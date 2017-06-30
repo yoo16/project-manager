@@ -1,0 +1,36 @@
+<html lang="ja">
+<head>
+  <? include('components/meta.phtml') ?>
+  <? include('components/stylesheet.phtml') ?>
+  <? include('components/javascript.phtml') ?>
+
+  <script type="text/javascript">
+    var project_name = '<?= PROJECT_ROOT ?>';
+  </script>
+</head>
+<body>
+
+  <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+    <div class="container">
+      <ul class="nav justify-content-left">
+        <li class="nav-item">
+          <a class="nav-link" href="<?= $this->base ?>">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<?= url_for('database/') ?>">Database</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<?= url_for('project/') ?>">Project</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <?= $this->content_for_layout?>
+
+  </div>
+
+</body>
+</html>

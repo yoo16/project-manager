@@ -1,0 +1,20 @@
+
+  <table class="table">
+
+    <tr>
+      <th>名称</th>
+      <td>
+        <input class="form-control" name="user[login_name]" type="text" value="<?= $this->user['login_name'] ?>">
+      </td>
+    </tr>
+
+    <tr>
+      <th>プロジェクトパス</th>
+      <td>
+        <input class="form-control" name="user[default_project_path]" type="text" value="<?= $this->user['default_project_path'] ?>">
+      </td>
+    </tr>
+
+  </table>
+
+  <input name="user[id]" type="hidden" value="<?= $this->user['id'] ?>" class="" />

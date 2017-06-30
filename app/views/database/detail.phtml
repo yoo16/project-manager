@@ -1,0 +1,42 @@
+<? include('_header.phtml') ?>
+
+
+<h2>テーブル名</h2>
+
+<? foreach ($this->pg_tables as $pg_table): ?>
+<h3><?= $pg_table['tablename'] ?></h3>
+<table class="table">
+  <tr>
+    <th></th>
+    <th>ラベル</th>
+    <th>name</th>
+    <th>type</th>
+    <th>length</th>
+    <th>attrelid</th>
+    <th>attnum</th>
+    <th>NOT NULL</th>
+  </tr>
+  <? foreach ($pg_table['attributes'] as $attribute): ?>
+  <tr>
+    <td></td>
+    <td nowrap="nowrap">
+      <input id="comment-<?= (int) $index ?>" class="" type="<?= $attribute['comment'] ?>" name="comment" value="<?= $attribute['comment'] ?>">
+      <a class="btn btn-primary action" href="#" action="updateColumnComment" database_id="<?= $this->database['id'] ?>" comment-id="comment-<?= (int) ++$index ?>" table="<?= $pg_table['tablename'] ?>" column="<?= $attribute['column_name'] ?>"><?= LABEL_UPDATE ?></a>
+    </td>
+    <td><?= $attribute['column_name'] ?></td>
+    <td><?= $attribute['udt_name'] ?></td>
+    <td><?= $attribute['character_maximum_length'] ?></td>
+    <td><?= $attribute['attrelid'] ?></td>
+    <td><?= $attribute['attnum'] ?></td>
+    <td><?= $attribute['attnotnull'] ?></td>
+  </tr>
+<? endforeach ?>
+
+<tr>
+</tr>
+
+</table>
+<? endforeach ?>
+
+<?= javascript_tag('controllers/DatabaseController') ?>
+

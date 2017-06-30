@@ -1,0 +1,31 @@
+<? include('_header.phtml') ?>
+<div id="project">
+	<form class="form-inline" action="<?= url_for('create_project_for_csv') ?>" method="post">
+		<a class="btn btn-primary" href="<?= url_for('new') ?>"><?= LABEL_ADD ?></a>
+ </form>
+
+ <table class="table">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>プロジェクト名</th>
+      <th>DB</th>
+      <th>&nbsp;</th>
+    </tr>
+  </thead>
+
+  <? if (is_array($this->projects)): ?>
+
+  <? foreach ($this->projects as $project): ?>
+  <tr>
+    <td><a class="btn btn-secondary" href="<?= url_for('edit', $project['id']) ?>"><?= LABEL_EDIT ?></a></td>
+    <td><a href="<?= url_for('model/list', array('project_id' => $project['id'])) ?>"><?=$project['name'] ?></a></td>
+    <td><a href="<?= url_for('database/tables', $project['database_id']) ?>"><?= Entity::searchForKey($this->databases, $project['database_id'], 'name') ?></a></td>
+    <td><a class="btn btn-warning" href="<?=url_for('export_list', $project['id']) ?>"><?= LABEL_EXPORT ?>...</a></td>
+  </tr>
+  <? endforeach ?>
+
+  <? endif ?>
+
+</table>
+</div>

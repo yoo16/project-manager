@@ -1,0 +1,28 @@
+<div class="panel">
+  <form class="" method="post" action="<?= url_for('/user/add') ?>">
+
+    <div class="form-group">
+      <label class=""><?= LABEL_USER_ID ?></label>
+      <input type="text" id="" class="form-control" placeholder="<?= LABEL_USER_ID ?>" name="user[login_name]" value="<?= $this->user['login_name'] ?>" required autofocus>
+    </div>
+
+    <div class="form-group">
+      <label class=""><?= LABEL_NAME ?></label>
+      <input type="text" id="" class="form-control" placeholder="<?= LABEL_LAST_NAME ?>" name="user[last_name]" value="<?= $this->user['last_name'] ?>" required autofocus>
+      &nbsp;
+      <input type="text" id="" class="form-control" placeholder="<?= LABEL_FIRST_NAME ?>" name="user[first_name]" value="<?= $this->user['first_name'] ?>" required autofocus>
+    </div>
+
+    <div class="form-group">
+      <label class=""><?= LABEL_MAIL ?></label>
+      <input type="text" id="" class="form-control" placeholder="<?= LABEL_MAIL ?>" name="user[email]" value="<?= $this->user['email'] ?>" required autofocus>
+    </div>
+
+    <div class="form-group">
+      <label class=""><?= LABEL_PASSWORD ?></label>
+      <input type="password" class="form-control" placeholder="<?= LABEL_PASSWORD ?>" name="user[password]" required>
+    </div>
+
+    <button class="btn btn-primary" type="submit"><?= LABEL_SEND ?></button>
+  </form>
+</div>

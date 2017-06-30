@@ -1,0 +1,13 @@
+<% include('_header.phtml') %>
+<div id="project">
+
+  <form id="input_form" action="<%=url_for('update', $this->params['id']) %>" method="post">
+
+    <% include('_confirm.phtml') %>
+    <div>
+      <a class="btn" href="javascript:submitForm('#input_form')"><%=LABEL_BUTTON_SAVE %></a>
+      <a class="btn" href="<%=url_for('edit', $this->params['id']) %>"><%=LABEL_BACK %></a>
+    </div>
+
+  </form>
+</div>

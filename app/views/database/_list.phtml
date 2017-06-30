@@ -1,0 +1,27 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th><?= DATABASE_NAME ?></th>
+      <th><?= DATABASE_HOST ?></th>
+      <th><?= DATABASE_USER ?></th>
+      <th><?= DATABASE_PORT ?></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <? if (is_array($this->databases)): ?> 
+
+  <? foreach ($this->databases as $key => $database): ?> 
+  <tr>
+    <td><a class="btn btn-secondary" href="<?= url_for('edit', $database['id']) ?>"><?= LABEL_EDIT ?></a></td>
+    <td><a class="" href="<?= url_for('tables', $database['id']) ?>"><?= $database['name'] ?></a></td>
+    <td><?= $database['hostname'] ?></td>
+    <td><?= $database['user_name'] ?></td>
+    <td><?= $database['port'] ?></td>
+  </tr>
+  <? endforeach ?> 
+
+  <? endif ?> 
+
+</table>

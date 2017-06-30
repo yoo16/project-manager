@@ -1,0 +1,28 @@
+<h3>Model</h3> 
+<a href="<%=url_for('export_model', $this->params['id']) %>" onClick="return confirmPHPmodelOutput();">PHP Export</a>
+<table>
+  <tr>
+    <th><a href="<%=url_for('model/new', array('database_id' => $this->database['id'])) %>"><img src="<%=image('/btn_add.gif') %>" alt="新規追加" /></a></th>
+    <th>モデル名</th>
+    <th>relfilenode</th>
+  </tr>
+
+  <% if (is_array($this->models)): %> 
+
+  <% foreach ($this->models as $key => $model): %> 
+  <tr class="<%=tr_model($model) %>">
+    <td><a href="<%=url_for('model/edit', $model['id']) %>"><img src="<%=image('/btn_edit.gif') %>" alt="編集" /></a></td>
+    <td><a href="<%=url_for('attribute/list', $model['id']) %>"><%=$model['name'] %></a></td>
+    <td>
+      <% if ($model['relfilenode'] > 0): %>
+      <%=$model['relfilenode'] %>
+      <% else: %>
+      <a href="<%=url_for('create_table', $model['id']) %>">テーブル作成</a>
+      <% endif %>
+    </td>
+  </tr>
+  <% endforeach %> 
+
+  <% endif %> 
+
+</table>

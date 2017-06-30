@@ -1,0 +1,33 @@
+<html lang="ja">
+<head>
+  <? include('components/meta.phtml') ?>
+  <? include('components/stylesheet.phtml') ?>
+  <? include('components/javascript.phtml') ?>
+  <? include('components/zip.phtml') ?>
+</head>
+<body>
+
+  <div class="nav">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#"><?= APP_NAME ?></a>
+      </div>
+<? if ($this->user): ?>
+      <nav class="nav nav-pills flex-column flex-sm-row">
+        <a class="flex-sm-fill text-sm-center nav-link active" href="#">Active</a>
+        <a class="flex-sm-fill text-sm-center nav-link" href="#">Link</a>
+        <a class="flex-sm-fill text-sm-center nav-link" href="#">Link</a>
+        <a class="flex-sm-fill text-sm-center nav-link disabled" href="#">Disabled</a>
+      </nav>
+<? endif ?>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <?= $this->content_for_layout?>
+
+  </div>
+
+</body>
+</html>

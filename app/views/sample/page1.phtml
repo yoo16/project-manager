@@ -1,0 +1,195 @@
+<h2>FormHelper.php</h2>
+<h4>select($params, $selected=null, $value_key=null, $label_key=null, $values=null)</h4>
+
+<form action="" class="form-inline">
+  <?= FormHelper::select($this->forms['area'], 2); ?>
+</form>
+
+<pre>
+  FormHelper::select($this->forms['area'], 2)
+</pre>
+
+<div>
+  <h5>$this->forms['area']</h5>
+  <table class="table">
+    <? foreach ($this->forms['area'] as $key => $value): ?>
+
+    <tr>
+      <th><?= $key ?></th>
+      <td>
+        <? if (is_array($value)): ?>
+
+        <table class="table">
+
+          <? foreach ($value as $key2 => $value2): ?>
+          <tr>
+            <th><?= $key2 ?></th>
+            <td>
+              <? if (is_array($value2)): ?>
+              <? print_r($value2) ?>
+            <? else: ?>
+            <?= $value2 ?>
+          <? endif ?>
+        </td>
+      </tr>
+    <? endforeach ?>
+
+  </table>
+
+<? else: ?>
+
+<?= $value ?>
+<? endif ?>
+</td>
+
+</tr>
+
+<? endforeach ?>
+</table>
+
+</div>
+
+<h4>multiCheckbox($params, $selected=null, $value_key=null, $label_key=null, $values=null)</h4>
+<form action="" class="form-inline">
+  <div class="form-group">
+    <?= FormHelper::multiCheckbox($this->forms['area_checkbox'], array(2, 3), 'id', 'name'); ?>
+  </div>
+</form>
+
+<pre>
+  FormHelper::multiCheckbox($this->forms['area_checkbox'], array(2, 3))
+</pre>
+
+<h5>$this->forms['area_checkbox']</h5>
+<table class="table">
+  <? foreach ($this->forms['area_checkbox'] as $key => $value): ?>
+
+  <tr>
+    <th><?= $key ?></th>
+    <td>
+      <? if (is_array($value)): ?>
+
+      <table class="table">
+
+        <? foreach ($value as $key2 => $value2): ?>
+        <tr>
+          <th><?= $key2 ?></th>
+          <td>
+            <? if (is_array($value2)): ?>
+            <? print_r($value2) ?>
+          <? else: ?>
+          <?= $value2 ?>
+        <? endif ?>
+      </td>
+    </tr>
+  <? endforeach ?>
+
+</table>
+
+<? else: ?>
+
+<?= $value ?>
+<? endif ?>
+</td>
+
+</tr>
+
+<? endforeach ?>
+</table>
+
+<h4>radio($params, $selected=null, $value_key=null, $label_key=null, $values=null)</h4>
+<form action="" class="form-inline">
+  <?= FormHelper::radio($this->forms['area_radio'], 2, 'id', 'name'); ?>
+</form>
+
+<pre>
+  FormHelper::radio($this->forms['area_radio'], 2, 'id', 'name')
+</pre>
+
+<div>
+
+  <h5>$this->forms['area_radio']</h5>
+  <table class="table">
+    <? foreach ($this->forms['area_radio'] as $key => $value): ?>
+
+    <tr>
+      <th><?= $key ?></th>
+      <td>
+        <? if (is_array($value)): ?>
+
+        <table class="table">
+
+          <? foreach ($value as $key2 => $value2): ?>
+          <tr>
+            <th><?= $key2 ?></th>
+            <td>
+              <? if (is_array($value2)): ?>
+              <? print_r($value2) ?>
+            <? else: ?>
+            <?= $value2 ?>
+          <? endif ?>
+        </td>
+      </tr>
+    <? endforeach ?>
+
+  </table>
+
+<? else: ?>
+
+<?= $value ?>
+<? endif ?>
+</td>
+
+</tr>
+
+<? endforeach ?>
+</table>
+</div>
+
+<h3>selectDate($params, $selected=null) </h3>
+<form action="" class="form-inline">
+  <?= FormHelper::selectDate($this->forms['date']) ?>
+</form>
+
+<pre>
+  FormHelper::selectDate($this->forms['date'])
+</pre>
+
+<div>
+  <h5>$this->forms['date']</h5>
+  <table class="table">
+    <? foreach ($this->forms['date'] as $key => $value): ?>
+
+    <tr>
+      <th><?= $key ?></th>
+      <td>
+        <? if (is_array($value)): ?>
+
+        <table class="table">
+
+          <? foreach ($value as $key2 => $value2): ?>
+          <tr>
+            <th><?= $key2 ?></th>
+            <td>
+              <? if (is_array($value2)): ?>
+              <? print_r($value2) ?>
+            <? else: ?>
+            <?= $value2 ?>
+          <? endif ?>
+        </td>
+      </tr>
+    <? endforeach ?>
+
+  </table>
+
+<? else: ?>
+
+<?= $value ?>
+<? endif ?>
+</td>
+
+</tr>
+
+<? endforeach ?>
+</table>
+</div>

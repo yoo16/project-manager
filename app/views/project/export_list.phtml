@@ -1,0 +1,40 @@
+<? include('_header.phtml') ?>
+
+<table class="table">
+  <tr>
+    <th>project name</th>
+    <td><?= $this->project['name'] ?></td>
+  </tr>
+</table>
+
+<h3>project path</h3>
+<form id="" action="<?=url_for('add_user_project_setting') ?>" method="post">
+<div class="form-group">
+  <input class="form-control" name="user_project_setting[project_path]" type="text" value="<?= $this->user_project_setting['project_path'] ?>">
+  <input class="" name="user_project_setting[project_id]" type="hidden" value="<?= $this->project['id'] ?>">
+  <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
+</div>
+</form>
+<? if (is_array($this->user_project_settings)): ?>
+
+<table class="table">
+  <? foreach ($this->user_project_settings as $user_project_setting): ?>
+  <tr>
+    <td><a class="btn btn-secondary" href="<?= url_for('edit_user_project_setting', $user_project_setting['id']) ?>"><?= LABEL_EDIT ?></a></td>
+    <td><?= $user_project_setting['project_path'] ?></td>
+    <td>
+      <? if (file_exists($user_project_setting['project_path'])): ?>
+        <label class="alert alert-success">exists</label>
+      <? else: ?>
+        <label class="alert alert-danger">not exists</label>
+      <? endif ?>
+</td>
+<td><a class="btn btn-warning" href="<?=url_for('export', array('id' => $this->project['id'], 'user_project_setting_id' => $user_project_setting['id'])) ?>"><?= LABEL_EXPORT ?></a></td>
+</tr>
+<? endforeach ?>
+
+<? endif ?>
+
+</table>
+
+<a href="<?= url_for('project/') ?>" class="btn btn-secondary"><?= LABEL_BACK ?></a>

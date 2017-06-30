@@ -1,0 +1,21 @@
+ 
+  <table id="item_table">
+    <thead class="header">
+      <tr>
+      </tr>
+    </thead>
+
+<% if (is_array($this->databases)): %> 
+
+<% foreach ($this->databases as $key => $database): %> 
+
+    <tr id="<%=$database['id'] %>">
+
+    </tr>
+<% endforeach %> 
+
+<% endif %> 
+
+  </table>
+
+  <script type="text/javascript">_add_sort_handler("#item_table");</script>

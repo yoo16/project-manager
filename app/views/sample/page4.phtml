@@ -1,0 +1,86 @@
+<div>
+  <h2>FileManager</h2>
+
+
+  <h3>getImageTypes()</h3>
+  <pre>FileManager::getImageTypes()</pre>
+  <ul>
+    <? foreach(FileManager::getImageTypes() as $key => $value): ?>
+    <li><?= $key ?> => <?= $value ?></li>
+    <? endforeach ?>
+  </ul>
+
+  <h3>getImageExts()</h3>
+  <pre>FileManager::getImageExts()</pre>
+  <ul>
+    <? foreach(FileManager::getImageExts() as $key => $value): ?>
+    <li><?= $key ?> => <?= $value ?></li>
+    <? endforeach ?>
+  </ul>
+
+  <h3>getImageTypeWithFileName($file_name)</h3>
+  <pre>FileManager::getImageTypeWithFileName('sample.jpg')</pre>
+  <?= FileManager::getImageTypeWithFileName('sample.jpg'); ?>
+
+
+  <h3>getImageExt($file_type)</h3>
+  <pre>FileManager::getImageExt('image/x-png')</pre>
+  <?= FileManager::getImageExt('image/x-png'); ?>
+
+  <h3>loadContents($base_dir, $params=null)</h3>
+  <pre>FileManager::loadFiles(BASE_DIR.'app/controllers/')</pre>
+
+
+  <? foreach(FileManager::loadFiles(BASE_DIR.'app/controllers/') as $key => $values): ?>
+  <table class="table">
+    <? foreach($values as $column => $value): ?>
+    <tr>
+      <th><?= $column ?><th>
+        <td><?= $value ?></td>
+      </tr>
+      <? endforeach ?>
+    </table>
+    <? endforeach ?>
+
+    <h3>loadContents($key='file')</h3>
+    <pre>FileManager::loadContents(BASE_DIR.'app/controllers/')</pre>
+
+    <h3>uploadFilePath($key='file')</h3>
+    <pre>FileManager::uploadFilePath()</pre>
+
+    <h3>uploadFileType($key='file')</h3>
+    <pre>FileManager::uploadFileType()</pre>
+
+    <h3>uploadFileName($key='file')</h3>
+    <pre>FileManager::uploadFileName()</pre>
+
+    <h3>uploadImageExt($key='file')</h3>
+    <pre>FileManager::uploadImageExt()</pre>
+
+    <form action="upload_file" method="post" enctype="multipart/form-data">
+      <input type="file" name="file">
+      <input type="submit" value="アップロード">
+    </form>
+
+    <h3>uploadFile($to_path, $key='file'))</h3>
+    <pre>FileManager::uploadFile('/home/telepath/upload_files/sample.txt')</pre>
+
+
+    <h3>uploadImage($to_path, $key='file'))</h3>
+    <pre>FileManager::uploadImage('/home/telepath/upload_files/sample.jpg')</pre>
+
+
+    <h3>getFileBaseName($path)</h3>
+    <pre>FileManager::getFileBaseName('http://wwww.sample.com/sample.jpg')</pre>
+    <?= FileManager::getFileBaseName('http://wwww.sample.com/sample.jpg') ?>
+
+
+    <h3>getFileName($path)</h3>
+    <pre>FileManager::getFileName('http://wwww.sample.com/sample.jpg')</pre>
+    <?= FileManager::getFileName('http://wwww.sample.com/sample.jpg') ?>
+
+
+    <h3>getFileExt($path)</h3>
+    <pre>FileManager::getFileExt('http://wwww.sample.com/sample.jpg')</pre>
+    <?= FileManager::getFileExt('http://wwww.sample.com/sample.jpg') ?>
+  </div>

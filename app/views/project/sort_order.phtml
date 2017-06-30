@@ -1,0 +1,12 @@
+<% include('_header.phtml') %>
+<div id="project">
+  <form id="input_form" action="<%=url_for('update_sort') %>" method="post"> 
+    <% include('_sort_order.phtml') %>
+    <div class="btns">
+      <a class="btn" href="javascript:submitForm('#input_form')"><%=LABEL_BUTTON_SAVE %></a>
+      <a class="btn" href="<%=url_for('list') %>"><%=LABEL_CANCEL %></a>
+    </div>
+
+  </form>
+</div>
+

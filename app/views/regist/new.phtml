@@ -1,0 +1,51 @@
+<div class="row car">
+  <div class="card col-xs-6 col-sm-6 col-md-6">
+    <div class="card-block">
+      <form id="form-edit" action="<?= url_for('add') ?>" method="post" autocomplete="off">
+        <div class="form-group">
+          <label for="recipient-name" class="form-control-label"><?= LABEL_MAIL ?></label>
+          <input class="form-control <?= FormHelper::validateRequired($this->errors, 'email') ?>" type="email" name="email" value="<?= $this->user['email'] ?>" required autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label for="recipient-name" class="form-control-label"><?= LABEL_LAST_NAME_KANA ?></label>
+          <input class="form-control" type="text" name="last_name" value="<?= $this->user['last_name_kana'] ?>">
+        </div>
+
+        <div class="form-group">
+          <label for="recipient-name" class="form-control-label"><?= LABEL_FIRST_NAME_KANA ?></label>
+          <input class="form-control" type="text" name="first_name" value="<?= $this->user['first_name_kana'] ?>">
+        </div>
+
+        <div class="form-group">
+          <label for="recipient-name" class="form-control-label"><?= LABEL_LAST_NAME ?></label>
+          <input class="form-control" type="text" name="last_name" value="<?= $this->user['last_name'] ?>" required>
+        </div>
+
+        <div class="form-group">
+          <label for="recipient-name" class="form-control-label"><?= LABEL_FIRST_NAME ?></label>
+          <input class="form-control" type="text" name="first_name" value="<?= $this->user['first_name'] ?>" required>
+        </div>
+
+        <? if (!$this->user['id']): ?>
+        <div class="form-group">
+          <label for="recipient-name" class="form-control-label"><?= LABEL_PASSWORD ?></label>
+          <input class="form-control" type="password" name="password" value="" required>
+        </div>
+      <? endif ?>
+
+      <div class="form-group">
+        <label for="recipient-name" class="form-control-label"><?= LABEL_GENDER ?></label>
+        <?= FormHelper::genderRadio($this->forms['gender'], $this->user['gender']); ?>
+      </div>
+
+      <div class="form-group">
+        <label for="recipient-name" class="form-control-label"><?= LABEL_BIRTHDAY ?></label>
+        <?= FormHelper::selectBirthday($this->forms['birthday_at'], $this->user['birthday_at']); ?>
+      </div>
+
+      <button class="btn btn-primary" type="submit"><?= LABEL_REGIST ?></button>
+    </form>
+  </div>
+</div>
+</div>

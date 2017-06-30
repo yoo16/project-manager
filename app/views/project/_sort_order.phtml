@@ -1,0 +1,27 @@
+
+ 
+  <table id="item_table" class="table">
+    <thead>
+      <tr>
+        <th></th>
+      </tr>
+    </thead>
+
+<% if (is_array($this->projects)): %> 
+
+<% foreach ($this->projects as $key => $project): %> 
+
+    <tr id="<%=$project['id'] %>">
+      <td>
+        
+        <input id="sort_order_<%=$project['id'] %>" name="sort_order[<%=$project['id'] %>]" type="hidden" value="<%=$project['sort_order'] %>" />
+      </td>
+
+    </tr>
+<% endforeach %> 
+
+<% endif %> 
+
+  </table>
+
+  <script type="text/javascript">_add_sort_handler("#item_table");</script>

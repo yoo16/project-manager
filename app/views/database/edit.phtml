@@ -1,0 +1,21 @@
+<? include('_header.phtml') ?>
+<div id="database">
+  <form id="" action="<?=url_for('update', $this->database['id']) ?>" method="post">
+
+    <? include('_edit.phtml') ?>
+
+    <input class="btn btn-primary" type="submit" value="<?=LABEL_UPDATE ?>">
+    <a class="btn btn-secondary" href="<?=url_for('cancel') ?>"><?=LABEL_BACK?></a>
+
+  </form>
+
+  <? if ($this->database['id']): ?>
+  <form id="" action="<?=url_for('delete', $this->database['id']) ?>" method="post">
+    <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
+
+    <label for="is_delete">
+      <input id="is_delete" class="" type="checkbox" name="is_delete"> データベース削除
+    </label>
+  </form>
+  <? endif ?>
+</div>

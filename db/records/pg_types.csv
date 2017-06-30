@@ -1,0 +1,13 @@
+value,label
+"boolean","boolean"
+"smallint","smallint"
+"integer","integer"
+"bigint","bigint"
+"float","float"
+"real","real"
+"double precision","double precision"
+"float","float"
+"varchar","varchar"
+"text","text"
+"timestamp","timestamp"
+"bytea","bytea"

@@ -1,0 +1,6 @@
+*.log
+app/settings/debian.php
+app/settings/debian8.php
+vendor/*
+composer.lock
+HOSTNAME

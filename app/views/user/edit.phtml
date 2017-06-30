@@ -1,0 +1,13 @@
+<? include('_header.phtml') ?>
+<div id="user">
+  <form id="" action="<?= url_for('update', $this->user['id']) ?>" method="post">
+    <? include('_edit.phtml') ?>
+
+    <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
+    <a class="btn btn-secondary" href="<?= url_for('cancel') ?>"><?= LABEL_CANCEL ?></a>
+  </form>
+
+  <form id="" action="<?= url_for('delete', $this->user['id']) ?>" method="post">
+    <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
+  </form>
+</div>

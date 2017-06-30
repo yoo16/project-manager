@@ -1,0 +1,26 @@
+
+  <a class="btn" href="<%=url_for('new') %>"><%=LABEL_ADD %></a> 
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>&nbsp;</th>
+        <th>ユーザ</th>
+        <th>デフォルトプロジェクトパス</th>
+        <th>デフォルト開発URL</th>
+      </tr>
+    </thead>
+
+<% if (is_array($this->user_configs)): %> 
+
+<% foreach ($this->user_configs as $key => $user_config): %> 
+    <tr>
+      <td><a class="btn" href="<%=url_for('edit', $user_config['id']) %>"><%=LABEL_EDIT %></a></td>
+      <td><%= $this->options['user_name'][$user_config['user_id']] %></td>
+      <td><%=$user_config['default_project_path'] %></td>
+      <td><%=$user_config['default_dev_url'] %></td>
+    </tr>
+<% endforeach %> 
+
+<% endif %> 
+
+  </table>

@@ -1,0 +1,55 @@
+<? include('_header.phtml') ?>
+
+<div id="columns"></div>
+
+<div class="container">
+  <form method="post" action="<?= url_for('add_table', $this->database['id']) ?>">
+    <div class="row">
+      <input class="form-control col-4" type="text" name="table_name" value="">
+      &nbsp;
+      <input class="btn btn-primary" type="submit" value="テーブル作成">
+    </div>
+  </form>
+</div>
+
+<? if ($this->pg_tables): ?>
+<form method="post" action="<?= url_for('update_table_comment') ?>">
+  <div class="card">
+    <div class="card-header">
+      <h4>テーブル</h4>
+    </div>
+    <div class="card-block overflow-list">
+      <table class="table">
+        <tr>
+          <th></th>
+          <th>テーブル名</th>
+          <th>コメント</th>
+        </tr>
+        <? foreach ($this->pg_tables as $pg_table): ?>
+        <tr>
+          <td>
+            <a class="btn btn-secondary" href="<?= url_for('edit_table', array('database_id' => $this->database['id'], 'table_name' => $pg_table['tablename'])) ?>"><?= LABEL_EDIT ?></a>
+          </td>
+          <td>
+            <a class="" href="<?= url_for('columns', array('database_id' => $this->database['id'], 'table_name' => $pg_table['tablename'])) ?>"><?= $pg_table['tablename'] ?></a>
+          </td>
+          <td>
+            <input class="form-control" type="text" name="comments[<?= $pg_table['tablename'] ?>]" value="<?= $this->table_comments[$pg_table['tablename']] ?>">
+          </td>
+          <td>
+            <a href="<?= url_for('drop_table') ?>"></a>
+          </td>
+        </tr>
+      <? endforeach ?>
+    </table>
+  </div>
+  <div class="card-footer text-center">
+    <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
+    <a class="btn btn-secondary" href="<?= url_for('database/list'); ?>"><?= LABEL_BACK ?></a>
+  </div>
+</div>
+<input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
+</form>
+<? endif ?>
+
+<?= javascript_tag('controllers/DatabaseController') ?>

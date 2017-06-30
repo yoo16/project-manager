@@ -1,0 +1,15 @@
+<div id="log-window" class="card">
+  <div class="card-block text-right">
+    <a href="#" class="btn btn-primary action-close" window-id="log-window"><?= LABEL_CLOSE ?></a>
+    <a href="#" class="btn btn-danger action-delete-log"><?= LABEL_DELETE ?></a>
+  </div>
+  <div id="log-contents" class="card-block"></div>
+</div>
+
+<a href="#" class="btn btn-primary action-log_list"><?= LABEL_RELOAD ?></a>
+<div id="log-list">
+</div>
+
+<script type="text/javascript">
+$('.action-log_list').trigger('click');
+</script>

@@ -1,0 +1,26 @@
+<? if ($this->errors || $this->flash['errors'] || $this->flash['messages']): ?>
+<div id="message_dialog" onclick="closeElement('#message_dialog')">
+  <div class="dialog">
+    <div class="message_area">
+      <ul>
+        <? if (is_array($this->flash['messages'])): ?>
+        <? foreach ($this->flash['messages'] as $key => $value): ?>
+        <li><?=display_message($value, $this->params) ?></li>
+        <? endforeach?>
+        <? endif ?>
+
+        <? if(is_array($this->flash['errors'])): ?>
+        <? foreach ($this->flash['errors'] as $key => $error): ?>
+        <? foreach ($error as $key2 => $value): ?>
+        <li><?=display_error($value, $this->params, $key)?></li>
+        <? endforeach?>
+        <? endforeach?>
+        <? endif ?>
+      </ul>
+    </div>
+    <div style="text-align: right">
+      <a class="btn" href="#"><?=LABEL_BUTTON_CLOSE ?></a>
+    </div>
+  </div>
+</div>
+<? endif ?>

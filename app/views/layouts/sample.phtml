@@ -1,0 +1,31 @@
+<html lang="ja">
+<head>
+  <? include('components/meta.phtml') ?>
+  <? include('components/stylesheet.phtml') ?>
+  <? include('components/javascript.phtml') ?>
+</head>
+<body>
+
+  <div class="nav">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="<?= url_for('/') ?>"><?= APP_NAME ?></a>
+      </div>
+      <nav class="nav nav-pills flex-column flex-sm-row">
+        <a class="flex-sm-fill text-sm-center nav-link" href="<?= url_for('page1') ?>">Page1</a>
+        <a class="flex-sm-fill text-sm-center nav-link" href="<?= url_for('page2') ?>">Page2</a>
+        <a class="flex-sm-fill text-sm-center nav-link" href="<?= url_for('page3') ?>">Page3</a>
+        <a class="flex-sm-fill text-sm-center nav-link" href="<?= url_for('page4') ?>">Page4</a>
+        <a class="flex-sm-fill text-sm-center nav-link" href="<?= url_for('page5') ?>">Page5</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <?= $this->content_for_layout?>
+
+  </div>
+
+</body>
+</html>

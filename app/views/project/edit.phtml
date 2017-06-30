@@ -1,0 +1,17 @@
+<? include('_header.phtml') ?>
+
+<h2>プロジェクト情報</h2>
+<form id="" action="<?=url_for('update', $this->params['id']) ?>" method="post">
+
+  <? include('_edit.phtml') ?>
+
+  <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
+  <a class="btn btn-secondary" href="<?=url_for('cancel') ?>"><?= LABEL_BACK ?></a>
+
+</form>
+
+<? if ($this->project): ?>
+<form id="" action="<?=url_for('delete', $this->params['id']) ?>" method="post">
+  <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
+</form>
+<? endif ?>

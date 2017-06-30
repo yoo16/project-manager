@@ -1,0 +1,10 @@
+<? include('_header.phtml') ?>
+<div id="user">
+  <form id="" action="<?= url_for('add') ?>" method="post">
+    <? include('_edit.phtml') ?>
+
+    <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
+    <a class="btn btn-secondary" href="<?= url_for('cancel') ?>"><?= LABEL_CANCEL ?></a>
+  </form>
+
+</div>

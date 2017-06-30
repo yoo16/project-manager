@@ -1,0 +1,19 @@
+<? if ($this->users): ?>
+
+count : <?= $this->count ?>
+
+<table class="table">
+
+<? foreach ($this->users as $user): ?>
+<tr>
+  <td><a action="edit" class="action btn btn-primary" edit-id="<?= $user['id'] ?>" href="#" data-toggle="modal" data-target="#edit_modal"><?= LABEL_EDIT ?></a></td>
+  <td><?= $user['email'] ?></td>
+  <td><?= $user['last_name'] ?></td>
+  <td><?= $user['first_name'] ?></td>
+  <td><?= $user['birthday_at'] ?></td>
+  <td><?= $user['created_at'] ?></td>
+</tr>
+<? endforeach ?>
+
+</table>
+<? endif ?>

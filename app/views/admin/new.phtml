@@ -1,0 +1,8 @@
+<div class="card card-container">
+  <p id="profile-name" class="profile-name-card"></p>
+  <form class="form-signin" method="post" action="<?= url_for('/admin/add') ?>">
+    <input type="text" class="form-control input" placeholder="<?= LABEL_LOGIN_NAME ?>" name="login_name" value="<?= $_POST['user']['email'] ?>" required autofocus>
+    <input type="password" class="form-control input" placeholder="<?= LABEL_PASSWORD ?>" name="password" required>
+    <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit"><?= LABEL_REGIST ?></button>
+  </form>
+</div>
