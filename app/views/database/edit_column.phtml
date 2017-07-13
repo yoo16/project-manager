@@ -1,0 +1,39 @@
+<? include('_header.phtml') ?>
+
+<form action="<?= url_for('update_column') ?>" method="post">
+  <div class="">
+    <div class="form-group row">
+      <label for="" class="col-2 col-form-label">name</label>
+      <input class="form-control col-5" type="text" name="name" value="<?= $this->pg_attribute['column_name'] ?>">
+    </div>
+
+    <div class="form-group row">
+      <label for="" class="col-2 col-form-label">type</label>
+      <?= FormHelper::select($this->forms['pg_types'], $this->pg_attribute['udt_name']) ?>
+    </div>
+
+    <div class="form-group row">
+      <label for="" class="col-2 col-form-label">length</label>
+      <input class="form-control col-1" type="text" name="legth" value="<?= $this->pg_attribute['character_maximum_length'] ?>">
+    </div>
+
+    <div class="form-group row">
+      <label for="" class="col-2 col-form-label">NOT NULL</label>
+      <?= FormHelper::checkbox($this->forms['notnull']) ?>
+    </div>
+  </div>
+  <div class="">
+    <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
+    <a class="btn btn-secondary" href="<?= url_for('columns', $this->params) ?>"><?= LABEL_BACK ?></a>
+    <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
+    <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
+    <input type="hidden" name="old_column_name" value="<?= $this->pg_attribute['column_name'] ?>">
+  </div>
+</form>
+
+<form action="<?= url_for('delete_column') ?>" method="post">
+  <input type="submit" class="btn btn-danger" value="<?= LABEL_DELETE ?>">
+  <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
+  <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
+  <input type="hidden" name="column_name" value="<?= $this->pg_attribute['column_name'] ?>">
+</form>

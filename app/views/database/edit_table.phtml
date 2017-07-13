@@ -1,16 +1,13 @@
 <? include('_header.phtml') ?>
 <div id="database">
-  <form id="" action="<?=url_for('rename_table') ?>" method="post">
+  <form id="" action="<?=url_for('update_table') ?>" method="post">
 
     <table class="table">
-
       <tr>
         <th>テーブル名</th>
         <td><input class="form-control" name="new_table_name" type="text" value="<?= $this->pg_table['tablename'] ?>" required="required"></td>
       </tr>
-
     </table>
-
 
     <input class="btn btn-primary" type="submit" value="<?=LABEL_UPDATE ?>">
     <a class="btn btn-secondary" href="<?=url_for('tables', $this->database['id']) ?>"><?=LABEL_BACK?></a>
@@ -19,13 +16,10 @@
   </form>
 
   <? if ($this->pg_table): ?>
-  <form id="" action="<?=url_for('delete_table', $this->pg_table['tablename']) ?>" method="post">
-    <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
+  <form id="" action="<?=url_for('drop_table', $this->pg_table['tablename']) ?>" method="post">
     <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
-
-    <label for="is_delete">
-      <input id="is_delete" class="" type="checkbox" name="is_delete"> テーブル削除
-    </label>
+    <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
+    <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
   </form>
 <? endif ?>
 </div>

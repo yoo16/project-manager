@@ -34,7 +34,6 @@ class ProjectController extends AppController {
             exit;
         }
 
-        AppSession::setSession('project', null);
         AppSession::setSession('database', null);
         AppSession::setSession('model', null);
         AppSession::setSession('attribute', null);
@@ -80,10 +79,9 @@ class ProjectController extends AppController {
         $this->user_project_settings = DB::table('UserProjectSetting')
                                         ->select()
                                         ->values;
-
     }
 
-    function action_add() {
+    function add() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $posts = $this->session['posts'] = $_POST['project'];
             $project = DB::table('Project')
@@ -144,17 +142,29 @@ class ProjectController extends AppController {
         $user_project_setting = DB::table('UserProjectSetting')->fetch($this->params['user_project_setting_id'])->value;
 
         $project_path = $user_project_setting['project_path'];
-        if (file_exists($project_path)) {
-        } else {
-            $phpwork_path = DB_DIR."phpwork";
 
-            $cmd = "mkdir -P {$project_path}";
-            exec($cmd);
+        $app_path = "{$project_path}app/";
 
-            $cmd = "cp -r {$phpwork_path} {$project_path}";
-            exec($cmd);
-
+        if (file_exists($app_path)) {
+            //$this->redirect_to('export_list', $project['id']);
+            //exit;
         }
+
+        $cmd = "mkdir -p {$project_path}";
+        exec($cmd, $output, $return);
+
+        if (file_exists($project_path)) {
+            $git_path = PHP_WORK_GIT_URL;
+            $cmd = "git clone {$git_path} {$project_path}";
+            exec($cmd, $output, $return);
+        }
+
+        $dot_git_path = "{$project_path}/.git";
+        if (file_exists($dot_git_path)) {
+            $cmd = "rm -rf {$dot_git_path}";
+            exec($cmd, $output, $return);
+        }
+
         $this->redirect_to('export_list', $project['id']);
     }
 
@@ -205,7 +215,7 @@ class ProjectController extends AppController {
             } else {
                 unset($this->session['posts']);
             }
-            $this->redirect_to('export_list', $posts['project_id']);
+            $this->redirect_to('export_list', $user_project_setting->value['project_id']);
         }
     }
 

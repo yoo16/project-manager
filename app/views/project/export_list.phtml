@@ -1,22 +1,40 @@
 <? include('_header.phtml') ?>
 
-<table class="table">
-  <tr>
-    <th>project name</th>
-    <td><?= $this->project['name'] ?></td>
-  </tr>
-</table>
-
-<h3>project path</h3>
-<form id="" action="<?=url_for('add_user_project_setting') ?>" method="post">
-<div class="form-group">
-  <input class="form-control" name="user_project_setting[project_path]" type="text" value="<?= $this->user_project_setting['project_path'] ?>">
-  <input class="" name="user_project_setting[project_id]" type="hidden" value="<?= $this->project['id'] ?>">
-  <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
+<div>
+  <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-project_path-window"><?= LABEL_ADD ?></a>
+  <a href="<?= url_for('list') ?>" class="btn btn-secondary"><?= LABEL_BACK ?></a>
 </div>
-</form>
-<? if (is_array($this->user_project_settings)): ?>
 
+
+<div id="add-project_path-window" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <form id="" action="<?=url_for('add_user_project_setting') ?>" method="post">
+    <div class="modal-dialog" role="document">
+
+      <div class="modal-content">
+
+        <div class="modal-header">
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Project path</label>
+            <input class="form-control" name="user_project_setting[project_path]" type="text" value="<?= $this->user_project_setting['project_path'] ?>" placeholder="/home/users/<?= $this->project['name'] ?>/">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
+          <input class="" name="user_project_setting[project_id]" type="hidden" value="<?= $this->project['id'] ?>">
+        </div>
+
+      </div>
+
+    </div>
+  </form>
+</div>
+
+<? if (is_array($this->user_project_settings)): ?>
 <table class="table">
   <? foreach ($this->user_project_settings as $user_project_setting): ?>
   <tr>
@@ -24,12 +42,21 @@
     <td><?= $user_project_setting['project_path'] ?></td>
     <td>
       <? if (file_exists($user_project_setting['project_path'])): ?>
-        <label class="alert alert-success">exists</label>
-      <? else: ?>
-        <label class="alert alert-danger">not exists</label>
-      <? endif ?>
+      <? if (file_exists($user_project_setting['project_path']."app/")): ?>
+      <label class="badge badge-success">exists</label>
+    <? else: ?>
+    <label class="badge badge-danger">not found php-work</label>
+    <div>
+      <div>
+        <?= PHP_WORK_GIT_URL ?>
+      </div>
+    </div>
+  <? endif ?>
+<? else: ?>
+<label class="badge badge-danger">not exists</label>
+<? endif ?>
 </td>
-<td><a class="btn btn-warning" href="<?=url_for('export', array('id' => $this->project['id'], 'user_project_setting_id' => $user_project_setting['id'])) ?>"><?= LABEL_EXPORT ?></a></td>
+<td><a class="btn btn-primary" href="<?=url_for('export', array('id' => $this->project['id'], 'user_project_setting_id' => $user_project_setting['id'])) ?>"><?= LABEL_CREATE ?></a></td>
 </tr>
 <? endforeach ?>
 

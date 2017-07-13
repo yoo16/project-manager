@@ -11,10 +11,6 @@ class DatabaseController extends AppController {
         $this->project = AppSession::getSession('project');
         $this->database = AppSession::getSession('database');
         $this->model = AppSession::getSession('model');
-
-        $this->forms['hostname'] = CsvLite::form('db_hosts', 'hostname');
-        $this->forms['user_name'] = CsvLite::form('db_users', 'user_name');
-        $this->forms['port'] = CsvLite::form('db_ports', 'port');
     }
 
     function index() {
@@ -31,6 +27,9 @@ class DatabaseController extends AppController {
 
     function action_list() {
         $this->databases = DB::table('database')->selectValues();
+
+        $pgsql_entity = new PgsqlEntity();
+        $this->pg_databases = $pgsql_entity->pgDatabases();
     }
 
     function action_new() {
@@ -43,6 +42,11 @@ class DatabaseController extends AppController {
         $database = DB::table('Database')->fetch($this->params['id']);
         if (isset($this->session['posts'])) $database->takeValues($this->session['posts']);
         $this->database = $database->value;
+
+
+        $this->forms['hostname'] = CsvLite::form('db_hosts', 'database[hostname]');
+        $this->forms['user_name'] = CsvLite::form('db_users', 'database[user_name]');
+        $this->forms['port'] = CsvLite::form('db_ports', 'database[port]');
     }
 
     function add() {
@@ -54,7 +58,7 @@ class DatabaseController extends AppController {
                 $this->flash['errors'] = $database->errors;
                 $this->redirect_to('new');
             } else {
-                $pg_connection_array = $database->convertPgConnectionArray();
+                $pg_connection_array = $database->pgConnectArray();
                 $this->flash['results'] = PgsqlEntity::createDatabase($pg_connection_array);
 
                 unset($this->session['posts']);
@@ -63,10 +67,29 @@ class DatabaseController extends AppController {
         }
     }
 
+
+    function action_import_database() {
+        $pgsql_entity = new PgsqlEntity();
+        $pg_database = $pgsql_entity->pgDatabase($_REQUEST['database_name']);
+
+        $database = DB::table('Database')->where("name = '{$pg_database['datname']}'")->selectOne();
+        if (!$database->value) {
+            $pg_info = PgsqlEntity::pgInfo();
+            $posts['name'] = $pg_database['datname'];
+            $posts['user_name'] = ($pg_info['user'])? $pg_info['user'] : 'postgres';
+            $posts['host'] = ($pg_info['host'])? $pg_info['host'] : 'localhost';
+            $posts['port'] = ($pg_info['port'])? $pg_info['port'] : 5432;
+
+            DB::table('Database')->insert($posts);
+        }
+
+        $this->redirect_to('database/');
+    }
+
     function tables() {
         $database = DB::table('Database')->fetch($this->params['id']);
 
-        $pg_connection_array = $database->convertPgConnectionArray();
+        $pg_connection_array = $database->pgConnectArray();
         $pgsql_entity = new PgsqlEntity($pg_connection_array);
         $pg_database = $pgsql_entity->pgDatabase('project_manager');
         $this->pg_tables = $pgsql_entity->pgTables();
@@ -83,40 +106,37 @@ class DatabaseController extends AppController {
 
     function add_table() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['posts'] = $_POST;
+            $database = DB::table('Database')->fetch($_REQUEST['database_id']);
 
-            $database = DB::table('Database')->fetch($this->params['id']);
+            $columns = Model::$required_columns;
 
-            $pg_connection_array = $database->convertPgConnectionArray();
+            $pg_connection_array = $database->pgConnectArray();
             $pgsql_entity = new PgsqlEntity($pg_connection_array); 
-            $pgsql_entity->createTable($posts['table_name']);
-
-            unset($this->session['posts']);
-            $this->redirect_to('tables', $this->params['id']);
+            $pgsql_entity->createTable($_REQUEST['table_name'], $columns);
+            $this->redirect_to('tables', $_REQUEST['database_id']);
         }
     }
 
 
     function drop_table() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $database = DB::table('Database')->fetch($this->params['id']);
+            $database = DB::table('Database')->fetch($_REQUEST['database_id']);
 
-            $pg_connection_array = $database->convertPgConnectionArray();
+            $pg_connection_array = $database->pgConnectArray();
             $pgsql_entity = new PgsqlEntity($pg_connection_array); 
-            $pgsql_entity->dropTable($posts['table_name']);
-
-            $this->redirect_to('tables', $this->params['id']);
+            $pgsql_entity->dropTable($_REQUEST['table_name']);
+            $this->redirect_to('tables', $_REQUEST['database_id']);
         }
     }
 
     function edit_table() {
-        $database = DB::table('Database')->fetch($this->params['database_id']);
-        $table_name = $this->params['table_name'];
+        $database = DB::table('Database')->fetch($_REQUEST['database_id']);
+        $table_name = $_REQUEST['table_name'];
         
         if (!$database) return;
         if (!$table_name) return;
 
-        $pg_connection_array = $database->convertPgConnectionArray();
+        $pg_connection_array = $database->pgConnectArray();
         $pgsql_entity = new PgsqlEntity($pg_connection_array);
         $this->pg_table = $pgsql_entity->pgTableByTableName($table_name);
 
@@ -131,7 +151,7 @@ class DatabaseController extends AppController {
         if (!$database) return;
         if (!$table_name) return;
 
-        $pg_connection_array = $database->convertPgConnectionArray();
+        $pg_connection_array = $database->pgConnectArray();
         $pgsql_entity = new PgsqlEntity($pg_connection_array);
         $this->pg_table = $pgsql_entity->renameTable($table_name, $new_table_name);
         
@@ -146,14 +166,17 @@ class DatabaseController extends AppController {
         if (!$database) return;
         if (!$table_name) return;
 
-        $pg_connection_array = $database->convertPgConnectionArray();
+        $pg_connection_array = $database->pgConnectArray();
         $pgsql_entity = new PgsqlEntity($pg_connection_array);
         $pg_database = $pgsql_entity->pgDatabase('project_manager');
 
         $this->pg_table = $pgsql_entity->pgTableByTableName($table_name);
         $this->attributes = $pgsql_entity->attributeValues($table_name); 
 
-        $this->database = $this->database->value;
+        $this->database = $database->value;
+
+        $this->forms['pg_types'] = CsvLite::form('pg_types', 'type');
+        $this->forms['pg_types']['class'] = "col-6";
     }
 
     function detail() {
@@ -170,44 +193,7 @@ class DatabaseController extends AppController {
         $pg_database = $pgsql_entity->pgDatabase('project_manager');
         $pg_tables = $pgsql_entity->pgTables();
 
-        if ($pg_tables) {
-            $pg_primary_keys = $pgsql_entity->peimaryKeys($this->database['name']);
-            if ($pg_primary_keys) {
-                foreach ($pg_primary_keys as $primary_key) {
-                    $table_name = $primary_key['table_name'];
-                    $primary_keys[$table_name] = $primary_key['column_name'];
-                }
-            }
-
-
-            $comments = $pgsql_entity->comments($table_name);
-            if ($comments) {
-                foreach ($comments as $comment) {
-                    $table_name = $comment['relname'];
-                    $column_name = $comment['attname'];
-                    $this->column_comments[$table_name][$column_name] = $comment['description'];
-                }
-            }
-
-            $pg_attributes = $pgsql_entity->pgAttributes();
-            if ($pg_attributes) {
-                foreach ($pg_attributes as $pg_attribute) {
-                    $table_name = $pg_attribute['table_name'];
-                    $column_name = $pg_attribute['column_name'];
-
-                    $pg_attribute['is_primary_key'] = ($primary_keys[$table_name] && $pg_attribute['column_name'] == $primary_keys[$table_name]);
-                    $pg_attribute['comment'] = $this->column_comments[$table_name][$column_name];
-
-                    $this->attributes[$table_name][] = $pg_attribute;
-                }
-            }
-
-            foreach ($pg_tables as $pg_table) {
-                $table_name = $pg_table['tablename'];
-                $this->pg_tables[$table_name] = $pg_table;
-                $this->pg_tables[$table_name]['attributes'] = $this->attributes[$table_name];
-            }
-        }
+        //$this->attributes = $pgsql_entity->attributeValues($table_name); 
     }
 
     function update_column_comment() {
@@ -216,7 +202,7 @@ class DatabaseController extends AppController {
             $table_name = $_REQUEST['table_name'];
 
             $database = DB::table('Database')->fetch($_REQUEST['database_id']);
-            $pg_connection_array = $database->convertPgConnectionArray();
+            $pg_connection_array = $database->pgConnectArray();
 
             $pgsql_entity = new PgsqlEntity($pg_connection_array);
             if ($comments) {
@@ -230,11 +216,27 @@ class DatabaseController extends AppController {
         }
     }
 
+
+    function action_update_table() {
+        $database = DB::table('Database')->fetch($_REQUEST['database_id']);
+        $table_name = $_REQUEST['table_name'];
+        if ($table_name && $database->value) {
+            if ($_REQUEST['new_table_name'] && ($_REQUEST['new_table_name'] != $_REQUEST['table_name'])) {
+                $pg_connection_array = $database->pgConnectArray();
+                $pgsql_entity = new PgsqlEntity($pg_connection_array);
+                $pgsql_entity->renameTable($_REQUEST['table_name'], $_REQUEST['new_table_name']);
+            }
+        }
+
+        $this->redirect_to('tables', $_REQUEST['database_id']);
+    }
+
+
     function update_table_comment() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $database = DB::table('Database')->fetch($_POST['database_id']);
-            $pg_connection_array = $database->convertPgConnectionArray();
+            $pg_connection_array = $database->pgConnectArray();
 
             $pgsql_entity = new PgsqlEntity($pg_connection_array);
             if ($comments = $_POST['comments']) {
@@ -252,6 +254,7 @@ class DatabaseController extends AppController {
 
     function update() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $this->session['posts'] = $_REQUEST['database'];
             $database = DB::table('Database')->update($this->session['posts'], $this->params['id']);
             if ($database->errors) {
                 $this->flash['errors'] = $database->errors;
@@ -264,14 +267,10 @@ class DatabaseController extends AppController {
 
     function action_delete() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
             if ($_POST['is_delete']) {
-                $database = DB::table('Database')->fetchValue($this->params['id']);
-                $pg_infos['dbname'] = $database['name'];
-                $pg_infos['user'] = $database['user_name'];
-                $pg_infos['port'] = $database['port'];
-                $pg_infos['host'] = $database['hostname']; 
-                $results = PgsqlEntity::dropDatabase($pg_infos);
+                $database = DB::table('Database')->fetch($this->params['id']);
+                $pg_connection_array = $database->pgConnectArray();
+                $results = PgsqlEntity::dropDatabase($pg_connection_array);
             }
 
             $database = DB::table('Database')->delete($this->params['id']);
@@ -284,128 +283,72 @@ class DatabaseController extends AppController {
         }
     }
 
-    function generate_model() {
-        $database = DB::table('Database')->fetch($this->params['id']);
-        $pg_connection_array = $database->convertPgConnectionArray();
+    function action_add_column() {
+        $database = DB::table('Database')->fetch($_REQUEST['database_id']);
+        $table_name = $_REQUEST['table_name'];
+        if ($table_name && $database->value) {
+            $column = $_REQUEST['name'];
+            $type = $_REQUEST['type'];
+            if ($_REQUEST['length']) $type.= "({$_REQUEST['length']})";
 
-        if (!$database->value['id']) {
-            $this->redirect_to('list');
-            exit;
+            $pg_connection_array = $database->pgConnectArray();
+            $pgsql_entity = new PgsqlEntity($pg_connection_array);
+            $pgsql_entity->addColumn($table_name, $column, $type);
         }
 
-        $pgsql_entity = new PgsqlEntity($pg_connection_array);
+        $params['database_id'] = $_REQUEST['database_id'];
+        $params['table_name'] = $_REQUEST['table_name'];
+        $this->redirect_to('columns', $params);
+    }
 
-        $pg_database = $pgsql_entity->pgDatabase('project_manager');
-
-        $this->pg_tables = $pgsql_entity->pgTables();
-
-        $database_name = $this->database->value['name'];
-        foreach ($this->pg_tables as $pg_table) {
-            $table_name = $pg_table['tablename'];
-
-            $model = DB::table('Model')
-                    ->where("database_id = '{$database->value['id']}'")
-                    ->where("name = '{$table_name}'")
-                    ->selectOne();
-
-            var_dump($model);
-            exit;
-
-            //$this->pg_table = $pgsql_entity->pgTableByTableName($table_name);
-            //TODO
-            $comments = $pgsql_entity->columnComment($table_name);
-            if ($comments) {
-                foreach ($comments as $comment) {
-                    $column_name = $comment['attname'];
-                    $this->column_comments[$column_name] = $comment['description'];
-                }
-            }
-
-            //TODO
-            $pg_primary_keys = $pgsql_entity->peimaryKeys($database_name, $table_name);
-            if ($pg_primary_keys) {
-                foreach ($pg_primary_keys as $primary_key) {
-                    $this->primary_keys = $primary_key['column_name'];
-                }
-            }
-
-            //TODO
-            $pg_attributes = $pgsql_entity->pgAttributes($table_name);
-            if ($pg_attributes) {
-                foreach ($pg_attributes as $pg_attribute) {
-                    $column_name = $pg_attribute['column_name'];
-
-                    $pg_attribute['is_primary_key'] = ($this->primary_keys && $pg_attribute['column_name'] == $this->primary_keys);
-                    $pg_attribute['comment'] = $this->column_comments[$column_name];
-
-                    $this->attributes[] = $pg_attribute;
-                }
+    function action_update_column() {
+        $database = DB::table('Database')->fetch($_REQUEST['database_id']);
+        $table_name = $_REQUEST['table_name'];
+        if ($table_name && $database->value) {
+            if ($_REQUEST['old_column_name'] && ($_REQUEST['old_column_name'] != $_REQUEST['name'])) {
+                $pg_connection_array = $database->pgConnectArray();
+                $pgsql_entity = new PgsqlEntity($pg_connection_array);
+                $pgsql_entity->renameColumn($table_name, $_REQUEST['old_column_name'], $_REQUEST['name']);
             }
         }
 
+        $params['database_id'] = $_REQUEST['database_id'];
+        $params['table_name'] = $_REQUEST['table_name'];
+        $this->redirect_to('columns', $params);
     }
 
-    function model_csv_export() {
-        if ($this->database['id']) {
-            $model = new Model();
-            $model->add_where("database_id = {$this->database['id']}");
-            $models = $model->results();
-            $this->_model_csv_export($models);
+    function action_edit_column() {
+        $database = DB::table('Database')->fetch($_REQUEST['database_id']);
+        $table_name = $_REQUEST['table_name'];
+
+        $column = $_REQUEST['column_name'];
+        if ($column && $table_name && $database->value) {
+            $pg_connection_array = $database->pgConnectArray();
+            $pgsql_entity = new PgsqlEntity($pg_connection_array);
+            $this->pg_table = $pgsql_entity->pgTableByTableName($table_name);
+            $this->pg_attribute = $pgsql_entity->pgAttribute($table_name, $column);
         }
+
+        $this->forms['pg_types'] = CsvLite::form('pg_types', 'type');
+        $this->forms['pg_types']['class'] = "col-3";
+
+        $this->database = $database->value;
     }
 
-    function _model_csv_export($models) {
-        $csv_name = "{$this->database['name']}.csv";
-        //_set_csv_download($csv_name);
-        foreach ($models as $key => $value) {
-            $attribute = new Attribute();
-            $attribute->add_where("model_id = {$value['id']}");
-            $attributes = $attribute->results();
-            $this->_attributes_csv_export($value, $attributes);
-            echo("\n");
-        }
-    }
-
-    function _is_table_export($table_name) {
-        $exceptions = array('schema_info');
-        $exists = in_array($table_name, $exceptions);
-        return !$exists;
-    }
-
-    function _table_info_export($table) {
-        $table_row = "{$table['comment']}\n{$table['name']}\n";
-        $table_row = mb_convert_encoding($table_row, CSV_ENCODING, mb_internal_encoding());
-        echo($table_row);
-    }
-
-    function _attributes_csv_export($columns, $attributes) {
-        if (is_array($attributes)) {
-            foreach ($attributes as $key2 => $row) {
-                $tmp = null;
-                foreach ($row as $key3 => $attribute) {
-                    switch ($key3) {
-                    case 'atttypmod';
-                        $tmp[$key3] = attribute_length($row);
-                        break;
-                    case 'typname';
-                        $tmp[$key3] = php_model_type($attribute);
-                        break;
-                    case 'attnotnull';
-                    case 'is_primary_key';
-                    case 'is_unique';
-                    case 'is_require';
-                        $tmp[$key3] = bool_value($attribute);
-                        break;
-                    default:
-                        $tmp[$key3] = $attribute;
-                    }
-                }
-                $attribute_list[] = $tmp;
+    function action_delete_column() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $database = DB::table('Database')->fetch($_REQUEST['database_id']);
+            if ($database->value) {
+                $pg_connection_array = $database->pgConnectArray();
+                $pgsql_entity = new PgsqlEntity($pg_connection_array);
+                $pgsql_entity->dropColumn($_REQUEST['table_name'], $_REQUEST['column_name']);
             }
-            _export_csv($columns, $attribute_list);
         }
-    }
 
+        $params['database_id'] = $_REQUEST['database_id'];
+        $params['table_name'] = $_REQUEST['table_name'];
+        $this->redirect_to('columns', $params);
+    }
 
     function table() {
         if ($this->database && $this->params['id']) {

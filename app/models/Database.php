@@ -53,7 +53,7 @@ class Database extends _Database {
      *
      * @return array
      */
-    function convertPgConnectionArray() {
+    function pgConnectArray() {
         $result['dbname'] = '';
         $result['host'] = 'localhost';
         $result['port'] = '5432';

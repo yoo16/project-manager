@@ -1,5 +1,39 @@
 <? include('_header.phtml') ?>
 
-<a class="btn btn-primary" href="<?= url_for('new') ?>"><?= LABEL_ADD ?></a>
+<div>
+  <a class="btn btn-primary" href="<?= url_for('new') ?>"><?= LABEL_ADD ?></a>
+  <a class="btn btn-secondary" href="#" data-toggle="modal" data-target="#import-table"><?= LABEL_IMPORT ?></a>
+</div>
+
+<div id="import-table" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Database Import</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <table class="table">
+          <? foreach ($this->pg_databases as $pg_database): ?>
+          <tr>
+            <td><?= $pg_database['datname'] ?></td>
+            <td>
+              <form method="post" action="<?= url_for('import_database') ?>">
+                <input class="btn btn-primary" type="submit" value="<?= LABEL_IMPORT ?>">
+                <input type="hidden" name="database_name" value="<?= $pg_database['datname'] ?>">
+              </form>
+            </td>
+          </tr>
+        <? endforeach ?>
+      </table>
+
+    </div>
+  </div>
+</div>
+</div>
 
 <? include('_list.phtml') ?>

@@ -3,6 +3,20 @@ require_once 'vo/_Model.php';
 
 class Model extends _Model {
 
+    static $required_columns = array('id' => array('name' => 'id', 
+                                                   'type' => 'SERIAL',
+                                                   'option' => 'PRIMARY KEY NOT NULL'
+                                                   ),
+                                     'created_at' => array('name' => 'created_at',
+                                                           'type' => 'TIMESTAMP',
+                                                           'option' => 'NOT NULL DEFAULT CURRENT_TIMESTAMP'
+                                                           ),
+                                     'updated_at' => array('name' => 'updated_at',
+                                                           'type' => 'TIMESTAMP',
+                                                           'option' => 'NULL'
+                                                           ),
+                                     );
+
     function validate() {
         parent::validate();
     }

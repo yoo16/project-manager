@@ -6,5 +6,11 @@
   <th>データベース</th>
   <td><?= $this->database['name'] ?></td>
 </tr>
+<? if ($this->pg_table ): ?>
+<tr>
+  <th>テーブル</th>
+  <td><?= $this->pg_table ['tablename'] ?></td>
+</tr>
+<? endif ?>
 </table>
 <? endif ?>

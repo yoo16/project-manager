@@ -320,6 +320,7 @@ class Entity {
      */
     private function cast($type, $value) {
         if (!$type) return $value;
+        if (is_null($value)) return null;
         if ($type == 's') return self::castString($value);
         if ($type == 'b') return self::castBool($value);
         if ($type == 't') return self::castTimestamp($value);

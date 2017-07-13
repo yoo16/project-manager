@@ -1,0 +1,19 @@
+<form id="form-edit" action="<?= url_for('update', $this->model['id']) ?>" method="post" autocomplete="off">
+  <div class="form-group row">
+    <label for="model-name" class="col-1 col-form-label">Name</label>
+    <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'name') ?>" type="text" name="model[name]" value="<?= $this->model['name'] ?>" required autocomplete="off">
+  </div>
+
+  <div class="form-group row">
+    <label for="" class="col-1 col-form-label">Label</label>
+    <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'label') ?>" type="text" name="model[label]" value="<?= $this->model['label'] ?>" required autocomplete="off">
+  </div>
+  <button class="btn btn-primary" type="submit"><?= LABEL_UPDATE ?></button>
+  <a class="btn btn-secondary" href="<?= url_for('list') ?>"><?= LABEL_CANCEL ?></a>
+</form>
+
+<? if ($this->model['id']): ?>
+<form id="" action="<?=url_for('delete', $this->model['id']) ?>" method="post">
+  <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
+</form>
+<? endif ?>
