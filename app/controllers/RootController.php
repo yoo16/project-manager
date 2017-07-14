@@ -25,7 +25,7 @@ class RootController extends AppController {
     }
 
     function create_database() {
-        $pg_infos = PgsqlEntity::pgInfo();
+        $pg_infos = PgsqlEntity::defaultPgInfo();
         $this->results = PgsqlEntity::createDatabase($pg_infos);
     }
 

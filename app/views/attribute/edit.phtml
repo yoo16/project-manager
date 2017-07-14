@@ -1,4 +1,8 @@
-<form id="form-edit" action="<?= url_for('update', $this->attribute['id']) ?>" method="post" autocomplete="off">
+<form id="" action="<?= url_for('update', $this->attribute['id']) ?>" method="post" autocomplete="off">
+  <div class="form-group row">
+    <label for="recipient-name" class="form-control-label col-2">attnum</label>
+    <?= $this->attribute['attnum'] ?>
+  </div>
 
   <div class="form-group row">
     <label for="recipient-name" class="form-control-label col-2">Name</label>
@@ -22,6 +26,8 @@
 
   <button class="btn btn-primary" type="submit"><?= LABEL_UPDATE ?></button>
   <a class="btn btn-secondary" href="<?= url_For('list') ?>" class="btn"><?= LABEL_BACK ?></a>
+
+  <input type="hidden" name="attribute['attnum']" value="<?= $this->attribute['attnum'] ?>">
 </form>
 
 <? if ($this->attribute['id']): ?>

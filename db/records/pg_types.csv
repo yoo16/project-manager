@@ -1,8 +1,8 @@
 value,label
 "boolean","boolean"
-"smallint","smallint"
-"integer","integer"
-"bigint","bigint"
+"int2","smallint (int2)"
+"int4","integer (int4)"
+"int8","bigint (int8)"
 "float","float"
 "real","real"
 "double precision","double precision"

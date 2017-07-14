@@ -1,12 +1,12 @@
 <?php
 /**
- * ProjectController 
+ * ModelController 
  *
  * @copyright 2017 copyright Yohei Yoshikawa (http://yoo-s.com)
  */
-require_once 'AppController.php';
+require_once 'ProjectController.php';
 
-class ModelController extends AppController {
+class ModelController extends ProjectController {
 
     var $name = 'model';
     var $session_name = 'model';
@@ -41,7 +41,7 @@ class ModelController extends AppController {
         if (isset($this->flash['errors'])) $this->errors = $this->flash['errors'];
     }
 
-    function index() {
+    function action_index() {
 
     }
 
@@ -58,18 +58,17 @@ class ModelController extends AppController {
         $database = DB::table('Database')->fetch($this->project['database_id']);
         $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
         $pg_database = $pgsql_entity->pgDatabase('project_manager');
-        $pg_tables = $pgsql_entity->pgTables();
 
         $pg_classes = $pgsql_entity->pgClasses();
         if ($pg_classes) {
             foreach ($pg_classes as $pg_class) {
                 $table_name = $pg_class['relname'];
-                $this->pg_tables[$table_name] = $pg_class;
+                $this->pg_classes[$table_name] = $pg_class;
             }
         }
 
         foreach ($models as $model) {
-            $model['pg_table'] = $this->pg_tables[$model['name']];
+            $model['pg_class'] = $this->pg_classes[$model['name']];
             $this->models[] = $model;
         }
     }
@@ -84,7 +83,7 @@ class ModelController extends AppController {
         $this->project = DB::table('Project')->value;
     }
 
-    function edit() {
+    function action_edit() {
         $params['name'] = 'project[database_id]';
         $params['label_key'] = 'name';
         $this->forms['database'] = DB::table('Database')
@@ -142,12 +141,7 @@ class ModelController extends AppController {
         }
     }
 
-    function action_import_from_db() {
-        $this->databases = DB::table('Database')
-                            ->selectValues();
-    }
-
-    function update() {
+    function action_update() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $posts = $this->session['posts'] = $_POST['model'];
 
@@ -183,6 +177,11 @@ class ModelController extends AppController {
         }
     }
 
+    function action_import_from_db() {
+        $this->databases = DB::table('Database')
+                            ->selectValues();
+    }
+
     function action_delete() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $model = DB::table('Model')->fetch($this->params['id'])->value;
@@ -202,7 +201,7 @@ class ModelController extends AppController {
         }
     }
 
-    function add_table() {
+    function action_add_table() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $model = DB::table('Model')->fetch($_REQUEST['model_id']);
 
@@ -221,7 +220,7 @@ class ModelController extends AppController {
         }
     }
 
-    function create_from_db() {
+    function action_create_from_db() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $database = DB::table('Database')->fetch($this->project['database_id']);
             if (!$database->value) {
@@ -245,6 +244,7 @@ class ModelController extends AppController {
                 $model_values['database_id'] = $this->project['database_id'];
                 $model_values['project_id'] = $this->project['id'];
                 $model_values['relfilenode'] = $pg_class['relfilenode'];
+                $model_values['pg_class_id'] = $pg_class['pg_class_id'];
                 $model_values['name'] = $pg_class['relname'];
 
                 $model = DB::table('Model')

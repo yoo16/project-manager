@@ -59,14 +59,9 @@ class AttributeController extends AppController {
 
         $database = DB::table('Database')->fetch($this->database['id']);
         $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
-        $pg_attributes = $pgsql_entity->attributeValues($this->model['name']); 
 
-        if ($pg_attributes) {
-            foreach ($pg_attributes as $pg_attribute) {
-                $column_name = $pg_attribute['column_name'];
-                $this->pg_attributes[$column_name] = $pg_attribute;
-            }
-        }
+        $this->pg_class = $pgsql_entity->pgClassByRelname($this->model['name']);
+        $this->pg_attributes = $pgsql_entity->attributeValues($this->model['name']); 
         if ($attributes) {
             foreach ($attributes as $attribute) {
                 $attribute['pg_attribute'] = $this->pg_attributes[$attribute['name']];
@@ -94,6 +89,10 @@ class AttributeController extends AppController {
                         ->takeValues($this->session['posts'])
                         ->value;
 
+        $database = DB::table('Database')->fetch($this->database['id']);
+        $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+        $this->pg_attribute = $pgsql_entity->pgAttributeByAttnum($this->model['relfilenode'], $this->attribute['attnum']);
+
         $this->forms['pg_types'] = CsvLite::form('pg_types', 'attribute[type]');
         $this->forms['pg_types']['class'] = "col-2";
     }
@@ -103,11 +102,12 @@ class AttributeController extends AppController {
             $posts = $this->session['posts'] = $_POST['attribute'];
             $posts['model_id'] = $this->model['id'];
 
+            $type = $posts['type'];
+            if ($type == 'varchar' && $posts['length']) $type.= "({$posts['length']})";
+            
             //DB add column
             $database = DB::table('Database')->fetch($this->database['id']);
             $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
-            $type = $posts['type'];
-            if ($type == 'varchar' && $posts['length']) $type.= "({$posts['length']})";
             $pgsql_entity->addColumn($this->model['name'], $posts['name'], $type);
             $pg_attribute = $pgsql_entity->pgAttributeByColumn($this->model['name'], $posts['name']);
 
@@ -140,30 +140,25 @@ class AttributeController extends AppController {
             $database = DB::table('Database')->fetch($this->database['id']);
             $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
 
-            $pg_attribute = $pgsql_entity->pgAttributeByColumn($this->model['name'], $attribute['name']);
+            $pg_attribute = $pgsql_entity->pgAttributeByAttnum($this->model['pg_class_id'], $attribute['attnum']);
 
             if ($pg_attribute) {
                 //name
-                if ($attribute['name'] != $posts['name']) {
-                    $results = $pgsql_entity->renameColumn($this->model['name'], $attribute['name'], $posts['name']);
-                    if ($results == false) {
-                        $posts['name'] = $attribute['name'];
-                    }
+                if ($pg_attribute['name'] != $posts['name']) {
+                    $results = $pgsql_entity->renameColumn($this->model['name'], $pg_attribute['attname'], $posts['name']);
+                    $pg_attribute = $pgsql_entity->pgAttributeByAttnum($this->model['pg_class_id'], $attribute['attnum']);
                 }
 
                 //type
-                if (($attribute['type'] != $posts['type']) || ($attribute['length'] !== $posts['length'])) {
+                if (($pg_attribute['udt_name'] != $posts['type']) || ($pg_attribute['character_maximum_length'] !== $posts['length'])) {
                     $type = $posts['type'];
                     if ($type == 'varchar' && $posts['length']) {
                         $type.= "({$posts['length']})";
                     } else {
                         $posts['length'] = null;
                     }
-
-                    $results = $pgsql_entity->changeColumnType($this->model['name'], $posts['name'], $type);
-                    if ($results == false) {
-                        $posts['type'] = $attribute['type'];
-                        $posts['length'] = $attribute['length'];
+                    if ($type) {
+                        $results = $pgsql_entity->changeColumnType($this->model['name'], $pg_attribute['attname'], $type);
                     }
                 }
 
@@ -174,9 +169,9 @@ class AttributeController extends AppController {
                         $posts['label'] = $attribute['label'];
                     }
                 }
+                $attribute = DB::table('Attribute')->update($posts, $this->params['id']);
             }
 
-            $attribute = DB::table('Attribute')->update($posts, $this->params['id']);
             if ($attribute->errors) {
                 $this->flash['errors'] = $attribute->errors;
                 $this->redirect_to('edit', $this->params['id']);

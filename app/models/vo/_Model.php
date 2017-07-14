@@ -18,6 +18,7 @@ class _Model extends PgsqlEntity {
         'sort_order' => array('type' => 'i'),
         'name' => array('type' => 's', 'required' => true),
         'label' => array('type' => 's'),
+        'pg_class_id' => array('type' => 'i', 'required' => true),
         'relfilenode' => array('type' => 'i', 'required' => true),
         'database_id' => array('type' => 'i', 'required' => true),
         'entity_name' => array('type' => 's'),

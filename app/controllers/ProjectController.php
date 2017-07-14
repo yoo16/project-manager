@@ -26,7 +26,7 @@ class ProjectController extends AppController {
         if (isset($this->flash['errors'])) $this->errors = $this->flash['errors'];
     }
 
-    function index() {
+    function action_index() {
         $pgsql_entity = new PgsqlEntity();
         $this->pg_connection = $pgsql_entity->connection();
         if (!$this->pg_connection) {
@@ -63,7 +63,7 @@ class ProjectController extends AppController {
         $this->project = DB::table('Project')->value;
     }
 
-    function edit() {
+    function action_edit() {
         $params['name'] = 'project[database_id]';
         $params['label_key'] = 'name';
         $this->forms['database'] = DB::table('Database')
@@ -81,7 +81,7 @@ class ProjectController extends AppController {
                                         ->values;
     }
 
-    function add() {
+    function action_add() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $posts = $this->session['posts'] = $_POST['project'];
             $project = DB::table('Project')
@@ -98,7 +98,7 @@ class ProjectController extends AppController {
         }
     }
 
-    function update() {
+    function action_update() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $posts = $this->session['posts'] = $_POST['project'];
             $project = DB::table('Project')->update($posts, $this->params['id']);
@@ -128,7 +128,11 @@ class ProjectController extends AppController {
         }
     }
 
-    function export_list() {
+    function update_project() {
+        
+    }
+
+    function action_export_list() {
         $this->project = DB::table('Project')->fetch($this->params['id'])->value;
 
         $this->user_project_settings = DB::table('UserProjectSetting')
@@ -137,7 +141,7 @@ class ProjectController extends AppController {
                                         ->values;
     }
 
-    function export() {
+    function action_export() {
         $project = DB::table('Project')->fetch($this->params['id'])->value;
         $user_project_setting = DB::table('UserProjectSetting')->fetch($this->params['user_project_setting_id'])->value;
 
@@ -174,12 +178,12 @@ class ProjectController extends AppController {
     }
 
 
-    function edit_user_project_setting() {
+    function action_edit_user_project_setting() {
         $this->user_project_setting = DB::table('UserProjectSetting')->fetch($this->params['id'])->value;
         $this->project = DB::table('Project')->fetch($this->user_project_setting['project_id'])->value;
     }
 
-    function add_user_project_setting() {
+    function action_add_user_project_setting() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $posts = $this->session['user_project_setting'] = $_POST['user_project_setting'];
 
@@ -197,7 +201,7 @@ class ProjectController extends AppController {
         }
     }
 
-    function delete_user_project_setting() {
+    function action_delete_user_project_setting() {
         $user_project_setting = DB::table('UserProjectSetting')->fetchValue($this->params['id']);
         if ($user_project_setting) {
             DB::table('UserProjectSetting')->delete($this->params['id']);
@@ -205,7 +209,7 @@ class ProjectController extends AppController {
         $this->redirect_to('export_list', $user_project_setting['project_id']);
     }
 
-    function update_user_project_setting() {
+    function action_update_user_project_setting() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $posts = $this->session['user_project_setting'] = $_POST['user_project_setting'];
             $user_project_setting = DB::table('UserProjectSetting')->update($posts, $this->params['id']);

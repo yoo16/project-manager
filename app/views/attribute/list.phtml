@@ -46,6 +46,7 @@
   </div>
 </div>
 
+<h4><?= $this->model['name'] ?> (<?= $this->model['pg_class_id'] ?> = <?= $this->pg_class['pg_class_id'] ?>)</h4>
 
 <table class="table">
   <tr>
@@ -61,32 +62,37 @@
   <? foreach ($this->attributes as $attribute): ?>
   <tr>
     <td>
-    <? if (Model::$required_columns[$attribute['name']]): ?>
-    <a class="btn btn-secondary disabled" href="#"><?= LABEL_EDIT ?></a>
+      <? if (Model::$required_columns[$attribute['name']]): ?>
+      <a class="btn btn-secondary disabled" href="#"><?= LABEL_EDIT ?></a>
     <? else: ?>
     <a class="btn btn-secondary" href="<?= url_for('edit', $attribute['id']) ?>"><?= LABEL_EDIT ?></a>
-    <? endif ?>
-    </td>
-    <td><?= $attribute['name'] ?></td>
-    <td><?= $attribute['label'] ?></td>
-    <td><?= $attribute['type'] ?></td>
-    <td><?= $attribute['length'] ?></td>
-    <td>
-      <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
-      <label class="badge badge-pill badge-success">connected</label>
-    <? else: ?>
-    <form action="<?= url_for('add_table', $attribute['id']) ?>" method="post">
-      <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
-      <input type="hidden" name="model_id" value="<?= $attribute['id'] ?>">
-      <input type="hidden" name="table_name" value="<?= $attribute['name'] ?>">
-    </form>
   <? endif ?>
 </td>
+<td><?= $attribute['name'] ?></td>
+<td><?= $attribute['pg_attribute']['comment'] ?></td>
+<td><?= $attribute['type'] ?></td>
+<td><?= $attribute['length'] ?></td>
 <td>
-  <?= $attribute['pg_attribute']['attname'] ?>
+  <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
+  <label class="badge badge-pill badge-success">connected</label>
+<? else: ?>
+<form action="<?= url_for('add_table', $attribute['id']) ?>" method="post">
+  <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
+  <input type="hidden" name="model_id" value="<?= $attribute['id'] ?>">
+  <input type="hidden" name="table_name" value="<?= $attribute['name'] ?>">
+</form>
+<? endif ?>
 </td>
 <td>
-  <?= $attribute['pg_attribute']['attnum'] ?>
+  <div>
+    <?= $attribute['pg_attribute']['attname'] ?>
+  </div>
+  <div>
+  (<?= $attribute['pg_attribute']['udt_name'] ?> <?= $attribute['pg_attribute']['character_maximum_length'] ?>)
+  </div>
+</td>
+<td>
+  <?= $attribute['pg_attribute']['attrelid'] ?>
 </td>
 </tr>
 <? endforeach ?>

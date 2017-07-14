@@ -22,22 +22,21 @@ class Attribute extends _Attribute {
 
         $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
         $pg_attributes = $pgsql_entity->attributeValues($model['name']); 
+
         if (!$pg_attributes) return;
-
-
         foreach ($pg_attributes as $pg_attribute) {
             $attribute = DB::table('Attribute')
                                 ->where("model_id = '{$model['id']}'")
-                                ->where("name = '{$pg_attribute['column_name']}'")
+                                ->where("name = '{$pg_attribute['attname']}'")
                                 ->selectOne();
 
             $value = null;
             $value['model_id'] = $model['id'];
-            $value['name'] = $pg_attribute['column_name'];
+            $value['name'] = $pg_attribute['attname'];
             $value['type'] = $pg_attribute['udt_name'];
             $value['label'] = $pg_attribute['comment'];
             $value['length'] = $pg_attribute['character_maximum_length'];
-            $value['attrelid'] = $pg_attribute['attrelid'];
+            $value['attrelid'] = $pg_attribute['pg_class_id'];
             $value['attnum'] = $pg_attribute['attnum'];
             $value['is_primary_key'] = ($pg_attribute['is_primary_key'] == 't');
             $value['is_require'] = ($pg_attribute['attnotnull'] == 't');
@@ -47,7 +46,9 @@ class Attribute extends _Attribute {
             } else {
                 $attribute = DB::table('Attribute')->insert($value);
             }
+            
         }
+
     }
 }
 

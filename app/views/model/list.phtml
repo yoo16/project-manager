@@ -22,16 +22,20 @@
   <? foreach ($this->models as $model): ?>
   <tr>
     <td><a class="btn btn-secondary" href="<?= url_for('edit', $model['id']) ?>"><?= LABEL_EDIT ?></a></td>
-    <td><a href="<?= url_for('attribute/', array('model_id' => $model['id'])) ?>"><?= $model['name'] ?></a></td>
+    <td>
+      <a href="<?= url_for('attribute/', array('model_id' => $model['id'])) ?>"><?= $model['name'] ?></a>
+      <div><?= $model['pg_class_id'] ?></div>
+    </td>
     <td><?= $model['label'] ?></td>
     <td>
-      <? if ($model['pg_table']): ?>
-      <? if ($model['relfilenode'] == $model['pg_table']['relfilenode']): ?>
+      <? if ($model['pg_class']): ?>
+      <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
       <label class="badge badge-pill badge-success">connected</label>
 
     <? else: ?>
-    <label class="badge badge-pill badge-danger">relfilenode error</label>
+    <label class="badge badge-pill badge-danger">pg_class_id error</label>
   <? endif ?>
+  <div><?= $model['pg_class']['pg_class_id'] ?></div>
 <? else: ?>
 <form action="<?= url_for('add_table', $model['id']) ?>" method="post">
   <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">

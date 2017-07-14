@@ -2,87 +2,52 @@
 
 <div>
   <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-modal"><?= LABEL_ADD ?></a>
-  <a href="<?= url_for('tables', $this->database['id']) ?>" class="btn btn-secondary action" action="closeColumns"><?= LABEL_BACK ?></a>
+  <a href="<?= url_for('tables', array('database_id' => $this->database['id'])) ?>" class="btn btn-secondary action" action="closeColumns"><?= LABEL_BACK ?></a>
 </div>
 
-<div id="add-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <form action="<?= url_for('add_column') ?>" method="post">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">カラム</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group row">
-            <label for="" class="col-2 col-form-label">name</label>
-            <input class="form-control col-5" type="text" name="name">
-          </div>
-          <div class="form-group row">
-            <label for="" class="col-2 col-form-label">type</label>
-            <?= FormHelper::select($this->forms['pg_types'], $this->pg_attribute) ?>
-            <? var_dump($this->pg_attribute); ?>
-          </div>
-          <div class="form-group row">
-            <label for="" class="col-2 col-form-label">length</label>
-            <input class="form-control col-5" type="text" name="length">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
-          <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
-          <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
-        </div>
-      </form>
-    </div>
+<div class="card">
+  <div class="card-header">
+    <h4><?= $this->pg_class['relname'] ?></h4>
   </div>
+
+  <div class="card-block overflow-list">
+    <table class="table">
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Label</th>
+        <th>Type</th>
+        <th>Length</th>
+        <th>Primary</th>
+        <th>NOT NULL</th>
+      </tr>
+      <? foreach ($this->attributes as $attribute): ?>
+      <tr>
+        <td><?= $attribute['attnum'] ?></td>
+        <td><?= $attribute['attname'] ?></td>
+        <td>
+          <form action="<?= url_for('update_column_comment') ?>" method="post">
+            <div class="row">
+              <input class="form-control col-9" type="text" name="comment" value="<?= $attribute['comment'] ?>">
+              <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
+              <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
+              <input type="hidden" name="relfilenode" value="<?= $this->pg_class['relfilenode'] ?>">
+              <input type="hidden" name="attnum" value="<?= $attribute['attnum'] ?>">
+            </div>
+          </form>
+        </td>
+        <td><?= $attribute['udt_name'] ?></td>
+        <td><?= $attribute['character_maximum_length'] ?></td>
+        <td><?= $attribute['is_primary_key'] ?></td>
+        <td><?= $attribute['attnotnull'] ?></td>
+      </tr>
+    <? endforeach ?>
+  </table>
+
 </div>
 
-
-<form action="<?= url_for('update_column_comment') ?>" method="post">
-  <div class="card">
-    <div class="card-header">
-      <h4>Columns</h4>
-    </div>
-
-    <div class="card-block overflow-list">
-      <table class="table">
-        <tr>
-          <th></th>
-          <th>comment</th>
-          <th>name</th>
-          <th>type</th>
-          <th>length</th>
-          <th>primary key</th>
-          <th>NOT NULL</th>
-        </tr>
-        <? foreach ($this->attributes as $attribute): ?>
-        <tr>
-          <td><a class="btn btn-secondary" href="<?= url_for('edit_column', array('database_id' => $this->database['id'] ,'table_name' => $this->pg_table['tablename'] ,'column_name' => $attribute['column_name'])) ?>"><?= LABEL_EDIT ?></a></td>
-          <td nowrap="nowrap">
-            <input class="form-control" type="text" name="comments[<?= $attribute['column_name'] ?>]" value="<?= $attribute['comment'] ?>">
-          </td>
-          <td><?= $attribute['column_name'] ?></td>
-          <td><?= $attribute['udt_name'] ?></td>
-          <td><?= $attribute['character_maximum_length'] ?></td>
-          <td><?= $attribute['is_primary_key'] ?></td>
-          <td><?= $attribute['attnotnull'] ?></td>
-        </tr>
-      <? endforeach ?>
-    </table>
-
+<div class="card-footer text-center">
+  <div class="text-center">
   </div>
-
-  <div class="card-footer text-center">
-    <div class="text-center">
-      <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
-      <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
-      <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
-      <a href="<?= url_for('tables', $this->database['id']) ?>" class="btn btn-secondary action" action="closeColumns"><?= LABEL_BACK ?></a>
-    </div>
-  </div>
-</form>
+</div>
 </div>

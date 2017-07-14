@@ -1,72 +1,41 @@
 <? include('_header.phtml') ?>
 
 <div>
-  <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-table"><?= LABEL_ADD ?></a>
   <a href="<?= url_for('list') ?>" class="btn btn-secondary"><?= LABEL_BACK ?></a>
 </div>
 
 
-<div id="add-table" class="modal fade" id="add-table" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <form method="post" action="<?= url_for('add_table', $this->database['id']) ?>">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Table</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group row">
-            <label for="" class="col-2 col-form-label">name</label>
-            <input class="form-control col-5" type="text" name="table_name" value="">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
-          <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
-        </div>
-      </form>
-    </div>
+<? if ($this->pg_classes): ?>
+<div class="card">
+  <div class="card-header">
+    <h4>Table</h4>
   </div>
+  <div class="card-block overflow-list">
+    <table class="table">
+      <tr>
+        <th>Name</th>
+        <th>Comment</th>
+      </tr>
+      <? foreach ($this->pg_classes as $pg_class): ?>
+      <tr>
+        <td>
+          <a class="" href="<?= url_for('columns', array('database_id' => $this->database['id'], 'relfilenode' => $pg_class['relfilenode'])) ?>"><?= $pg_class['tablename'] ?></a>
+        </td>
+        <td>
+          <form method="post" action="<?= url_for('update_table_comment') ?>">
+            <div class="row">
+              <input class="form-control col-6" type="text" name="comment" value="<?= $this->table_comments[$pg_class['tablename']] ?>">
+              <input type="hidden" name="relfilenode" value="<?= $pg_class['relfilenode'] ?>">
+              <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
+              <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
+            </div>
+          </form>
+        </td>
+      </tr>
+    <? endforeach ?>
+  </table>
 </div>
-
-<? if ($this->pg_tables): ?>
-<form method="post" action="<?= url_for('update_table_comment') ?>">
-  <div class="card">
-    <div class="card-header">
-      <h4>テーブル</h4>
-    </div>
-    <div class="card-block overflow-list">
-      <table class="table">
-        <tr>
-          <th></th>
-          <th>テーブル名</th>
-          <th>コメント</th>
-        </tr>
-        <? foreach ($this->pg_tables as $pg_table): ?>
-        <tr>
-          <td>
-            <a class="btn btn-secondary" href="<?= url_for('edit_table', array('database_id' => $this->database['id'], 'table_name' => $pg_table['tablename'])) ?>"><?= LABEL_EDIT ?></a>
-          </td>
-          <td>
-            <a class="" href="<?= url_for('columns', array('database_id' => $this->database['id'], 'table_name' => $pg_table['tablename'])) ?>"><?= $pg_table['tablename'] ?></a>
-          </td>
-          <td>
-            <input class="form-control" type="text" name="comments[<?= $pg_table['tablename'] ?>]" value="<?= $this->table_comments[$pg_table['tablename']] ?>">
-          </td>
-        </tr>
-      <? endforeach ?>
-    </table>
-  </div>
-  <div class="card-footer text-center">
-    <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
-    <a class="btn btn-secondary" href="<?= url_for('database/list'); ?>"><?= LABEL_BACK ?></a>
-  </div>
 </div>
-<input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
-</form>
 <? endif ?>
 
 <?= javascript_tag('controllers/DatabaseController') ?>

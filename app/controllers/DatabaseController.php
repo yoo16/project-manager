@@ -8,8 +8,14 @@ class DatabaseController extends AppController {
     
     function before_action($action) {
         parent::before_action($action);
-        $this->project = AppSession::getSession('project');
+
+        if ($_REQUEST['database_id']) {
+            $database = DB::table('Database')->fetch($_REQUEST['database_id'])->value;
+            AppSession::setSession('database', $database);
+        }
         $this->database = AppSession::getSession('database');
+
+        $this->project = AppSession::getSession('project');
         $this->model = AppSession::getSession('model');
     }
 
@@ -74,12 +80,11 @@ class DatabaseController extends AppController {
 
         $database = DB::table('Database')->where("name = '{$pg_database['datname']}'")->selectOne();
         if (!$database->value) {
-            $pg_info = PgsqlEntity::pgInfo();
+            $pg_info = PgsqlEntity::defaultPgInfo();
             $posts['name'] = $pg_database['datname'];
             $posts['user_name'] = ($pg_info['user'])? $pg_info['user'] : 'postgres';
             $posts['host'] = ($pg_info['host'])? $pg_info['host'] : 'localhost';
             $posts['port'] = ($pg_info['port'])? $pg_info['port'] : 5432;
-
             DB::table('Database')->insert($posts);
         }
 
@@ -87,17 +92,16 @@ class DatabaseController extends AppController {
     }
 
     function tables() {
-        $database = DB::table('Database')->fetch($this->params['id']);
+        $database = DB::table('Database')->fetch($this->database['id']);
+        $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
 
-        $pg_connection_array = $database->pgConnectArray();
-        $pgsql_entity = new PgsqlEntity($pg_connection_array);
-        $pg_database = $pgsql_entity->pgDatabase('project_manager');
-        $this->pg_tables = $pgsql_entity->pgTables();
+        $pg_classes = $pgsql_entity->pgClasses();
 
-        $comments = $pgsql_entity->tableComments();
-        foreach ($comments as $comment) {
-            $table_name = $comment['relname'];
-            $this->table_comments[$table_name] = $comment['description'];
+        $this->table_comments = $pgsql_entity->tableCommentsArray();
+        if ($pg_classes) {
+            foreach ($pg_classes as $pg_class) {
+                $this->pg_classes[] = $pg_class;
+            }
         }
 
         $this->database = $database->value;
@@ -160,20 +164,14 @@ class DatabaseController extends AppController {
 
     function columns() {
         $database = DB::table('Database')->fetch($_REQUEST['database_id']);
-
-        $table_name = $_REQUEST['table_name'];
+        $relfilenode = $_REQUEST['relfilenode'];
 
         if (!$database) return;
-        if (!$table_name) return;
+        if (!$relfilenode) return;
 
-        $pg_connection_array = $database->pgConnectArray();
-        $pgsql_entity = new PgsqlEntity($pg_connection_array);
-        $pg_database = $pgsql_entity->pgDatabase('project_manager');
-
-        $this->pg_table = $pgsql_entity->pgTableByTableName($table_name);
-        $this->attributes = $pgsql_entity->attributeValues($table_name); 
-
-        $this->database = $database->value;
+        $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+        $this->pg_class = $pgsql_entity->pgClassByRelfilenode($relfilenode);
+        $this->attributes = $pgsql_entity->attributeValues($this->pg_class['relname']); 
 
         $this->forms['pg_types'] = CsvLite::form('pg_types', 'type');
         $this->forms['pg_types']['class'] = "col-6";
@@ -192,26 +190,35 @@ class DatabaseController extends AppController {
         $pgsql_entity = new PgsqlEntity($pg_info);
         $pg_database = $pgsql_entity->pgDatabase('project_manager');
         $pg_tables = $pgsql_entity->pgTables();
-
-        //$this->attributes = $pgsql_entity->attributeValues($table_name); 
     }
 
     function update_column_comment() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $comments = $_REQUEST['comments'];
-            $table_name = $_REQUEST['table_name'];
+            $comment = $_REQUEST['comment'];
+            $relfilenode = $_REQUEST['relfilenode'];
+            $attnum = $_REQUEST['attnum'];
+
+            $attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id'])->value;
 
             $database = DB::table('Database')->fetch($_REQUEST['database_id']);
-            $pg_connection_array = $database->pgConnectArray();
+            $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
 
-            $pgsql_entity = new PgsqlEntity($pg_connection_array);
-            if ($comments) {
-                foreach ($comments as $column_name => $comment) {
-                    $pgsql_entity->updateColumnComment($table_name, $column_name, $comment);
-                }
+            $pg_class = $pgsql_entity->pgClassByRelfilenode($relfilenode);
+            $pg_attribute = $pgsql_entity->pgAttribute($pg_class['relname'], $attribute['name']);
+            //$pg_attribute = $pgsql_entity->pgAttributeByAttnum($pg_class['relfilenode'], $attnum);
+
+var_dump($_REQUEST);
+var_dump($attribute);
+var_dump($pg_attribute);
+var_dump($relfilenode);
+var_dump($attnum);
+exit;
+            if ($pg_class && $pg_attribute) {
+                $pgsql_entity->updateColumnComment($pg_class['relname'], $pg_attribute['attname'], $_REQUEST['comment']);
             }
+
             $params['database_id'] = $_REQUEST['database_id'];
-            $params['table_name'] = $_REQUEST['table_name'];
+            $params['relfilenode'] = $relfilenode;
             $this->redirect_to('columns', $params);
         }
     }
@@ -234,17 +241,15 @@ class DatabaseController extends AppController {
 
     function update_table_comment() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if (!$_REQUEST['database_id']) return;
+            if (!$_REQUEST['relfilenode']) return;
 
-            $database = DB::table('Database')->fetch($_POST['database_id']);
-            $pg_connection_array = $database->pgConnectArray();
+            $database = DB::table('Database')->fetch($_REQUEST['database_id']);
+            $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+            $pg_class = $pgsql_entity->pgClassByRelfilenode($_REQUEST['relfilenode']);
+            $pgsql_entity->updateTableComment($pg_class['relname'], $_REQUEST['comment']);
 
-            $pgsql_entity = new PgsqlEntity($pg_connection_array);
-            if ($comments = $_POST['comments']) {
-                foreach ($comments as $table_name => $comment) {
-                    $comment = $pgsql_entity->updateTableComment($table_name, $comment);
-                }
-            }
-            $this->redirect_to('tables', $_POST['database_id']);
+            $this->redirect_to('tables', $_REQUEST['database_id']);
         }
     }
 

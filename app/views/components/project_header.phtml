@@ -4,6 +4,7 @@
     <td><?= $this->project['name'] ?></td>
     <th>Database</th>
     <td><?= $this->database['name'] ?></td>
+    <td><a class="btn btn-primary" href="<?= url_for('update_project', $this->project['id']) ?>"><?= LABEL_UPDATE ?></a></td>
  </tr>
 </table>
 
