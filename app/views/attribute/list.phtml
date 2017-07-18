@@ -1,9 +1,9 @@
 <? include('_header.phtml') ?>
 
-<form action="<?= url_for('create_from_db') ?>" method="post">
+<form action="<?= url_for('sync_db') ?>" method="post">
   <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-attribute"><?= LABEL_ADD ?></a>
   <a href="<?= url_for('model/list') ?>" class="btn btn-secondary"><?= LABEL_BACK ?></a>
-  <input class="btn btn-warning" type="submit" value="Import From DB">
+  <input class="btn btn-success" type="submit" value="Sync DB">
   <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
 </form>
 
@@ -46,7 +46,7 @@
   </div>
 </div>
 
-<h4><?= $this->model['name'] ?> (<?= $this->model['pg_class_id'] ?> = <?= $this->pg_class['pg_class_id'] ?>)</h4>
+<h4><?= $this->model['name'] ?> <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label></h4>
 
 <table class="table">
   <tr>
@@ -54,10 +54,7 @@
     <th>Name</th>
     <th>Label</th>
     <th>Type</th>
-    <th>Length</th>
     <th>DB</th>
-    <th></th>
-    <th></th>
   </tr>
   <? foreach ($this->attributes as $attribute): ?>
   <tr>
@@ -70,11 +67,26 @@
 </td>
 <td><?= $attribute['name'] ?></td>
 <td><?= $attribute['pg_attribute']['comment'] ?></td>
-<td><?= $attribute['type'] ?></td>
-<td><?= $attribute['length'] ?></td>
 <td>
+  <label class="badge badge-pill badge-default">
+    <?= $attribute['type'] ?>
+    <? if ($attribute['length'] > 0): ?> (<?= $attribute['length'] ?>) <? endif ?>
+  </label>
+  <div>
+    <? if ($attribute['is_required']): ?><label class="badge badge-pill badge-info">required</label><? endif ?>
+
+  </div>
+</td>
+<td>
+  <div>
+    <label class="badge badge-pill badge-info"><?= $attribute['pg_attribute']['attnum'] ?></label>
+    <label class="badge badge-pill badge-success">sync</label>
+  </div>
   <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
-  <label class="badge badge-pill badge-success">connected</label>
+  <label class="badge badge-pill badge-default"><?= $attribute['pg_attribute']['attname'] ?></label>
+  <label class="badge badge-pill badge-default"><?= $attribute['pg_attribute']['udt_name'] ?> <?= $attribute['pg_attribute']['character_maximum_length'] ?></label>
+  <? if ($attribute['is_primary_key']): ?><label class="badge badge-info">Primary</label><? endif ?>
+  <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><label class="badge badge-info">Not Null</label><? endif ?>
 <? else: ?>
 <form action="<?= url_for('add_table', $attribute['id']) ?>" method="post">
   <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
@@ -82,17 +94,6 @@
   <input type="hidden" name="table_name" value="<?= $attribute['name'] ?>">
 </form>
 <? endif ?>
-</td>
-<td>
-  <div>
-    <?= $attribute['pg_attribute']['attname'] ?>
-  </div>
-  <div>
-  (<?= $attribute['pg_attribute']['udt_name'] ?> <?= $attribute['pg_attribute']['character_maximum_length'] ?>)
-  </div>
-</td>
-<td>
-  <?= $attribute['pg_attribute']['attrelid'] ?>
 </td>
 </tr>
 <? endforeach ?>

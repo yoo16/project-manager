@@ -27,4 +27,16 @@ class Project extends _Project {
         return $project;
     }
 
+    function exportPHP() {
+        $models = DB::table('Model')->listByProject($this->value);
+        if (!$models) return;
+        foreach ($models as $model) {
+            $name = FileManager::pluralToSingular($model['name']);
+            $php_class_name = FileManager::phpClassName($name);
+            var_dump($php_class_name);
+        }
+        exit;
+    }
+
+
 }

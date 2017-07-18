@@ -1,26 +1,18 @@
+<? if ($this->project): ?>
+
 <table class="table">
   <tr>
     <th>Project</th>
     <td><?= $this->project['name'] ?></td>
     <th>Database</th>
     <td><?= $this->database['name'] ?></td>
-    <td><a class="btn btn-primary" href="<?= url_for('update_project', $this->project['id']) ?>"><?= LABEL_UPDATE ?></a></td>
- </tr>
+    <td><a class="btn btn-danger" href="<?= url_for('update_project', $this->project['id']) ?>">PHP <?= LABEL_EXPORT ?></a></td>
+  </tr>
 </table>
-
-<? if ($this->project): ?>
-  <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
   <ul class="nav">
-    <li class="nav-item"><a class="nav-link" href="<?= url_for('page/list', array('project_id' => $this->project['id'])) ?>">ページ</a></li>
-    <li class="nav-item"><a class="nav-link" href="<?= url_for('model/list', array('project_id' => $this->project['id'])) ?>">モデル</a></li>
+    <li class="nav-item"><a class="nav-link" href="<?= url_for('page/list', array('project_id' => $this->project['id'])) ?>">Page</a></li>
+    <li class="nav-item"><a class="nav-link" href="<?= url_for('model/list', array('project_id' => $this->project['id'])) ?>">Model</a></li>
   </ul>
-<? endif ?>
 </nav>
-
-<? if ($this->model): ?>
-<table class="table">
-  <th>Model</th>
-  <td><?= $this->model['name'] ?></td>
-</tr>
-</table>
 <? endif ?>

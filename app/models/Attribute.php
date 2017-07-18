@@ -39,7 +39,7 @@ class Attribute extends _Attribute {
             $value['attrelid'] = $pg_attribute['pg_class_id'];
             $value['attnum'] = $pg_attribute['attnum'];
             $value['is_primary_key'] = ($pg_attribute['is_primary_key'] == 't');
-            $value['is_require'] = ($pg_attribute['attnotnull'] == 't');
+            $value['is_required'] = ($pg_attribute['attnotnull'] == 't');
 
             if ($attribute->value['id']) {
                 $attribute = DB::table('Attribute')->update($value, $attribute->value['id']);
@@ -50,6 +50,5 @@ class Attribute extends _Attribute {
         }
 
     }
-}
 
-?>
+}

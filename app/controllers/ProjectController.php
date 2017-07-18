@@ -20,10 +20,26 @@ class ProjectController extends AppController {
     */ 
     function before_action($action) {
         parent::before_action($action);
+        if ($_REQUEST['project_id']) {
+            $project = DB::table('project')->fetch($_REQUEST['project_id'])->value;
+            AppSession::setSession('project', $project);
+        }
+        $this->project = AppSession::getSession('project');
+        if ($this->project['database_id']) {
+            $this->database = DB::table('Database')->fetchValue($this->project['database_id']);
+        }
     }
 
     function before_rendering() {
         if (isset($this->flash['errors'])) $this->errors = $this->flash['errors'];
+    }
+
+    function clearSession() {
+        AppSession::clearSession('project');
+        AppSession::clearSession('database');
+        AppSession::clearSession('model');
+        AppSession::clearSession('attribute');
+        unset($this->session['posts']);
     }
 
     function action_index() {
@@ -34,10 +50,7 @@ class ProjectController extends AppController {
             exit;
         }
 
-        AppSession::setSession('database', null);
-        AppSession::setSession('model', null);
-        AppSession::setSession('attribute', null);
-        unset($this->session['posts']);
+        $this->clearSession();
         $this->redirect_to('list');
     }
 
@@ -46,11 +59,14 @@ class ProjectController extends AppController {
     }
 
     function action_list() {
+        $this->clearSession();
+
         $this->projects = DB::table('Project')
                             ->selectValues();
 
         $this->databases = DB::table('Database')
                             ->selectValues(array('id_index' => true));
+
     }
 
     function action_new() {
@@ -128,8 +144,13 @@ class ProjectController extends AppController {
         }
     }
 
-    function update_project() {
-        
+    function action_update_project() {
+        $project = new Project();
+        $project->fetch($this->project['id']);
+        $project->exportPHP();
+
+        $params['project_id'] = $this->project['id'];
+        $this->redirect_to('model/list', $params);
     }
 
     function action_export_list() {

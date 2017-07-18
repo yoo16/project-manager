@@ -17,26 +17,27 @@ class Model extends _Model {
                                                            ),
                                      );
 
+    static $s_type = array('ies' => array('name' => 'ies', 
+                                          'number' => '3',
+                                         ),
+                           'sses' => array('name' => 'sses',
+                                          'number' => '4',
+                                         ),
+                           'uses' => array('name' => 'uses',
+                                          'number' => '2',
+                                         ),
+                   );
+
     function validate() {
         parent::validate();
     }
 
 
     function listByProject($project) {
-        $conditions[] = "database_id = {$project['database_id']}";
-        $orders[] = array('sort_order', false);
-        $params['is_key'] = true;
-        $values = self::_list($conditions, $orders, $params);
+        $this->where("database_id = {$project['database_id']}");
+        $this->order('sort_order');
+        $values = $this->select()->values;
         return $values;
     }
 
-    function fetchForName($name, $project) {
-        $conditions[] = "name = '{$name}'";
-        $conditions[] = "project_id = '{$project['database_id']}'";
-        $databases = self::_list($conditions);
-        return $databases[0];
-    }
-
 }
-
-?>

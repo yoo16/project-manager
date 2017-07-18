@@ -355,9 +355,9 @@ class PgsqlEntity extends Entity {
     */
     public function get($id, $params=null) {
         $this->values = null;
-        if (!$id) return;
-        $this->where("{$this->id_column} = {$id}")
-        ->selectOne($params);
+        if (!$id) return $this;
+        $this->where("{$this->id_column} = {$id}")->selectOne($params);
+        $this->_value = $this->value;
         return $this;
     }
 
@@ -369,13 +369,8 @@ class PgsqlEntity extends Entity {
     * @return Object
     */
     public function fetch($id, $params=null) {
-        $this->values = null;
-        if (!$id) return $this;
-        $this->where("{$this->id_column} = {$id}")
-        ->selectOne($params);
-        return $this;
+       return $this->get($id, $params);
     }
-
 
     /**
     * fetch
@@ -470,7 +465,7 @@ class PgsqlEntity extends Entity {
         if ($posts) $this->takeValues($posts);
 
         $this->validate();
-        if ($this->errors) return $this;
+        //if ($this->errors) return $this;
 
         $sql = $this->insertSql();
         if (!$sql) {
@@ -505,7 +500,9 @@ class PgsqlEntity extends Entity {
         if ($posts) $this->takeValues($posts);
 
         $this->validate();
-        if ($this->errors) return $this;
+        if ($this->errors) {
+            return $this;
+        }
 
         $sql = $this->updateSql();
         if (!$sql) {
@@ -920,23 +917,23 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * attributeArray
+    * tableArray
     * 
-    * @param string $table
     * @return array
     **/
-    public function attributeArray($table) {
-        $_attributes = $this->attribute($table);
+    public function tableArray() {
+        $pg_classes = $this->pgClasses();
+        $comments = $this->tableCommentsArray();
 
-        if ($_attributes) {
-            foreach ($_attributes as $attribute) {
-                $column_name = $attribute['attname'];
-                $attributes[$column_name] = $attribute;
+        if ($pg_classes) {
+            foreach ($pg_classes as $pg_class) {
+                $name = $pg_class['relname'];
+                $pg_class['comment'] = $comments[$name];
+                $values[$name] = $pg_class;
             }
         }
-        return $attributes;
+        return $values;
     }
-
 
     /**
     * databases
@@ -1016,13 +1013,13 @@ class PgsqlEntity extends Entity {
     * @param string $schema_name
     * @return array
     **/
-    function pgClassByRelfilenode($pg_class_id, $relkind = 'r', $schema_name = 'public') {
+    function pgClassById($pg_class_id, $relkind = 'r', $schema_name = 'public') {
         $sql = "SELECT * FROM pg_class 
                 LEFT JOIN pg_tables ON pg_tables.tablename = pg_class.relname
                 LEFT JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
                 WHERE relkind = '{$relkind}' 
                 AND nspname = '{$schema_name}'
-                AND oid = '{$pg_class_id}';";
+                AND pg_class.oid = '{$pg_class_id}';";
         return $this->fetch_row($sql);
     }
 
@@ -1056,22 +1053,6 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * column
-    *
-    * @param string $table
-    * @return array
-    **/
-    function pgAttribute($table, $column) {
-        $sql = "SELECT * FROM pg_attribute 
-                LEFT JOIN pg_class ON pg_class.oid = pg_attribute.attrelid
-                WHERE attnum > 0
-                AND is_updatable = 'YES' 
-                AND attname = '{$column}' 
-                AND attrelid = (SELECT oid FROM pg_class WHERE relname = '{$table}' AND relkind = 'r');";
-        return $this->fetch_row($sql);
-    }
-
-    /**
     * pg_attribute
     *
     * @param string $table
@@ -1079,16 +1060,14 @@ class PgsqlEntity extends Entity {
     * @return array
     **/
     function pgAttributeByColumn($table, $column) {
-        $sql = "SELECT * FROM pg_attribute 
-                LEFT JOIN information_schema.columns ON
-                information_schema.columns.table_name = '{$table}' 
+        $sql = "SELECT pg_class.oid AS pg_class_id, * FROM pg_class 
+                LEFT JOIN pg_attribute ON pg_class.oid = pg_attribute.attrelid
+                LEFT JOIN information_schema.columns ON information_schema.columns.table_name = pg_class.relname
                 AND information_schema.columns.column_name = pg_attribute.attname 
-                WHERE attnum > 0
-                AND is_updatable = 'YES' 
-                AND table_schema = '{$schama_name}' 
+                WHERE pg_attribute.attnum > 0
+                AND atttypid > 0 
                 AND attname = '{$column}'
-                AND attrelid = (SELECT oid FROM pg_class WHERE relname = '{$table}');";
-                
+                AND relname = '{$table}';";
         return $this->fetch_row($sql);
     }
 
@@ -1135,30 +1114,6 @@ class PgsqlEntity extends Entity {
         return $this->fetch_row($sql);
     }
 
-    /**
-    * pg_attribute
-    *
-    * @param string $relname
-    * @return array
-    **/
-    function attribute($relname, $schema_name = 'public') {
-        $sql = "SELECT attrelid, attname , attnum , atttypid , atttypmod , typname , attnotnull
-                ,CASE con_u.contype WHEN 'u' THEN true ELSE false END AS is_unique
-                ,CASE con_p.contype WHEN 'p' THEN true ELSE false END AS is_primary_key
-                FROM pg_stat_user_tables stat
-                INNER JOIN pg_attribute att ON att.attrelid = stat.relid
-                INNER JOIN pg_type type ON att.atttypid = type.typelem
-                INNER JOIN pg_class class ON class.relname = stat.relname
-                LEFT JOIN pg_constraint con_u ON con_u.conkey[1] = att.attnum
-                            AND con_u.contype = 'u' AND con_u.conrelid = class.oid
-                LEFT JOIN pg_constraint con_p ON att.attnum = ANY (con_p.conkey)
-                            AND con_p.contype = 'p' AND con_p.conrelid = class.oid
-                WHERE stat.schemaname = '{$schema_name}'
-                AND att.attnum > 0
-                AND substr(type.typname, 1, 1) = '_'
-                AND stat.relname = '{$relname}'";
-        return $this->fetch_rows($sql);
-    }
 
     /**
      * update table comment
@@ -1312,6 +1267,20 @@ class PgsqlEntity extends Entity {
     public function setNotNull($table, $column) {
         $sql = "ALTER TABLE \"{$table}\" ALTER COLUMN {$column} SET NOT NULL;";
         return $this->query($sql);
+    }
+
+    /**
+     * sqlColumnType
+     *
+     * @param  string $type
+     * @param  int $length
+     * @return string
+     */
+    public function sqlColumnType($type, $length = 0) {
+        if ($type == 'varchar' && $length > 0) {
+            $type.= "({$posts['length']})";
+        }
+        return $type;
     }
 
 }

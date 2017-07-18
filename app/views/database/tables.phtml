@@ -19,13 +19,13 @@
       <? foreach ($this->pg_classes as $pg_class): ?>
       <tr>
         <td>
-          <a class="" href="<?= url_for('columns', array('database_id' => $this->database['id'], 'relfilenode' => $pg_class['relfilenode'])) ?>"><?= $pg_class['tablename'] ?></a>
+          <a class="" href="<?= url_for('columns', array('database_id' => $this->database['id'], 'pg_class_id' => $pg_class['pg_class_id'])) ?>"><?= $pg_class['tablename'] ?></a>
         </td>
         <td>
           <form method="post" action="<?= url_for('update_table_comment') ?>">
             <div class="row">
               <input class="form-control col-6" type="text" name="comment" value="<?= $this->table_comments[$pg_class['tablename']] ?>">
-              <input type="hidden" name="relfilenode" value="<?= $pg_class['relfilenode'] ?>">
+              <input type="hidden" name="pg_class_id" value="<?= $pg_class['pg_class_id'] ?>">
               <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
               <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
             </div>

@@ -9,8 +9,6 @@
     <tr>
       <th>&nbsp;</th>
       <th>プロジェクト名</th>
-      <th>ページ</th>
-      <th>モデル</th>
       <th>DB</th>
       <th>&nbsp;</th>
     </tr>
@@ -21,9 +19,7 @@
   <? foreach ($this->projects as $project): ?>
   <tr>
     <td><a class="btn btn-secondary" href="<?= url_for('edit', $project['id']) ?>"><?= LABEL_EDIT ?></a></td>
-    <td><?=$project['name'] ?></td>
-    <td><a class="" href="<?= url_for('page/list', array('project_id' => $project['id'])) ?>">ページ</a></td>
-    <td><a class="" href="<?= url_for('model/list', array('project_id' => $project['id'])) ?>">モデル</a></td>
+    <td><a class="" href="<?= url_for('model/list', array('project_id' => $project['id'])) ?>"><?=$project['name'] ?></a></td>
     <td><?= Entity::searchForKey($this->databases, $project['database_id'], 'name') ?></td>
     <td><a class="btn btn-warning" href="<?=url_for('export_list', $project['id']) ?>"><?= LABEL_EXPORT ?>...</a></td>
   </tr>

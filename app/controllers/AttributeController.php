@@ -91,7 +91,7 @@ class AttributeController extends AppController {
 
         $database = DB::table('Database')->fetch($this->database['id']);
         $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
-        $this->pg_attribute = $pgsql_entity->pgAttributeByAttnum($this->model['relfilenode'], $this->attribute['attnum']);
+        $this->pg_attribute = $pgsql_entity->pgAttributeByAttnum($this->model['pg_class_id'], $this->attribute['attnum']);
 
         $this->forms['pg_types'] = CsvLite::form('pg_types', 'attribute[type]');
         $this->forms['pg_types']['class'] = "col-2";
@@ -108,16 +108,19 @@ class AttributeController extends AppController {
             //DB add column
             $database = DB::table('Database')->fetch($this->database['id']);
             $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+            $pg_class = $pgsql_entity->pgClassByRelname($this->model['name']);
+
             $pgsql_entity->addColumn($this->model['name'], $posts['name'], $type);
             $pg_attribute = $pgsql_entity->pgAttributeByColumn($this->model['name'], $posts['name']);
 
-            if ($pg_attribute['attrelid']) {
-                if ($posts['label']) {
-                    $pgsql_entity->updateColumnComment($this->model['name'], $posts['name'], $posts['label']);
-                }
-                $posts['attrelid'] = $pg_attribute['attrelid'];
-                $attribute = DB::table('Attribute')->insert($posts);
+            if ($posts['label']) {
+                $pgsql_entity->updateColumnComment($this->model['name'], $posts['name'], $posts['label']);
             }
+            $posts['pg_class_id'] = $pg_class['pg_class_id'];
+            $posts['attrelid'] = $pg_attribute['attrelid'];
+            $posts['attnum'] = $pg_attribute['attnum'];
+
+            $attribute = DB::table('Attribute')->insert($posts);
 
             if ($attribute->errors) {
                 $this->flash['errors'] = $attribute->errors;
@@ -136,7 +139,6 @@ class AttributeController extends AppController {
 
             $attribute = DB::table('Attribute')->fetch($this->params['id'])->value;
 
-            //DB rename column
             $database = DB::table('Database')->fetch($this->database['id']);
             $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
 
@@ -151,12 +153,8 @@ class AttributeController extends AppController {
 
                 //type
                 if (($pg_attribute['udt_name'] != $posts['type']) || ($pg_attribute['character_maximum_length'] !== $posts['length'])) {
-                    $type = $posts['type'];
-                    if ($type == 'varchar' && $posts['length']) {
-                        $type.= "({$posts['length']})";
-                    } else {
-                        $posts['length'] = null;
-                    }
+                    if ($posts['type'] != 'varchar') $posts['length'] = null;
+                    $type = $pgsql_entity->sqlColumnType($posts['type'], $posts['length']);
                     if ($type) {
                         $results = $pgsql_entity->changeColumnType($this->model['name'], $pg_attribute['attname'], $type);
                     }
@@ -165,9 +163,6 @@ class AttributeController extends AppController {
                 //label
                 if ($attribute['label'] != $posts['label']) {
                     $results = $pgsql_entity->updateColumnComment($this->model['name'], $posts['name'], $posts['label']);
-                    if ($results == false) {
-                        $posts['label'] = $attribute['label'];
-                    }
                 }
                 $attribute = DB::table('Attribute')->update($posts, $this->params['id']);
             }
@@ -216,7 +211,7 @@ class AttributeController extends AppController {
         }
     }
 
-    function create_from_db() {
+    function action_sync_db() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $attribute = new Attribute();

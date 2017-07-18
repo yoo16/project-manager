@@ -164,13 +164,13 @@ class DatabaseController extends AppController {
 
     function columns() {
         $database = DB::table('Database')->fetch($_REQUEST['database_id']);
-        $relfilenode = $_REQUEST['relfilenode'];
+        $pg_class_id = $_REQUEST['pg_class_id'];
 
         if (!$database) return;
-        if (!$relfilenode) return;
+        if (!$pg_class_id) return;
 
         $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
-        $this->pg_class = $pgsql_entity->pgClassByRelfilenode($relfilenode);
+        $this->pg_class = $pgsql_entity->pgClassById($pg_class_id);
         $this->attributes = $pgsql_entity->attributeValues($this->pg_class['relname']); 
 
         $this->forms['pg_types'] = CsvLite::form('pg_types', 'type');
@@ -203,16 +203,10 @@ class DatabaseController extends AppController {
             $database = DB::table('Database')->fetch($_REQUEST['database_id']);
             $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
 
-            $pg_class = $pgsql_entity->pgClassByRelfilenode($relfilenode);
-            $pg_attribute = $pgsql_entity->pgAttribute($pg_class['relname'], $attribute['name']);
+            $pg_class = $pgsql_entity->pgClassById($relfilenode);
+            $pg_attribute = $pgsql_entity->pgAttributeByColumn($pg_class['relname'], $attribute['name']);
             //$pg_attribute = $pgsql_entity->pgAttributeByAttnum($pg_class['relfilenode'], $attnum);
 
-var_dump($_REQUEST);
-var_dump($attribute);
-var_dump($pg_attribute);
-var_dump($relfilenode);
-var_dump($attnum);
-exit;
             if ($pg_class && $pg_attribute) {
                 $pgsql_entity->updateColumnComment($pg_class['relname'], $pg_attribute['attname'], $_REQUEST['comment']);
             }
@@ -242,11 +236,12 @@ exit;
     function update_table_comment() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (!$_REQUEST['database_id']) return;
-            if (!$_REQUEST['relfilenode']) return;
+            if (!$_REQUEST['pg_class_id']) return;
 
             $database = DB::table('Database')->fetch($_REQUEST['database_id']);
             $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
-            $pg_class = $pgsql_entity->pgClassByRelfilenode($_REQUEST['relfilenode']);
+            $pg_class = $pgsql_entity->pgClassById($_REQUEST['pg_class_id']);
+
             $pgsql_entity->updateTableComment($pg_class['relname'], $_REQUEST['comment']);
 
             $this->redirect_to('tables', $_REQUEST['database_id']);
@@ -331,7 +326,7 @@ exit;
             $pg_connection_array = $database->pgConnectArray();
             $pgsql_entity = new PgsqlEntity($pg_connection_array);
             $this->pg_table = $pgsql_entity->pgTableByTableName($table_name);
-            $this->pg_attribute = $pgsql_entity->pgAttribute($table_name, $column);
+            $this->pg_attribute = $pgsql_entity->pgAttributeByColumn($table_name, $column);
         }
 
         $this->forms['pg_types'] = CsvLite::form('pg_types', 'type');

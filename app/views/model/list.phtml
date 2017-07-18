@@ -1,10 +1,10 @@
 <? include('_header.phtml') ?>
 
 <div>
-  <form action="<?= url_for('create_from_db') ?>" method="post">
+  <form action="<?= url_for('sync_db') ?>" method="post">
     <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-table-window"><?= LABEL_ADD ?></a>
     <a href="<?= url_for('project/list') ?>" class="btn btn-secondary"><?= LABEL_BACK ?></a>
-    <input class="btn btn-warning" type="submit" value="Import From DB">
+    <input class="btn btn-success" type="submit" value="Sync DB">
     <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
   </form>
 </div>
@@ -15,7 +15,8 @@
   <tr>
     <th></th>
     <th>name</th>
-    <th>label</th>
+    <th>Entity</th>
+    <th>Class</th>
     <th>DB</th>
     <th></th>
   </tr>
@@ -24,29 +25,48 @@
     <td><a class="btn btn-secondary" href="<?= url_for('edit', $model['id']) ?>"><?= LABEL_EDIT ?></a></td>
     <td>
       <a href="<?= url_for('attribute/', array('model_id' => $model['id'])) ?>"><?= $model['name'] ?></a>
-      <div><?= $model['pg_class_id'] ?></div>
+      <div>
+        <?= $model['label'] ?>
+      </div>
     </td>
-    <td><?= $model['label'] ?></td>
+    <td><?= $model['entity_name'] ?>
+    </td>
+    <td>
+      <?= $model['class_name'] ?>
+    </td>
     <td>
       <? if ($model['pg_class']): ?>
-      <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
-      <label class="badge badge-pill badge-success">connected</label>
+      <label class="badge badge-pill badge-info"><?= $model['pg_class']['pg_class_id'] ?></label>
 
+      <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
+      <label class="badge badge-pill badge-success">sync</label>
+
+      <? if ($model['label'] == $model['pg_class']['comment']): ?>
+      <label class="badge badge-pill badge-success">label</label>
     <? else: ?>
-    <label class="badge badge-pill badge-danger">pg_class_id error</label>
+    <label class="badge badge-pill badge-danger">different label</label>
+    <label class="badge badge-pill badge-default">DB:<?= $model['pg_class']['comment'] ?></label>
   <? endif ?>
-  <div><?= $model['pg_class']['pg_class_id'] ?></div>
+
 <? else: ?>
+<label class="badge badge-pill badge-danger">pg_class_id error</label>
+<? endif ?>
+
+<? else: ?>
+
 <form action="<?= url_for('add_table', $model['id']) ?>" method="post">
   <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
   <input type="hidden" name="model_id" value="<?= $model['id'] ?>">
   <input type="hidden" name="table_name" value="<?= $model['name'] ?>">
 </form>
+
 <? endif ?>
 </td>
+
 <td>
-  <div><?= $model['pg_table']['relname'] ?></div>
-  <div><?= $model['pg_table']['relfilenode'] ?></div>
+  <div>
+
+  </div>
 </td>
 </tr>
 <? endforeach ?>

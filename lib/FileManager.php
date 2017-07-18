@@ -2,11 +2,77 @@
 /**
  * FileMnager.php
  *
- * 
  * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
  **/
 
 class FileManager {
+
+    static $irregular_rules = array(
+        'men'       =>  'man',
+        'seamen'    =>  'seaman',
+        'snowmen'   =>  'snowman',
+        'women'     =>  'woman',
+        'people'    =>  'person',
+        'children'  =>  'child',
+        'sexes'     =>  'sex',
+        'moves'     =>  'move',
+        'databases' =>  'database',
+        'feet'      =>  'foot',
+        'cruces'    =>  'crux',
+        'oases'     =>  'oasis',
+        'phenomena' =>  'phenomenon',
+        'teeth'     =>  'tooth',
+        'geese'     =>  'goose',
+        'atlases'   =>  'atlas',
+        'corpuses'  =>  'corpus',
+        'genies'    =>  'genie',
+        'genera'    =>  'genus',
+        'graffiti'  =>  'graffito',
+        'loaves'    =>  'loaf',
+        'mythoi'    =>  'mythos',
+        'niches'    =>  'niche',
+        'numina'    =>  'numen',
+        'octopuses' =>  'octopus',
+        'opuses'    =>  'opus',
+        'penises'   =>  'penis',
+        'equipment' =>  'equipment',
+        'information'   =>  'information',
+        'rice'      =>  'rice',
+        'money'     =>  'money',
+        'species'   =>  'species',
+        'series'    =>  'series',
+        'fish'      =>  'fish',
+        'sheep'     =>  'sheep',
+        'swiss'     =>  'swiss',
+    );
+
+    static $singular_rules = array(
+        '(quiz)zes$'        =>  '$1',
+        '(matr)ices$'       =>  '$1ix',
+        '(vert|ind)ices$'   =>  '$1ex',
+        '^(ox)en'       =>  '$1',
+        '(alias|status)es$' =>  '$1',
+        '(octop|vir)i$'     =>  '$1us',
+        '(cris|ax|test)es$' =>  '$1is',
+        '(shoe)s$'      =>  '$1',
+        '(o)es$'        =>  '$1',
+        '(bus)es$'      =>  '$1',
+        '([m|l])ice$'       =>  '$1ouse',
+        '(x|ch|ss|sh)es$'   =>  '$1',
+        'movies$'       =>  'movie',
+        'series$'       =>  'series',
+        '([^aeiouy]|qu)ies$'    =>  '$1y',
+        '([lr])ves$'        =>  '$1f',
+        '(tive)s$'      =>  '$1',
+        '(hive)s$'      =>  '$1',
+        '([^f])ves$'        =>  '$1fe',
+        '(^analy)ses$'      =>  '$1sis',
+        '(analy|ba|diagno|parenthe|progno|synop|the)ses$' => '$1sis',
+        '([ti])a$'      =>  '$1um',
+        '(n)ews$'       =>  '$1ews',
+        '(.)s$'         =>  '$1',
+    );
+
     var $base_dir;
     var $base_url;
 
@@ -531,7 +597,6 @@ class FileManager {
         return $this;
     }
 
-
     /**
      * excape line break
      *
@@ -544,6 +609,59 @@ class FileManager {
         return preg_replace("/\r\n|\r|\n/", $to, $value);
     }
 
-}
+    /**
+     * singular to plural
+     *
+     * @param string $value
+     * @return string
+     */
+    static function singularToPlural($value) {
+        //TODO
+        $value = preg_replace("/(s|sh|ch|o|x)$/", "$1es",$value);
+        $value = preg_replace("/(f|fe)$/","ves", $value);
+        $value = preg_replace("/(a|i|u|e|o)y$/", "$1ys",$value);
+        $value = preg_replace("/y$/","ies",$value);
+        if (!preg_match("/s$/",$value)) {
+            $value = $value."s";
+        }
+        return $value;
+    }
 
-?>
+    /**
+     * plural to singular
+     *
+     * @param string $value
+     * @return string
+     */
+    static function pluralToSingular($plural) {
+        $irregular_rules = self::$irregular_rules;
+        $singular_rules = self::$singular_rules;
+
+        $singular = $plural;
+        if (array_key_exists(strtolower($plural), $irregular_rules)) {
+            $singular = $irregular_rules[strtolower($plural)];
+        } else {
+            foreach($singular_rules as $key => $value) {
+                $reg = '/' . $key . '/';
+                if (preg_match($reg, $plural)) {
+                    $singular = preg_replace($reg, $value, $plural);
+                    break;
+                }
+            }
+        }
+        return $singular;
+    }
+
+    static function phpClassName($name) {
+        $names = explode('_', $name);
+        if (is_array($names)) {
+            foreach ($names as $key => $value) {
+                $class_name .= ucwords($value);
+            }
+        } else {
+            $class_name = ucwords($name);
+        }
+        return "{$class_name}";
+    }
+
+}
