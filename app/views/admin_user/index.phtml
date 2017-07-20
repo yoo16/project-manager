@@ -1,7 +1,7 @@
 
 <div>
-  <a action="new" class="action btn btn-primary" href="#" data-toggle="modal" data-target="#edit_modal"><?= LABEL_ADD ?></a>
-  <a action="list" class="action btn btn-secondary" href="#"><?= LABEL_RELOAD ?></a>
+  <a action="new" class="action btn btn-outline-primary" href="#" data-toggle="modal" data-target="#edit_modal"><?= LABEL_ADD ?></a>
+  <a action="list" class="action btn btn-outline-primary" href="#"><?= LABEL_RELOAD ?></a>
 </div>
 
 <div id="user_list"></div>
@@ -20,11 +20,11 @@
       <div id="user_edit" class="modal-body"></div>
 
       <div class="modal-footer">
-        <a action="update" class="action btn btn-primary" href="#"><?= LABEL_UPDATE ?></a>
+        <a action="update" class="action btn btn-outline-primary" href="#"><?= LABEL_UPDATE ?></a>
         <? if (!$this->user['id']): ?>
-        <a action="delete" class="action btn btn-danger" href="#"><?= LABEL_DELETE ?></a>
+        <a action="delete" class="action btn btn-outline-danger" href="#"><?= LABEL_DELETE ?></a>
         <? endif ?>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
+        <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
       </div>
 
     </div>

@@ -6,7 +6,7 @@ count : <?= $this->count ?>
 
 <? foreach ($this->users as $user): ?>
 <tr>
-  <td><a action="edit" class="action btn btn-primary" edit-id="<?= $user['id'] ?>" href="#" data-toggle="modal" data-target="#edit_modal"><?= LABEL_EDIT ?></a></td>
+  <td><a action="edit" class="action btn btn-outline-primary " edit-id="<?= $user['id'] ?>" href="#" data-toggle="modal" data-target="#edit_modal"><?= LABEL_EDIT ?></a></td>
   <td><?= $user['email'] ?></td>
   <td><?= $user['last_name'] ?></td>
   <td><?= $user['first_name'] ?></td>

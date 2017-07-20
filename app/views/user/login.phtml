@@ -3,8 +3,8 @@
   <form class="form-signin" method="post" action="<?= url_for('/user/auth') ?>">
     <input type="text" class="form-control input" placeholder="<?= LABEL_MAIL ?>" name="user[email]" value="<?= $this->user['email'] ?>" required autofocus>
     <input type="password" class="form-control input" placeholder="<?= LABEL_PASSWORD ?>" name="user[password]" required>
-    <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit"><?= LABEL_LOGIN  ?></button>
+    <button class="btn btn-lg btn-outline-primary btn-block btn-signin" type="submit"><?= LABEL_LOGIN  ?></button>
   </form>
 </div>
 
-<a class="btn btn-secondary" href="<?= url_for('regist/')  ?>"><?= LABEL_REGIST ?></a>
+<a class="btn btn-outline-primary" href="<?= url_for('regist/')  ?>"><?= LABEL_REGIST ?></a>

@@ -30,3 +30,7 @@
 	overflow-y: auto;
 	max-height: 30rem;
 }
+
+#main {
+	margin-top: 5rem;
+}

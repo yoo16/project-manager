@@ -124,8 +124,6 @@ class AttributeController extends AppController {
 
             if ($attribute->errors) {
                 $this->flash['errors'] = $attribute->errors;
-                var_dump($attribute->errors);
-                exit;
             } else {
                 unset($this->session['posts']);
             }

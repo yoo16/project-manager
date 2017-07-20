@@ -25,3 +25,7 @@ function undefineLabelTag($key, $value) {
     $tag = '<label class="badge badge-danger">Undefined</label>';
     return $tag;
 }
+
+function cssClass($key, $selected, $class_name) {
+    if ($key == $selected) return $class_name;
+}

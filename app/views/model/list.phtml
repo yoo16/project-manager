@@ -1,61 +1,64 @@
 <? include('_header.phtml') ?>
 
-<div>
-  <form action="<?= url_for('sync_db') ?>" method="post">
-    <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-table-window"><?= LABEL_ADD ?></a>
-    <a href="<?= url_for('project/list') ?>" class="btn btn-secondary"><?= LABEL_BACK ?></a>
-    <input class="btn btn-success" type="submit" value="Sync DB">
-    <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
-  </form>
-</div>
+<div class="">
+  <div class="pt-3">
+    <form action="<?= url_for('sync_db') ?>" method="post">
+      <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-table-window"><?= LABEL_ADD ?></a>
+      <a href="<?= url_for('project/list') ?>" class="btn btn-outline-primary"><?= LABEL_BACK ?></a>
+      <input class="btn btn-outline-success" type="submit" value="Sync DB">
+      <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
+    </form>
+  </div>
 
-<? include('add_table_window.phtml'); ?>
+  <? include('add_table_window.phtml'); ?>
 
-<table class="table">
-  <tr>
-    <th></th>
-    <th>name</th>
-    <th>Entity</th>
-    <th>Class</th>
-    <th>DB</th>
-    <th></th>
-  </tr>
-  <? foreach ($this->models as $model): ?>
-  <tr>
-    <td><a class="btn btn-secondary" href="<?= url_for('edit', $model['id']) ?>"><?= LABEL_EDIT ?></a></td>
-    <td>
-      <a href="<?= url_for('attribute/', array('model_id' => $model['id'])) ?>"><?= $model['name'] ?></a>
-      <div>
-        <?= $model['label'] ?>
-      </div>
-    </td>
-    <td><?= $model['entity_name'] ?>
-    </td>
-    <td>
-      <?= $model['class_name'] ?>
-    </td>
-    <td>
-      <? if ($model['pg_class']): ?>
-      <label class="badge badge-pill badge-info"><?= $model['pg_class']['pg_class_id'] ?></label>
+  <table class="table">
+    <thead class="thead-default">
+      <tr>
+        <th></th>
+        <th>name</th>
+        <th>Entity</th>
+        <th>Class</th>
+        <th>DB</th>
+        <th></th>
+      </tr>
+    </thead>
+    <? foreach ($this->models as $model): ?>
+    <tr>
+      <td><a class="btn btn-outline-primary" href="<?= url_for('edit', $model['id']) ?>"><?= LABEL_EDIT ?></a></td>
+      <td>
+        <a href="<?= url_for('attribute/', array('model_id' => $model['id'])) ?>"><?= $model['name'] ?></a>
+        <div>
+          <?= $model['label'] ?>
+        </div>
+      </td>
+      <td><?= $model['entity_name'] ?>
+      </td>
+      <td>
+        <?= $model['class_name'] ?>
+      </td>
+      <td>
+        <? if ($model['pg_class']): ?>
+        <label class="badge badge-pill badge-info"><?= $model['pg_class']['pg_class_id'] ?></label>
 
-      <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
-      <label class="badge badge-pill badge-success">sync</label>
+        <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
+        <label class="badge badge-pill badge-success">sync</label>
 
-      <? if ($model['label'] == $model['pg_class']['comment']): ?>
-      <label class="badge badge-pill badge-success">label</label>
-    <? else: ?>
-    <label class="badge badge-pill badge-danger">different label</label>
-    <label class="badge badge-pill badge-default">DB:<?= $model['pg_class']['comment'] ?></label>
-  <? endif ?>
+        <? if ($model['label'] == $model['pg_class']['comment']): ?>
+        <label class="badge badge-pill badge-success">label</label>
+      <? else: ?>
+      <label class="badge badge-pill badge-danger">different label</label>
+      <label class="badge badge-pill badge-default">DB:<?= $model['pg_class']['comment'] ?></label>
+    <? endif ?>
 
-<? else: ?>
-<label class="badge badge-pill badge-danger">pg_class_id error</label>
+  <? else: ?>
+  <label class="badge badge-pill badge-danger">pg_class_id error</label>
 <? endif ?>
 
 <? else: ?>
 
 <form action="<?= url_for('add_table', $model['id']) ?>" method="post">
-  <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
+  <input class="btn btn-outline-primary" type="submit" value="<?= LABEL_ADD ?>">
   <input type="hidden" name="model_id" value="<?= $model['id'] ?>">
   <input type="hidden" name="table_name" value="<?= $model['name'] ?>">
 </form>
@@ -71,3 +74,4 @@
 </tr>
 <? endforeach ?>
 </table>
+</div>

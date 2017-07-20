@@ -6,11 +6,11 @@
     <input class="form-control col-5" name="user_project_setting[project_path]" type="text" value="<?= $this->user_project_setting['project_path'] ?>">
   </div>
   <div class="">
-    <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
-    <a class="btn btn-secondary" href="<?= url_for('export_list', $this->project['id']) ?>"><?= LABEL_CLOSE ?></a>
+    <input class="btn btn-outline-primary" type="submit" value="<?= LABEL_UPDATE ?>">
+    <a class="btn btn-outline-primary" href="<?= url_for('export_list', $this->project['id']) ?>"><?= LABEL_CLOSE ?></a>
   </div>
 </form>
 
 <form id="" action="<?= url_for('delete_user_project_setting', $this->user_project_setting['id']) ?>" method="post">
-  <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
+  <input class="btn btn-outline-danger" type="submit" value="<?= LABEL_DELETE ?>">
 </form>

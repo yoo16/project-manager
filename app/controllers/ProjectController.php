@@ -28,6 +28,13 @@ class ProjectController extends AppController {
         if ($this->project['database_id']) {
             $this->database = DB::table('Database')->fetchValue($this->project['database_id']);
         }
+
+        if ($this->project['id']) {
+            $this->user_project_settings = DB::table('UserProjectSetting')
+                                            ->where("project_id = {$this->project['id']}")
+                                            ->select()
+                                            ->values;
+        }
     }
 
     function before_rendering() {
@@ -42,7 +49,7 @@ class ProjectController extends AppController {
         unset($this->session['posts']);
     }
 
-    function action_index() {
+    function index() {
         $pgsql_entity = new PgsqlEntity();
         $this->pg_connection = $pgsql_entity->connection();
         if (!$this->pg_connection) {
@@ -144,22 +151,43 @@ class ProjectController extends AppController {
         }
     }
 
-    function action_update_project() {
+    function action_export_php() {
         $project = new Project();
         $project->fetch($this->project['id']);
+        //TODO bind
+        $project->user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id'])->value;
         $project->exportPHP();
 
         $params['project_id'] = $this->project['id'];
         $this->redirect_to('model/list', $params);
     }
 
-    function action_export_list() {
-        $this->project = DB::table('Project')->fetch($this->params['id'])->value;
+    function action_export_db() {
+        $database = new Database();
+        $database->fetch($this->project['database_id']);
+        //TODO bind
+        $database->exportDatabase();
 
-        $this->user_project_settings = DB::table('UserProjectSetting')
-                                        ->where("project_id = {$this->project['id']}")
-                                        ->select()
-                                        ->values;
+        $params['project_id'] = $this->project['id'];
+        $this->redirect_to('model/list', $params);
+    }
+
+
+    function action_export_list() {
+            $this->project = DB::table('Project')
+                                            ->fetch("{$this->params['id']}")
+                                            ->value;
+
+            if ($this->project['id']) {
+                $this->database = DB::table('Database')
+                                                ->fetch("{$this->project['database_id']}")
+                                                ->value;
+
+                $this->user_project_settings = DB::table('UserProjectSetting')
+                                                ->where("project_id = {$this->project['id']}")
+                                                ->select()
+                                                ->values;
+            }
     }
 
     function action_export() {

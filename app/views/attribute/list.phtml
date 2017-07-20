@@ -1,100 +1,67 @@
 <? include('_header.phtml') ?>
 
-<form action="<?= url_for('sync_db') ?>" method="post">
-  <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-attribute"><?= LABEL_ADD ?></a>
-  <a href="<?= url_for('model/list') ?>" class="btn btn-secondary"><?= LABEL_BACK ?></a>
-  <input class="btn btn-success" type="submit" value="Sync DB">
-  <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
-</form>
-
-<div id="add-attribute" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <form action="<?= url_for('add') ?>" method="post">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">カラム</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group row">
-            <label for="" class="col-2 col-form-label">Name</label>
-            <input class="form-control col-5" type="text" name="attribute[name]">
-          </div>
-          <div class="form-group row">
-            <label for="" class="col-2 col-form-label">Label</label>
-            <input class="form-control col-5" type="text" name="attribute[label]">
-          </div>
-          <div class="form-group row">
-            <label for="" class="col-2 col-form-label">Type</label>
-            <?= FormHelper::select($this->forms['pg_types']) ?>
-          </div>
-          <div class="form-group row">
-            <label for="" class="col-2 col-form-label">Length</label>
-            <input class="form-control col-5" type="text" name="attribute[length]">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
-          <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
-          <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
-        </div>
-      </form>
-    </div>
-  </div>
+<div class="pt-3">
+  <form action="<?= url_for('sync_db') ?>" method="post">
+    <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-attribute"><?= LABEL_ADD ?></a>
+    <a href="<?= url_for('model/list') ?>" class="btn btn-outline-primary"><?= LABEL_BACK ?></a>
+    <input class="btn btn-outline-success" type="submit" value="Sync DB">
+    <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
+  </form>
 </div>
 
-<h4><?= $this->model['name'] ?> <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label></h4>
+<? include('add_window.phtml') ?>
 
-<table class="table">
-  <tr>
-    <th></th>
-    <th>Name</th>
-    <th>Label</th>
-    <th>Type</th>
-    <th>DB</th>
+<div class="card">
+
+  <h4 class="card-header"><?= $this->model['name'] ?> <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label></h4>
+
+  <div class="card-body">
+    <table class="table">
+      <thead class="thead-default">
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Label</th>
+          <th>Type</th>
+          <th>DB</th>
+        </tr>
+      </thead>
+      <tbody>
+        <? foreach ($this->attributes as $attribute): ?>
+        <tr>
+          <td>
+            <? if (!Model::$required_columns[$attribute['name']]): ?>
+            <a class="btn btn-outline-primary" href="<?= url_for('edit', $attribute['id']) ?>"><?= LABEL_EDIT ?></a>
+          <? endif ?>
+        </td>
+        <td><?= $attribute['name'] ?></td>
+        <td><?= $attribute['pg_attribute']['comment'] ?></td>
+        <td>
+          <label class="badge badge-pill badge-default">
+            <?= $attribute['type'] ?>
+            <? if ($attribute['length'] > 0): ?> (<?= $attribute['length'] ?>) <? endif ?>
+          </label>
+          <? if ($attribute['is_required']): ?><label class="badge badge-pill badge-info">required</label><? endif ?>
+        </td>
+        <td>
+          <label class="badge badge-pill badge-info"><?= $attribute['pg_attribute']['attnum'] ?></label>
+          <label class="badge badge-pill badge-success">sync</label>
+          <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
+          <label class="badge badge-pill badge-default"><?= $attribute['pg_attribute']['attname'] ?></label>
+          <label class="badge badge-pill badge-default"><?= $attribute['pg_attribute']['udt_name'] ?> <?= $attribute['pg_attribute']['character_maximum_length'] ?></label>
+          <? if ($attribute['is_primary_key']): ?><label class="badge badge-info">Primary</label><? endif ?>
+          <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><label class="badge badge-info">Not Null</label><? endif ?>
+        <? else: ?>
+        <form action="<?= url_for('add_table', $attribute['id']) ?>" method="post">
+          <input class="btn btn-outline-primary" type="submit" value="<?= LABEL_ADD ?>">
+          <input type="hidden" name="model_id" value="<?= $attribute['id'] ?>">
+          <input type="hidden" name="table_name" value="<?= $attribute['name'] ?>">
+        </form>
+      <? endif ?>
+    </td>
   </tr>
-  <? foreach ($this->attributes as $attribute): ?>
-  <tr>
-    <td>
-      <? if (Model::$required_columns[$attribute['name']]): ?>
-      <a class="btn btn-secondary disabled" href="#"><?= LABEL_EDIT ?></a>
-    <? else: ?>
-    <a class="btn btn-secondary" href="<?= url_for('edit', $attribute['id']) ?>"><?= LABEL_EDIT ?></a>
-  <? endif ?>
-</td>
-<td><?= $attribute['name'] ?></td>
-<td><?= $attribute['pg_attribute']['comment'] ?></td>
-<td>
-  <label class="badge badge-pill badge-default">
-    <?= $attribute['type'] ?>
-    <? if ($attribute['length'] > 0): ?> (<?= $attribute['length'] ?>) <? endif ?>
-  </label>
-  <div>
-    <? if ($attribute['is_required']): ?><label class="badge badge-pill badge-info">required</label><? endif ?>
-
-  </div>
-</td>
-<td>
-  <div>
-    <label class="badge badge-pill badge-info"><?= $attribute['pg_attribute']['attnum'] ?></label>
-    <label class="badge badge-pill badge-success">sync</label>
-  </div>
-  <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
-  <label class="badge badge-pill badge-default"><?= $attribute['pg_attribute']['attname'] ?></label>
-  <label class="badge badge-pill badge-default"><?= $attribute['pg_attribute']['udt_name'] ?> <?= $attribute['pg_attribute']['character_maximum_length'] ?></label>
-  <? if ($attribute['is_primary_key']): ?><label class="badge badge-info">Primary</label><? endif ?>
-  <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><label class="badge badge-info">Not Null</label><? endif ?>
-<? else: ?>
-<form action="<?= url_for('add_table', $attribute['id']) ?>" method="post">
-  <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
-  <input type="hidden" name="model_id" value="<?= $attribute['id'] ?>">
-  <input type="hidden" name="table_name" value="<?= $attribute['name'] ?>">
-</form>
-<? endif ?>
-</td>
-</tr>
 <? endforeach ?>
+</tbody>
 </table>
+</div>
+</div>

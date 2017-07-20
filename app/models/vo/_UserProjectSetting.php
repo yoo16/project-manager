@@ -18,8 +18,8 @@ class _UserProjectSetting extends PgsqlEntity {
         'updated_at' => array('type' => 't'),
         'sort_order' => array('type' => 'i'),
         'project_id' => array('type' => 'i', 'required' => true),
-        'user_id' => array('type' => 'i'),
         'project_path' => array('type' => 's', 'required' => true),
+        'user_id' => array('type' => 'i'),
         'group_name' => array('type' => 's'),
         'user_name' => array('type' => 's'),
     );

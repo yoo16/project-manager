@@ -465,7 +465,7 @@ class PgsqlEntity extends Entity {
         if ($posts) $this->takeValues($posts);
 
         $this->validate();
-        //if ($this->errors) return $this;
+        if ($this->errors) return $this;
 
         $sql = $this->insertSql();
         if (!$sql) {
@@ -938,11 +938,10 @@ class PgsqlEntity extends Entity {
     /**
     * databases
     * 
-    * @param string $name
     * @return array
     **/
-    function pgDatabases($name) {
-        $sql = "SELECT * FROM pg_database;";
+    function pgDatabases() {
+        $sql = "SELECT * FROM pg_database WHERE datacl IS NULL;";
         return $this->fetch_rows($sql);
     }
 
@@ -1048,6 +1047,7 @@ class PgsqlEntity extends Entity {
                 AND information_schema.columns.column_name = pg_attribute.attname 
                 WHERE pg_attribute.attnum > 0
                 AND atttypid > 0 
+                AND relacl IS NULL  
                 AND relname = '{$table}';";
         return $this->fetch_rows($sql);
     }

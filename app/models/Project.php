@@ -27,16 +27,26 @@ class Project extends _Project {
         return $project;
     }
 
+    /**
+     * export php
+     * @return bool
+     */
     function exportPHP() {
         $models = DB::table('Model')->listByProject($this->value);
         if (!$models) return;
         foreach ($models as $model) {
-            $name = FileManager::pluralToSingular($model['name']);
-            $php_class_name = FileManager::phpClassName($name);
-            var_dump($php_class_name);
-        }
-        exit;
-    }
+            $values['model'] = $model;
 
+            $model_path = Model::projectFilePath($this->user_project_setting, $model);
+            $model_template_path = Model::templateFilePath($model);
+            $contents = FileManager::bufferFileContetns($model_template_path, $values);
+            file_put_contents($model_path, $contents);
+
+            $vo_model_path = Model::projectVoFilePath($this->user_project_setting, $model);
+            $vo_model_template_path = Model::voTemplateFilePath($model);
+            $contents = FileManager::bufferFileContetns($vo_model_template_path, $values);
+            file_put_contents($vo_model_path, $contents);
+        }
+    }
 
 }

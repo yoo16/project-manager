@@ -661,7 +661,17 @@ class FileManager {
         } else {
             $class_name = ucwords($name);
         }
-        return "{$class_name}";
+        return $class_name;
+    }
+
+    static function bufferFileContetns($path, $values) {
+        if (file_exists($path)) {
+            ob_start();
+            include $path;
+            $contents = ob_get_contents();
+            ob_end_clean();
+        }
+        return $contents;
     }
 
 }

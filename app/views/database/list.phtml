@@ -2,7 +2,7 @@
 
 <div>
   <a class="btn btn-primary" href="<?= url_for('new') ?>"><?= LABEL_ADD ?></a>
-  <a class="btn btn-secondary" href="#" data-toggle="modal" data-target="#import-table"><?= LABEL_IMPORT ?></a>
+  <a class="btn btn-outline-primary" href="#" data-toggle="modal" data-target="#import-table"><?= LABEL_IMPORT ?></a>
 </div>
 
 <div id="import-table" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -23,7 +23,7 @@
             <td><?= $pg_database['datname'] ?></td>
             <td>
               <form method="post" action="<?= url_for('import_database') ?>">
-                <input class="btn btn-primary" type="submit" value="<?= LABEL_IMPORT ?>">
+                <input class="btn btn-sm btn-primary" type="submit" value="<?= LABEL_IMPORT ?>">
                 <input type="hidden" name="database_name" value="<?= $pg_database['datname'] ?>">
               </form>
             </td>

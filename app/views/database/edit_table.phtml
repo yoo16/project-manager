@@ -9,15 +9,15 @@
       </tr>
     </table>
 
-    <input class="btn btn-primary" type="submit" value="<?=LABEL_UPDATE ?>">
-    <a class="btn btn-secondary" href="<?=url_for('tables', $this->database['id']) ?>"><?=LABEL_BACK?></a>
+    <input class="btn btn-outline-primary" type="submit" value="<?=LABEL_UPDATE ?>">
+    <a class="btn btn-outline-primary" href="<?=url_for('tables', $this->database['id']) ?>"><?=LABEL_BACK?></a>
     <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
     <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
   </form>
 
   <? if ($this->pg_table): ?>
   <form id="" action="<?=url_for('drop_table', $this->pg_table['tablename']) ?>" method="post">
-    <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
+    <input class="btn btn-outline-danger" type="submit" value="<?= LABEL_DELETE ?>">
     <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
     <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
   </form>

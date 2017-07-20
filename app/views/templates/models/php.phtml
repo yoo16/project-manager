@@ -1,0 +1,24 @@
+<?= '<?php'?>
+
+/**
+ * <?= $values['model']['class_name'] ?> 
+ *
+ * @create  <?= $model['created_at'] ?> 
+ */
+
+require_once 'models/vo/_<?= $values['model']['class_name'] ?>.php';
+
+class <?= $values['model']['class_name'] ?> extends _<?= $values['model']['class_name'] ?> {
+
+   /**
+    * validate
+    *
+    * @access public
+    * @param
+    * @return void
+    */ 
+    function validate() {
+        parent::validate();
+    }
+
+}

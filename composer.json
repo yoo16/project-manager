@@ -6,6 +6,7 @@
         }
     },
     "require": {
-        "league/oauth2-client": "^1.4"
+        "league/oauth2-client": "^1.4",
+        "phpoffice/phpexcel": "^1.8"
     }
 }

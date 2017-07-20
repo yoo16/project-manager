@@ -42,13 +42,16 @@ class DatabaseController extends AppController {
         $database = DB::table('Database');
         if (isset($this->session['posts'])) $database->takeValues($this->session['posts']);
         $this->database = $database->value;
+
+        $this->forms['hostname'] = CsvLite::form('db_hosts', 'database[hostname]');
+        $this->forms['user_name'] = CsvLite::form('db_users', 'database[user_name]');
+        $this->forms['port'] = CsvLite::form('db_ports', 'database[port]');
     }
 
-    function edit() {
+    function action_edit() {
         $database = DB::table('Database')->fetch($this->params['id']);
         if (isset($this->session['posts'])) $database->takeValues($this->session['posts']);
         $this->database = $database->value;
-
 
         $this->forms['hostname'] = CsvLite::form('db_hosts', 'database[hostname]');
         $this->forms['user_name'] = CsvLite::form('db_users', 'database[user_name]');

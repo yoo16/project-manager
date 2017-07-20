@@ -1,31 +1,33 @@
 <? include('_header.phtml') ?>
-<div id="project">
-	<form class="form-inline" action="<?= url_for('create_project_for_csv') ?>" method="post">
-		<a class="btn btn-primary" href="<?= url_for('new') ?>"><?= LABEL_ADD ?></a>
- </form>
+<div>
+  <div class="pt-3">
+   <form class="form-inline" action="<?= url_for('create_project_for_csv') ?>" method="post">
+    <a class="btn btn-primary" href="<?= url_for('new') ?>"><?= LABEL_ADD ?></a>
+  </form>
+</div>
 
- <table class="table">
-  <thead>
-    <tr>
-      <th>&nbsp;</th>
-      <th>プロジェクト名</th>
-      <th>DB</th>
-      <th>&nbsp;</th>
-    </tr>
-  </thead>
-
-  <? if (is_array($this->projects)): ?>
-
-  <? foreach ($this->projects as $project): ?>
+<table class="table">
+ <thead class="thead-default">
   <tr>
-    <td><a class="btn btn-secondary" href="<?= url_for('edit', $project['id']) ?>"><?= LABEL_EDIT ?></a></td>
-    <td><a class="" href="<?= url_for('model/list', array('project_id' => $project['id'])) ?>"><?=$project['name'] ?></a></td>
-    <td><?= Entity::searchForKey($this->databases, $project['database_id'], 'name') ?></td>
-    <td><a class="btn btn-warning" href="<?=url_for('export_list', $project['id']) ?>"><?= LABEL_EXPORT ?>...</a></td>
+    <th>&nbsp;</th>
+    <th>プロジェクト名</th>
+    <th>DB</th>
+    <th>&nbsp;</th>
   </tr>
-  <? endforeach ?>
+</thead>
 
-  <? endif ?>
+<? if (is_array($this->projects)): ?>
+
+<? foreach ($this->projects as $project): ?>
+<tr>
+  <td><a class="btn btn-outline-primary" href="<?= url_for('edit', $project['id']) ?>"><?= LABEL_EDIT ?></a></td>
+  <td><a class="" href="<?= url_for('model/list', array('project_id' => $project['id'])) ?>"><?=$project['name'] ?></a></td>
+  <td><?= Entity::searchForKey($this->databases, $project['database_id'], 'name') ?></td>
+  <td><a class="btn btn-outline-primary" href="<?=url_for('export_list', $project['id']) ?>"><?= LABEL_EXPORT ?><?= LABEL_SETTING ?>...</a></td>
+</tr>
+<? endforeach ?>
+
+<? endif ?>
 
 </table>
 </div>

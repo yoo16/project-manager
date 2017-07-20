@@ -1,16 +1,12 @@
-<h2>Database</h2>
-
-<? if ($this->database): ?>
-<table class="table">
-<tr>
-  <th>データベース</th>
-  <td><?= $this->database['name'] ?></td>
-</tr>
-<? if ($this->pg_table ): ?>
-<tr>
-  <th>テーブル</th>
-  <td><?= $this->pg_table ['tablename'] ?></td>
-</tr>
+<div class="row mt-3 mb-3">
+  <? if ($this->database): ?>
+  <div class="col-sm-4">
+    <div class="">
+      <div class="card-block">
+        <strong class="mr-1">Database</strong>
+        <?= $this->database['name'] ?>
+      </div>
+    </div>
+  </div>
 <? endif ?>
-</table>
-<? endif ?>
+</div>

@@ -1,10 +1,10 @@
 
-<div id="add-table-window" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+<div id="add-attribute" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <form method="post" action="<?= url_for('add') ?>">
+      <form action="<?= url_for('add') ?>" method="post">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Model</h5>
+          <h5 class="modal-title" id="exampleModalLongTitle">カラム</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -12,20 +12,29 @@
         <div class="modal-body">
           <div class="form-group row">
             <label for="" class="col-2 col-form-label">Name</label>
-            <input class="form-control col-5" type="text" name="model[name]" value="">
+            <input class="form-control col-5" type="text" name="attribute[name]">
           </div>
           <div class="form-group row">
             <label for="" class="col-2 col-form-label">Label</label>
-            <input class="form-control col-5" type="text" name="model[label]" value="">
+            <input class="form-control col-5" type="text" name="attribute[label]">
+          </div>
+          <div class="form-group row">
+            <label for="" class="col-2 col-form-label">Type</label>
+            <?= FormHelper::select($this->forms['pg_types']) ?>
+          </div>
+          <div class="form-group row">
+            <label for="" class="col-2 col-form-label">Length</label>
+            <input class="form-control col-5" type="text" name="attribute[length]">
           </div>
         </div>
         <div class="modal-footer">
           <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
           <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
-          <input type="hidden" name="model[database_id]" value="<?= $this->database['id'] ?>">
           <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
+          <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
         </div>
       </form>
     </div>
   </div>
 </div>
+

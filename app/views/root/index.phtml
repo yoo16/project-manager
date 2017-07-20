@@ -100,9 +100,9 @@
     </tr>
   </table>
   <? if (!$this->pg_connection): ?>
-  <a class="btn btn-primary" href="<?= url_for('create_database') ?>" onClick="return confirm('createdb for PostgreSQL?')"><?= LABEL_CREATE ?></a>
+  <a class="btn btn-outline-primary" href="<?= url_for('create_database') ?>" onClick="return confirm('createdb for PostgreSQL?')"><?= LABEL_CREATE ?></a>
   <? endif ?>
-  <a class="btn btn-primary" href="<?= url_for('pgsql') ?>"><?= LABEL_SETTING ?></a>
+  <a class="btn btn-outline-primary" href="<?= url_for('pgsql') ?>"><?= LABEL_SETTING ?></a>
 
 </div>
 

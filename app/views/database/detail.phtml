@@ -21,7 +21,7 @@
     <td></td>
     <td nowrap="nowrap">
       <input id="comment-<?= (int) $index ?>" class="" type="<?= $attribute['comment'] ?>" name="comment" value="<?= $attribute['comment'] ?>">
-      <a class="btn btn-primary action" href="#" action="updateColumnComment" database_id="<?= $this->database['id'] ?>" comment-id="comment-<?= (int) ++$index ?>" table="<?= $pg_table['tablename'] ?>" column="<?= $attribute['column_name'] ?>"><?= LABEL_UPDATE ?></a>
+      <a class="btn btn-outline-primary action" href="#" action="updateColumnComment" database_id="<?= $this->database['id'] ?>" comment-id="comment-<?= (int) ++$index ?>" table="<?= $pg_table['tablename'] ?>" column="<?= $attribute['column_name'] ?>"><?= LABEL_UPDATE ?></a>
     </td>
     <td><?= $attribute['column_name'] ?></td>
     <td><?= $attribute['udt_name'] ?></td>

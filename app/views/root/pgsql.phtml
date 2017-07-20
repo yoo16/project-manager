@@ -11,7 +11,7 @@
       <th>pg_connection()</th>
       <td>
       <? if ($this->pg_connection): ?>
-      <?= $this->pg_connection ?>
+      <label class="badge badge-success">connected</label>
       <? else: ?>
       <?= undefineLabelTag() ?>
       <? endif ?>
@@ -28,9 +28,9 @@
     </tr>
   </table>
   <? if (!$this->pg_connection): ?>
-  <a class="btn btn-primary" href="<?= url_for('create_database') ?>" onClick="return confirm('createdb for PostgreSQL?')"><?= LABEL_CREATE ?></a>
+  <a class="btn btn-outline-primary" href="<?= url_for('create_database') ?>" onClick="return confirm('createdb for PostgreSQL?')"><?= LABEL_CREATE ?></a>
   <? endif ?>
-  <a class="btn btn-primary" href="<?= url_for('init_database') ?>" onClick="return confirm('init database? *Data will be deleted on database.')"><?= LABEL_INIT ?></a>
+  <a class="btn btn-outline-primary" href="<?= url_for('init_database') ?>" onClick="return confirm('init database? *Data will be deleted on database.')"><?= LABEL_INIT ?></a>
 
 
 </div>

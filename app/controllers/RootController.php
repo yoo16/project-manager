@@ -9,13 +9,21 @@ require_once 'AppController.php';
 
 class RootController extends AppController {
 
+    function before_action() {
+
+    }
+
     function index() {
         $pgsql_entity = new PgsqlEntity();
         $this->pg_connection = $pgsql_entity->connection();
-
-        $this->hostname = hostname();
-        $this->debug_traces = debug_backtrace(true);
-        $this->create_sql_path = BASE_DIR."db/sql/create.sql";
+        if ($this->pg_connection) {
+            $this->redirect_to('project/');
+        } else {
+            $this->redirect_to('pgsql');
+        }
+        // $this->hostname = hostname();
+        // $this->debug_traces = debug_backtrace(true);
+        // $this->create_sql_path = BASE_DIR."db/sql/create.sql";
     }
 
     function action_pgsql() {

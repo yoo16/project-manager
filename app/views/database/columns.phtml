@@ -1,17 +1,13 @@
 <? include('_header.phtml') ?>
 
-<div>
-  <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-modal"><?= LABEL_ADD ?></a>
-  <a href="<?= url_for('tables', array('database_id' => $this->database['id'])) ?>" class="btn btn-secondary action" action="closeColumns"><?= LABEL_BACK ?></a>
-</div>
-
 <div class="card">
   <div class="card-header">
-    <h4><?= $this->pg_class['relname'] ?></h4>
+    <h4><a href="<?= url_for('tables', array('database_id' => $this->database['id'])) ?>"><?= $this->pg_class['relname'] ?></a></h4>
   </div>
 
   <div class="card-block overflow-list">
     <table class="table">
+    <thead class="thead-default">
       <tr>
         <th></th>
         <th>Name</th>
@@ -21,28 +17,33 @@
         <th>Primary</th>
         <th>NOT NULL</th>
       </tr>
-      <? foreach ($this->attributes as $attribute): ?>
-      <tr>
-        <td><?= $attribute['attnum'] ?></td>
-        <td><?= $attribute['attname'] ?></td>
-        <td>
-          <form action="<?= url_for('update_column_comment') ?>" method="post">
-            <div class="row">
-              <input class="form-control col-9" type="text" name="comment" value="<?= $attribute['comment'] ?>">
-              <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
+    </thead>
+    <? foreach ($this->attributes as $attribute): ?>
+    <tr>
+      <td><?= $attribute['attnum'] ?></td>
+      <td><?= $attribute['attname'] ?></td>
+      <td>
+        <form action="<?= url_for('update_column_comment') ?>" method="post">
+          <div class="row">
+            <div class="input-group">
+              <input class="form-control col-6" type="text" name="comment" value="<?= $attribute['comment'] ?>">
+              <span class="input-group-btn">
+                <button class="btn btn-primary"><?= LABEL_UPDATE ?></button>
+              </span>
               <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
               <input type="hidden" name="relfilenode" value="<?= $this->pg_class['relfilenode'] ?>">
               <input type="hidden" name="attnum" value="<?= $attribute['attnum'] ?>">
             </div>
-          </form>
-        </td>
-        <td><?= $attribute['udt_name'] ?></td>
-        <td><?= $attribute['character_maximum_length'] ?></td>
-        <td><?= $attribute['is_primary_key'] ?></td>
-        <td><?= $attribute['attnotnull'] ?></td>
-      </tr>
-    <? endforeach ?>
-  </table>
+          </div>
+        </form>
+      </td>
+      <td><?= $attribute['udt_name'] ?></td>
+      <td><?= $attribute['character_maximum_length'] ?></td>
+      <td><?= $attribute['is_primary_key'] ?></td>
+      <td><?= $attribute['attnotnull'] ?></td>
+    </tr>
+  <? endforeach ?>
+</table>
 
 </div>
 
