@@ -112,4 +112,14 @@ class Model extends _Model {
         return $path;
     }
 
+    static function columnPropaty($attribute) {
+        $propaties[] = "'type' => '{$attribute['column_type']}'";
+        if (!self::$required_columns[$attribute['name']] && $attribute['is_required']) {
+            $propaties[] = "'required' => true";
+        }
+        $propaty = implode(', ', $propaties);
+
+        $value = "'{$attribute['name']}' => array({$propaty})";
+        return $value;
+    }
 }

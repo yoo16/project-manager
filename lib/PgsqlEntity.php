@@ -23,15 +23,21 @@ class PgsqlEntity extends Entity {
     var $orders = null;
     var $limits = null;
 
-    function __construct($params = null) {
-        $pg_info = '';
-        if ($params['dbname']) $pg_info.= "dbname={$params['dbname']}";
-        if ($params['host']) $pg_info.= " host={$params['host']}";
-        if ($params['user']) $pg_info.= " user={$params['user']}";
-        if ($params['port']) $pg_info.= " port={$params['port']}";
+    static $udt_types = array(
+        'timestamp' => 't',
+        'varchar' => 's',
+        'text' => 's',
+        'bool' => 'b',
+        'int2' => 'i',
+        'int4' => 'i',
+        'int8' => 'i',
+        'float' => 'f',
+        'double' => 'd',
+        );
 
-        if ($pg_info) $this->pg_info = $pg_info;
-        $this->setPgInfo($this->pg_info);
+    function __construct($params = null) {
+        $this->defaultPgInfo();
+        if ($params) $this->setPgInfo($params);
 
         if (!$this->dbname) {
             echo("Not Found: dbname");
@@ -56,57 +62,29 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * checkInfo
-    * 
-    * @param  array $values
-    * @return array
-    */
-    static function checkInfo($values) {
-        if (!$values['dbname']) {
-            echo("Not found: dbname");
-            exit;
-        }
-        if (!$values['user']) $values['user'] = 'postgres';
-        if (!$values['host']) $values['host'] = 'localhost';
-        if (!$values['port']) $values['port'] = '5432';
-        return $values;
-    }
-
-    /**
     * createDatabase
     * 
-    * @param  array $values
     * @return array
     */
-    static function createDatabase($values) {
-        if (!$values) return;
-        $values = self::checkInfo($values);
-        if ($values) {
-            $cmd = "createdb -U {$values['user']} -E UTF8 --host {$values['host']} --port {$values['port']} {$values['dbname']} 2>&1";
-            exec($cmd, $output, $return);
+    function createDatabase() {
+        if (!$this->dbname) return;
+        $cmd = "createdb -U {$this->user} -E UTF8 --host {$this->host} --port {$this->port} {$this->dbname} 2>&1";
+        exec($cmd, $output, $return);
 
-            $results['cmd'] = $cmd;
-            $results['output'] = $output;
-            $results['return'] = $return;
-        }
+        $results['cmd'] = $cmd;
+        $results['output'] = $output;
+        $results['return'] = $return;
         return $results;
     }
 
     /**
     * dropDatabase
     * 
-    * @param  array $values
     * @return array
     */
-    static function dropDatabase($values) {
-        if (!$values) return;
-
-        $database_name = $values['dbname'];
-        if (!$database_name) return;
-
-        $values = self::checkInfo($values);
-
-        $cmd = "dropdb -U {$values['user']} --host {$values['host']} --port {$values['port']} {$database_name} 2>&1";
+    function dropDatabase() {
+        if (!$this->dbname) return;
+        $cmd = "dropdb -U {$this->user} --host {$this->host} --port {$this->port} {$this->dbname} 2>&1";
 
         exec($cmd, $output, $return);
 
@@ -119,12 +97,34 @@ class PgsqlEntity extends Entity {
     /**
     * pgInfo
     * 
-    * @param array $pg_info
+    * @param array $params
     */
-    function setPgInfo($pg_info) {
-        if (!$pg_info) return;
-        $this->pg_info = $pg_info;
-        $values = explode(' ', $pg_info);
+    function setPgInfo($params) {
+        if (!$params) return;
+        if ($params['dbname']) $this->dbname = $params['dbname'];
+        if ($params['host']) $this->host = $params['host'];
+        if ($params['user']) $this->user = $params['user'];
+        if ($params['port']) $this->port = $params['port'];
+
+        $pg_infos[] = "dbname={$this->dbname}";
+        $pg_infos[] = "host={$this->host}";
+        $pg_infos[] = "user={$this->user}";
+        $pg_infos[] = "port={$this->port}";
+
+        $this->pg_info = implode(' ', $pg_infos);
+    }
+
+    /**
+    * pgInfo
+    * 
+    * @return void
+    */
+    function defaultPgInfo() {
+        if (!defined('PG_INFO')) {
+            echo('Not Defined: PG_INFO');
+            exit;
+        }
+        $values = explode(' ', $this->pg_info);
         foreach ($values as $value) {
             if (is_numeric(strpos($value, 'dbname='))) {
                 $this->dbname = trim(str_replace('dbname=', '', $value));
@@ -139,32 +139,6 @@ class PgsqlEntity extends Entity {
                 $this->host = trim(str_replace('host=', '', $value));
             }
         }
-    }
-
-    /**
-    * pgInfo
-    * 
-    * @return array
-    */
-    static function defaultPgInfo() {
-        if (!defined('PG_INFO')) return;
-        $values = explode(' ', PG_INFO);
-        foreach ($values as $value) {
-            if (is_numeric(strpos($value, 'dbname='))) {
-                $results['dbname'] = trim(str_replace('dbname=', '', $value));
-            }
-            if (is_numeric(strpos($value, 'user='))) {
-                $results['user'] = trim(str_replace('user=', '', $value));
-            }
-            if (is_numeric(strpos($value, 'port='))) {
-                $results['port'] = trim(str_replace('port=', '', $value));
-            }
-            if (is_numeric(strpos($value, 'host='))) {
-                $results['host'] = trim(str_replace('host=', '', $value));
-            }
-        }
-        $results['pg_info'] = PG_INFO;
-        return $results;
     }
 
     /**
@@ -880,7 +854,7 @@ class PgsqlEntity extends Entity {
     * @param string $table
     * @return array
     **/
-    public function attributeValues($table) {
+    public function attributeArray($table) {
         if (!$table) return;
         $column_comments = $this->columnCommentArray($table);
 
@@ -951,8 +925,8 @@ class PgsqlEntity extends Entity {
     * @param string $name
     * @return array
     **/
-    function pgDatabase($name) {
-        $sql = "SELECT * FROM pg_database WHERE datname = '{$name}';";
+    function pgDatabase() {
+        $sql = "SELECT * FROM pg_database WHERE datname = '{$this->dbname}';";
         return $this->fetch_row($sql);
     }
 
@@ -1279,6 +1253,13 @@ class PgsqlEntity extends Entity {
     public function sqlColumnType($type, $length = 0) {
         if ($type == 'varchar' && $length > 0) {
             $type.= "({$posts['length']})";
+        }
+        return $type;
+    }
+
+    static function typeByPgAttribute($pg_attribute) {
+        if ($pg_attribute['udt_name']) {
+            $type = self::$udt_types[$pg_attribute['udt_name']];
         }
         return $type;
     }

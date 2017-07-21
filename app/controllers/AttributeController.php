@@ -1,12 +1,12 @@
 <?php
 /**
- * ProjectController 
+ * AttributeController 
  *
  * @copyright 2017 copyright Yohei Yoshikawa (http://yoo-s.com)
  */
-require_once 'AppController.php';
+require_once 'ProjectController.php';
 
-class AttributeController extends AppController {
+class AttributeController extends ProjectController {
 
     var $name = 'attribute';
     var $session_name = 'attribute';
@@ -58,10 +58,10 @@ class AttributeController extends AppController {
                                 ->select()->values;
 
         $database = DB::table('Database')->fetch($this->database['id']);
-        $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());
 
         $this->pg_class = $pgsql_entity->pgClassByRelname($this->model['name']);
-        $this->pg_attributes = $pgsql_entity->attributeValues($this->model['name']); 
+        $this->pg_attributes = $pgsql_entity->attributeArray($this->model['name']); 
         if ($attributes) {
             foreach ($attributes as $attribute) {
                 $attribute['pg_attribute'] = $this->pg_attributes[$attribute['name']];
@@ -90,11 +90,15 @@ class AttributeController extends AppController {
                         ->value;
 
         $database = DB::table('Database')->fetch($this->database['id']);
-        $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());
         $this->pg_attribute = $pgsql_entity->pgAttributeByAttnum($this->model['pg_class_id'], $this->attribute['attnum']);
 
         $this->forms['pg_types'] = CsvLite::form('pg_types', 'attribute[type]');
         $this->forms['pg_types']['class'] = "col-2";
+
+        $this->forms['is_required']['name'] = 'attribute[is_required]';
+        $this->forms['is_required']['value'] = true;
+        $this->forms['is_required']['label'] = 'On';
     }
 
     function action_add() {
@@ -107,7 +111,7 @@ class AttributeController extends AppController {
             
             //DB add column
             $database = DB::table('Database')->fetch($this->database['id']);
-            $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+            $pgsql_entity = new PgsqlEntity($database->pgInfo());
             $pg_class = $pgsql_entity->pgClassByRelname($this->model['name']);
 
             $pgsql_entity->addColumn($this->model['name'], $posts['name'], $type);
@@ -138,7 +142,7 @@ class AttributeController extends AppController {
             $attribute = DB::table('Attribute')->fetch($this->params['id'])->value;
 
             $database = DB::table('Database')->fetch($this->database['id']);
-            $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+            $pgsql_entity = new PgsqlEntity($database->pgInfo());
 
             $pg_attribute = $pgsql_entity->pgAttributeByAttnum($this->model['pg_class_id'], $attribute['attnum']);
 
@@ -180,7 +184,7 @@ class AttributeController extends AppController {
             $attribute = DB::table('Attribute')->fetch($this->params['id']);
             if ($attribute->value['id']) {
                 $database = DB::table('Database')->fetch($this->database['id']);
-                $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+                $pgsql_entity = new PgsqlEntity($database->pgInfo());
                 $pgsql_entity->dropColumn($this->model['name'], $attribute->value['name']);
                 $attribute->delete();
             }
@@ -201,7 +205,7 @@ class AttributeController extends AppController {
             $table_name = $_REQUEST['table_name'];
 
             if ($database && $table_name) {
-                $pg_connection_array = $database->pgConnectArray();
+                $pg_connection_array = $database->pgInfo();
                 $pgsql_entity = new PgsqlEntity($pg_connection_array); 
                 $pgsql_entity->createTable($table_name);
             }

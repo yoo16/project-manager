@@ -34,7 +34,7 @@ class Database extends _Database {
         require BASE_DIR.'/vendor/autoload.php';
 
         $database = DB::table('Database')->fetch($this->value['id']);
-        $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());
         $pg_database = $pgsql_entity->pgDatabase();
         $pg_classes = $pgsql_entity->tableArray();
 
@@ -60,7 +60,7 @@ class Database extends _Database {
         foreach ($pg_classes as $pg_class) {
             $sheet = $book->createSheet()->setTitle($pg_class['relname']);
 
-            $pg_attributes = $pgsql_entity->attributeValues($pg_class['relname']);
+            $pg_attributes = $pgsql_entity->attributeArray($pg_class['relname']);
 
             $row = 1;
             $sheet->setCellValueByColumnAndRow(0, $row, 'attribute');
@@ -105,39 +105,14 @@ class Database extends _Database {
     /**
      * pg_connect info
      *
-     * @return string
-     */
-    function convertPgConnectionString() {
-        $dbname = '';
-        $host = 'localhost';
-        $port = '5432';
-        $user = 'postgres';
-
-        if ($this->value['name']) $dbname = $this->value['name'];
-        if ($this->value['hostname']) $host = $this->value['hostname'];
-        if ($this->value['port']) $port = $this->value['port'];
-        if ($this->value['user_name']) $user = $this->value['user_name'];
-
-        if (!$dbname) return;
-
-        $result = "host={$host} port={$port} dbname={$dbname} user={$user}";
-
-        return $result;
-    }
-
-
-    /**
-     * pg_connect info
-     *
      * @return array
      */
-    function pgConnectArray() {
-        $result['dbname'] = '';
+    function pgInfo() {
+        $result['dbname'] = $this->value['name'];
         $result['host'] = 'localhost';
         $result['port'] = '5432';
         $result['user'] = 'postgres';
 
-        if ($this->value['name']) $result['dbname'] = $this->value['name'];
         if ($this->value['hostname']) $result['host'] = $this->value['hostname'];
         if ($this->value['port']) $result['port'] = $this->value['port'];
         if ($this->value['user_name']) $result['user'] = $this->value['user_name'];

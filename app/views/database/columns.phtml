@@ -1,5 +1,9 @@
 <? include('_header.phtml') ?>
 
+<div class="alert alert-danger">
+if you want create database's columns, please add columns on 'Project'.
+</div>
+
 <div class="card">
   <div class="card-header">
     <h4><a href="<?= url_for('tables', array('database_id' => $this->database['id'])) ?>"><?= $this->pg_class['relname'] ?></a></h4>

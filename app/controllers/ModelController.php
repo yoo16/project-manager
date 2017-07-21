@@ -22,7 +22,7 @@ class ModelController extends ProjectController {
         parent::before_action($action);
 
         if (!$this->project) {
-            $this->redirect_to('project/list');
+            $this->redirect_to('project/index');
             exit;
         }
 
@@ -47,8 +47,8 @@ class ModelController extends ProjectController {
                             ->select()->values;
 
         $database = DB::table('Database')->fetch($this->project['database_id']);
-        $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
-        $pg_database = $pgsql_entity->pgDatabase('project_manager');
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());
+        $pg_database = $pgsql_entity->pgDatabase();
 
         $pg_classes = $pgsql_entity->tableArray();
         if ($pg_classes) {
@@ -96,21 +96,21 @@ class ModelController extends ProjectController {
     function action_add() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $posts = $this->session['posts'] = $_POST['model'];
-
             $database = DB::table('Database')->fetch($this->database['id']);
-            $table_name = $posts['name'];
 
-            if ($database && $table_name) {
+            if ($database && $posts['name']) {
                 $columns = Model::$required_columns;
-                $pgsql_entity = new PgsqlEntity($database->pgConnectArray()); 
-                $results = $pgsql_entity->createTable($table_name, $columns);
-
+                $pgsql_entity = new PgsqlEntity($database->pgInfo()); 
+                $results = $pgsql_entity->createTable($posts['name'], $columns);
                 if (!$results) {
                     echo("SQL Error: {$pgsql_entity->sql}");
                     exit;
                 }
-                $pg_class = $pgsql_entity->pgClassByRelname($table_name);
-
+                if ($posts['label']) {
+                    $results = $pgsql_entity->updateTableComment($posts['name'], $posts['label']);
+                }
+                
+                $pg_class = $pgsql_entity->pgClassByRelname($posts['name']);
                 if (!$pg_class) {
                     echo("Not found: {$table_name} pg_class");
                     exit;
@@ -121,15 +121,10 @@ class ModelController extends ProjectController {
                 $posts['relfilenode'] = $pg_class['relfilenode'];
                 $posts['pg_class_id'] = $pg_class['pg_class_id'];
                 $posts['name'] = $pg_class['relname'];
-                $posts['label'] = $pg_class['label'];
                 $posts['entity_name'] = FileManager::pluralToSingular($pg_class['relname']);
                 $posts['class_name'] = FileManager::phpClassName($posts['entity_name']);
 
                 $model = DB::table('Model')->insert($posts);
-                if ($model->errors) {
-                    //TODO
-                    $this->flash['errors'][] = $model->errors;
-                }
 
                 $attribute = new Attribute();
                 $attribute->importByModel($model->value);
@@ -148,7 +143,7 @@ class ModelController extends ProjectController {
 
             if ($model->value) {
                 $database = DB::table('Database')->fetch($this->database['id']);
-                $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+                $pgsql_entity = new PgsqlEntity($database->pgInfo());
 
                 if ($model->value['name'] != $posts['name']) {
                     $results = $pgsql_entity->renameTable($model->value['name'], $posts['name']);
@@ -182,7 +177,7 @@ class ModelController extends ProjectController {
             $model = DB::table('Model')->fetch($this->params['id'])->value;
             if ($model['id']) {
                 $database = DB::table('Database')->fetch($this->database['id']);
-                $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+                $pgsql_entity = new PgsqlEntity($database->pgInfo());
                 $results = $pgsql_entity->dropTable($model['name']);
                 $model = DB::table('Model')->delete($this->params['id']);
                 
@@ -206,7 +201,7 @@ class ModelController extends ProjectController {
             if ($database && $table_name) {
                 $columns = Model::$required_columns;
 
-                $pg_connection_array = $database->pgConnectArray();
+                $pg_connection_array = $database->pgInfo();
                 $pgsql_entity = new PgsqlEntity($pg_connection_array); 
                 $pgsql_entity->createTable($table_name, $columns);
             }
@@ -224,7 +219,7 @@ class ModelController extends ProjectController {
                 exit;
             }
 
-            $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+            $pgsql_entity = new PgsqlEntity($database->pgInfo());
             $this->pg_classes = $pgsql_entity->tableArray();
 
             foreach ($this->pg_classes as $pg_class) {

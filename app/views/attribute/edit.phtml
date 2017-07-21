@@ -35,6 +35,11 @@
       <button class="btn btn-primary" type="submit"><?= LABEL_UPDATE ?></button>
       <a class="btn btn-outline-primary" href="<?= url_For('list') ?>" class="btn"><?= LABEL_BACK ?></a>
 
+      <div class="form-group row">
+        <label for="" class="col-2 col-form-label">Requied</label>
+        <?= FormHelper::checkbox($this->forms['is_required'], (bool) $this->attribute['is_required']) ?>
+      </div>
+
       <input type="hidden" name="attribute['attnum']" value="<?= $this->attribute['attnum'] ?>">
 
     </form>

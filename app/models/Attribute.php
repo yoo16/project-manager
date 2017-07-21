@@ -10,7 +10,8 @@ class Attribute extends _Attribute {
     function listByModel($model) {
         $values = $this->where("model_id = {$model['id']}")
                        ->order('sort_order', false)
-                       ->select();
+                       ->select()
+                       ->values;
         return $values;
     }
 
@@ -20,8 +21,8 @@ class Attribute extends _Attribute {
         $database = DB::table('Database')->fetch($model['database_id']);
         if (!$database->value) return;
 
-        $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
-        $pg_attributes = $pgsql_entity->attributeValues($model['name']); 
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());
+        $pg_attributes = $pgsql_entity->attributeArray($model['name']); 
 
         if (!$pg_attributes) return;
         foreach ($pg_attributes as $pg_attribute) {

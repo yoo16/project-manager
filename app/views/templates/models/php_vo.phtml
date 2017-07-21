@@ -1,14 +1,14 @@
 <?= '<?php' ?>
 
 /**
- * <?= $values['model']['class_name'] ?>
- *
- * @create  <?= $values['model']['created_at'] ?>
+ * <?= $values['model']['class_name'] ?> 
+ * 
+ * @create  <?= $values['model']['created_at'] ?> 
  */
 
 require_once 'PgsqlEntity.php';
 
-class <?= $values['model']['class_name'] ?> extends PgsqlEntity {
+class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
 
 <? if ($values['model']['is_none_id_column']): ?>
     var $is_none_id_column = true;
@@ -19,19 +19,29 @@ class <?= $values['model']['class_name'] ?> extends PgsqlEntity {
     var $id_column = 'id';
 <? endif ?>
 <? endif ?>
+    var $name = '<?= $values['model']['name'] ?>';
+    static $entity_name = '<?= $values['model']['entity_name']?>';
 
-    var $name = '<?= $values['model']['class_name'] ?>';
-    var $entity_name = '<?=  $values['model']['entity_name']?>';
-
-    static $columns = array(
+<? if ($values['attribute']): ?>
+    var $columns = array(
+<? foreach ($values['attribute'] as $attribute): ?>
+<? if ($attribute['name'] != 'id'): ?>
+        <?= Model::columnPropaty($attribute) ?>,
+<? endif ?>
+<? endforeach ?>
     );
 
-    static $column_labels = array (
+    var $column_labels = array (
+<? foreach ($values['model']['attribute'] as $attribute): ?>
+<? if ($attribute['name'] != 'id'): ?>
+        '<?= $attribute['name'] ?>' => '<?= $attribute['label'] ?>',
+<? endif ?>
+<? endforeach ?>
     );
+<? endif ?>
 
-    function __construct($params=null) {
-        parent::__construct();        
-        if ($params['pg_info']) $pg_info = $params['pg_info'];
+    function __construct($params = null) {
+        parent::__construct($params);
     }
 
    /**

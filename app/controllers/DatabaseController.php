@@ -60,16 +60,16 @@ class DatabaseController extends AppController {
 
     function add() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['posts'] = $_POST;
+            $posts = $this->session['posts'] = $_POST['database'];
             $database = DB::table('Database')->insert($posts);
+
+            $pgsql_entity = new PgsqlEntity($database->pgInfo());
+            $this->flash['results'] = $pgsql_entity->createDatabase();
 
             if ($database->errors) {
                 $this->flash['errors'] = $database->errors;
                 $this->redirect_to('new');
             } else {
-                $pg_connection_array = $database->pgConnectArray();
-                $this->flash['results'] = PgsqlEntity::createDatabase($pg_connection_array);
-
                 unset($this->session['posts']);
                 $this->redirect_to('result');
             }
@@ -78,16 +78,17 @@ class DatabaseController extends AppController {
 
 
     function action_import_database() {
-        $pgsql_entity = new PgsqlEntity();
-        $pg_database = $pgsql_entity->pgDatabase($_REQUEST['database_name']);
+        $pg_infos['dbname'] = $_REQUEST['database_name'];
+
+        $pgsql_entity = new PgsqlEntity($pg_infos);
+        $pg_database = $pgsql_entity->pgDatabase();
 
         $database = DB::table('Database')->where("name = '{$pg_database['datname']}'")->selectOne();
         if (!$database->value) {
-            $pg_info = PgsqlEntity::defaultPgInfo();
-            $posts['name'] = $pg_database['datname'];
-            $posts['user_name'] = ($pg_info['user'])? $pg_info['user'] : 'postgres';
-            $posts['host'] = ($pg_info['host'])? $pg_info['host'] : 'localhost';
-            $posts['port'] = ($pg_info['port'])? $pg_info['port'] : 5432;
+            $posts['name'] = $pgsql_entity->dbname;
+            $posts['user_name'] = $pgsql_entity->user;
+            $posts['hostname'] = $pgsql_entity->host;
+            $posts['port'] = $pgsql_entity->port;
             DB::table('Database')->insert($posts);
         }
 
@@ -96,7 +97,7 @@ class DatabaseController extends AppController {
 
     function tables() {
         $database = DB::table('Database')->fetch($this->database['id']);
-        $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());
 
         $pg_classes = $pgsql_entity->pgClasses();
 
@@ -117,7 +118,7 @@ class DatabaseController extends AppController {
 
             $columns = Model::$required_columns;
 
-            $pg_connection_array = $database->pgConnectArray();
+            $pg_connection_array = $database->pgInfo();
             $pgsql_entity = new PgsqlEntity($pg_connection_array); 
             $pgsql_entity->createTable($_REQUEST['table_name'], $columns);
             $this->redirect_to('tables', $_REQUEST['database_id']);
@@ -129,7 +130,7 @@ class DatabaseController extends AppController {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $database = DB::table('Database')->fetch($_REQUEST['database_id']);
 
-            $pg_connection_array = $database->pgConnectArray();
+            $pg_connection_array = $database->pgInfo();
             $pgsql_entity = new PgsqlEntity($pg_connection_array); 
             $pgsql_entity->dropTable($_REQUEST['table_name']);
             $this->redirect_to('tables', $_REQUEST['database_id']);
@@ -143,7 +144,7 @@ class DatabaseController extends AppController {
         if (!$database) return;
         if (!$table_name) return;
 
-        $pg_connection_array = $database->pgConnectArray();
+        $pg_connection_array = $database->pgInfo();
         $pgsql_entity = new PgsqlEntity($pg_connection_array);
         $this->pg_table = $pgsql_entity->pgTableByTableName($table_name);
 
@@ -158,7 +159,7 @@ class DatabaseController extends AppController {
         if (!$database) return;
         if (!$table_name) return;
 
-        $pg_connection_array = $database->pgConnectArray();
+        $pg_connection_array = $database->pgInfo();
         $pgsql_entity = new PgsqlEntity($pg_connection_array);
         $this->pg_table = $pgsql_entity->renameTable($table_name, $new_table_name);
         
@@ -172,9 +173,9 @@ class DatabaseController extends AppController {
         if (!$database) return;
         if (!$pg_class_id) return;
 
-        $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());
         $this->pg_class = $pgsql_entity->pgClassById($pg_class_id);
-        $this->attributes = $pgsql_entity->attributeValues($this->pg_class['relname']); 
+        $this->attributes = $pgsql_entity->attributeArray($this->pg_class['relname']); 
 
         $this->forms['pg_types'] = CsvLite::form('pg_types', 'type');
         $this->forms['pg_types']['class'] = "col-6";
@@ -191,7 +192,7 @@ class DatabaseController extends AppController {
         $pg_info['host'] = $this->database['hostname'];
 
         $pgsql_entity = new PgsqlEntity($pg_info);
-        $pg_database = $pgsql_entity->pgDatabase('project_manager');
+        $pg_database = $pgsql_entity->pgDatabase();
         $pg_tables = $pgsql_entity->pgTables();
     }
 
@@ -204,7 +205,7 @@ class DatabaseController extends AppController {
             $attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id'])->value;
 
             $database = DB::table('Database')->fetch($_REQUEST['database_id']);
-            $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+            $pgsql_entity = new PgsqlEntity($database->pgInfo());
 
             $pg_class = $pgsql_entity->pgClassById($relfilenode);
             $pg_attribute = $pgsql_entity->pgAttributeByColumn($pg_class['relname'], $attribute['name']);
@@ -226,7 +227,7 @@ class DatabaseController extends AppController {
         $table_name = $_REQUEST['table_name'];
         if ($table_name && $database->value) {
             if ($_REQUEST['new_table_name'] && ($_REQUEST['new_table_name'] != $_REQUEST['table_name'])) {
-                $pg_connection_array = $database->pgConnectArray();
+                $pg_connection_array = $database->pgInfo();
                 $pgsql_entity = new PgsqlEntity($pg_connection_array);
                 $pgsql_entity->renameTable($_REQUEST['table_name'], $_REQUEST['new_table_name']);
             }
@@ -242,7 +243,7 @@ class DatabaseController extends AppController {
             if (!$_REQUEST['pg_class_id']) return;
 
             $database = DB::table('Database')->fetch($_REQUEST['database_id']);
-            $pgsql_entity = new PgsqlEntity($database->pgConnectArray());
+            $pgsql_entity = new PgsqlEntity($database->pgInfo());
             $pg_class = $pgsql_entity->pgClassById($_REQUEST['pg_class_id']);
 
             $pgsql_entity->updateTableComment($pg_class['relname'], $_REQUEST['comment']);
@@ -270,10 +271,10 @@ class DatabaseController extends AppController {
 
     function action_delete() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if ($_POST['is_delete']) {
+            if ($_REQUEST['is_delete']) {
                 $database = DB::table('Database')->fetch($this->params['id']);
-                $pg_connection_array = $database->pgConnectArray();
-                $results = PgsqlEntity::dropDatabase($pg_connection_array);
+                $pgsql_entity = new PgsqlEntity($database->pgInfo());
+                $results = $pgsql_entity->dropDatabase();
             }
 
             $database = DB::table('Database')->delete($this->params['id']);
@@ -294,7 +295,7 @@ class DatabaseController extends AppController {
             $type = $_REQUEST['type'];
             if ($_REQUEST['length']) $type.= "({$_REQUEST['length']})";
 
-            $pg_connection_array = $database->pgConnectArray();
+            $pg_connection_array = $database->pgInfo();
             $pgsql_entity = new PgsqlEntity($pg_connection_array);
             $pgsql_entity->addColumn($table_name, $column, $type);
         }
@@ -309,7 +310,7 @@ class DatabaseController extends AppController {
         $table_name = $_REQUEST['table_name'];
         if ($table_name && $database->value) {
             if ($_REQUEST['old_column_name'] && ($_REQUEST['old_column_name'] != $_REQUEST['name'])) {
-                $pg_connection_array = $database->pgConnectArray();
+                $pg_connection_array = $database->pgInfo();
                 $pgsql_entity = new PgsqlEntity($pg_connection_array);
                 $pgsql_entity->renameColumn($table_name, $_REQUEST['old_column_name'], $_REQUEST['name']);
             }
@@ -326,7 +327,7 @@ class DatabaseController extends AppController {
 
         $column = $_REQUEST['column_name'];
         if ($column && $table_name && $database->value) {
-            $pg_connection_array = $database->pgConnectArray();
+            $pg_connection_array = $database->pgInfo();
             $pgsql_entity = new PgsqlEntity($pg_connection_array);
             $this->pg_table = $pgsql_entity->pgTableByTableName($table_name);
             $this->pg_attribute = $pgsql_entity->pgAttributeByColumn($table_name, $column);
@@ -342,7 +343,7 @@ class DatabaseController extends AppController {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $database = DB::table('Database')->fetch($_REQUEST['database_id']);
             if ($database->value) {
-                $pg_connection_array = $database->pgConnectArray();
+                $pg_connection_array = $database->pgInfo();
                 $pgsql_entity = new PgsqlEntity($pg_connection_array);
                 $pgsql_entity->dropColumn($_REQUEST['table_name'], $_REQUEST['column_name']);
             }

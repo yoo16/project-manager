@@ -26,6 +26,8 @@
                 <input class="btn btn-sm btn-primary" type="submit" value="<?= LABEL_IMPORT ?>">
                 <input type="hidden" name="database_name" value="<?= $pg_database['datname'] ?>">
               </form>
+
+              <? var_dump($pg_database); ?>
             </td>
           </tr>
         <? endforeach ?>

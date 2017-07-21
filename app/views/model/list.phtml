@@ -4,7 +4,7 @@
   <div class="pt-3">
     <form action="<?= url_for('sync_db') ?>" method="post">
       <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-table-window"><?= LABEL_ADD ?></a>
-      <a href="<?= url_for('project/list') ?>" class="btn btn-outline-primary"><?= LABEL_BACK ?></a>
+      <a href="<?= url_for('project/index') ?>" class="btn btn-outline-primary"><?= LABEL_BACK ?></a>
       <input class="btn btn-outline-success" type="submit" value="Sync DB">
       <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
     </form>
