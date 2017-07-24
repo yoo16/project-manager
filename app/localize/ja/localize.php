@@ -23,6 +23,7 @@ define('LABEL_COMMENT', 'コメント');
 define('LABEL_PASSWORD', 'パスワード');
 define('LABEL_USER_ID', 'ユーザID');
 define('LABEL_LOGIN_NAME', 'ログイン名');
+define('LABEL_VIEW', 'View');
 
 define('LABEL_SEARCH', '検索');
 define('LABEL_CANCEL', 'キャンセル');
@@ -55,6 +56,8 @@ define('LABEL_SELECT', '選択');
 define('LABEL_PRINT', '印刷');
 define('LABEL_RELOAD', '再読み込み');
 define('LABEL_SETTING', '設定');
+define('LABEL_TRUE', '有効');
+define('LABEL_FALSE', '無効');
 
 define('LABEL_IMPORT', 'インポート');
 define('LABEL_EXPORT', 'エクスポート');

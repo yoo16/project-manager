@@ -81,7 +81,6 @@ class ModelController extends ProjectController {
                                         ->select()
                                         ->formOptions($params);
 
-
         $this->project = DB::table('Project')
                         ->fetch($this->params['id'])
                         ->takeValues($this->session['posts'])
@@ -253,5 +252,16 @@ class ModelController extends ProjectController {
             $this->redirect_to('list', $params);
         }    
     }
-    
+
+    function action_delete_unrelated() {
+        $models = DB::table('Model')->listByProject($this->project)->values;
+        if ($models) {
+            foreach ($models as $model) {
+                $attribute = new Attribute();
+                $attribute->deleteUnrelatedByModel($model);
+            }
+        }
+        $this->redirect_to('list');
+    }
+
 }

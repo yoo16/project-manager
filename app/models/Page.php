@@ -16,15 +16,73 @@ class Page extends _Page {
         parent::validate();
     }
 
+    /**
+     * list by project
+     * 
+     * @param array $project
+     * @return Page
+     */
+    function listByProject($project) {
+        if (!$project['id']) return;
+        $this->where("project_id = {$project['id']}")
+             ->select();
+        return $this;
+    }
+
     function default_value() {
         $this->value['dev_url'] = 'http://';
         return $this->value;
     }
 
-    function fetchForName($name) {
-        $conditions[] = "name = '{$name}'";
-        $project = Page::_get($conditions);
-        return $project;
+    /**
+     * class name
+     * 
+     * @param array $page
+     * @return string
+     */
+    static function className($page) {
+        $name = "{$page['name']}Controller";
+        return $name;
+    }
+
+    /**
+     * class file name
+     * 
+     * @param array $page
+     * @return string
+     */
+    static function classFileName($page) {
+        $name = self::className($page);
+        $name = "{$name}.php";
+        return $name;
+    }
+
+    /**
+     * project path
+     * 
+     * @param array $user_project_setting
+     * @param array $page
+     * @return string
+     */
+    static function projectFilePath($user_project_setting, $page) {
+        if (!$user_project_setting) return;
+        if (!$page['name']) return;
+        if (!file_exists($user_project_setting['project_path'])) return;
+
+        $file_name = Page::classFileName($page);
+        $path = $user_project_setting['project_path']."app/controllers/{$file_name}";
+        return $path;
+    }
+
+    /**
+     * local path
+     * 
+     * @param array $page
+     * @return string
+     */
+    static function templateFilePath() {
+        $path = TEMPLATE_DIR.'controllers/php.phtml';
+        return $path;
     }
 
 }

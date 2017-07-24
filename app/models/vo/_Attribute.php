@@ -23,6 +23,7 @@ class _Attribute extends PgsqlEntity {
         'attrelid' => array('type' => 'i', 'required' => true),
         'attnum' => array('type' => 'i', 'required' => true),
         'length' => array('type' => 'i'),
+        'fk_attribute_id' => array('type' => 'i'),
         'is_required' => array('type' => 'b'),
         'is_primary_key' => array('type' => 'b'),
         'is_array' => array('type' => 'b'),

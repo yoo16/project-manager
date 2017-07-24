@@ -55,6 +55,7 @@ class AttributeController extends ProjectController {
 
         $attributes = DB::table('Attribute')
                                 ->where("model_id = {$this->model['id']}")
+                                ->order('name', 'asc')
                                 ->select()->values;
 
         $database = DB::table('Database')->fetch($this->database['id']);
@@ -98,7 +99,7 @@ class AttributeController extends ProjectController {
 
         $this->forms['is_required']['name'] = 'attribute[is_required]';
         $this->forms['is_required']['value'] = true;
-        $this->forms['is_required']['label'] = 'On';
+        $this->forms['is_required']['label'] = LABEL_TRUE;
     }
 
     function action_add() {
@@ -182,7 +183,7 @@ class AttributeController extends ProjectController {
     function action_delete() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $attribute = DB::table('Attribute')->fetch($this->params['id']);
-            if ($attribute->value['id']) {
+            if ($attribute->value['id'] && $attribute->value['attnum']) {
                 $database = DB::table('Database')->fetch($this->database['id']);
                 $pgsql_entity = new PgsqlEntity($database->pgInfo());
                 $pgsql_entity->dropColumn($this->model['name'], $attribute->value['name']);
@@ -213,13 +214,107 @@ class AttributeController extends ProjectController {
         }
     }
 
+    function action_update_label() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $posts = $_REQUEST['attribute'];
+            $attribute = DB::table('Attribute')->update($posts, $this->params['id']);
+
+            $database = DB::table('Database')->fetch($this->project['database_id']);
+            $pgsql_entity = new PgsqlEntity($database->pgInfo());
+            $pg_class = $pgsql_entity->pgClassById($this->model['pg_class_id']);
+            $pgsql_entity->updateColumnComment($pg_class['relname'], $attribute->value['name'], $posts['label']);
+
+            $this->redirect_to('list');
+        }
+    }
+
+    function action_change_required() {
+        $attribute = DB::table('Attribute')->fetch($this->params['id']);
+        if ($attribute->value['id'] && $attribute->value['attnum']) {
+            $posts['is_required'] = !$attribute->value['is_required'];
+            $attribute->update($posts);
+
+            //TODO IS NOT NULL
+            //$database = DB::table('Database')->fetch($this->database['id']);
+            //$pgsql_entity = new PgsqlEntity($database->pgInfo());
+        }
+        $this->redirect_to('list');
+    }
+
     function action_sync_db() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
             $attribute = new Attribute();
             $attribute->importByModel($this->model);
 
             $this->redirect_to('list');
         }    
     }
+
+    function action_relation_model_list() {
+        $this->layout = null;
+
+        $this->models = DB::table('Model')->listByProject($this->project)->values;
+
+        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id'])->value;
+        $this->model = DB::table('Model')->fetch($this->attribute['model_id'])->value;
+
+        if ($this->attribute['fk_attribute_id']) {
+            $this->fk_attribute = DB::table('Attribute')
+                                            ->fetch($this->attribute['fk_attribute_id'])
+                                            ->value;
+            $this->fk_model = DB::table('Model')
+                                            ->fetch($this->fk_attribute['model_id'])
+                                            ->value;
+        }
+    }
+
+    function action_relation_attribute_list() {
+        $this->layout = null;
+
+        $model = DB::table('Model')->fetch($_REQUEST['model_id'])->value;
+        $this->attributes = DB::table('Attribute')
+                                ->where("model_id = {$model['id']}")
+                                ->order('name', 'asc')
+                                ->select()->values;
+
+        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id'])->value;
+        $this->model = DB::table('Model')->fetch($this->attribute['model_id'])->value;
+
+        if ($this->attribute['fk_attribute_id']) {
+            $this->fk_attribute = DB::table('Attribute')
+                                            ->fetch($this->attribute['fk_attribute_id'])
+                                            ->value;
+            $this->fk_model = DB::table('Model')
+                                            ->fetch($this->fk_attribute['model_id'])
+                                            ->value;
+        }
+    }
+
+    function action_update_relation() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $fk_attribute = DB::table('Attribute')->fetch($_REQUEST['fk_attribute_id']);
+            if ($fk_attribute->value['id']) {
+                $attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
+                if ($attribute->value['id']) {
+                    $posts['fk_attribute_id'] = $fk_attribute->value['id'];
+                    $attribute->update($posts);
+                }
+            }
+            $params['model_id'] = $attribute->value['model_id'];
+            $this->redirect_to('list', $params);
+        }
+    }
+
+    function action_remove_relation() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
+            if ($attribute->value['id']) {
+                $posts['fk_attribute_id'] = null;
+                $attribute->update($posts);
+            }
+            $params['model_id'] = $attribute->value['model_id'];
+            $this->redirect_to('list', $params);
+        }
+    }
+
 }

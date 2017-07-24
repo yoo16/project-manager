@@ -4,9 +4,9 @@
  *
  * @copyright 2017 copyright Yohei Yoshikawa (http://yoo-s.com)
  */
-require_once 'AppController.php';
+require_once 'ProjectController.php';
 
-class PageController extends AppController {
+class PageController extends ProjectController {
 
     var $name = 'page';
     var $session_name = 'page';
@@ -21,11 +21,10 @@ class PageController extends AppController {
     function before_action($action) {
         parent::before_action($action);
 
-        if ($_REQUEST['project_id']) {
-            $project = DB::table('Project')->fetch($_REQUEST['project_id'])->value;
-            AppSession::setSession('project', $project);
+        if (!$this->project['id']) {
+            $this->redirect_to('project/');
+            exit;
         }
-        $this->project = AppSession::getSession('project');
     }
 
     function before_rendering() {
@@ -33,7 +32,7 @@ class PageController extends AppController {
     }
 
     function index() {
-
+        $this->redirect_to('list');
     }
 
     function action_cancel() {
@@ -41,39 +40,27 @@ class PageController extends AppController {
     }
 
     function action_list() {
-        $this->projects = DB::table('Page')
-                            ->fetchValue($this->params['project_id']);
-
-        $this->databases = DB::table('Database')
-                            ->selectValues(array('id_index' => true));
+        $this->models = DB::table('Model')->listByProject($this->project)->valuesWithKey('id');
+        $this->pages = DB::table('Page')->listByProject($this->project)->values;
     }
 
     function action_new() {
-        $params['name'] = 'project[database_id]';
-        $params['label_key'] = 'name';
-        $this->forms['database'] = DB::table('Database')
-                                        ->select()
-                                        ->formOptions($params);
-
-        $this->project = DB::table('Project')->value;
+        $this->page = DB::table('Page')->takeValues($this->session['posts']);
     }
 
-    function edit() {
-        $params['name'] = 'project[database_id]';
-        $params['label_key'] = 'name';
-        $this->forms['database'] = DB::table('Database')
-                                        ->select()
-                                        ->formOptions($params);
+    function action_edit() {
+        $this->page = DB::table('Page')->fetch($this->params['id'])->value;
 
+        if ($this->page['project_id']) {
+            $this->project = DB::table('Project')->fetch($this->page['project_id'])->value;
+        }
+        if ($this->page['model_id']) {
+            $this->model = DB::table('Model')->fetch($this->page['model_id'])->value;
+        }
 
-        $this->project = DB::table('Project')
-                        ->fetch($this->params['id'])
-                        ->takeValues($this->session['posts'])
-                        ->value;
-
-        $this->user_project_settings = DB::table('UserProjectSetting')
-                                        ->select()
-                                        ->values;
+        $this->forms['is_force_write']['name'] = 'page[is_force_write]';
+        $this->forms['is_force_write']['value'] = true;
+        $this->forms['is_force_write']['label'] = LABEL_TRUE;
 
     }
 
@@ -94,10 +81,10 @@ class PageController extends AppController {
         }
     }
 
-    function update() {
+    function action_update() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['posts'] = $_POST['project'];
-            $project = DB::table('Project')->update($posts, $this->params['id']);
+            $posts = $this->session['posts'] = $_REQUEST['page'];
+            $project = DB::table('Page')->update($posts, $this->params['id']);
 
             if ($project->errors) {
                 $this->flash['errors'] = $project->errors;
@@ -110,18 +97,44 @@ class PageController extends AppController {
 
     function action_delete() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $project = DB::table('Project')->delete($this->params['id']);
-            if ($project->value['name'] && $project->value['path'] && file_exists($project->value['path'])) {
-                $cmd = "rm -rf {$project->value['path']};";
-                exec($cmd);
-            }
-            if ($project->errors) {
-                $this->flash['errors'] = $project->errors;
+            $page = DB::table('Page')->delete($this->params['id']);
+            if ($page->errors) {
+                $this->flash['errors'] = $page->errors;
                 $this->redirect_to('edit', $this->params['id']);
             } else {
                 $this->redirect_to('index');
             }
         }
+    }
+
+    function action_create_page_from_model() {
+        $model = DB::table('Model')->fetch($_REQUEST['model_id'])->value;
+
+        if ($this->project['id'] && $model['id']) {
+            $posts['model_id'] = $model['id'];
+            $posts['project_id'] = $this->project['id'];
+            $posts['label'] = $model['label'];
+            $posts['name'] = $model['class_name'];
+            $posts['class_name'] = $model['class_name'];
+            $posts['entity_name'] = $model['entity_name'];
+            $posts['extends_class_name'] = '';
+
+            $page = DB::table('Page')
+                ->where("project_id = {$this->project['id']}")
+                ->where("name = '{$model['class_name']}'")
+                ->selectOne()
+                ->value;
+
+            if (!$page['id']) {
+                $page = DB::table('Page')->insert($posts);
+            }
+
+            if ($page['id']) {
+                DB::table('View')->generateDefaultActions($page);
+            }
+        }
+
+        $this->redirect_to('list');
     }
 
 }

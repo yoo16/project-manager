@@ -2,8 +2,7 @@
 /**
  * FormHelper
  *
- * @author  Yohei Yoshikawa 
- * @create  2010/02/06 
+ * @copyright 2017 copyright Yohei Yoshikawa (http://yoo-s.com)
  */
 
 class FormHelper {
@@ -553,9 +552,14 @@ class FormHelper {
 
         $attribute = self::selectAttribute($params);
 
-        if ($params['has_hidden']) $_tag.= "<input type=\"hidden\" name=\"{$name}\" value=\"-1\" />";
-        $_tag.= "<input id=\"{$id}\" class=\"{$class}\" type=\"checkbox\" name=\"{$name}\" value=1 \"{$checked}{$attribute} />";
-        $tag.= "<label for=\"{$id}\">\n{$_tag}\n{$label}\n</label>\n";
+        if ($class) $class_tag = "class=\"{$class}\" ";
+        if ($id) $id_tag = "id=\"{$id}\" ";
+        if ($id) $for_tag = "for=\"{$id}\" ";
+        if ($name) $name_tag = "name=\"{$name}\" ";
+
+        if ($params['has_hidden']) $_tag.= "<input type=\"hidden\" {$name}value=\"-1\">";
+        $_tag.= "<input {$id_tag}{$class_tag}type=\"checkbox\" name=\"{$name}\" value=\"1\" {$checked}{$attribute}>";
+        $tag.= "<label {$for_tag}>\n{$_tag}\n{$label}\n</label>\n";
         return $tag;
     }
 

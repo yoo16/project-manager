@@ -32,12 +32,18 @@ class Model extends _Model {
         parent::validate();
     }
 
-
+    /**
+     * list by project
+     * 
+     * @param array $project
+     * @return Model
+     */
     function listByProject($project) {
-        $this->where("database_id = {$project['database_id']}");
-        $this->order('sort_order');
-        $values = $this->select()->values;
-        return $values;
+        $this->where("database_id = {$project['database_id']}")
+             ->order('name')
+             ->order('sort_order')
+             ->select();
+        return $this;
     }
 
     /**

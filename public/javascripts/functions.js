@@ -4,6 +4,12 @@
  * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
+$(document).on('click', '.confirm-dialog', function() {
+    $message = $(this).attr('message');
+    return confirm($message);
+});
+
+
 $(document).on('click', '.action-close', function() {
     var window_id = '#' + $(this).attr('window-id');
     $(window_id).hide();

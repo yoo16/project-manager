@@ -399,7 +399,7 @@ class Entity {
     * @param string $key
     * @return array
     */
-    function valuesWithKey($key) {
+    function valuesWithKey($key = 'id') {
         $values = null;
         if ($this->values) {
             foreach ($this->values as $value) {

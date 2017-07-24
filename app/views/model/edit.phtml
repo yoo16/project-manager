@@ -11,6 +11,7 @@
         <label for="" class="col-1 col-form-label">Label</label>
         <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'label') ?>" type="text" name="model[label]" value="<?= $this->model['label'] ?>" required autocomplete="off">
       </div>
+      
       <button class="btn btn-primary" type="submit"><?= LABEL_UPDATE ?></button>
       <a class="btn btn-outline-primary" href="<?= url_for('list') ?>"><?= LABEL_CANCEL ?></a>
     </form>

@@ -16,8 +16,10 @@ class _View extends PgsqlEntity {
         'created_at' => array('type' => 't'),
         'updated_at' => array('type' => 't'),
         'sort_order' => array('type' => 'i'),
+        'page_id' => array('type' => 'i', 'required' => true),
         'name' => array('type' => 's', 'required' => true),
         'label' => array('type' => 's'),
+        'is_force_write' => array('type' => 'b'),
     );
 
     function __construct($params=null) {

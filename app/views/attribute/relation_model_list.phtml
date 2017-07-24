@@ -1,0 +1,20 @@
+
+<h3 class=""><?= $this->model['name'] ?> -> <?= $this->attribute['name'] ?></h3>
+
+<? if ($this->fk_attribute): ?>
+<form action="<?= url_for('remove_relation') ?>" method="post">
+  <?= $this->fk_model['name'] ?> -> <?= $this->fk_attribute['name'] ?>
+  <input class="btn btn-sm btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
+  <input type="hidden" name="attribute_id" value="<?= $this->attribute['id'] ?>">
+</form>
+<? endif ?>
+
+<table class="table table-sm">
+  <? foreach ($this->models as $model): ?>
+  <tr>
+    <td>
+      <a href="#" class="action" action="relation_attribute_list" attribute_id="<?= $this->attribute['id'] ?>" model_id="<?= $model['id'] ?>"><?= $model['name'] ?></a>
+    </td>
+  </tr>
+<? endforeach ?>
+</table>

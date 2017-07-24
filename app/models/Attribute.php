@@ -42,14 +42,34 @@ class Attribute extends _Attribute {
             $value['is_primary_key'] = ($pg_attribute['is_primary_key'] == 't');
             $value['is_required'] = ($pg_attribute['attnotnull'] == 't');
 
-            if ($attribute->value['id']) {
-                $attribute = DB::table('Attribute')->update($value, $attribute->value['id']);
-            } else {
-                $attribute = DB::table('Attribute')->insert($value);
+            if ($pg_attribute['attnum'] > 0) {
+                if ($attribute->value['id']) {
+                        $attribute = DB::table('Attribute')->update($value, $attribute->value['id']);
+                } else {
+                    $attribute = DB::table('Attribute')->insert($value);
+                }
             }
-            
         }
+    }
 
+    /**
+     * delete Unrelated
+     * 
+     * @param  array $model [description]
+     * @return 
+     */
+    function deleteUnrelatedByModel($model) {
+        if (!$model['id']) return;
+
+        $attributes = DB::table('Attribute')->listByModel($model);
+        if (!$attributes) return;
+        foreach ($attributes as $attribute) {
+            if ($attribute['attnum'] > 0) {
+
+            } else {
+                $attribute = DB::table('Attribute')->delete($attribute['id']);
+            }
+        }
     }
 
 }

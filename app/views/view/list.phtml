@@ -1,0 +1,33 @@
+<? include('_header.phtml') ?>
+
+<? include('add_window.phtml') ?>
+
+<div class="pt-3">
+  <form action="<?= url_for('import_from_model') ?>" method="post">
+    <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-window"><?= LABEL_ADD ?></a>
+    <input class="btn btn-outline-success" type="submit" value="Import From Model">
+    <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
+  </form>
+</div>
+
+<? if ($this->views): ?>
+<table class="table">
+  <tr>
+    <th></th>
+    <th>Name</th>
+    <th>Label</th>
+    <th></th>
+  </tr>
+  <? foreach ($this->views as $view): ?>
+  <tr>
+    <td><a class="btn btn-sm btn-outline-primary" href="<?= url_for('edit', $view['id']) ?>"><?= LABEL_EDIT ?></a></td>
+    <td><?= $view['name'] ?></td>
+    <td><?= $view['label'] ?></td>
+    <td><? if ($view['is_force_write']): ?><label class="badge badge-danger">forece write</label><? endif ?></td>
+    <td>
+    <? if ($view['model_id']): ?><?= $this->models[$view['model_id']]['name'] ?><? endif ?>
+    </td>
+  </tr>
+<? endforeach ?> 
+</table>
+<? endif ?>

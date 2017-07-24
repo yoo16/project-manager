@@ -32,21 +32,20 @@
         <input class="form-control col-2" type="text" name="attribute[length]" value="<?= $this->attribute['length'] ?>">
       </div>
 
-      <button class="btn btn-primary" type="submit"><?= LABEL_UPDATE ?></button>
-      <a class="btn btn-outline-primary" href="<?= url_For('list') ?>" class="btn"><?= LABEL_BACK ?></a>
-
       <div class="form-group row">
         <label for="" class="col-2 col-form-label">Requied</label>
         <?= FormHelper::checkbox($this->forms['is_required'], (bool) $this->attribute['is_required']) ?>
       </div>
 
+      <button class="btn btn-primary" type="submit"><?= LABEL_UPDATE ?></button>
+      <a class="btn btn-outline-primary" href="<?= url_For('list') ?>" class="btn"><?= LABEL_BACK ?></a>
       <input type="hidden" name="attribute['attnum']" value="<?= $this->attribute['attnum'] ?>">
 
     </form>
 
     <? if ($this->attribute['id']): ?>
     <form id="" action="<?=url_for('delete', $this->attribute['id']) ?>" method="post">
-      <input class="btn btn-outline-danger" type="submit" value="<?= LABEL_DELETE ?>">
+      <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
     </form>
   <? endif ?>
 

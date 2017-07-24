@@ -515,6 +515,24 @@ class PgsqlEntity extends Entity {
     }
 
     /**
+    * delete
+    * 
+    * @param  int $id
+    * @return Class
+    */
+    public function deletes() {
+        $sql = $this->deletesSql();
+        $result = $this->query($sql);
+
+        if ($result === false) {
+            $this->addError($this->name, 'delete');
+        } else {
+            unset($this->id);
+        }
+        return $this;
+    }
+
+    /**
     * where
     * 
     * @param  string $condition
@@ -767,7 +785,7 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * deleteSql
+    * delete Sql
     * 
     * @return string
     */
@@ -779,6 +797,17 @@ class PgsqlEntity extends Entity {
         return $sql;
     }
 
+    /**
+    * deletes Sql
+    * 
+    * @return string
+    */
+    private function deletesSql() {
+        $sql = '';
+        $where = $this->whereSql($params);
+        $sql = "DELETE FROM {$this->name} {$where};";
+        return $sql;
+    }
 
     //TODO GROUP BY
 
@@ -1024,6 +1053,7 @@ class PgsqlEntity extends Entity {
                 AND relacl IS NULL  
                 AND relname = '{$table}';";
         return $this->fetch_rows($sql);
+//                AND attnum > 0 
     }
 
     /**
@@ -1097,6 +1127,8 @@ class PgsqlEntity extends Entity {
      * @return array
      */
     function updateTableComment($table, $comment) {
+        if (!$table) return;
+        if (!$comment) return;
         $sql = "COMMENT ON TABLE \"{$table}\" IS '{$comment}';";
         return $this->query($sql);
     }
@@ -1110,6 +1142,9 @@ class PgsqlEntity extends Entity {
      * @return array
      */
     function updateColumnComment($table, $column_name, $comment) {
+        if (!$table) return;
+        if (!$column_name) return;
+        if (!$comment) return;
         $sql = "COMMENT ON COLUMN \"{$table}\".{$column_name} IS '{$comment}';";
         return $this->query($sql);
     }

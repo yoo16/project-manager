@@ -36,35 +36,58 @@ class Project extends _Project {
         $pgsql_entity = new PgsqlEntity($database->pgInfo());
         $pg_database = $pgsql_entity->pgDatabase();
 
-        $models = DB::table('Model')->listByProject($this->value);
-        if (!$models) return;
-        foreach ($models as $model) {
-            $values = null;
-            
-            $pg_attributes = $pgsql_entity->attributeArray($model['name']);
-            $attributes = DB::table('Attribute')->listByModel($model);
+        $models = DB::table('Model')->listByProject($this->value)->values;
+        if ($models) {
+            foreach ($models as $model) {
+                $values = null;
+                
+                $pg_attributes = $pgsql_entity->attributeArray($model['name']);
+                $attributes = DB::table('Attribute')->listByModel($model);
 
-            foreach ($attributes as $attribute) {
-                $pg_attribute = $pg_attributes[$attribute['name']];
-                $attribute['pg_attribute'] = $pg_attribute;
-                $attribute['column_type'] = PgsqlEntity::typeByPgAttribute($pg_attribute);
+                foreach ($attributes as $attribute) {
+                    $pg_attribute = $pg_attributes[$attribute['name']];
+                    $attribute['pg_attribute'] = $pg_attribute;
+                    $attribute['column_type'] = PgsqlEntity::typeByPgAttribute($pg_attribute);
 
-                $values['attribute'][] = $attribute;
+                    $values['attribute'][] = $attribute;
+                }
+
+                $values['model'] = $model;
+                $values['pg_attribute'] = $pgsql_entity->attributeArray($model['name']);
+
+                $model_path = Model::projectFilePath($this->user_project_setting, $model);
+                if (!file_exists($model_path)) {
+                    $model_template_path = Model::templateFilePath($model);
+                    $contents = FileManager::bufferFileContetns($model_template_path, $values);
+                    file_put_contents($model_path, $contents);
+                }
+
+                $vo_model_path = Model::projectVoFilePath($this->user_project_setting, $model);
+                $vo_model_template_path = Model::voTemplateFilePath($model);
+                $contents = FileManager::bufferFileContetns($vo_model_template_path, $values);
+                file_put_contents($vo_model_path, $contents);
             }
-
-            $values['model'] = $model;
-            $values['pg_attribute'] = $pgsql_entity->attributeArray($model['name']);
-
-            $model_path = Model::projectFilePath($this->user_project_setting, $model);
-            $model_template_path = Model::templateFilePath($model);
-            $contents = FileManager::bufferFileContetns($model_template_path, $values);
-            file_put_contents($model_path, $contents);
-
-            $vo_model_path = Model::projectVoFilePath($this->user_project_setting, $model);
-            $vo_model_template_path = Model::voTemplateFilePath($model);
-            $contents = FileManager::bufferFileContetns($vo_model_template_path, $values);
-            file_put_contents($vo_model_path, $contents);
         }
+
+        $pages = DB::table('Page')->listByProject($this->value)->values;
+        if ($pages) {
+            foreach ($pages as $page) {
+                $page_path = Page::projectFilePath($this->user_project_setting, $page);
+                if (!file_exists($page_path) || $page['is_force_write']) {
+                    $values = null;
+                    $values['page'] = $page;
+                    if ($page['model_id']) {
+                        $values['model'] = DB::table('Model')->fetch($page['model_id'])->value;
+                    }
+                    $page_template_path = page::templateFilePath($page);
+                    $contents = FileManager::bufferFileContetns($page_template_path, $values);
+                    file_put_contents($page_path, $contents);
+                }
+
+            }   
+        }
+
+
     }
 
 }

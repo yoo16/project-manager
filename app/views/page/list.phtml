@@ -1,4 +1,39 @@
 <? include('_header.phtml') ?>
 
-<a class="btn btn-outline-primary" href="<?= url_for('new') ?>"><?= LABEL_ADD ?></a>
+<? include('add_window.phtml') ?>
 
+<div class="pt-3">
+  <form action="<?= url_for('import_from_model') ?>" method="post">
+    <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-window"><?= LABEL_ADD ?></a>
+    <input class="btn btn-outline-success" type="submit" value="Import From Model">
+    <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
+  </form>
+</div>
+
+<? if ($this->pages): ?>
+<table class="table">
+  <tr>
+    <th></th>
+    <th>Name</th>
+    <th>Label</th>
+    <th>Class Name</th>
+    <th></th>
+    <th>Model</th>
+    <th>Entity Name</th>
+  </tr>
+  <? foreach ($this->pages as $page): ?>
+  <tr>
+    <td><a class="btn btn-sm btn-outline-primary" href="<?= url_for('edit', $page['id']) ?>"><?= LABEL_EDIT ?></a></td>
+    <td><?= $page['name'] ?></td>
+    <td><?= $page['label'] ?></td>
+    <td><?= Page::className($page) ?></td>
+    <td><? if ($page['is_force_write']): ?><label class="badge badge-danger">forece write</label><? endif ?></td>
+    <td>
+    <? if ($page['model_id']): ?><?= $this->models[$page['model_id']]['name'] ?><? endif ?>
+    </td>
+    <td><?= $page['entity_name'] ?></td>
+    <td><a class="btn btn-sm btn-outline-primary" href="<?= url_for('view/', array('page_id' => $page['id'])) ?>"><?= LABEL_VIEW ?></a></td>
+  </tr>
+<? endforeach ?> 
+</table>
+<? endif ?>

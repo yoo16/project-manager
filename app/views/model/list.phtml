@@ -4,7 +4,6 @@
   <div class="pt-3">
     <form action="<?= url_for('sync_db') ?>" method="post">
       <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-table-window"><?= LABEL_ADD ?></a>
-      <a href="<?= url_for('project/index') ?>" class="btn btn-outline-primary"><?= LABEL_BACK ?></a>
       <input class="btn btn-outline-success" type="submit" value="Sync DB">
       <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
     </form>
@@ -19,13 +18,13 @@
         <th>name</th>
         <th>Entity</th>
         <th>Class</th>
+        <th>Page</th>
         <th>DB</th>
-        <th></th>
       </tr>
     </thead>
     <? foreach ($this->models as $model): ?>
     <tr>
-      <td><a class="btn btn-outline-primary" href="<?= url_for('edit', $model['id']) ?>"><?= LABEL_EDIT ?></a></td>
+      <td><a class="btn btn-sm btn-outline-primary" href="<?= url_for('edit', $model['id']) ?>"><?= LABEL_EDIT ?></a></td>
       <td>
         <a href="<?= url_for('attribute/', array('model_id' => $model['id'])) ?>"><?= $model['name'] ?></a>
         <div>
@@ -36,6 +35,12 @@
       </td>
       <td>
         <?= $model['class_name'] ?>
+      </td>
+      <td>
+        <form action="<?= url_for('page/create_page_from_model') ?>" method="post">
+          <button class="btn btn-sm btn-primary confirm-dialog" message="Create page '<?= $model['name'] ?>'?">Create</button>
+          <input type="hidden" name="model_id" value="<?= $model['id'] ?>">
+        </form>
       </td>
       <td>
         <? if ($model['pg_class']): ?>
@@ -66,11 +71,6 @@
 <? endif ?>
 </td>
 
-<td>
-  <div>
-
-  </div>
-</td>
 </tr>
 <? endforeach ?>
 </table>
