@@ -35,11 +35,12 @@ class Model extends _Model {
     /**
      * list by project
      * 
-     * @param array $project
+     * @param Project $project
      * @return Model
      */
     function listByProject($project) {
-        $this->where("database_id = {$project['database_id']}")
+        if (!$project->value['id']) return;
+        $this->where("database_id = {$project->value['database_id']}")
              ->order('name')
              ->order('sort_order')
              ->select();

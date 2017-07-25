@@ -11,7 +11,7 @@ class _Admin extends PgsqlEntity {
     
     var $id_column = 'id';
     var $name = 'admins';
-    static $entity_name = 'admin';
+    var $entity_name = 'admin';
 
     var $columns = array(
         'created_at' => array('type' => 't'),

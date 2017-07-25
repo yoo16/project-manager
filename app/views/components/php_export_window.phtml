@@ -11,7 +11,7 @@
       </div>
 
       <div class="modal-body">
-        <h5><?= $this->project['name'] ?></h5>
+        <h5><?= $this->project->value['name'] ?></h5>
         <? if (is_array($this->user_project_settings)): ?>
         <table class="table">
           <? foreach ($this->user_project_settings as $user_project_setting): ?>
@@ -37,8 +37,8 @@
       <? if (file_exists($user_project_setting['project_path'])): ?>
       <? if (file_exists($user_project_setting['project_path']."app/")): ?>
       <form action="<?=url_for('project/export_php') ?>" method="post">
-        <button class="btn btn-sm btn-primary" href=""><?= LABEL_EXPORT ?></button>
-        <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
+        <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?"><?= LABEL_EXPORT ?></button>
+        <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
         <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
       </form>
     <? endif ?>

@@ -8,6 +8,7 @@ $libs = array(
     'FileManager',
     'FtpLite',
     'FormHelper',
+    'TagHelper',
     'DateHelper',
     'AppSession',
     'ApplicationLocalize',

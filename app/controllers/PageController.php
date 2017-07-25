@@ -21,7 +21,7 @@ class PageController extends ProjectController {
     function before_action($action) {
         parent::before_action($action);
 
-        if (!$this->project['id']) {
+        if (!$this->project->value['id']) {
             $this->redirect_to('project/');
             exit;
         }
@@ -46,6 +46,10 @@ class PageController extends ProjectController {
 
     function action_new() {
         $this->page = DB::table('Page')->takeValues($this->session['posts']);
+
+        $this->forms['is_force_write']['name'] = 'page[is_force_write]';
+        $this->forms['is_force_write']['value'] = true;
+        $this->forms['is_force_write']['label'] = LABEL_TRUE;
     }
 
     function action_edit() {
@@ -61,7 +65,6 @@ class PageController extends ProjectController {
         $this->forms['is_force_write']['name'] = 'page[is_force_write]';
         $this->forms['is_force_write']['value'] = true;
         $this->forms['is_force_write']['label'] = LABEL_TRUE;
-
     }
 
     function action_add() {
@@ -110,9 +113,9 @@ class PageController extends ProjectController {
     function action_create_page_from_model() {
         $model = DB::table('Model')->fetch($_REQUEST['model_id'])->value;
 
-        if ($this->project['id'] && $model['id']) {
+        if ($this->project->value['id'] && $model['id']) {
             $posts['model_id'] = $model['id'];
-            $posts['project_id'] = $this->project['id'];
+            $posts['project_id'] = $this->project->value['id'];
             $posts['label'] = $model['label'];
             $posts['name'] = $model['class_name'];
             $posts['class_name'] = $model['class_name'];
@@ -120,13 +123,13 @@ class PageController extends ProjectController {
             $posts['extends_class_name'] = '';
 
             $page = DB::table('Page')
-                ->where("project_id = {$this->project['id']}")
+                ->where("project_id = {$this->project->value['id']}")
                 ->where("name = '{$model['class_name']}'")
                 ->selectOne()
                 ->value;
 
             if (!$page['id']) {
-                $page = DB::table('Page')->insert($posts);
+                $page = DB::table('Page')->insert($posts)->value;
             }
 
             if ($page['id']) {

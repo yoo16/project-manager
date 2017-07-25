@@ -26,7 +26,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
 <? endif ?>
 
    /**
-    * 事前処理
+    * before_action
     *
     * @param string $action
     * @return void
@@ -36,8 +36,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     }
 
    /**
-    * トップページ
-    * セッションクリア＆一覧画面リダイレクト
+    * index
     *
     * @param
     * @return void
@@ -48,8 +47,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     }
 
    /**
-    * キャンセル
-    * セッションクリア＆トップページ
+    * cancel
     *
     * @param
     * @return void
@@ -60,7 +58,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     }
 
    /**
-    * 一覧画面
+    * list
     *
     * @param
     * @return void
@@ -74,7 +72,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     }
 
    /**
-    * 新規作成画面
+    * new
     *
     * @param
     * @return void
@@ -85,7 +83,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     }
 
    /**
-    * 編集画面
+    * edit
     *
     * @param
     * @return void
@@ -99,7 +97,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     }
 
    /**
-    * 新規作成追加処理
+    * add
     *
     * @param
     * @return void
@@ -120,7 +118,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     }
 
    /**
-    * 更新処理
+    * update
     *
     * @param
     * @return void
@@ -141,7 +139,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     }
 
    /**
-    * 削除処理
+    * delete
     *
     * @param
     * @return void
@@ -156,17 +154,21 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     }
 
    /**
-    * ソート画面
+    * sort order
     *
     * @param
     * @return void
     */
-    function sort_order() {
-
+    function action_sort_order() {
+<? if ($values['model']): ?>
+        $this-><?= $values['model']['name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')
+                ->select()
+                ->values;
+<? endif ?>
     }
 
    /**
-    * ソート更新
+    * update sort order
     *
     * @param
     * @return void

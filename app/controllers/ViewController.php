@@ -75,6 +75,10 @@ class ViewController extends PageController {
     function action_new() {
         $this->view = DB::table('View')
                     ->takeValues($this->session['posts']);
+
+        $this->forms['is_force_write']['name'] = 'view[is_force_write]';
+        $this->forms['is_force_write']['value'] = true;
+        $this->forms['is_force_write']['label'] = LABEL_TRUE;
     }
 
    /**
@@ -88,6 +92,10 @@ class ViewController extends PageController {
                     ->fetch($this->params['id'])
                     ->takeValues($this->session['posts'])
                     ->value;
+
+        $this->forms['is_force_write']['name'] = 'view[is_force_write]';
+        $this->forms['is_force_write']['value'] = true;
+        $this->forms['is_force_write']['label'] = LABEL_TRUE;
     }
 
    /**

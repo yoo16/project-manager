@@ -11,7 +11,7 @@ class _UserConfig extends PgsqlEntity {
 
     var $id_column = 'id';
     var $name = 'user_configs';
-    static $entity_name = 'user_config';
+    var $entity_name = 'user_config';
 
     var $columns = array(
         'created_at' => array('type'=> 't'),

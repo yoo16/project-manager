@@ -2,10 +2,10 @@
 
 <div class="pt-3">
   <form action="<?= url_for('sync_db') ?>" method="post">
-    <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-attribute"><?= LABEL_ADD ?></a>
-    <a href="<?= url_for('model/list') ?>" class="btn btn-outline-primary"><?= LABEL_BACK ?></a>
-    <input class="btn btn-outline-success" type="submit" value="Sync DB">
-    <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
+    <?= FormHelper::linkModal('#add-attribute', LABEL_ADD) ?>
+    <?= FormHelper::linkButton('model/list', LABEL_BACK) ?>
+    <?= FormHelper::submit('Sync DB', ['class' => 'btn btn-outline-success confirm-dialog', 'message' => 'Do you sync DB?']) ?>
+    <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
   </form>
 </div>
 
@@ -15,7 +15,7 @@
 
 <div class="card">
 
-  <h4 class="card-header"><?= $this->model['name'] ?> <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label></h4>
+  <h4 class="card-header"><?= $this->model->value['name'] ?> <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label></h4>
 
   <div class="card-body">
     <table class="table">
@@ -34,61 +34,69 @@
         <? foreach ($this->attributes as $attribute): ?>
         <tr>
           <td>
-            <? if (!Model::$required_columns[$attribute['name']]): ?>
-            <a class="btn btn-outline-primary" href="<?= url_for('edit', $attribute['id']) ?>"><?= LABEL_EDIT ?></a>
+            <? if (!Model::$required_columns[$attribute['name']]): ?><?= FormHelper::linkButton('edit', LABEL_EDIT, $attribute['id']) ?><? endif ?>
+          </td>
+          <td><?= $attribute['name'] ?></td>
+          <td>
+            <form method="post" action="<?= url_for('update_label', $attribute['id']) ?>">
+              <div class="row">
+               <div class="input-group">
+                <input class="form-control form-control-sm" type="text" name="attribute[label]" value="<?= $attribute['label'] ?>">
+                <span class="input-group-btn">
+                  <?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?>
+                </span>
+              </div>
+            </div>
+            <?= FormHelper::hidden('pg_class_id', $attribute['pg_attribute']['pg_class_id']) ?>
+            <?= FormHelper::hidden('database_id', $this->database->value['id']) ?>
+          </form>
+        </td>
+        <td>
+          <? if ($attribute['fk_attribute_id'] > 0): ?>
+          <?= FormHelper::linkModal('#relation-window', 'relation', 
+            [
+            'class' => 'btn btn-success btn-sm action', 
+            'action' => 'relation_model_list', 
+            'attribute-id' => $attribute['id'], 
+            ]) ?>
+          <? else: ?>
+          <?= FormHelper::linkModal('#relation-window', 'relation', 
+            [
+            'class' => 'btn btn-outline-primary btn-sm action', 
+            'action' => 'relation_model_list', 
+            'attribute-id' => $attribute['id'], 
+            ]) ?>
           <? endif ?>
         </td>
-        <td><?= $attribute['name'] ?></td>
         <td>
-          <form method="post" action="<?= url_for('update_label', $attribute['id']) ?>">
-            <div class="row">
-             <div class="input-group">
-              <input class="form-control form-control-sm" type="text" name="attribute[label]" value="<?= $attribute['label'] ?>">
-              <span class="input-group-btn">
-                <button class="btn btn-primary btn-sm"><?= LABEL_UPDATE ?></button>
-              </span>
-            </div>
-          </div>
-          <input type="hidden" name="pg_class_id" value="<?= $pg_class['pg_class_id'] ?>">
-          <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
-        </form>
-      </td>
-      <td>
-        <? if ($attribute['fk_attribute_id'] > 0): ?>
-        <a class="btn btn-success btn-sm action" href="#" action="relation_model_list" data-toggle="modal" attribute-id="<?= $attribute['id'] ?>" data-target="#relation-window">relation</a>
+          <label class="badge badge-pill badge-info">
+            <?= $attribute['type'] ?>
+            <? if ($attribute['length'] > 0): ?> (<?= $attribute['length'] ?>) <? endif ?>
+          </label>
+        </td>
+        <td>
+          <? if ($attribute['is_required']): ?>
+          <?= FormHelper::link('change_required', 'required', $attribute['id'], ['class' => 'badge badge-success']) ?>
         <? else: ?>
-        <a class="btn btn-outline-primary btn-sm action" href="#" action="relation_model_list" data-toggle="modal" attribute-id="<?= $attribute['id'] ?>" data-target="#relation-window">relation</a>
+          <?= FormHelper::link('change_required', 'required', $attribute['id'], ['class' => 'badge badge-default']) ?>
       <? endif ?>
     </td>
     <td>
-      <label class="badge badge-pill badge-info">
-        <?= $attribute['type'] ?>
-        <? if ($attribute['length'] > 0): ?> (<?= $attribute['length'] ?>) <? endif ?>
-      </label>
-    </td>
-    <td>
-      <? if ($attribute['is_required']): ?>
-      <a href="<?= url_for('change_required', $attribute['id']); ?>"><label class="badge badge-pill badge-success">required</label></a>
+      <label class="badge badge-pill badge-info"><?= $attribute['pg_attribute']['attnum'] ?></label>
+      <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
+      <label class="badge badge-pill badge-success">sync</label>
+      <label class="badge badge-pill badge-info"><?= $attribute['pg_attribute']['attname'] ?></label>
+      <label class="badge badge-pill badge-info"><?= $attribute['pg_attribute']['udt_name'] ?> <?= $attribute['pg_attribute']['character_maximum_length'] ?></label>
+      <? if ($attribute['is_primary_key']): ?><label class="badge badge-info">Primary</label><? endif ?>
+      <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><label class="badge badge-info">Not Null</label><? endif ?>
     <? else: ?>
-    <a href="<?= url_for('change_required', $attribute['id']); ?>"><label class="badge badge-pill badge-default">required</label></a>
+    <label class="badge badge-pill badge-danger">unsync</label>
+    <form action="<?= url_for('add_table', $attribute['id']) ?>" method="post">
+      <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-outline-primary']) ?>
+      <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
+      <?= FormHelper::hidden('table_name', $this->model->value['name']) ?>
+    </form>
   <? endif ?>
-</td>
-<td>
-  <label class="badge badge-pill badge-info"><?= $attribute['pg_attribute']['attnum'] ?></label>
-  <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
-  <label class="badge badge-pill badge-success">sync</label>
-  <label class="badge badge-pill badge-info"><?= $attribute['pg_attribute']['attname'] ?></label>
-  <label class="badge badge-pill badge-info"><?= $attribute['pg_attribute']['udt_name'] ?> <?= $attribute['pg_attribute']['character_maximum_length'] ?></label>
-  <? if ($attribute['is_primary_key']): ?><label class="badge badge-info">Primary</label><? endif ?>
-  <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><label class="badge badge-info">Not Null</label><? endif ?>
-<? else: ?>
-<label class="badge badge-pill badge-danger">unsync</label>
-<form action="<?= url_for('add_table', $attribute['id']) ?>" method="post">
-  <input class="btn btn-outline-primary" type="submit" value="<?= LABEL_ADD ?>">
-  <input type="hidden" name="model_id" value="<?= $attribute['id'] ?>">
-  <input type="hidden" name="table_name" value="<?= $attribute['name'] ?>">
-</form>
-<? endif ?>
 </td>
 </tr>
 <? endforeach ?>

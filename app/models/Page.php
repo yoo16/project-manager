@@ -19,12 +19,12 @@ class Page extends _Page {
     /**
      * list by project
      * 
-     * @param array $project
+     * @param Project $project
      * @return Page
      */
     function listByProject($project) {
-        if (!$project['id']) return;
-        $this->where("project_id = {$project['id']}")
+        if (!$project->value['id']) return;
+        $this->where("project_id = {$project->value['id']}")
              ->select();
         return $this;
     }

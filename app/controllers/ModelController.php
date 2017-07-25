@@ -37,19 +37,18 @@ class ModelController extends ProjectController {
     }
 
     function action_cancel() {
-        $this->index();
+        unset($this->session['posts']);
+        $this->redirect_to('list');
     }
 
     function action_list() {
-        $models = DB::table('Model')
-                            ->where("database_id = {$this->project['database_id']}")
+        $this->model = DB::table('Model')
+                            ->where("database_id = {$this->project->value['database_id']}")
                             ->order('name')
-                            ->select()->values;
+                            ->select();
 
-        $database = DB::table('Database')->fetch($this->project['database_id']);
-        $pgsql_entity = new PgsqlEntity($database->pgInfo());
+        $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
         $pg_database = $pgsql_entity->pgDatabase();
-
         $pg_classes = $pgsql_entity->tableArray();
         if ($pg_classes) {
             foreach ($pg_classes as $pg_class) {
@@ -58,9 +57,11 @@ class ModelController extends ProjectController {
             }
         }
 
-        foreach ($models as $model) {
-            $model['pg_class'] = $this->pg_classes[$model['name']];
-            $this->models[] = $model;
+        if ($this->model->values) {
+            foreach ($this->model->values as $model) {
+                $model['pg_class'] = $this->pg_classes[$model['name']];
+                $this->models[] = $model;
+            }
         }
     }
 
@@ -87,9 +88,7 @@ class ModelController extends ProjectController {
                         ->value;
 
         $this->model = DB::table('Model')
-                        ->fetch($this->params['id'])
-                        ->value;
-
+                        ->fetch($this->params['id']);
     }
 
     function action_add() {
@@ -115,8 +114,8 @@ class ModelController extends ProjectController {
                     exit;
                 }
 
-                $posts['project_id'] = $this->project['id'];
-                $posts['database_id'] = $this->project['database_id'];
+                $posts['project_id'] = $this->project->value['id'];
+                $posts['database_id'] = $this->project->value['database_id'];
                 $posts['relfilenode'] = $pg_class['relfilenode'];
                 $posts['pg_class_id'] = $pg_class['pg_class_id'];
                 $posts['name'] = $pg_class['relname'];
@@ -195,7 +194,7 @@ class ModelController extends ProjectController {
             $model = DB::table('Model')->fetch($_REQUEST['model_id']);
 
             $database = DB::table('Database')->fetch($model->value['database_id']);
-            $table_name = $_REQUEST['table_name'];
+            $table_name = $model['name'];
 
             if ($database && $table_name) {
                 $columns = Model::$required_columns;
@@ -204,16 +203,15 @@ class ModelController extends ProjectController {
                 $pgsql_entity = new PgsqlEntity($pg_connection_array); 
                 $pgsql_entity->createTable($table_name, $columns);
             }
-
             $this->redirect_to('list');
         }
     }
 
     function action_sync_db() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $database = DB::table('Database')->fetch($this->project['database_id']);
+            $database = DB::table('Database')->fetch($this->project->value['database_id']);
             if (!$database->value) {
-                $params['project_id'] = $this->project['id'];
+                $params['project_id'] = $this->project->value['id'];
                 $this->redirect_to('list', $params);
                 exit;
             }
@@ -224,8 +222,8 @@ class ModelController extends ProjectController {
             foreach ($this->pg_classes as $pg_class) {
 
                 $model_values = null;
-                $model_values['database_id'] = $this->project['database_id'];
-                $model_values['project_id'] = $this->project['id'];
+                $model_values['database_id'] = $this->project->value['database_id'];
+                $model_values['project_id'] = $this->project->value['id'];
                 $model_values['relfilenode'] = $pg_class['relfilenode'];
                 $model_values['pg_class_id'] = $pg_class['pg_class_id'];
                 $model_values['name'] = $pg_class['relname'];
@@ -236,7 +234,7 @@ class ModelController extends ProjectController {
 
                 $model = DB::table('Model')
                                 ->where("pg_class_id = '{$pg_class['pg_class_id']}'")
-                                ->where("database_id = {$this->project['database_id']}")
+                                ->where("database_id = {$this->project->value['database_id']}")
                                 ->selectOne();
 
                 if ($model->value['id']) {
@@ -248,7 +246,7 @@ class ModelController extends ProjectController {
                 $attribute = new Attribute();
                 $attribute->importByModel($model->value);
             }
-            $params['project_id'] = $this->project['id'];
+            $params['project_id'] = $this->project->value['id'];
             $this->redirect_to('list', $params);
         }    
     }

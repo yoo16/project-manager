@@ -80,30 +80,29 @@ class View extends _View {
      * 
      * @param array $user_project_setting
      * @param array $page
+     * @param array $view
      * @return string
      */
-    static function projectFilePath($user_project_setting, $page) {
+    static function projectFilePath($user_project_setting, $page, $view) {
         if (!$user_project_setting) return;
         if (!file_exists($user_project_setting['project_path'])) return;
 
-        $views = DB::table('View')->listByPage($page)->values;
-
-        if ($views) {
-            foreach ($views as $view) {
-                $path = $user_project_setting['project_path']."app/views/{$view['name']}.phtml";
-                return $path;
-            }
+        $view_dir = $user_project_setting['project_path']."app/views/{$page['entity_name']}/";
+        if (!file_exists($view_dir)) {
+            FileManager::createDir($view_dir);
         }
+        $path = "{$view_dir}{$view['name']}.phtml";
+        return $path;
     }
 
     /**
      * local path
      * 
-     * @param array $page
+     * @param array $view
      * @return string
      */
-    static function templateFilePath() {
-        $path = TEMPLATE_DIR.'controllers/php.phtml';
+    static function templateFilePath($view) {
+        $path = TEMPLATE_DIR."views/{$view['name']}.phtml";
         return $path;
     }
 

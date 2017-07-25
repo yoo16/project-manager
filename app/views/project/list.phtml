@@ -1,32 +1,30 @@
 <? include('_header.phtml') ?>
-<div>
-  <div class="pt-3">
-   <form class="form-inline" action="<?= url_for('create_project_for_csv') ?>" method="post">
-    <a class="btn btn-primary" href="<?= url_for('new') ?>"><?= LABEL_ADD ?></a>
-  </form>
+
+<div class="pt-3">
+  <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-window"><?= LABEL_ADD ?></a>
 </div>
+
+<? include('add_window.phtml') ?>
 
 <table class="table">
  <thead class="thead-default">
   <tr>
     <th>&nbsp;</th>
-    <th>プロジェクト名</th>
+    <th>Name</th>
     <th>DB</th>
     <th>&nbsp;</th>
   </tr>
 </thead>
 
 <? if (is_array($this->projects)): ?>
-
 <? foreach ($this->projects as $project): ?>
 <tr>
-  <td><a class="btn btn-outline-primary" href="<?= url_for('edit', $project['id']) ?>"><?= LABEL_EDIT ?></a></td>
-  <td><a class="" href="<?= url_for('model/list', array('project_id' => $project['id'])) ?>"><?=$project['name'] ?></a></td>
+  <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $project['id']) ?></td>
+  <td><?= FormHelper::link('model/list', $project['name'], ['project_id' => $project['id']]) ?></td>
   <td><?= Entity::searchForKey($this->databases, $project['database_id'], 'name') ?></td>
-  <td><a class="btn btn-outline-primary" href="<?=url_for('export_list', $project['id']) ?>"><?= LABEL_EXPORT ?><?= LABEL_SETTING ?>...</a></td>
+  <td><?= FormHelper::linkButton('export_list', LABEL_EXPORT.LABEL_SETTING, $project['id']) ?></td>
 </tr>
 <? endforeach ?>
-
 <? endif ?>
 
 </table>

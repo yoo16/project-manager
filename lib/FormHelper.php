@@ -21,7 +21,7 @@ class FormHelper {
 
         $params = self::checkParams($params, $selected, $value_key, $label_key, $values);
 
-        if (!isset($params['class'])) $params['class'] = 'form-control';
+        if (!isset($params['class'])) $params['class'] = 'form-control col-4';
 
         $tag = '';
         $tag.= self::unselectOption($params);
@@ -297,8 +297,8 @@ class FormHelper {
      * @return String
      */
     static function selectOptions($params, $selected=null) {
-        if (isset($params['csv_path']) && $params['csv_path']) {
-            $values = CsvLite::options($params['csv_path']);
+        if (isset($params['csv_file']) && $params['csv_file']) {
+            $values = CsvLite::options($params['csv_file']);
         } else {
             $values = $params['values'];
         }
@@ -448,7 +448,7 @@ class FormHelper {
      * @return String
      */
     static function selectedTag($value, $selected) {
-        $tag = ($selected == $value)? ' selected="selected"' : '';
+        $tag = (!is_null($selected) && $selected == $value)? ' selected="selected"' : '';
         return $tag;
     }
 
@@ -460,7 +460,7 @@ class FormHelper {
      * @return String
      */
     static function checkedTag($value, $selected) {
-        if (is_bool($selected) && (bool) $value == (bool) $selected) {
+        if (is_bool($value) && (bool) $value == (bool) $selected) {
             $tag = ' checked="checked"';
         } elseif ($value == $selected) {
             $tag = ' checked="checked"';
@@ -478,8 +478,8 @@ class FormHelper {
     static function radio($params, $selected=null, $value_key=null, $label_key=null, $values=null) {
         $params = self::checkParams($params, $selected, $value_key, $label_key, $values);
 
-        if ($params['csv_path']) {
-            $values = CsvLite::options($params['csv_path']);
+        if ($params['csv_file']) {
+            $values = CsvLite::options($params['csv_file']);
         }
         if ($values) $params['values'] = $values;
         if ($selected) $params['selected'] = $selected;
@@ -533,33 +533,24 @@ class FormHelper {
     /**
      * チェックボックス（単一）
      *
-     * @param Array $params
-     * @param Object $seleted
-     * @return String
+     * @param array $params
+     * @param object $seleted
+     * @return string
      */
-    static function checkbox($params, $selected=null, $value_key=null, $label_key=null, $values=null) {
-        $params = self::checkParams($params, $selected, $value_key, $label_key, $values);
+    static function checkbox($params, $selected = null) {
+        $checked = self::checkedTag($params['value'], $selected);
+        $label = ($params['label']) ? $params['label'] : LABEL_TRUE;
 
-        $name = $params['name'];
-        $value = $params['value'];
-        $label = $params['label'];
-        $id = $params['id'];
-        $class = $params['class'];
+        $attributes['type'] = 'checkbox';
+        $attributes['name'] = $params['name'];
+        $attributes['value'] = $params['value'];
+        $attributes['id'] = $params['id'];
+        $attributes['class'] = $params['class'];
+        $attribute = self::attribute($attributes);
 
-        if (!$id) $id = "checkbox_{$name}";
-
-        $checked = self::checkedTag($value, $selected);
-
-        $attribute = self::selectAttribute($params);
-
-        if ($class) $class_tag = "class=\"{$class}\" ";
-        if ($id) $id_tag = "id=\"{$id}\" ";
-        if ($id) $for_tag = "for=\"{$id}\" ";
-        if ($name) $name_tag = "name=\"{$name}\" ";
-
-        if ($params['has_hidden']) $_tag.= "<input type=\"hidden\" {$name}value=\"-1\">";
-        $_tag.= "<input {$id_tag}{$class_tag}type=\"checkbox\" name=\"{$name}\" value=\"1\" {$checked}{$attribute}>";
-        $tag.= "<label {$for_tag}>\n{$_tag}\n{$label}\n</label>\n";
+        $tag.= self::hidden($params['name'], -1);
+        $tag.= "<input {$attribute} {$checked}>\n";
+        $tag = "<label>\n{$tag}{$label}\n</label>\n";
         return $tag;
     }
 
@@ -597,75 +588,186 @@ class FormHelper {
         return $tag;
     }
 
-
     /**
-     * input(text)タグ
+     * validateRequired
      *
-     * @param Array $params
-     * @return String
-     */
-    static function input($params) {
-        $id = $params['id'];
-        $class = $params['class'];
-        $type = ($params['type']) ? $params['type'] : 'text';
-        $name = $params['name'];
-        $value = $params['value'];
-        $tag = "<input id=\"{$id}\" class=\"{$class}\" type=\"{$type}\" name=\"{$name}\" value=\"{$value}\">";
-        return $tag;
-    }
-
-    /**
-     * submitタグ
-     *
-     * @param Array $params
-     * @return String
-     */
-    static function inputSubmit($params) {
-        $params['type'] = "submit";
-        $tag = formInput($params);
-        return $tag;
-    }
-
-    /**
-     * input(text)タグ
-     *
-     * @param Array $params
-     * @return String
-     */
-    static function inputText($params) {
-        $params['type'] = "text";
-        $tag = formInput($params);
-        return $tag;
-    }
-
-    /**
-     * input(password)タグ
-     *
-     * @param Array $params
-     * @return String
-     */
-    static function inputPassword($params) {
-        $params['type'] = "password";
-        $tag = formInput($params);
-        return $tag;
-    }
-
-    /**
-     * input(password)タグ
-     *
-     * @param array $params
+     * @param array $errors
+     * @param string $column
      * @return string
      */
-    static function inputHidden($params) {
-        $params['type'] = "hidden";
-        $tag = formInput($params);
-        return $tag;
-    }
-
     static function validateRequired($errors, $column) {
         if (!$errors) return;
         foreach ($errors as $error) {
             if ($error['column'] == $column) return 'required';
         }
     }
+
+    /**
+     * attribute
+     *
+     * @param array $params
+     * @return string
+     */
+    static function attribute($params) {
+        if (!$params) return;
+        foreach ($params as $key => $param) {
+            if (is_array($param)) $param = implode(' ', $param);
+            $attributes[] = "{$key}=\"{$param}\""; 
+        }
+        $attribute = implode(' ', $attributes);
+        return $attribute;
+    }
+
+    /**
+     * link
+     *
+     * @param string $action
+     * @param string $label
+     * @param array $query
+     * @param array $params
+     * @return string
+     */
+    static function link($action, $label, $query = null, $params = null) {
+        $attribute = self::attribute($params);
+        if (substr($action, 0, 1) == '#') {
+            $href = '#';
+        } else {
+            $href = url_for($action, $query);
+        }
+        $tag = "<a href=\"{$href}\" {$attribute}>{$label}</a>\n";
+        return $tag;
+    }
+
+    /**
+     * link button
+     *
+     * @param string $action
+     * @param string $label
+     * @param array $query
+     * @param array $params
+     * @return string
+     */
+    static function linkButton($action, $label, $query = null, $params = null) {
+        if (!$params['class']) $params['class'] = 'btn btn-outline-primary';
+        $tag = self::link($action, $label, $query, $params);
+        return $tag;
+    }
+
+    /**
+     * modal link
+     *
+     * @param string $target
+     * @param string $label
+     * @param array $params
+     * @return string
+     */
+    static function linkModal($target, $label, $params = null) {
+        if (!$params['class']) $params['class'] = 'btn btn-primary';
+        $params['data-toggle'] = 'modal';
+        $params['data-target'] = $target;
+        $attribute = self::attribute($params);
+        $tag = "<a href=\"#\" {$attribute}>{$label}</a>\n";
+        return $tag;
+    }
+
+    /**
+     * input
+     *
+     * @param array $params
+     * @param string $name
+     * @param object $value
+     * @return string
+     */
+    static function input($params, $name = null, $value = null) {
+        if (!$params['type']) $params['type'] = "text";
+        if ($name) $params['name'] = $name;
+        if ($value) $params['value'] = $value;
+
+        $attribute = self::attribute($params);
+        $tag = "<input {$attribute}>\n";
+        return $tag;
+    }
+
+    /**
+     * text
+     *
+     * @param string $name
+     * @param object $value
+     * @param array $params
+     * @return string
+     */
+    static function text($name, $value = null, $params = null) {
+        $params['type'] = "text";
+        if (!$params['class']) $params['class'] = 'col-4';
+        $params['class'].= " form-control";
+
+        $tag = self::input($params, $name, $value);
+        return $tag;
+    }
+
+    /**
+     * submit
+     *
+     * @param string $value
+     * @param array $params
+     * @return string $name
+     * @param string $name
+     */
+    static function submit($value = null, $params = null, $name = null) {
+        if (!$params['class']) $params['class'] = 'btn btn-primary';
+        $params['type'] = "submit";
+        $tag = self::input($params, $name, $value);
+        return $tag;
+    }
+
+    /**
+     * delete
+     *
+     * @param string $value
+     * @param array $params
+     * @return string $name
+     * @param string $name
+     */
+    static function delete($value = null, $params = null, $name = null) {
+        if (!$params['class']) $params['class'] = 'btn btn-danger';
+        $tag = self::submit($value, $params, $name);
+        return $tag;
+    }
+
+    static function button($label, $params = null) {
+        if (!$params['class']) $params['class'] = 'btn btn-primary';
+        $attribute = self::attribute($params);
+        $tag = "<button {$attribute}>{$label}</button>\n";
+        return $tag;
+    }
+
+    /**
+     * input(password)
+     *
+     * @param string $name
+     * @param object $value
+     * @param array $params
+     * @return string
+     */
+    static function password($name, $value = null, $params = null) {
+        $params['type'] = "password";
+        $tag = self::input($params, $name, $value);
+        return $tag;
+    }
+
+    /**
+     * input(hidden)タグ
+     *
+     * @param string $name
+     * @param object $value
+     * @param array $params
+     * @return string
+     */
+    static function hidden($name, $value = null, $params = null) {
+        $params['type'] = "hidden";
+        $tag = self::input($params, $name, $value);
+        return $tag;
+    }
+
+
 }

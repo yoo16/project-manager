@@ -11,7 +11,7 @@ class _Page extends SqlEntity {
 
     var $id_column = 'id';
     var $name = 'pages';
-    static $entity_name = 'page';
+    var $entity_name = 'page';
 
     var $columns = array(
         'created_at' => array('type' => 't'),

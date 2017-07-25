@@ -1,5 +1,5 @@
 
-<h3 class=""><?= $this->model['name'] ?> -> <?= $this->attribute['name'] ?></h3>
+<h3 class=""><?= $this->model->value['name'] ?> -> <?= $this->attribute['name'] ?></h3>
 
 <? if ($this->fk_attribute): ?>
 <form action="<?= url_for('remove_relation') ?>" method="post">

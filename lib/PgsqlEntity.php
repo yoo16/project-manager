@@ -36,6 +36,7 @@ class PgsqlEntity extends Entity {
         );
 
     function __construct($params = null) {
+        parent::__construct();
         $this->defaultPgInfo();
         if ($params) $this->setPgInfo($params);
 

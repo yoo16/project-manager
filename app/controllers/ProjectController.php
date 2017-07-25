@@ -21,17 +21,19 @@ class ProjectController extends AppController {
     function before_action($action) {
         parent::before_action($action);
         if ($_REQUEST['project_id']) {
-            $project = DB::table('project')->fetch($_REQUEST['project_id'])->value;
+            $project = DB::table('project')->fetch($_REQUEST['project_id']);
             AppSession::setSession('project', $project);
         }
         $this->project = AppSession::getSession('project');
-        if ($this->project['database_id']) {
-            $this->database = DB::table('Database')->fetchValue($this->project['database_id']);
+
+        //TODO relation
+        if ($this->project->value['database_id']) {
+            $this->database = DB::table('Database')->fetch($this->project->value['database_id']);
         }
 
-        if ($this->project['id']) {
+        if ($this->project->value['id']) {
             $this->user_project_settings = DB::table('UserProjectSetting')
-                                            ->where("project_id = {$this->project['id']}")
+                                            ->where("project_id = {$this->project->value['id']}")
                                             ->select()
                                             ->values;
         }
@@ -74,6 +76,7 @@ class ProjectController extends AppController {
         $this->databases = DB::table('Database')
                             ->selectValues(array('id_index' => true));
 
+        $this->new_project = new Project();
     }
 
     function action_new() {
@@ -96,8 +99,7 @@ class ProjectController extends AppController {
 
         $this->project = DB::table('Project')
                         ->fetch($this->params['id'])
-                        ->takeValues($this->session['posts'])
-                        ->value;
+                        ->takeValues($this->session['posts']);
 
         $this->user_project_settings = DB::table('UserProjectSetting')
                                         ->select()
@@ -153,22 +155,22 @@ class ProjectController extends AppController {
 
     function action_export_php() {
         $project = new Project();
-        $project->fetch($this->project['id']);
+        $project->fetch($this->project->value['id']);
         //TODO bind
         $project->user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id'])->value;
         $project->exportPHP();
 
-        $params['project_id'] = $this->project['id'];
+        $params['project_id'] = $this->project->value['id'];
         $this->redirect_to('model/list', $params);
     }
 
     function action_export_db() {
         $database = new Database();
-        $database->fetch($this->project['database_id']);
+        $database->fetch($this->project->value['database_id']);
         //TODO bind
         $database->exportDatabase();
 
-        $params['project_id'] = $this->project['id'];
+        $params['project_id'] = $this->project->value['id'];
         $this->redirect_to('model/list', $params);
     }
 
@@ -178,13 +180,13 @@ class ProjectController extends AppController {
                                             ->fetch("{$this->params['id']}")
                                             ->value;
 
-            if ($this->project['id']) {
+            if ($this->project->value['id']) {
                 $this->database = DB::table('Database')
-                                                ->fetch("{$this->project['database_id']}")
+                                                ->fetch("{$this->project->value['database_id']}")
                                                 ->value;
 
                 $this->user_project_settings = DB::table('UserProjectSetting')
-                                                ->where("project_id = {$this->project['id']}")
+                                                ->where("project_id = {$this->project->value['id']}")
                                                 ->select()
                                                 ->values;
             }

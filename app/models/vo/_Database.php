@@ -11,7 +11,7 @@ class _Database extends PgsqlEntity {
 
     var $id_column = 'id';
     var $name = 'databases';
-    static $entity_name = 'database';
+    var $entity_name = 'database';
 
     var $columns = array(
         'created_at' => array('type' => 't'),

@@ -4,9 +4,9 @@
 
 <div class="pt-3">
   <form action="<?= url_for('import_from_model') ?>" method="post">
-    <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-window"><?= LABEL_ADD ?></a>
-    <input class="btn btn-outline-success" type="submit" value="Import From Model">
-    <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
+    <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
+    <?= FormHelper::submit(LABEL_IMPORT) ?>
+    <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
   </form>
 </div>
 
@@ -23,7 +23,7 @@
   </tr>
   <? foreach ($this->pages as $page): ?>
   <tr>
-    <td><a class="btn btn-sm btn-outline-primary" href="<?= url_for('edit', $page['id']) ?>"><?= LABEL_EDIT ?></a></td>
+    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $page['id']) ?></td>
     <td><?= $page['name'] ?></td>
     <td><?= $page['label'] ?></td>
     <td><?= Page::className($page) ?></td>

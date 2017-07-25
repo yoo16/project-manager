@@ -1,6 +1,6 @@
 
 <h4><a class="btn btn-sm btn-outline-primary action" href="#" action="relation_model_list" attribute-id="<?= $this->attribute['id'] ?>"><?= LABEL_BACK ?></a></h4>
-<h4 class=""><?= $this->model['name'] ?> -> <?= $this->attribute['name'] ?></h4>
+<h4 class=""><?= $this->model->value['name'] ?> -> <?= $this->attribute['name'] ?></h4>
 
 <? if ($this->fk_attribute): ?>
 <form action="<?= url_for('remove_relation') ?>" method="post">

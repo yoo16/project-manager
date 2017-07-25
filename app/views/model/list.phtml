@@ -3,9 +3,9 @@
 <div class="">
   <div class="pt-3">
     <form action="<?= url_for('sync_db') ?>" method="post">
-      <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-table-window"><?= LABEL_ADD ?></a>
-      <input class="btn btn-outline-success" type="submit" value="Sync DB">
-      <input type="hidden" name="project_id" value="<?= $this->project['id'] ?>">
+      <?= FormHelper::linkModal('#add-table-window', LABEL_ADD) ?>
+      <?= FormHelper::submit('Sync DB', ['class' => 'btn btn-outline-success confirm-dialog', 'message' => 'Do you sync DB?']) ?>
+      <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
     </form>
   </div>
 
@@ -24,50 +24,40 @@
     </thead>
     <? foreach ($this->models as $model): ?>
     <tr>
-      <td><a class="btn btn-sm btn-outline-primary" href="<?= url_for('edit', $model['id']) ?>"><?= LABEL_EDIT ?></a></td>
+      <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $model['id']) ?></td>
       <td>
-        <a href="<?= url_for('attribute/', array('model_id' => $model['id'])) ?>"><?= $model['name'] ?></a>
-        <div>
-          <?= $model['label'] ?>
-        </div>
+        <?= FormHelper::link('attribute/', $model['name'], ['model_id' => $model['id']]) ?>
+        <div><?= $model['label'] ?></div>
       </td>
-      <td><?= $model['entity_name'] ?>
-      </td>
-      <td>
-        <?= $model['class_name'] ?>
-      </td>
+      <td><?= $model['entity_name'] ?></td>
+      <td><?= $model['class_name'] ?></td>
       <td>
         <form action="<?= url_for('page/create_page_from_model') ?>" method="post">
-          <button class="btn btn-sm btn-primary confirm-dialog" message="Create page '<?= $model['name'] ?>'?">Create</button>
-          <input type="hidden" name="model_id" value="<?= $model['id'] ?>">
-        </form>
-      </td>
-      <td>
-        <? if ($model['pg_class']): ?>
-        <label class="badge badge-pill badge-info"><?= $model['pg_class']['pg_class_id'] ?></label>
+          <?= FormHelper::button(LABEL_CREATE, ['class' => 'btn btn-sm btn-primary confirm-dialog', 'message' => "Create page?"]) ?>
+          <?= FormHelper::hidden('model_id', $model['id']) ?>
+          </form>
+        </td>
+        <td>
+          <? if ($model['pg_class']): ?>
+          <label class="badge badge-pill badge-info"><?= $model['pg_class']['pg_class_id'] ?></label>
+          <? else: ?>
+          <form action="<?= url_for('add_table') ?>" method="post">
+            <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-primary btn-sm']) ?>
+            <?= FormHelper::hidden('model_id', $model['id']) ?>
+          </form>
+          <? endif ?>
 
-        <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
-        <label class="badge badge-pill badge-success">sync</label>
+      <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
+      <label class="badge badge-pill badge-success">sync</label>
+    <? else: ?>
+    <label class="badge badge-pill badge-danger">unsync</label>
+  <? endif ?>
 
-        <? if ($model['label'] == $model['pg_class']['comment']): ?>
-        <label class="badge badge-pill badge-success">label</label>
-      <? else: ?>
-      <label class="badge badge-pill badge-danger">different label</label>
-      <label class="badge badge-pill badge-default">DB:<?= $model['pg_class']['comment'] ?></label>
-    <? endif ?>
-
-  <? else: ?>
-  <label class="badge badge-pill badge-danger">pg_class_id error</label>
-<? endif ?>
-
+  <? if ($model['label'] == $model['pg_class']['comment']): ?>
+  <label class="badge badge-pill badge-success">label</label>
 <? else: ?>
-
-<form action="<?= url_for('add_table', $model['id']) ?>" method="post">
-  <input class="btn btn-outline-primary" type="submit" value="<?= LABEL_ADD ?>">
-  <input type="hidden" name="model_id" value="<?= $model['id'] ?>">
-  <input type="hidden" name="table_name" value="<?= $model['name'] ?>">
-</form>
-
+<label class="badge badge-pill badge-danger">different label</label>
+<label class="badge badge-pill badge-default">DB:<?= $model['pg_class']['comment'] ?></label>
 <? endif ?>
 </td>
 

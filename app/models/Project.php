@@ -79,9 +79,26 @@ class Project extends _Project {
                     if ($page['model_id']) {
                         $values['model'] = DB::table('Model')->fetch($page['model_id'])->value;
                     }
-                    $page_template_path = page::templateFilePath($page);
+                    $page_template_path = Page::templateFilePath($page);
                     $contents = FileManager::bufferFileContetns($page_template_path, $values);
                     file_put_contents($page_path, $contents);
+                }
+
+                $views = DB::table('View')->listByPage($page)->values;
+                if ($views) {
+                    foreach ($views as $view) {
+                        $view_path = View::projectFilePath($this->user_project_setting, $page, $view);
+                        if (!file_exists($view_path) || $view['is_force_write']) {
+                            $values['view'] = $view;
+
+                            $view_template_path = View::templateFilePath($view);
+                            if (file_exists($view_template_path)) {
+                                $contents = FileManager::bufferFileContetns($view_template_path, $values);
+                                file_put_contents($view_path, $contents);
+                            }
+                        } 
+                    }
+
                 }
 
             }   

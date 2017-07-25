@@ -1,17 +1,20 @@
 <? include('_header.phtml') ?>
 
-<h2>プロジェクト情報</h2>
 <form id="" action="<?=url_for('update', $this->params['id']) ?>" method="post">
 
-  <? include('_edit.phtml') ?>
+  <div class="form-group row">
+    <label for="" class="col-2 col-form-label">Name</label>
+    <?= $this->project->formInput('name') ?>
+  </div>
 
-  <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
-  <a class="btn btn-outline-primary" href="<?=url_for('cancel') ?>"><?= LABEL_BACK ?></a>
+  <div class="form-group row">
+    <label for="" class="col-2 col-form-label">Database</label>
+    <?= $this->project->formSelect('database_id', ['model' => 'Database', 'label_key' => 'name']) ?>
+  </div>
+
+  <?= FormHelper::submit(LABEL_UPDATE) ?>
+  <?= FormHelper::linkButton('cancel', LABEL_BACK) ?>
 
 </form>
 
-<? if ($this->project): ?>
-<form id="" action="<?=url_for('delete', $this->params['id']) ?>" method="post">
-  <input class="btn btn-outline-danger" type="submit" value="<?= LABEL_DELETE ?>">
-</form>
-<? endif ?>
+<?= $this->project->formDelete('delete', LABEL_DELETE) ?>

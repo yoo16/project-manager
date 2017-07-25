@@ -11,7 +11,7 @@ class _Project extends SqlEntity {
 
     var $id_column = 'id';
     var $name = 'projects';
-    static $entity_name = 'project';
+    var $entity_name = 'project';
 
     var $columns = array(
         'created_at' => array('type' => 't'),

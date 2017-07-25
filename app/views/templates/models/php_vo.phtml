@@ -20,7 +20,7 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
 <? endif ?>
 <? endif ?>
     var $name = '<?= $values['model']['name'] ?>';
-    static $entity_name = '<?= $values['model']['entity_name']?>';
+    var $entity_name = '<?= $values['model']['entity_name']?>';
 
 <? if ($values['attribute']): ?>
     var $columns = array(

@@ -11,7 +11,7 @@ class _User extends PgsqlEntity {
     
     var $id_column = 'id';
     var $name = 'users';
-    static $entity_name = 'user';
+    var $entity_name = 'user';
 
     var $columns = array(
         'created_at' => array('type' => 't'),

@@ -11,7 +11,7 @@ class _UserProjectSetting extends PgsqlEntity {
 
     var $id_column = 'id';
     var $name = 'user_project_settings';
-    static $entity_name = 'user_project_setting';
+    var $entity_name = 'user_project_setting';
 
     var $columns = array(
         'created_at' => array('type' => 't'),
