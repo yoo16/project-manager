@@ -32,7 +32,7 @@ class AttributeController extends ProjectController {
         }
     }
 
-    function before_rendering() {
+    function before_rendering($action) {
         if (isset($this->flash['errors'])) $this->errors = $this->flash['errors'];
     }
 
@@ -64,13 +64,7 @@ class AttributeController extends ProjectController {
     }
 
     function action_new() {
-        $params['name'] = 'project[database_id]';
-        $params['label_key'] = 'name';
-        $this->forms['database'] = DB::table('Database')
-                                        ->select()
-                                        ->formOptions($params);
 
-        $this->project = DB::table('Project')->value;
     }
 
     function edit() {

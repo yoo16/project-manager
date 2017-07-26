@@ -26,9 +26,8 @@ class _Page extends SqlEntity {
         'is_force_write' => array('type' => 'b'),
     );
 
-    function __construct($params=null) {
-        parent::__construct();
-        if ($params['pg_info']) $this->pg_info = $params['pg_info'];
+    function __construct($params = null) {
+        parent::__construct();        
     }
 
    /**

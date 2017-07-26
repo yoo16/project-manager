@@ -12,14 +12,14 @@
         <div class="modal-body">
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Project path</label>
-            <input class="form-control" name="user_project_setting[project_path]" type="text" value="<?= $this->user_project_setting['project_path'] ?>" placeholder="/home/users/<?= $this->project['name'] ?>/">
+            <?= DB::table('UserProjectSetting')->formInput('project_path', ['class' => 'form-control', 'placeholder' => '/home/users/project_name/']) ?>
           </div>
         </div>
 
         <div class="modal-footer">
-        <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
-          <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
-          <input class="" name="user_project_setting[project_id]" type="hidden" value="<?= $this->project['id'] ?>">
+          <?= FormHelper::submit(LABEL_ADD) ?>
+          <?= FormHelper::button(LABEL_CLOSE, ['class' => 'btn btn-outline-primary', 'data-dismiss' => 'modal']) ?>
+          <?= FormHelper::hidden('user_project_setting[project_id]', $this->project->value['id']) ?>
         </div>
 
       </div>

@@ -12,10 +12,9 @@ class ProjectController extends AppController {
     var $session_name = 'project';
 
    /**
-    * 事前処理
+    * before_action
     *
-    * @access public
-    * @param String $action
+    * @param string $action
     * @return void
     */ 
     function before_action($action) {
@@ -39,7 +38,7 @@ class ProjectController extends AppController {
         }
     }
 
-    function before_rendering() {
+    function before_rendering($action) {
         if (isset($this->flash['errors'])) $this->errors = $this->flash['errors'];
     }
 
@@ -64,92 +63,64 @@ class ProjectController extends AppController {
     }
 
     function action_cancel() {
+        $this->clearSession();
         $this->index();
     }
 
     function action_list() {
-        $this->clearSession();
-
-        $this->projects = DB::table('Project')
-                            ->selectValues();
-
-        $this->databases = DB::table('Database')
-                            ->selectValues(array('id_index' => true));
-
-        $this->new_project = new Project();
+        $this->database = DB::table('Database')->select();
+        $this->project = DB::table('Project')
+                            ->select()
+                            ->bindById($this->database, 'database_id');
     }
 
     function action_new() {
-        $params['name'] = 'project[database_id]';
-        $params['label_key'] = 'name';
-        $this->forms['database'] = DB::table('Database')
-                                        ->select()
-                                        ->formOptions($params);
-
-        $this->project = DB::table('Project')->value;
     }
 
     function action_edit() {
-        $params['name'] = 'project[database_id]';
-        $params['label_key'] = 'name';
-        $this->forms['database'] = DB::table('Database')
-                                        ->select()
-                                        ->formOptions($params);
-
-
         $this->project = DB::table('Project')
                         ->fetch($this->params['id'])
                         ->takeValues($this->session['posts']);
 
-        $this->user_project_settings = DB::table('UserProjectSetting')
-                                        ->select()
-                                        ->values;
+        $this->database = DB::table('Database')->fetch($this->project->value['database_id']);
     }
 
     function action_add() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['posts'] = $_POST['project'];
-            $project = DB::table('Project')
-                            ->takeValues($posts)
-                            ->insert();
+        if (!isPost()) exit;
+        $posts = $this->session['posts'] = $_POST['project'];
+        $project = DB::table('Project')->insert($posts);
 
-            if ($project->errors) {
-                $this->flash['errors'] = $project->errors;
-                $this->redirect_to('new');
-            } else {
-                unset($this->session['posts']);
-                $this->redirect_to('list');
-            }
+        if ($project->errors) {
+            $this->flash['errors'] = $project->errors;
+            $this->redirect_to('new');
+        } else {
+            unset($this->session['posts']);
+            $this->redirect_to('list');
         }
     }
 
     function action_update() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['posts'] = $_POST['project'];
-            $project = DB::table('Project')->update($posts, $this->params['id']);
+        if (!isPost()) exit;
+        $posts = $this->session['posts'] = $_POST['project'];
+        $project = DB::table('Project')->update($posts, $this->params['id']);
 
-            if ($project->errors) {
-                $this->flash['errors'] = $project->errors;
-            } else {
-                unset($this->session['posts']);
-            }
-            $this->redirect_to('edit', $this->params['id']);
+        if ($project->errors) {
+            $this->flash['errors'] = $project->errors;
+        } else {
+            unset($this->session['posts']);
         }
+        $this->redirect_to('edit', $this->params['id']);
     }
 
     function action_delete() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $project = DB::table('Project')->delete($this->params['id']);
-            if ($project->value['name'] && $project->value['path'] && file_exists($project->value['path'])) {
-                $cmd = "rm -rf {$project->value['path']};";
-                exec($cmd);
-            }
-            if ($project->errors) {
-                $this->flash['errors'] = $project->errors;
-                $this->redirect_to('edit', $this->params['id']);
-            } else {
-                $this->redirect_to('index');
-            }
+        if (!isPost()) exit;
+
+        $project = DB::table('Project')->delete($this->params['id']);
+        if ($project->errors) {
+            $this->flash['errors'] = $project->errors;
+            $this->redirect_to('edit', $this->params['id']);
+        } else {
+            $this->redirect_to('index');
         }
     }
 
@@ -176,19 +147,14 @@ class ProjectController extends AppController {
 
 
     function action_export_list() {
-            $this->project = DB::table('Project')
-                                            ->fetch("{$this->params['id']}")
-                                            ->value;
+            $this->project = DB::table('Project')->fetch("{$this->params['id']}");
 
             if ($this->project->value['id']) {
-                $this->database = DB::table('Database')
-                                                ->fetch("{$this->project->value['database_id']}")
-                                                ->value;
+                $this->database = DB::table('Database')->fetch("{$this->project->value['database_id']}");
 
-                $this->user_project_settings = DB::table('UserProjectSetting')
+                $this->user_project_setting = DB::table('UserProjectSetting')
                                                 ->where("project_id = {$this->project->value['id']}")
-                                                ->select()
-                                                ->values;
+                                                ->select();
             }
     }
 
@@ -230,8 +196,8 @@ class ProjectController extends AppController {
 
 
     function action_edit_user_project_setting() {
-        $this->user_project_setting = DB::table('UserProjectSetting')->fetch($this->params['id'])->value;
-        $this->project = DB::table('Project')->fetch($this->user_project_setting['project_id'])->value;
+        $this->user_project_setting = DB::table('UserProjectSetting')->fetch($this->params['id']);
+        $this->project = DB::table('Project')->fetch($this->user_project_setting->value['project_id']);
     }
 
     function action_add_user_project_setting() {
@@ -253,23 +219,24 @@ class ProjectController extends AppController {
     }
 
     function action_delete_user_project_setting() {
-        $user_project_setting = DB::table('UserProjectSetting')->fetchValue($this->params['id']);
-        if ($user_project_setting) {
-            DB::table('UserProjectSetting')->delete($this->params['id']);
+        if (!isPost()) exit;
+        $user_project_setting = DB::table('UserProjectSetting')->fetch($this->params['id']);
+        if ($user_project_setting->value) {
+            DB::table('UserProjectSetting')->delete($user_project_setting->value['id']);
         }
-        $this->redirect_to('export_list', $user_project_setting['project_id']);
+        $this->redirect_to('export_list', $user_project_setting->value['project_id']);
     }
 
     function action_update_user_project_setting() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['user_project_setting'] = $_POST['user_project_setting'];
-            $user_project_setting = DB::table('UserProjectSetting')->update($posts, $this->params['id']);
+        if (!isPost()) exit;
+        $posts = $this->session['user_project_setting'] = $_POST['user_project_setting'];
+        $user_project_setting = DB::table('UserProjectSetting')->update($posts, $this->params['id']);
 
-            if ($user_project_setting->errors) {
-                $this->flash['errors'] = $project->errors;
-            } else {
-                unset($this->session['posts']);
-            }
+        if ($user_project_setting->errors) {
+            $this->flash['errors'] = $project->errors;
+            $this->redirect_to('edit_user_project_setting', $user_project_setting->value['id']);
+        } else {
+            unset($this->session['posts']);
             $this->redirect_to('export_list', $user_project_setting->value['project_id']);
         }
     }
@@ -281,6 +248,50 @@ class ProjectController extends AppController {
         $results['cmd'] = $cmd;
         $results['output'] = $output;
         $results['return'] = $return;
+    }
+
+
+    function action_sync_db() {
+        if (!isPost()) exit;
+        $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+        $this->pg_classes = $pgsql_entity->tableArray();
+
+        foreach ($this->pg_classes as $pg_class) {
+            $relnames = explode('_', $pg_class['relname']);
+            $last_relname = end($relnames);
+
+            if (is_numeric($last_relname)) {
+
+            } else {
+                $model_values = null;
+                $model_values['database_id'] = $this->project->value['database_id'];
+                $model_values['project_id'] = $this->project->value['id'];
+                $model_values['relfilenode'] = $pg_class['relfilenode'];
+                $model_values['pg_class_id'] = $pg_class['pg_class_id'];
+                $model_values['name'] = $pg_class['relname'];
+                if ($pg_class['comment']) $model_values['label'] = $pg_class['comment'];
+
+                $model_values['entity_name'] = FileManager::pluralToSingular($pg_class['relname']);
+                $model_values['class_name'] = FileManager::phpClassName($model_values['entity_name']);
+
+                $model = DB::table('Model')
+                                ->where("pg_class_id = '{$pg_class['pg_class_id']}'")
+                                ->where("database_id = {$this->database->value['id']}")
+                                ->selectOne();
+
+                if ($model->value['id']) {
+                    $model = DB::table('Model')->update($model_values, $model->value['id']);
+                } else {
+                    $model = DB::table('Model')->insert($model_values);
+                }
+
+                $attribute = new Attribute();
+                $attribute->importByModel($model->value);
+            }
+
+        }
+        $params['project_id'] = $this->project->value['id'];
+        $this->redirect_to('list', $params);
     }
 
 }

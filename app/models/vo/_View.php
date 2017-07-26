@@ -22,8 +22,8 @@ class _View extends PgsqlEntity {
         'is_force_write' => array('type' => 'b'),
     );
 
-    function __construct($params=null) {
-        if ($params['pg_info']) $this->pg_info = $params['pg_info'];
+    function __construct($params = null) {
+        parent::__construct();        
     }
 
    /**

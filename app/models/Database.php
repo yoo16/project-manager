@@ -58,48 +58,68 @@ class Database extends _Database {
 
         $sheet = $book->removeSheetByIndex(0);
         foreach ($pg_classes as $pg_class) {
-            $sheet = $book->createSheet()->setTitle($pg_class['relname']);
+            $relnames = explode('_', $pg_class['relname']);
+            $last_relname = end($relnames);
 
-            $pg_attributes = $pgsql_entity->attributeArray($pg_class['relname']);
+            if (!is_numeric($last_relname)) {
+                $sheet_name = $pg_class['relname'];
+                if (mb_strlen($sheet_name) > 30) {
+                    $sheet_name = mb_substr($sheet_name,0, 30);
+                }
+                $sheet = $book->createSheet()->setTitle($sheet_name);
+                $pg_attributes = $pgsql_entity->attributeArray($pg_class['relname']);
 
-            $row = 1;
-            $sheet->setCellValueByColumnAndRow(0, $row, 'attribute');
-            $sheet->setCellValueByColumnAndRow(1, $row, 'type');
-            $sheet->setCellValueByColumnAndRow(2, $row, 'length');
-            $sheet->setCellValueByColumnAndRow(3, $row, 'primary key');
-            $sheet->setCellValueByColumnAndRow(4, $row, 'not null');
-            $sheet->setCellValueByColumnAndRow(5, $row, 'comment');
-            for ($col = 0; $col <= 5; $col++) {
-                $sheet->getStyleByColumnAndRow($col, $row)
-                      ->getBorders()
-                      ->getAllBorders()
-                      ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
-                $sheet->calculateColumnWidths();
-            }
+                $sheet->setCellValueByColumnAndRow(0, 1, 'Table Name');
+                $sheet->setCellValueByColumnAndRow(1, 1, $pg_class['relname']);
 
-            foreach ($pg_attributes as $pg_attribute) {
-                $row++;
-                $sheet->setCellValueByColumnAndRow(0, $row, $pg_attribute['attname']);
-                $sheet->setCellValueByColumnAndRow(1, $row, $pg_attribute['udt_name']);
-                $sheet->setCellValueByColumnAndRow(2, $row, $pg_attribute['character_maximum_length']);
-                $sheet->setCellValueByColumnAndRow(3, $row, $pg_attribute['is_primary_key']);
-                $sheet->setCellValueByColumnAndRow(4, $row, ($pg_attribute['attnotnull'] == 't'));
-                $sheet->setCellValueByColumnAndRow(5, $row, $pg_attribute['comment']);
-
+                $row = 3;
+                $sheet->setCellValueByColumnAndRow(0, $row, 'attribute');
+                $sheet->setCellValueByColumnAndRow(1, $row, 'type');
+                $sheet->setCellValueByColumnAndRow(2, $row, 'length');
+                $sheet->setCellValueByColumnAndRow(3, $row, 'primary key');
+                $sheet->setCellValueByColumnAndRow(4, $row, 'not null');
+                $sheet->setCellValueByColumnAndRow(5, $row, 'comment');
                 for ($col = 0; $col <= 5; $col++) {
                     $sheet->getStyleByColumnAndRow($col, $row)
                           ->getBorders()
                           ->getAllBorders()
                           ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
-                    $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex($col))->setAutoSize(true);
+                    $sheet->calculateColumnWidths();
+                }
+
+                foreach ($pg_attributes as $pg_attribute) {
+                    $row++;
+                    $sheet->setCellValueByColumnAndRow(0, $row, $pg_attribute['attname']);
+                    $sheet->setCellValueByColumnAndRow(1, $row, $pg_attribute['udt_name']);
+                    $sheet->setCellValueByColumnAndRow(2, $row, $pg_attribute['character_maximum_length']);
+                    $sheet->setCellValueByColumnAndRow(3, $row, $pg_attribute['is_primary_key']);
+                    $sheet->setCellValueByColumnAndRow(4, $row, ($pg_attribute['attnotnull'] == 't'));
+                    $sheet->setCellValueByColumnAndRow(5, $row, $pg_attribute['comment']);
+
+                    for ($col = 0; $col <= 5; $col++) {
+                        $sheet->getStyleByColumnAndRow($col, $row)
+                              ->getBorders()
+                              ->getAllBorders()
+                              ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+                        $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex($col))->setAutoSize(true);
+                    }
                 }
             }
+
         }
         $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
+        header("Pragma: public");
+        header("Expires: 0");
+        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+        header("Content-Type: application/force-download");
+        header("Content-Type: application/octet-stream");
+        header("Content-Type: application/download");
+        header("Content-Disposition: attachment;filename={$file_name}");
+        header("Content-Transfer-Encoding: binary ");
+        $writer->save('php://output');
 
-        FileManager::createDir($tmp_dir);
-        $writer->save($export_path);
-        //var_dump($pg_classes);
+        //FileManager::createDir($tmp_dir);
+        //$writer->save($export_path);
     }
 
     /**

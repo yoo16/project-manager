@@ -593,7 +593,7 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * initWhere
+    * offset
     * 
     * @param  string $condition
     * @return Class
@@ -604,33 +604,60 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * initWhere
+    * select column
     * 
-    * @param  string $condition
+    * @param  string $model_name
+    * @param  array $conditions
     * @return Class
     */
-    public function join($table, $type = 'INNER') {
+    public function selectColumn($join_class_name, $column, $join_column, $eq = '=', $type = 'LEFT') {
+        if (!$join_class_name) return $this;
+        if (!$column) return $this;
+        if (!$join_column) return $this;
+
+        $join_class = DB::table($join_class_name);
+
+        $join['join_class'] = $join_class;
+        $join['join_name'] = $join_class->name;
+        $join['condition'] = "{$this->name}.{$column} = {$join_class->name}.{$join_column}";
+        $join['type'] = $type;
+        $this->joins[] = $join;
+        return $this;
+    }
+
+    /**
+    * join
+    * 
+    * @param  string $model_name
+    * @param  array $conditions
+    * @return Class
+    */
+    public function join($join_class_name, $column, $join_column, $eq = '=', $type = 'LEFT') {
+        if (!$join_class_name) return $this;
+        if (!$column) return $this;
+        if (!$join_column) return $this;
+
+        $join_class = DB::table($join_class_name);
+
+        $join['join_class'] = $join_class;
+        $join['join_name'] = $join_class->name;
+        $join['condition'] = "{$this->name}.{$column} = {$join_class->name}.{$join_column}";
+        $join['type'] = $type;
+        $this->joins[] = $join;
+        return $this;
+    }
+
+    /**
+    * init Join
+    * 
+    * @param  string $model_name
+    * @return Class
+    */
+    public function initJoin($class_name, $type = 'LEFT') {
         $this->joins = array();
-        $this->add_join($table, $conditions, $type);
-        return;
+        $this->join($class_name, $type);
+        return $this;
     }
-
-    function add_join($table, $conditions, $type = 'INNER') {
-        if (is_array($conditions)) {
-            foreach ($conditions as $i => $condition) {
-                $conditions[$i] = "(\"{$table}\".{$condition})";
-            }
-            $conditions = implode(' AND ', $conditions);
-        } else {
-            $conditions = "\"{$table}\".{$conditions}";
-        }
-        $this->joins[] = "{$type} JOIN \"{$table}\" ON {$conditions}";
-    }
-
-    function set_left_join($t, $c)  { $this->set_join($t, $c, 'LEFT'); }
-    function set_right_join($t, $c) { $this->set_join($t, $c, 'RIGHT'); }
-    function add_left_join($t, $c)  { $this->add_join($t, $c, 'LEFT'); }
-    function add_right_join($t, $c) { $this->add_join($t, $c, 'RIGHT'); }
 
     /**
     * sqlValue
@@ -653,7 +680,7 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * whereSql
+    * where Sql
     * 
     * @param  array $params
     * @return string
@@ -662,6 +689,22 @@ class PgsqlEntity extends Entity {
         $sql = '';
         if (isset($params['conditions'])) $this->conditions = $params['conditions'];
         if ($condition = $this->sqlConditions($this->conditions)) $sql = " WHERE {$condition}";
+        return $sql;
+    }
+
+    /**
+    * join Sql
+    * 
+    * @return string
+    */
+    private function joinSql() {
+        $sql = '';
+        if (is_array($this->joins)) {
+            foreach ($this->joins as $join) {
+                $joins[] = " {$join['type']} JOIN \"{$join['join_name']}\" ON {$join['condition']}";
+            }
+            $sql = implode(' AND ', $joins);
+        }
         return $sql;
     }
 
@@ -712,8 +755,35 @@ class PgsqlEntity extends Entity {
     * @return string
     */
     private function selectSql($params = null) {
-        $sql = "SELECT {$this->name}.* FROM {$this->name}";
+        //TODO join column
+        // if ($this->joins) {
+        //     if ($this->columns) {
+        //         $columns[] = "{$this->name}.{$this->id_column}";
+        //         foreach ($this->columns as $key => $value) {
+        //             $columns[] = "{$this->name}.{$key}\n";
+        //         }
+        //     }
+        //     foreach ($this->joins as $join) {
+        //         $join_class = $join['join_class'];
+        //         if ($join_class->columns) {
+        //             foreach ($join_class->columns as $key => $value) {
+        //                 $columns[] = "{$join['join_name']}.{$key}\n";
+        //             }
+        //         }
+        //     }
+        //     $column = implode(', ', $columns);
+        // } else {
+        //     $column = "{$this->name}.*";
+        // }
+        $column = "{$this->name}.*";
+
+        $sql = "SELECT {$column} FROM {$this->name}";
         $sql.= $this->whereSql($params);
+
+        if ($this->joins) {
+            $sql.= $this->joinSql();
+        }
+
         $sql.= $this->orderBySql($params);
         $sql.= $this->offsetSql($params);
         $sql.= $this->limitSql($params);
@@ -931,9 +1001,11 @@ class PgsqlEntity extends Entity {
 
         if ($pg_classes) {
             foreach ($pg_classes as $pg_class) {
-                $name = $pg_class['relname'];
-                $pg_class['comment'] = $comments[$name];
-                $values[$name] = $pg_class;
+                if ($pg_class['pg_class_id']) {
+                    $name = $pg_class['relname'];
+                    $pg_class['comment'] = $comments[$name];
+                    $values[$name] = $pg_class;
+                }
             }
         }
         return $values;

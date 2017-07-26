@@ -12,23 +12,18 @@ class FormHelper {
      *
      * @param array $params
      * @param string $selected
-     * @param string $value_key
-     * @param string $label_key
      * @return string
      */
-    static function select($params, $selected=null, $value_key=null, $label_key=null, $values=null) {
+    static function select($params, $selected=null) {
         if (!$params) return;
-
-        $params = self::checkParams($params, $selected, $value_key, $label_key, $values);
-
         if (!isset($params['class'])) $params['class'] = 'form-control col-4';
 
-        $tag = '';
-        $tag.= self::unselectOption($params);
-        $tag.= self::selectOptions($params, $params['selected']);
+        $tag = self::selectOptions($params, $selected);
 
-        $attribute = self::selectAttribute($params);
-        $tag = self::selectTag($tag, $attribute);
+        $attribues['id'] = $params['id'];
+        $attribues['class'] = $params['class'];
+        $attribues['name'] = $params['name'];
+        $tag = self::selectTag($tag, $attribues);
         return $tag;
     }
 
@@ -234,14 +229,96 @@ class FormHelper {
     }
 
     /**
-     * selectタグ生成
+     * tag
      *
-     * @param String $tag
-     * @param Array $params
-     * @return String
+     * @param string $type
+     * @param string $tag
+     * @param array $attributes
+     * @return string
      */
-    static function selectTag($tag, $attribute=null) {
-       $tag = "<select{$attribute}>\n{$tag}\n</select>\n"; 
+    static function tag($type, $tag, $attributes=null) {
+        if (is_array($attributes)) $attribute = self::attribute($attributes);
+       $tag = "<{$type} {$attribute}>{$tag}</{$type}>\n"; 
+       return $tag;
+    }
+
+    /**
+     * tag
+     *
+     * @param string $type
+     * @param array $attributes
+     * @param string $tag
+     * @return string
+     */
+    static function singleTag($type, $attributes=null, $tag = null) {
+        if (is_array($attributes)) $attribute = self::attribute($attributes);
+       $tag = "<{$type} {$attribute}>{$tag}\n"; 
+       return $tag;
+    }
+
+    /**
+     * label tag
+     *
+     * @param string $tag
+     * @param array $attributes
+     * @return string
+     */
+    static function labelTag($tag, $attributes=null) {
+       $tag = self::tag('label', $tag, $attributes);
+       return $tag;
+    }
+
+
+    /**
+     * label tag
+     *
+     * @param string $tag
+     * @param array $attributes
+     * @return string
+     */
+    static function formLabel($tag, $attributes=null) {
+        if (!$attributes['class']) $attributes['class'] = 'col-2 col-form-label';
+        $tag = self::labelTag($tag, $attributes);
+        return $tag;
+    }
+
+    /**
+     * label badge tag
+     *
+     * @param string $tag
+     * @param array $attributes
+     * @param string $type
+     * @return string
+     */
+    static function badgeTag($tag, $attributes = null, $type = 'info') {
+        $badge_class = " badge badge-pill badge-{$type}";
+        $attributes['class'].= $badge_class;
+        $tag = self::labelTag($tag, $attributes);
+        return $tag;
+    }
+
+
+    /**
+     * select tag
+     *
+     * @param string $tag
+     * @param array $attributes
+     * @return string
+     */
+    static function selectTag($tag, $attributes=null) {
+       $tag = self::tag('select', $tag, $attributes);
+       return $tag;
+    }
+
+    /**
+     * option tag
+     *
+     * @param string $tag
+     * @param array $attributes
+     * @return string
+     */
+    static function optionTag($tag, $attributes=null) {
+       $tag = self::tag('option', $tag, $attributes);
        return $tag;
     }
 
@@ -290,6 +367,24 @@ class FormHelper {
     }
 
     /**
+     * 
+     *
+     * @param array $params
+     * @return array
+     */
+    static function values($params) {
+        if (isset($params['csv']) && $params['csv']) {
+            $values = CsvLite::options($params['csv']);
+        } else if (isset($params['model']) && $params['model']) {
+            $entity = DB::table($params['model']);
+            $values = $entity->select()->values;
+        } else {
+            $values = $params['values'];
+        }
+        return $values;
+    }
+
+    /**
      * optionタグ
      *
      * @param Array $params
@@ -297,27 +392,18 @@ class FormHelper {
      * @return String
      */
     static function selectOptions($params, $selected=null) {
-        if (isset($params['csv_file']) && $params['csv_file']) {
-            $values = CsvLite::options($params['csv_file']);
-        } else {
-            $values = $params['values'];
-        }
+        $values = self::values($params);
+        if (!is_array($values)) return;
 
-        $value_key = isset($params['value_key']) ? $params['value_key'] : 'value';
-        $label_key = isset($params['label_key']) ? $params['label_key'] : 'label';
-        $class_key = isset($params['class_key']) ? $params['class_key'] : '';
+        $value_key = isset($params['value']) ? $params['value'] : 'value';
 
-        $tag = '';
-        $class = null;
-        if (is_array($values)) {
-            foreach ($values as $key => $option) {
-                $value = $option[$value_key];
-                $label = self::convertLabel($option, $params);
+        $tag = self::unselectOption($params);
+        foreach ($values as $value) {
+            $attributes['value'] = $value[$value_key];
+            $attributes['selected'] = self::selectedTag($attributes['value'], $selected);
 
-                if ($class_key) $class = $option[$class_key];
-                $selected_tag = self::selectedTag($value, $selected);
-                $tag.= "<option value=\"{$value}\" class=\"{$class}\"{$selected_tag}>{$label}</option>\n";
-            }
+            $label = self::convertLabel($value, $params);
+            $tag.= self::optionTag($label, $attributes);
         }
         return $tag;
     }
@@ -344,7 +430,7 @@ class FormHelper {
     }
 
     /**
-     * 未選択optionタグ
+     * unselect option
      *
      * @param array $params
      * @return string
@@ -414,20 +500,20 @@ class FormHelper {
     static function checkParams($params, $selected=null, $value_key=null, $label_key=null, $values=null) {
         if (isset($values)) $params['values'] = $values;
         $params['selected'] = isset($selected)? $selected : null;
-        if (isset($value_key)) $params['value_key'] = $value_key;
-        if (isset($label_key)) $params['label_key'] = $label_key;
+        if (isset($value_key)) $params['value'] = $value_key;
+        if (isset($label_key)) $params['label'] = $label_key;
         return $params;
     }
         
     /**
      * ラベル生成
      * 
-     * @param Array $values
-     * @param Array $params
-     * @return String
+     * @param array $values
+     * @param array $params
+     * @return string
      */
     static function convertLabel($values, $params) {
-        $label_keys = isset($params['label_key']) ? $params['label_key'] : 'label';
+        $label_keys = isset($params['label']) ? $params['label'] : 'label';
         if (is_array($label_keys)) {
             foreach ($label_keys as $label_key) {
                 $labels[] = $values[$label_key];
@@ -448,8 +534,7 @@ class FormHelper {
      * @return String
      */
     static function selectedTag($value, $selected) {
-        $tag = (!is_null($selected) && $selected == $value)? ' selected="selected"' : '';
-        return $tag;
+        if (!is_null($selected) && $selected == $value) return 'selected';
     }
 
     /**
@@ -461,9 +546,9 @@ class FormHelper {
      */
     static function checkedTag($value, $selected) {
         if (is_bool($value) && (bool) $value == (bool) $selected) {
-            $tag = ' checked="checked"';
-        } elseif ($value == $selected) {
-            $tag = ' checked="checked"';
+            $tag = 'checked';
+        } elseif ($value && $value == $selected) {
+            $tag = 'checked';
         }
         return $tag;
     }
@@ -476,17 +561,15 @@ class FormHelper {
      * @return String
      */
     static function radio($params, $selected=null, $value_key=null, $label_key=null, $values=null) {
-        $params = self::checkParams($params, $selected, $value_key, $label_key, $values);
-
-        if ($params['csv_file']) {
-            $values = CsvLite::options($params['csv_file']);
+        if ($params['csv']) {
+            $values = CsvLite::options($params['csv']);
         }
         if ($values) $params['values'] = $values;
         if ($selected) $params['selected'] = $selected;
-        if ($value_key) $params['value_key'] = $value_key;
-        if ($label_key) $params['label_key'] = $label_key;
-        if (!$params['value_key']) $params['value_key'] = 'value';
-        if (!$params['label_key']) $params['label_key'] = 'label';
+        if ($value_key) $params['value'] = $value_key;
+        if ($label_key) $params['label'] = $label_key;
+        if (!$params['value']) $params['value'] = 'value';
+        if (!$params['label']) $params['label'] = 'label';
 
         $name = $params['name'];
 
@@ -500,7 +583,7 @@ class FormHelper {
 
         if (is_array($values)) {
             foreach ($values as $key => $option) {
-                $value = $option[$params['value_key']];
+                $value = $option[$params['value']];
                 $label = self::convertLabel($option, $params);
                 $id_name = "{$id}_{$key}";
 
@@ -538,19 +621,19 @@ class FormHelper {
      * @return string
      */
     static function checkbox($params, $selected = null) {
-        $checked = self::checkedTag($params['value'], $selected);
         $label = ($params['label']) ? $params['label'] : LABEL_TRUE;
+        if (!isset($params['value'])) $params['value'] = 1;
 
         $attributes['type'] = 'checkbox';
         $attributes['name'] = $params['name'];
         $attributes['value'] = $params['value'];
+        $attributes['checked'] = self::checkedTag($params['value'], $selected);
         $attributes['id'] = $params['id'];
         $attributes['class'] = $params['class'];
-        $attribute = self::attribute($attributes);
 
         $tag.= self::hidden($params['name'], -1);
-        $tag.= "<input {$attribute} {$checked}>\n";
-        $tag = "<label>\n{$tag}{$label}\n</label>\n";
+        $tag.= self::input($attributes);
+        $tag = self::labelTag($tag.$label);
         return $tag;
     }
 
@@ -566,8 +649,8 @@ class FormHelper {
 
         $name = $params['name'];
         $values = $params['values'];
-        $value_key = $params['value_key'];
-        $label_key = $params['label_key'];
+        $value_key = $params['value'];
+        $label_key = $params['label'];
 
         $params['class'] = ' form-check-input';
         $attribute = self::selectAttribute($params);
@@ -612,7 +695,7 @@ class FormHelper {
         if (!$params) return;
         foreach ($params as $key => $param) {
             if (is_array($param)) $param = implode(' ', $param);
-            $attributes[] = "{$key}=\"{$param}\""; 
+            if (isset($param)) $attributes[] = "{$key}=\"{$param}\"";
         }
         $attribute = implode(' ', $attributes);
         return $attribute;
@@ -673,18 +756,17 @@ class FormHelper {
     /**
      * input
      *
-     * @param array $params
+     * @param array $attributes
      * @param string $name
      * @param object $value
      * @return string
      */
-    static function input($params, $name = null, $value = null) {
-        if (!$params['type']) $params['type'] = "text";
-        if ($name) $params['name'] = $name;
-        if ($value) $params['value'] = $value;
+    static function input($attributes, $name = null, $value = null) {
+        if (!$attributes['type']) $attributes['type'] = "text";
+        if (isset($name)) $attributes['name'] = $name;
+        if (isset($value)) $attributes['value'] = $value;
 
-        $attribute = self::attribute($params);
-        $tag = "<input {$attribute}>\n";
+        $tag = self::singleTag('input', $attributes);
         return $tag;
     }
 
@@ -725,8 +807,8 @@ class FormHelper {
      *
      * @param string $value
      * @param array $params
-     * @return string $name
      * @param string $name
+     * @return string $name
      */
     static function delete($value = null, $params = null, $name = null) {
         if (!$params['class']) $params['class'] = 'btn btn-danger';
@@ -734,10 +816,32 @@ class FormHelper {
         return $tag;
     }
 
+    /**
+     * button
+     *
+     * @param string $label
+     * @param array $params
+     * @return string $name
+     */
     static function button($label, $params = null) {
         if (!$params['class']) $params['class'] = 'btn btn-primary';
         $attribute = self::attribute($params);
         $tag = "<button {$attribute}>{$label}</button>\n";
+        return $tag;
+    }
+
+    /**
+     * groupButton
+     *
+     * @param string $label
+     * @param array $params
+     * @return string $name
+     */
+    static function groupButton($label, $params = null) {
+        $tag = "<button {$attribute}>{$label}</button>\n";
+
+        $attributes['class'] = 'input-group-btn';
+        $label = self::tag('span', $attribues);
         return $tag;
     }
 
@@ -768,6 +872,5 @@ class FormHelper {
         $tag = self::input($params, $name, $value);
         return $tag;
     }
-
 
 }

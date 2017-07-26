@@ -1,9 +1,9 @@
-<? if ($this->project->value): ?>
+<? if ($this->project->value['id']): ?>
 
 <div class="row mt-3 mb-3">
 
-  <div class="col-sm-4">
-    <div class="">
+  <div class="col-4">
+    <div class="card">
       <div class="card-block">
         <strong class="mr-1">Project</strong>
         <?= $this->project->value['name'] ?>
@@ -11,33 +11,37 @@
     </div>
   </div>
 
-  <div class="col-sm-4">
-    <div class="mr-1">
+  <div class="col-4">
+    <div class="card">
       <div class="card-block">
-        <strong class="">Database</strong>
+        <strong class="ml-2">Database</strong>
         <?= $this->database->value['name'] ?>
       </div>
     </div>
   </div>
 
-  <div class="col-sm-4">
-    <ul class="nav justify-content-end">
-      <li class="nav-item">
-        <a class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#php-export-window">PHP <?= LABEL_EXPORT ?></a>
-        <a class="btn btn-sm btn-danger" href="<?= url_for('export_db', $this->project->value['id']) ?>">DB <?= LABEL_EXPORT ?></a>
-      </li>
-    </ul>
+  <div class="col-4">
+    <div class="">
+      <div class="card-block">
+        <form action="<?= url_for('project/sync_db') ?>" method="post" class="">
+          <?= FormHelper::linkModal('#php-export-window', 'PHP Export', ['class' => 'btn btn-sm btn-danger']) ?>
+          <?= FormHelper::linkButton('project/export_db', 'DB Export', null, ['class' => 'btn btn-sm btn-danger confirm-dialog']) ?>
+          <?= FormHelper::submit('DB Sync', ['class' => 'btn btn-sm btn-danger confirm-dialog']) ?>
+          <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
+        </form>
+      </div>
+    </div>
   </div>
 
 </div>
 
 <? include('php_export_window.phtml') ?>
 
-  <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
-    <ul class="nav nav-pills">
-      <li class="nav-item"><a class="nav-link <?= cssClass('page', $this->params['controller'], 'active'); ?>" href="<?= url_for('page/list', array('project_id' => $this->project->value['id'])) ?>">Page</a></li>
-      <li class="nav-item"><a class="nav-link <?= cssClass('model', $this->params['controller'], 'active'); ?>" href="<?= url_for('model/list', array('project_id' => $this->project->value['id'])) ?>">Model</a></li>
-    </ul>
-  </nav>
+<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+  <ul class="nav nav-pills">
+    <li class="nav-item"><a class="nav-link <?= cssClass('page', $this->params['controller'], 'active'); ?>" href="<?= url_for('page/list', array('project_id' => $this->project->value['id'])) ?>">Page</a></li>
+    <li class="nav-item"><a class="nav-link <?= cssClass('model', $this->params['controller'], 'active'); ?>" href="<?= url_for('model/list', array('project_id' => $this->project->value['id'])) ?>">Model</a></li>
+  </ul>
+</nav>
 
 <? endif ?>

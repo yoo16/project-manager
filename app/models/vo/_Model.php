@@ -23,16 +23,16 @@ class _Model extends PgsqlEntity {
         'database_id' => array('type' => 'i', 'required' => true),
         'entity_name' => array('type' => 's', 'required' => true),
         'class_name' => array('type' => 's', 'required' => true),
-        'auth_type' => array('type' => 's'),
-        'creator_user_id' => array('type' => 'i'),
+        //'auth_type' => array('type' => 's'),
+        //'creator_user_id' => array('type' => 'i'),
         'is_unenable' => array('type' => 'b'),
         'id_column_name' => array('type' => 's'),
         'is_none_id_column' => array('type' => 'b'),
         'sub_table_name' => array('type' => 's'),
     );
 
-    function __construct($params=null) {
-        if ($params['pg_info']) $this->pg_info = $params['pg_info'];
+    function __construct($params = null) {
+        parent::__construct();   
     }
 
    /**

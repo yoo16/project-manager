@@ -15,9 +15,9 @@
       <td>Exists</td>
     </tr>
   </thead>
-  <? if (is_array($this->user_project_settings)): ?>
+  <? if (is_array($this->user_project_setting->values)): ?>
   <tbody>
-    <? foreach ($this->user_project_settings as $user_project_setting): ?>
+    <? foreach ($this->user_project_setting->values as $user_project_setting): ?>
     <tr>
       <td><a class="btn btn-outline-primary" href="<?= url_for('edit_user_project_setting', $user_project_setting['id']) ?>"><?= LABEL_EDIT ?></a></td>
       <td><?= $user_project_setting['project_path'] ?></td>

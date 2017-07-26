@@ -28,9 +28,8 @@ class _User extends PgsqlEntity {
         'default_db_host' => array('type' => 's'),
     );
 
-    function __construct($params=null) {
+    function __construct($params = null) {
         parent::__construct();        
-        if ($params['pg_info']) $this->pg_info = $params['pg_info'];
     }
 
    /**

@@ -12,20 +12,18 @@
         <div class="modal-body">
           <div class="form-group row">
             <label for="" class="col-3 col-form-label">Name</label>
-            <input class="form-control col-8" type="text" name="project[name]" value="">
+            <?= DB::table('Project')->formInput('name') ?>
           </div>
 
           <div class="form-group row">
             <label for="" class="col-3 col-form-label">Database</label>
-            <?= $this->new_project->formSelect('database_id', ['model' => 'Database', 'label_key' => 'name', 'class' => 'form-control col-8']) ?>
+            <?= DB::table('Project')->formSelect('database_id', ['model' => 'Database', 'label' => 'name', 'class' => 'form-control col-8']) ?>
           </div>
 
         </div>
         <div class="modal-footer">
-          <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
-          <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
-          <input type="hidden" name="project[database_id]" value="<?= $this->database['id'] ?>">
-          <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
+          <?= FormHelper::submit(LABEL_ADD) ?>
+          <?= FormHelper::button(LABEL_CLOSE, ['class' => 'btn btn-outline-primary', 'data-dismiss' => 'modal']) ?>
         </div>
       </form>
     </div>

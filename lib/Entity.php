@@ -385,9 +385,9 @@ class Entity {
         if (isset($params['id'])) $options['id'] = $params['id'];
         if (isset($params['class'])) $options['class'] = $params['class'];
         if (isset($params['name'])) $options['name'] = $params['name'];
-        $options['value_key'] =  (isset($params['value_key'])) ? $params['value_key'] : $this->id_column;
-        $options['label_key'] =  (isset($params['label_key'])) ? $params['label_key'] : $this->id_column;
-        $options['values'] = $this->values;
+        $options['value'] =  (isset($params['value'])) ? $params['value'] : $this->id_column;
+        $options['label'] =  (isset($params['label'])) ? $params['label'] : $this->id_column;
+        if (isset($this->values)) $options['values'] = $this->values;
         $options['unselect'] =  (isset($params['unselect'])) ? $params['unselect'] : true;
         $options['label_separator'] = (isset($params['label_separator'])) ? $params['label_separator'] : ' ';
         return $options;
@@ -399,7 +399,8 @@ class Entity {
     * @param string $key
     * @return array
     */
-    function valuesWithKey($key = 'id') {
+    function valuesWithKey($key) {
+        if (!$key) $key = $this->id_column;
         $values = null;
         if ($this->values) {
             foreach ($this->values as $value) {
@@ -461,7 +462,6 @@ class Entity {
     * formSelect
     *
     * @param string $column
-    * @param array $values
     * @param array $params
     * @return string
     */
@@ -469,11 +469,8 @@ class Entity {
         if (!$column) return;
         $params['name'] = "{$this->entity_name}[{$column}]";
 
-        if ($params['model']) {
-            if (!$params['value_key']) $params['value_key'] = $this->id_column;
-            $params['values'] = DB::table($params['model'])
-                                            ->select()
-                                            ->values;
+        if ($params['model'] && !$params['value']) {
+            $params['value'] = $this->id_column;
         }
         $tag = FormHelper::select($params, $this->value[$column]);
         return $tag;
@@ -512,6 +509,51 @@ class Entity {
         $tag.= FormHelper::delete($label);
         $tag.= "</form>\n";
         return $tag;
+    }
+
+   /**
+    * bind
+    *
+    * @param class $model
+    * @param string $column
+    * @param string $bind_key
+    * @return class
+    */
+    function bindById($model, $bind_column) {
+        if (!$this->values) return $this;
+        if (!$model->values) return $this;
+
+        $bind_values = $model->valuesWithKey();
+        $bind_name = $model->entity_name;
+
+        if ($this->values) {
+            foreach ($this->values as $index => $value) {
+                if ($model->entity_name) {
+                    $id = $value[$bind_column];
+                    if ($id > 0) $this->values[$index][$bind_name] = $bind_values[$id];
+                }
+            }
+        }
+        return $this;
+    }
+
+   /**
+    * bind values
+    *
+    * @param array $values
+    * @param string $column
+    * @param string $bind_key
+    * @return array
+    */
+    function bindValues($values, $column, $bind_key) {
+        if (!$values) return $this->values;
+
+        if ($this->values) {
+            foreach ($this->values as $index => $value) {
+                $this->values[$index][$column] = $values[$value[$bind_key]];
+            }
+        }
+        return $this->values;
     }
 
 }

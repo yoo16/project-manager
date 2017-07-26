@@ -1,10 +1,10 @@
 <? include('_header.phtml') ?>
 
-<div class="pt-3">
-  <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-window"><?= LABEL_ADD ?></a>
-</div>
-
 <? include('add_window.phtml') ?>
+
+<div class="pt-3">
+  <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
+</div>
 
 <table class="table">
  <thead class="thead-default">
@@ -16,12 +16,12 @@
   </tr>
 </thead>
 
-<? if (is_array($this->projects)): ?>
-<? foreach ($this->projects as $project): ?>
+<? if (is_array($this->project->values)): ?>
+<? foreach ($this->project->values as $project): ?>
 <tr>
   <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $project['id']) ?></td>
   <td><?= FormHelper::link('model/list', $project['name'], ['project_id' => $project['id']]) ?></td>
-  <td><?= Entity::searchForKey($this->databases, $project['database_id'], 'name') ?></td>
+  <td><?= $project['database']['name'] ?></td>
   <td><?= FormHelper::linkButton('export_list', LABEL_EXPORT.LABEL_SETTING, $project['id']) ?></td>
 </tr>
 <? endforeach ?>

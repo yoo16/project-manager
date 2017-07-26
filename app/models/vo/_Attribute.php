@@ -32,8 +32,8 @@ class _Attribute extends PgsqlEntity {
         'note' => array('type' => 's'),
     );
 
-    function __construct($params=null) {
-        if ($params['pg_info']) $this->pg_info = $params['pg_info'];
+    function __construct($params = null) {
+        parent::__construct();   
     }
 
    /**

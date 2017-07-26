@@ -2,11 +2,7 @@
 
 <div class="">
   <div class="pt-3">
-    <form action="<?= url_for('sync_db') ?>" method="post">
-      <?= FormHelper::linkModal('#add-table-window', LABEL_ADD) ?>
-      <?= FormHelper::submit('Sync DB', ['class' => 'btn btn-outline-success confirm-dialog', 'message' => 'Do you sync DB?']) ?>
-      <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
-    </form>
+    <?= FormHelper::linkModal('#add-table-window', LABEL_ADD) ?>
   </div>
 
   <? include('add_table_window.phtml'); ?>
@@ -15,7 +11,7 @@
     <thead class="thead-default">
       <tr>
         <th></th>
-        <th>name</th>
+        <th>Name</th>
         <th>Entity</th>
         <th>Class</th>
         <th>Page</th>
@@ -26,8 +22,8 @@
     <tr>
       <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $model['id']) ?></td>
       <td>
-        <?= FormHelper::link('attribute/', $model['name'], ['model_id' => $model['id']]) ?>
-        <div><?= $model['label'] ?></div>
+      <div><?= FormHelper::link('attribute/', $model['name'], ['model_id' => $model['id']]) ?></div>
+      <div><?= $model['label'] ?></div>
       </td>
       <td><?= $model['entity_name'] ?></td>
       <td><?= $model['class_name'] ?></td>
@@ -35,29 +31,30 @@
         <form action="<?= url_for('page/create_page_from_model') ?>" method="post">
           <?= FormHelper::button(LABEL_CREATE, ['class' => 'btn btn-sm btn-primary confirm-dialog', 'message' => "Create page?"]) ?>
           <?= FormHelper::hidden('model_id', $model['id']) ?>
-          </form>
-        </td>
-        <td>
-          <? if ($model['pg_class']): ?>
-          <label class="badge badge-pill badge-info"><?= $model['pg_class']['pg_class_id'] ?></label>
-          <? else: ?>
-          <form action="<?= url_for('add_table') ?>" method="post">
-            <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-primary btn-sm']) ?>
-            <?= FormHelper::hidden('model_id', $model['id']) ?>
-          </form>
-          <? endif ?>
+        </form>
+      </td>
+      <td>
+        <? if ($model['pg_class']): ?>
+        <?= FormHelper::badgeTag($model['pg_class']['pg_class_id']) ?>
+      <? else: ?>
+      <form action="<?= url_for('add_table') ?>" method="post">
+        <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-primary btn-sm']) ?>
+        <?= FormHelper::hidden('model_id', $model['id']) ?>
+      </form>
+    <? endif ?>
 
-      <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
-      <label class="badge badge-pill badge-success">sync</label>
-    <? else: ?>
-    <label class="badge badge-pill badge-danger">unsync</label>
-  <? endif ?>
+    <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
+    <?= FormHelper::badgeTag('sync', null, 'success') ?>
+    <label class="badge badge-pill badge-success">sync</label>
+  <? else: ?>
+  <?= FormHelper::badgeTag('unsync', null, 'danger') ?>
+<? endif ?>
 
-  <? if ($model['label'] == $model['pg_class']['comment']): ?>
-  <label class="badge badge-pill badge-success">label</label>
+<? if ($model['label'] == $model['pg_class']['comment']): ?>
+<?= FormHelper::badgeTag('label', null, 'success') ?>
 <? else: ?>
-<label class="badge badge-pill badge-danger">different label</label>
-<label class="badge badge-pill badge-default">DB:<?= $model['pg_class']['comment'] ?></label>
+<?= FormHelper::badgeTag('different label', null, 'danger') ?>
+<?= FormHelper::badgeTag($model['pg_class']['comment'], null, 'default') ?>
 <? endif ?>
 </td>
 

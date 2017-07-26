@@ -17,16 +17,15 @@ class _Database extends PgsqlEntity {
         'created_at' => array('type' => 't'),
         'updated_at' => array('type' => 't'),
         'name' => array('type' => 's', 'required' => true),
-        'hostname' => array('type' => 's'),
-        'user_name' => array('type' => 's'),
-        'port' => array('type' => 'i'),
+        'hostname' => array('type' => 's', 'required' => true),
+        'user_name' => array('type' => 's', 'required' => true),
+        'port' => array('type' => 'i', 'required' => true),
         'current_version' => array('type' => 'i'),
         'type' => array('type' => 's'),
     );
 
-    function __construct($params=null) {
+    function __construct($params = null) {
         parent::__construct();        
-        if ($params['pg_info']) $this->pg_info = $params['pg_info'];
     }
 
    /**

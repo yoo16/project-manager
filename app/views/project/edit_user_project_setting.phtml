@@ -1,16 +1,14 @@
 <? include('_header.phtml') ?>
 
-<form id="" action="<?= url_for('update_user_project_setting', $this->user_project_setting['id']) ?>" method="post">
+<form id="" action="<?= url_for('update_user_project_setting', $this->user_project_setting->value['id']) ?>" method="post">
   <div class="form-group row">
     <label for="recipient-name" class="col-2 col-form-label">Project path</label>
-    <input class="form-control col-5" name="user_project_setting[project_path]" type="text" value="<?= $this->user_project_setting['project_path'] ?>">
+    <input class="form-control col-5" name="user_project_setting[project_path]" type="text" value="<?= $this->user_project_setting->value['project_path'] ?>">
   </div>
   <div class="">
-    <input class="btn btn-outline-primary" type="submit" value="<?= LABEL_UPDATE ?>">
-    <a class="btn btn-outline-primary" href="<?= url_for('export_list', $this->project['id']) ?>"><?= LABEL_CLOSE ?></a>
+    <?= FormHelper::submit(LABEL_UPDATE) ?>
+    <?= FormHelper::linkButton('export_list', LABEL_CLOSE, $this->project->value['id']) ?>
   </div>
 </form>
 
-<form id="" action="<?= url_for('delete_user_project_setting', $this->user_project_setting['id']) ?>" method="post">
-  <input class="btn btn-outline-danger" type="submit" value="<?= LABEL_DELETE ?>">
-</form>
+<?= $this->user_project_setting->formDelete('delete_user_project_setting', LABEL_DELETE) ?>

@@ -14,7 +14,6 @@
 <? include('relation_window.phtml') ?>
 
 <div class="card">
-
   <h4 class="card-header"><?= $this->model->value['name'] ?> <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label></h4>
 
   <div class="card-body">
@@ -31,6 +30,7 @@
         </tr>
       </thead>
       <tbody>
+        <? if ($this->attributes): ?>
         <? foreach ($this->attributes as $attribute): ?>
         <tr>
           <td>
@@ -41,17 +41,15 @@
             <form method="post" action="<?= url_for('update_label', $attribute['id']) ?>">
               <div class="row">
                <div class="input-group">
-                <input class="form-control form-control-sm" type="text" name="attribute[label]" value="<?= $attribute['label'] ?>">
-                <span class="input-group-btn">
-                  <?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?>
-                </span>
-              </div>
-            </div>
-            <?= FormHelper::hidden('pg_class_id', $attribute['pg_attribute']['pg_class_id']) ?>
-            <?= FormHelper::hidden('database_id', $this->database->value['id']) ?>
-          </form>
-        </td>
-        <td>
+                 <?= FormHelper::input(['class' => 'form-control form-control-sm'], 'attribute[label]', $attribute['label']) ?>
+                 <span class="input-group-btn"><?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?></span>
+               </div>
+             </div>
+             <?= FormHelper::hidden('pg_class_id', $attribute['pg_attribute']['pg_class_id']) ?>
+             <?= FormHelper::hidden('database_id', $this->database->value['id']) ?>
+           </form>
+         </td>
+         <td>
           <? if ($attribute['fk_attribute_id'] > 0): ?>
           <?= FormHelper::linkModal('#relation-window', 'relation', 
             [
@@ -70,25 +68,25 @@
         </td>
         <td>
           <label class="badge badge-pill badge-info">
-            <?= $attribute['type'] ?>
-            <? if ($attribute['length'] > 0): ?> (<?= $attribute['length'] ?>) <? endif ?>
+            <?= $attribute['type'] ?> <? if ($attribute['length'] > 0): ?> (<?= $attribute['length'] ?>) <? endif ?>
           </label>
         </td>
         <td>
           <? if ($attribute['is_required']): ?>
           <?= FormHelper::link('change_required', 'required', $attribute['id'], ['class' => 'badge badge-success']) ?>
         <? else: ?>
-          <?= FormHelper::link('change_required', 'required', $attribute['id'], ['class' => 'badge badge-default']) ?>
+        <?= FormHelper::link('change_required', 'required', $attribute['id'], ['class' => 'badge badge-default']) ?>
       <? endif ?>
     </td>
     <td>
-      <label class="badge badge-pill badge-info"><?= $attribute['pg_attribute']['attnum'] ?></label>
+      <?= FormHelper::badgeTag($attribute['pg_attribute']['attnum'], null, 'info') ?>
       <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
-      <label class="badge badge-pill badge-success">sync</label>
-      <label class="badge badge-pill badge-info"><?= $attribute['pg_attribute']['attname'] ?></label>
-      <label class="badge badge-pill badge-info"><?= $attribute['pg_attribute']['udt_name'] ?> <?= $attribute['pg_attribute']['character_maximum_length'] ?></label>
-      <? if ($attribute['is_primary_key']): ?><label class="badge badge-info">Primary</label><? endif ?>
-      <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><label class="badge badge-info">Not Null</label><? endif ?>
+      <?= FormHelper::badgeTag('sync', null, 'success') ?>
+      <?= FormHelper::badgeTag($attribute['pg_attribute']['attname'], null, 'info') ?>
+      <?= FormHelper::badgeTag($attribute['pg_attribute']['udt_name'], null, 'info') ?>
+      <?= FormHelper::badgeTag($attribute['pg_attribute']['character_maximum_length'], null, 'info') ?>
+      <? if ($attribute['is_primary_key']): ?><?= FormHelper::badgeTag('Primary', null, 'info') ?><? endif ?>
+      <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><?= FormHelper::badgeTag('Not Null', null, 'info') ?><? endif ?>
     <? else: ?>
     <label class="badge badge-pill badge-danger">unsync</label>
     <form action="<?= url_for('add_table', $attribute['id']) ?>" method="post">
@@ -100,6 +98,7 @@
 </td>
 </tr>
 <? endforeach ?>
+<? endif ?>
 </tbody>
 </table>
 </div>
