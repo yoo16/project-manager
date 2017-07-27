@@ -1,36 +1,25 @@
 <? if ($this->project->value['id']): ?>
 
-<div class="row mt-3 mb-3">
+<div class="row">
 
-  <div class="col-4">
-    <div class="card">
-      <div class="card-block">
-        <strong class="mr-1">Project</strong>
-        <?= $this->project->value['name'] ?>
-      </div>
-    </div>
+  <div class="col-5">
+    <table class="table">
+      <tr>
+        <th>Project</th>
+        <td><?= $this->project->value['name'] ?></td>
+        <td><?= FormHelper::linkModal('#php-export-window', 'PHP Export', ['class' => 'btn btn-sm btn-success']) ?></td>
+      </tr>
+    </table>
   </div>
 
-  <div class="col-4">
-    <div class="card">
-      <div class="card-block">
-        <strong class="ml-2">Database</strong>
-        <?= $this->database->value['name'] ?>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-4">
-    <div class="">
-      <div class="card-block">
-        <form action="<?= url_for('project/sync_db') ?>" method="post" class="">
-          <?= FormHelper::linkModal('#php-export-window', 'PHP Export', ['class' => 'btn btn-sm btn-danger']) ?>
-          <?= FormHelper::linkButton('project/export_db', 'DB Export', null, ['class' => 'btn btn-sm btn-danger confirm-dialog']) ?>
-          <?= FormHelper::submit('DB Sync', ['class' => 'btn btn-sm btn-danger confirm-dialog']) ?>
-          <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
-        </form>
-      </div>
-    </div>
+  <div class="col-5">
+    <table class="table">
+      <tr>
+        <th>Database</th>
+        <td><?= $this->database->value['name'] ?></td>
+        <td><?= FormHelper::linkButton('project/export_db', 'DB Export (Excel)', null, ['class' => 'btn btn-sm btn-success confirm-dialog']) ?></td>
+      </tr>
+    </table>
   </div>
 
 </div>

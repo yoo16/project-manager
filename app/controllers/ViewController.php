@@ -22,7 +22,7 @@ class ViewController extends PageController {
         parent::before_action($action);
 
         if ($_REQUEST['page_id']) {
-            $page = DB::table('Page')->fetch($_REQUEST['page_id'])->value;
+            $page = DB::table('Page')->fetch($_REQUEST['page_id']);
             AppSession::setSession('page', $page);
         }
         $this->page = AppSession::getSession('page');
@@ -63,7 +63,7 @@ class ViewController extends PageController {
     * @return void
     */
     function action_list() {
-        $this->views = DB::table('View')->listByPage($this->page)->values;
+        $this->view = DB::table('View')->listByPage($this->page);
     }
 
    /**
@@ -169,6 +169,15 @@ class ViewController extends PageController {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             DB::table('View')->updateSortOrder($_REQUEST['sort_order']);
         }
+    }
+
+    function action_change_force_write() {
+        $view = DB::table('View')->fetch($this->params['id']);
+        if ($view->value['id']) {
+            $posts['is_force_write'] = !$view->value['is_force_write'];
+            $view->update($posts);
+        }
+        $this->redirect_to('list');
     }
 
 }

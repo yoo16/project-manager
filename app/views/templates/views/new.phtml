@@ -1,0 +1,18 @@
+<?= "<? include('_header.phtml') ?>" ?>
+
+<form action="<? Tag::init()->php('url_for(\'add\')') ?>" method="post">
+
+  <table class="table">
+<? foreach ($values['model']['attributes'] as $attribute): ?>
+<? if (!Model::$required_columns[$attribute['name']]): ?>
+    <tr>
+      <th><?= $attribute['label'] ?></th>
+      <td><? Tag::init()->php('$this->'.$values['model']['entity_name']."->formInput('{$attribute['name']}')") ?></td>
+    </tr>
+<? endif ?>
+<? endforeach ?>
+  </table>
+
+  <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
+  <? Tag::init()->php('FormHelper::linkButton("cancel", LABEL_BACK)') ?>
+</form>

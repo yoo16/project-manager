@@ -7,7 +7,15 @@ class Attribute extends _Attribute {
         parent::validate();
     }
 
+    //TODO
     function listByModel($model) {
+        $this->where("model_id = {$model['id']}")
+                   ->order('sort_order', false)
+                   ->select();
+        return $this;
+    }
+
+    function valuesByModel($model) {
         $values = $this->where("model_id = {$model['id']}")
                        ->order('sort_order', false)
                        ->select()

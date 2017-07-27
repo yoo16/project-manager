@@ -3,37 +3,46 @@
 <? include('add_window.phtml') ?>
 
 <div class="pt-3">
-  <form action="<?= url_for('import_from_model') ?>" method="post">
+  <form action="<?= url_for('import_from_models') ?>" method="post">
     <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
-    <?= FormHelper::submit(LABEL_IMPORT) ?>
+    <?= FormHelper::submit(LABEL_IMPORT, ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you import from Models?']) ?>
     <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
   </form>
 </div>
 
-<? if ($this->pages): ?>
 <table class="table">
-  <tr>
-    <th></th>
-    <th>Name</th>
-    <th>Label</th>
-    <th>Class Name</th>
-    <th></th>
-    <th>Model</th>
-    <th>Entity Name</th>
-  </tr>
+  <thead class="thead-default">
+    <tr>
+      <th></th>
+      <th>Name</th>
+      <th>Label</th>
+      <th>Class Name</th>
+      <th></th>
+      <th></th>
+      <th>Entity Name</th>
+      <th>Model</th>
+    </tr>
+  </thead>
+
+  <? if ($this->pages): ?>
   <? foreach ($this->pages as $page): ?>
   <tr>
     <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $page['id']) ?></td>
     <td><?= $page['name'] ?></td>
     <td><?= $page['label'] ?></td>
     <td><?= Page::className($page) ?></td>
-    <td><? if ($page['is_force_write']): ?><label class="badge badge-danger">forece write</label><? endif ?></td>
-    <td>
-    <? if ($page['model_id']): ?><?= $this->models[$page['model_id']]['name'] ?><? endif ?>
-    </td>
-    <td><?= $page['entity_name'] ?></td>
     <td><a class="btn btn-sm btn-outline-primary" href="<?= url_for('view/', array('page_id' => $page['id'])) ?>"><?= LABEL_VIEW ?></a></td>
-  </tr>
+    <td>
+      <? if ($page['is_force_write']): ?>
+      <?= FormHelper::link('change_force_write', 'forced', $page['id'], ['class' => 'badge badge-danger']) ?>
+    <? else: ?>
+    <?= FormHelper::link('change_force_write', 'forced', $page['id'], ['class' => 'badge badge-default']) ?>
+  <? endif ?>
+</td>
+<td><?= $page['entity_name'] ?></td>
+<td><? if ($page['model_id']): ?><?= $this->models[$page['model_id']]['name'] ?><? endif ?></td>
+</tr>
 <? endforeach ?> 
-</table>
 <? endif ?>
+
+</table>

@@ -24,8 +24,7 @@ class Page extends _Page {
      */
     function listByProject($project) {
         if (!$project->value['id']) return;
-        $this->where("project_id = {$project->value['id']}")
-             ->select();
+        $this->where("project_id = {$project->value['id']}")->select();
         return $this;
     }
 

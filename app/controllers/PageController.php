@@ -41,7 +41,10 @@ class PageController extends ProjectController {
 
     function action_list() {
         $this->models = DB::table('Model')->listByProject($this->project)->valuesWithKey('id');
-        $this->pages = DB::table('Page')->listByProject($this->project)->values;
+        $this->pages = DB::table('Page')
+                            ->order('name')
+                            ->listByProject($this->project)
+                            ->values;
     }
 
     function action_new() {
@@ -110,6 +113,34 @@ class PageController extends ProjectController {
         }
     }
 
+    function action_import_from_models() {
+        $this->model = DB::table('Model')->listByProject($this->project);
+        foreach ($this->model->values as $model) {
+            $posts['model_id'] = $model['id'];
+            $posts['project_id'] = $this->project->value['id'];
+            $posts['label'] = $model['label'];
+            $posts['name'] = $model['class_name'];
+            $posts['class_name'] = $model['class_name'];
+            $posts['entity_name'] = $model['entity_name'];
+            $posts['extends_class_name'] = '';
+
+            $page = DB::table('Page')
+                ->where("project_id = {$this->project->value['id']}")
+                ->where("name = '{$model['class_name']}'")
+                ->selectOne()
+                ->value;
+
+            if (!$page['id']) {
+                $page = DB::table('Page')->insert($posts)->value;
+            }
+
+            if ($page['id']) {
+                DB::table('View')->generateDefaultActions($page);
+            }
+        }
+        $this->redirect_to('list');
+    }
+
     function action_create_page_from_model() {
         $model = DB::table('Model')->fetch($_REQUEST['model_id'])->value;
 
@@ -140,4 +171,12 @@ class PageController extends ProjectController {
         $this->redirect_to('list');
     }
 
+    function action_change_force_write() {
+        $page = DB::table('Page')->fetch($this->params['id']);
+        if ($page->value['id']) {
+            $posts['is_force_write'] = !$page->value['is_force_write'];
+            $page->update($posts);
+        }
+        $this->redirect_to('list');
+    }
 }

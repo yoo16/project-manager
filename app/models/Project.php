@@ -36,13 +36,14 @@ class Project extends _Project {
         $pgsql_entity = new PgsqlEntity($database->pgInfo());
         $pg_database = $pgsql_entity->pgDatabase();
 
-        $models = DB::table('Model')->listByProject($this->value)->values;
+        //model
+        $models = DB::table('Model')->listByProject($this)->values;
         if ($models) {
             foreach ($models as $model) {
                 $values = null;
                 
                 $pg_attributes = $pgsql_entity->attributeArray($model['name']);
-                $attributes = DB::table('Attribute')->listByModel($model);
+                $attributes = DB::table('Attribute')->valuesByModel($model);
 
                 foreach ($attributes as $attribute) {
                     $pg_attribute = $pg_attributes[$attribute['name']];
@@ -53,7 +54,7 @@ class Project extends _Project {
                 }
 
                 $values['model'] = $model;
-                $values['pg_attribute'] = $pgsql_entity->attributeArray($model['name']);
+                $values['pg_attribute'] = $pg_attributes;
 
                 $model_path = Model::projectFilePath($this->user_project_setting, $model);
                 if (!file_exists($model_path)) {
@@ -69,22 +70,27 @@ class Project extends _Project {
             }
         }
 
-        $pages = DB::table('Page')->listByProject($this->value)->values;
+        //controller view
+        $pages = DB::table('Page')->listByProject($this)->values;
         if ($pages) {
             foreach ($pages as $page) {
+                $values = null;
+                $values['page'] = $page;
+                if ($page['model_id']) {
+                    $model = DB::table('Model')->fetch($page['model_id'])->value;
+                    $model['attributes'] = DB::table('Attribute')->valuesByModel($model);
+                    $values['model'] = $model;
+                }
+
                 $page_path = Page::projectFilePath($this->user_project_setting, $page);
                 if (!file_exists($page_path) || $page['is_force_write']) {
-                    $values = null;
-                    $values['page'] = $page;
-                    if ($page['model_id']) {
-                        $values['model'] = DB::table('Model')->fetch($page['model_id'])->value;
-                    }
                     $page_template_path = Page::templateFilePath($page);
                     $contents = FileManager::bufferFileContetns($page_template_path, $values);
                     file_put_contents($page_path, $contents);
                 }
 
-                $views = DB::table('View')->listByPage($page)->values;
+                //view
+                $views = DB::table('View')->valuesByPage($page);
                 if ($views) {
                     foreach ($views as $view) {
                         $view_path = View::projectFilePath($this->user_project_setting, $page, $view);
@@ -98,7 +104,6 @@ class Project extends _Project {
                             }
                         } 
                     }
-
                 }
 
             }   
