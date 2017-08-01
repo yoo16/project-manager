@@ -14,10 +14,15 @@
         <?= $this->model->formInput('label') ?>
       </div>
       
+      <div class="form-group row">
+        <label for="" class="col-1 col-form-label">Lock</label>
+        <?= $this->model->formCheckbox('is_lock') ?>
+      </div>
+      
       <?= FormHelper::submit(LABEL_UPDATE) ?>
       <?= FormHelper::linkButton('cancel', LABEL_BACK) ?>
     </form>
 
-    <?= $this->model->formDelete('delete', LABEL_DELETE) ?>
+    <?= $this->model->formDelete() ?>
 </div>
 </div>

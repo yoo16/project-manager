@@ -9,11 +9,11 @@
 class ApplicationLoader {
 
     /**
-     * [autoload_model description]
+     * autoload_model
      * 
-     * @return [type] [description]
+     * @return void
      */
-    function autoload_model() {
+    static function autoloadModel() {
         $model_path = BASE_DIR."app/models/*.php";
         foreach (glob($model_path) as $model) {
             require_once $model;
@@ -21,13 +21,13 @@ class ApplicationLoader {
     }
 
     /**
-     * [load_model description]
+     * load_model
      * 
      * @param  string $file_path          [description]
      * @param  string $project_name [description]
      * @return string               [description]
      */
-    function load_model($file_path, $project_name) {
+    static function loadModel($file_path, $project_name) {
         $models = self::rows($file_path);
         if (!$models) return;
         if ($project_name) {
@@ -45,10 +45,10 @@ class ApplicationLoader {
     /**
      * options
      *
-     * @param String $file_path
-     * @return Array
+     * @param string $file_path
+     * @return array
      **/
-    function rows($file_path) {
+    static function rows($file_path) {
         if (!file_exists($file_path)) {
             $file_path = BASE_DIR."db/model/{$file_path}.csv";
         }
@@ -63,5 +63,3 @@ class ApplicationLoader {
     }
 
 }
-
-?>

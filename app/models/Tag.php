@@ -18,6 +18,27 @@ class Tag {
         return $instance;
     }
 
+    function tableItemForAttribute($attribute) {
+        $entity = '$values'."['{$attribute['name']}']";
+        if ($attribute['type'] == 'bool') {
+            $tag = "FormHelper::activeLabelTag({$entity})";
+        } else {
+            $tag = $entity;
+        }
+        if ($tag) $this->php($tag);
+    }
+
+    function formEditForModel($model, $attribute) {
+        $entity = '$this->'.$model['entity_name'];
+        if ($attribute['type'] == 'bool') {
+            $method = "formCheckbox('{$attribute['name']}')";
+        } else {
+            $method = "formInput('{$attribute['name']}')";
+        }
+        $param = "{$entity}->{$method}";
+        if ($method) $this->php($param);
+    }
+
     function php($value = null) {
         if ($value) $this->value = $value;
         $this->value = '<?= '.$this->value.' ?>';

@@ -20,7 +20,7 @@ class ModelController extends ProjectController {
     function before_action($action) {
         parent::before_action($action);
 
-        if (!$this->project) {
+        if (!$this->project->value['id'] || !$this->database->value['id']) {
             $this->redirect_to('project/index');
             exit;
         }
@@ -47,7 +47,6 @@ class ModelController extends ProjectController {
 
     function action_list() {
         $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
-
         $this->pg_classes = $pgsql_entity->tableArray();
 
         $this->models = DB::table('Model')
@@ -60,17 +59,16 @@ class ModelController extends ProjectController {
     }
 
     function action_edit() {
-        $this->model = DB::table('Model')
-                        ->fetch($this->params['id']);
+        $this->model = DB::table('Model')->fetch($this->params['id']);
     }
 
     function action_add() {
         if (!isPost()) exit;
 
         $posts = $this->session['posts'] = $_POST['model'];
-        $pgsql_entity = new PgsqlEntity($this->database->pgInfo()); 
+        if ($this->database && $posts['name']) {
+            $pgsql_entity = new PgsqlEntity($this->database->pgInfo()); 
 
-        if ($database && $posts['name']) {
             $columns = Model::$required_columns;
             $results = $pgsql_entity->createTable($posts['name'], $columns);
             if (!$results) {
@@ -131,20 +129,18 @@ class ModelController extends ProjectController {
         $this->redirect_to('list');
     }
 
-    function action_import_from_db() {
-        $this->databases = DB::table('Database')
-                            ->selectValues();
-    }
-
     function action_delete() {
         if (!isPost()) exit;
 
-        $model = DB::table('Model')->fetch($this->params['id'])->value;
-        if ($model['id']) {
-            $database = DB::table('Database')->fetch($this->database['id']);
-            $pgsql_entity = new PgsqlEntity($database->pgInfo());
-            $results = $pgsql_entity->dropTable($model['name']);
-            $model = DB::table('Model')->delete($this->params['id']);
+        $model = DB::table('Model')->fetch($this->params['id']);
+        if ($model->value['id']) {
+
+            if (!$database->value['is_lock']) {
+                $database = DB::table('Database')->fetch($this->database->value['id']);
+                $pgsql_entity = new PgsqlEntity($database->pgInfo());
+                $results = $pgsql_entity->dropTable($model->value['name']);
+            }
+            $model = DB::table('Model')->delete($model->value['id']);
             
             if ($model->errors) {
                 $this->flash['errors'] = $model->errors;
@@ -153,6 +149,21 @@ class ModelController extends ProjectController {
             }
         }
         $this->redirect_to('list');
+    }
+
+    function action_lock() {
+        if ($this->database->value['id']) {
+            $posts['is_lock'] = true;
+            $model = DB::table('Model')
+                            ->where("database_id = {$this->database->value['id']}")
+                            ->updates($posts);
+        }
+        $this->redirect_to('list');
+    }
+
+    function action_import_from_db() {
+        $this->databases = DB::table('Database')
+                            ->selectValues();
     }
 
     function action_add_table() {

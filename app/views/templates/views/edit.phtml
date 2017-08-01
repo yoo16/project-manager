@@ -7,7 +7,7 @@
 <? if (!Model::$required_columns[$attribute['name']]): ?>
     <tr>
       <th><?= $attribute['label'] ?></th>
-      <td><? Tag::init()->php('$this->'.$values['model']['entity_name']."->formInput('{$attribute['name']}')") ?></td>
+      <td><? Tag::init()->formEditForModel($values['model'], $attribute); ?></td>
     </tr>
 <? endif ?>
 <? endforeach ?>

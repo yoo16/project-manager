@@ -5,9 +5,9 @@
  * @create  2017-07-24 18:04:18 
  */
 
-require_once 'PageController.php';
+require_once 'AppController.php';
 
-class ViewController extends PageController {
+class ViewController extends AppController {
 
     var $name = 'view';
     var $session_name = 'view';
@@ -21,11 +21,9 @@ class ViewController extends PageController {
     function before_action($action) {
         parent::before_action($action);
 
-        if ($_REQUEST['page_id']) {
-            $page = DB::table('Page')->fetch($_REQUEST['page_id']);
-            AppSession::setSession('page', $page);
-        }
-        $this->page = AppSession::getSession('page');
+        $this->project = DB::table('Project')->loadSession();
+        $this->page = DB::table('Page')->loadSession();
+        $this->model = DB::table('Model')->relation($this->page, 'model_id');
 
         if (!$this->page) {
             $this->redirect_to('page/');
@@ -90,8 +88,7 @@ class ViewController extends PageController {
     function action_edit() {
         $this->view = DB::table('View')
                     ->fetch($this->params['id'])
-                    ->takeValues($this->session['posts'])
-                    ->value;
+                    ->takeValues($this->session['posts']);
 
         $this->forms['is_force_write']['name'] = 'view[is_force_write]';
         $this->forms['is_force_write']['value'] = true;

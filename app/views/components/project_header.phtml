@@ -7,7 +7,9 @@
       <tr>
         <th>Project</th>
         <td><?= $this->project->value['name'] ?></td>
+        <? if ($this->user_project_setting): ?>
         <td><?= FormHelper::linkModal('#php-export-window', 'PHP Export', ['class' => 'btn btn-sm btn-success']) ?></td>
+        <? endif ?>
       </tr>
     </table>
   </div>
@@ -28,8 +30,9 @@
 
 <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
   <ul class="nav nav-pills">
-    <li class="nav-item"><a class="nav-link <?= cssClass('page', $this->params['controller'], 'active'); ?>" href="<?= url_for('page/list', array('project_id' => $this->project->value['id'])) ?>">Page</a></li>
     <li class="nav-item"><a class="nav-link <?= cssClass('model', $this->params['controller'], 'active'); ?>" href="<?= url_for('model/list', array('project_id' => $this->project->value['id'])) ?>">Model</a></li>
+    <li class="nav-item"><a class="nav-link <?= cssClass('page', $this->params['controller'], 'active'); ?>" href="<?= url_for('page/list', array('project_id' => $this->project->value['id'])) ?>">Page</a></li>
+    <li class="nav-item"><a class="nav-link <?= cssClass('layout', $this->params['controller'], 'active'); ?>" href="<?= url_for('layout/list', array('project_id' => $this->project->value['id'])) ?>">Layout</a></li>
   </ul>
 </nav>
 

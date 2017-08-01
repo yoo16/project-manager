@@ -2,27 +2,34 @@
 
     <tr>
       <th><?= DATABASE_NAME ?></th>
-      <td><input class="form-control" name="database[name]" type="text" value="<?= $this->database['name'] ?>" required="required"></td>
+      <td><?= $this->database->formInput('name') ?></td>
     </tr>
 
     <tr>
       <th><?= DATABASE_HOST ?></th>
       <td>
-        <?= FormHelper::select($this->forms['hostname']) ?>
+        <?= $this->database->formSelect('hostname', ['csv' => 'db_hosts']) ?>
       </td>
     </tr>
                  
     <tr>
       <th><?= DATABASE_USER ?></th>
       <td>
-        <?= FormHelper::select($this->forms['user_name']) ?>
+        <?= $this->database->formSelect('user_name', ['csv' => 'db_users']) ?>
       </td>
     </tr>
                  
     <tr>
       <th><?= DATABASE_PORT ?></th>
       <td>
-        <?= FormHelper::select($this->forms['port']) ?>
+        <?= $this->database->formSelect('port', ['csv' => 'db_ports']) ?>
+      </td>
+    </tr>
+
+    <tr>
+      <th>Delete Lock</th>
+      <td>
+        <?= $this->database->formCheckbox('is_lock') ?>
       </td>
     </tr>
 

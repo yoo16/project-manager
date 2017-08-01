@@ -1,12 +1,12 @@
 <? include('_header.phtml') ?>
 
-<div class="alert alert-danger">
+<div class="alert alert-success">
 if you want create database's table, please add model on 'Project'.
 </div>
 <? if ($this->pg_classes): ?>
 <div class="card">
   <div class="card-header">
-    <h4><?= $this->database['name'] ?></h4>
+    <h4><?= $this->database->value['name'] ?></h4>
   </div>
   <div class="card-block overflow-list">
     <table class="table">
@@ -19,7 +19,7 @@ if you want create database's table, please add model on 'Project'.
       <? foreach ($this->pg_classes as $pg_class): ?>
       <tr>
         <td>
-          <a class="" href="<?= url_for('columns', array('database_id' => $this->database['id'], 'pg_class_id' => $pg_class['pg_class_id'])) ?>"><?= $pg_class['tablename'] ?></a>
+          <a class="" href="<?= url_for('columns', array('database_id' => $this->database->value['id'], 'pg_class_id' => $pg_class['pg_class_id'])) ?>"><?= $pg_class['tablename'] ?></a>
         </td>
         <td>
           <form method="post" action="<?= url_for('update_table_comment') ?>">
@@ -32,7 +32,7 @@ if you want create database's table, please add model on 'Project'.
             </div>
           </div>
           <input type="hidden" name="pg_class_id" value="<?= $pg_class['pg_class_id'] ?>">
-          <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
+          <input type="hidden" name="database_id" value="<?= $this->database->value['id'] ?>">
         </form>
       </td>
     </tr>

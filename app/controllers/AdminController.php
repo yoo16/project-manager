@@ -48,7 +48,7 @@ class AdminController extends AppController {
 
     function checkLogin($action) {
         if (!in_array($action, $this->escape_auth_actions)) {
-            $this->admin = AppSession::getSession('admin', 'admin');
+            $this->admin = AppSession::get('admin', 'admin');
             if (!$this->admin['id']) {
                 $this->redirect_to('admin/login');
                 return;
@@ -91,9 +91,9 @@ class AdminController extends AppController {
                   ->selectOne();
 
             if ($admin->value) {
-                AppSession::setSession('admin', $admin->value, 'admin');
+                AppSession::set('admin', $admin->value, 'admin');
             }
-            $this->admin = AppSession::getSession('admin', 'admin');
+            $this->admin = AppSession::get('admin', 'admin');
             if ($this->admin['id'] > 0) {
                 $this->default_page();
                 exit;

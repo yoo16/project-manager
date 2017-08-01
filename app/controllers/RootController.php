@@ -9,18 +9,23 @@ require_once 'AppController.php';
 
 class RootController extends AppController {
 
-    function before_action() {
-
+    function before_action($action) {
     }
 
     function index() {
         $pgsql_entity = new PgsqlEntity();
         $this->pg_connection = $pgsql_entity->connection();
-        if ($this->pg_connection) {
-            $this->redirect_to('project/');
-        } else {
+        if (!$this->pg_connection) {
             $this->redirect_to('pgsql');
+            exit;
         }
+
+        $database = new Database();
+        if (!$database->checkProjectManager()) {
+            $this->redirect_to('pgsql');
+            exit;
+        }
+
         // $this->hostname = hostname();
         // $this->debug_traces = debug_backtrace(true);
         // $this->create_sql_path = BASE_DIR."db/sql/create.sql";
@@ -29,22 +34,19 @@ class RootController extends AppController {
     function action_pgsql() {
         $pgsql_entity = new PgsqlEntity();
         $this->pg_connection = $pgsql_entity->connection();
-        $this->create_sql_path = BASE_DIR."db/sql/create.sql";
+        $this->sql = $pgsql_entity->createTablesSql();
     }
 
-    function create_database() {
-        $pg_infos = PgsqlEntity::defaultPgInfo();
-        $this->results = PgsqlEntity::createDatabase($pg_infos);
+    function action_create_database() {
+        $pgsql_entity = new PgsqlEntity();
+        $this->results = $pgsql_entity->createDatabase();
     }
 
-    function init_database() {
-        $this->results = PgsqlEntity::initDb();
-    }
+    function action_create_tables() {
+        $pgsql_entity = new PgsqlEntity();
 
-    function init_user() {
-        $posts['login_name'] = 'default';
-        Db::table('User')->insert($posts);
-        $this->redirect_to('index');
+        $this->results = $pgsql_entity->createTables();
+        $this->sql = $pgsql_entity->sql;
     }
 
 }

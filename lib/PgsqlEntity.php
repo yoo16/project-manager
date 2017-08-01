@@ -23,18 +23,6 @@ class PgsqlEntity extends Entity {
     var $orders = null;
     var $limits = null;
 
-    static $udt_types = array(
-        'timestamp' => 't',
-        'varchar' => 's',
-        'text' => 's',
-        'bool' => 'b',
-        'int2' => 'i',
-        'int4' => 'i',
-        'int8' => 'i',
-        'float' => 'f',
-        'double' => 'd',
-        );
-
     function __construct($params = null) {
         parent::__construct();
         $this->defaultPgInfo();
@@ -121,10 +109,6 @@ class PgsqlEntity extends Entity {
     * @return void
     */
     function defaultPgInfo() {
-        if (!defined('PG_INFO')) {
-            echo('Not Defined: PG_INFO');
-            exit;
-        }
         $values = explode(' ', $this->pg_info);
         foreach ($values as $value) {
             if (is_numeric(strpos($value, 'dbname='))) {
@@ -145,21 +129,52 @@ class PgsqlEntity extends Entity {
     /**
     * createTable
     * 
-    * @param string $table
+    * @param Class $model
     * @param array $columns
     * @return resource
     */
-    public function createTable($table, $columns) {
-        if (!$table) return;
-        if (!$columns) return;
+    public function createTableSql($model) {
+        if (!$model) return;
 
-        foreach ($columns as $column_name => $column) {
-            $column_sqls[] = "{$column_name} {$column['type']} {$column['option']}";
+        $column_sqls[] = "{$model->id_column} SERIAL PRIMARY KEY NOT NULL";
+        foreach ($model->columns as $column_name => $option) {
+            if ($option['type']) {
+                if ($option['length']) {
+                    $type = "{$option['type']}({$option['length']})";
+                } else {
+                    $type = $option['type'];
+                }
+                $type = strtoupper($type);
+
+                if ($option['required']) {
+                    $option['option'].= "NOT NULL";
+                }
+                $column_sqls[] = "{$column_name} {$type} {$option['option']}";
+            }
         }
         $column_sql = implode(",\n", $column_sqls);
-        $sql = "CREATE TABLE \"{$table}\" (\n{$column_sql}\n)";
+        $sql = "CREATE TABLE IF NOT EXISTS \"{$model->name}\" (\n{$column_sql}\n);\n";
 
-        return $this->query($sql);
+        return $sql;
+    }
+
+    function createTablesSql() {
+        $vo_path = BASE_DIR."app/models/vo/*.php";
+        foreach (glob($vo_path) as $file_path) {
+            if (is_file($file_path)) {
+                $file = pathinfo($file_path);
+                $class_name = $file['filename'];
+                $vo = new $class_name();
+
+                $this->sql.= $this->createTableSql($vo);
+            }
+        }
+        return $this->sql;
+    }
+
+    function createTables() {
+        $this->createTablesSql();
+        return $this->query($this->sql);
     }
 
     /**
@@ -272,8 +287,10 @@ class PgsqlEntity extends Entity {
     function query($sql) {
         $this->sql = $sql;
         $pg = $this->connection();
-        if (defined('DEBUG') && DEBUG) error_log("<SQL> {$sql}");
-        return pg_query($pg, $sql);
+
+        if (defined('SQL_LOG') && SQL_LOG) error_log("<SQL> {$sql}");
+        $results = pg_query($pg, $sql);
+        return $results;
     }
 
     /**
@@ -346,6 +363,78 @@ class PgsqlEntity extends Entity {
     public function fetch($id, $params=null) {
        return $this->get($id, $params);
     }
+
+    /**
+    * relation by model
+    * 
+    * @param  Class $relation
+    * @param  string $relation_value_column
+    * @return Class
+    */
+    public function relation($relation, $relation_value_column = null) {
+        if ($relation_value_column) {
+            $condition = "{$this->id_column} = '{$relation->value[$relation_value_column]}'";
+        } else {
+            $relation_column = "{$relation->entity_name}_id";
+            if (isset($relation->id)) {
+                $condition = "{$relation_column} = {$relation->id}";
+            }
+        }
+        if ($condition) return $this->where($condition)->selectOne();
+        return $this;
+    }
+
+    /**
+    * relations by model
+    * 
+    * @param  Class $relation
+    * @param  string $relation_value_column
+    * @return Class
+    */
+    public function relations($relation, $relation_value_column = null) {
+        if ($relation_value_column) {
+            $condition = "{$this->id_column} = '{$relation->value[$relation_value_column]}'";
+        } else {
+            $relation_column = "{$relation->entity_name}_id";
+            if (isset($relation->id)) {
+                $condition = "{$relation_column} = {$relation->id}";
+            }
+        }
+        if ($condition) return $this->where($condition)->select();
+        return $this;
+    }
+
+    /**
+    * relation
+    * 
+    * @param  string $model_name
+    * @param  string $relation_column
+    * @return Class
+    */
+    public function relationByModelName($model_name, $relation_column = null) {
+        $relation = DB::table($model_name);
+        if (!$relation_column) $relation_column = "{$relation->entity_name}_id";
+        if ($this->value && isset($this->value[$relation_column])) {
+            return $relation->fetch($this->value[$relation_column]);
+        }
+    }
+
+    /**
+    * relations
+    * 
+    * @param  string $model_name
+    * @param  string $relation_column
+    * @return Class
+    */
+    public function relationsByModelName($model_name, $relation_column = null) {
+        $relation = DB::table($model_name);
+        if (!$relation_column) $relation_column = "{$this->entity_name}_id";
+        if (isset($this->value[$this->id_column])) {
+            $condition = "{$relation_column} = {$this->value[$this->id_column]}";
+            return $relation->where($condition)->select();
+        }
+    }
+
 
     /**
     * fetch
@@ -494,6 +583,36 @@ class PgsqlEntity extends Entity {
         return $this;
     }
 
+
+    /**
+    * updates
+    * 
+    * @param  array $posts
+    * @return Class
+    */
+    public function updates($posts) {
+        if (!$posts) return;
+        $sql = $this->updatesSql($posts);
+        if (!$sql) {
+            //$this->addError('sql', 'error');
+            $message = "SQL Error: {$sql}";
+            echo($message);
+            exit;
+            return $this;
+        }
+
+        $result = $this->query($sql);
+        if ($result !== false) {
+            $this->_value = $this->value;
+        } else {
+            $this->addError('sql', 'error');
+            $message = "SQL Error: {$sql}";
+            echo($message);
+            exit;
+        }
+        return $this;
+    }
+
     /**
     * delete
     * 
@@ -541,6 +660,7 @@ class PgsqlEntity extends Entity {
     */
     public function where($condition) {
         $this->conditions[] = $condition; 
+        $this->conditions = array_unique($this->conditions);
         return $this;
     }
 
@@ -566,6 +686,7 @@ class PgsqlEntity extends Entity {
         $value['column'] = $column;
         $value['option'] = $option;
         $this->orders[] = $value; 
+        $this->orders = array_unique($this->orders);
         return $this;
     }
 
@@ -856,6 +977,38 @@ class PgsqlEntity extends Entity {
     }
 
     /**
+    * updateSql
+    * 
+    * @return string
+    */
+    private function updatesSql($values) {
+        if (!$values) return;
+        if (!$this->conditions) return;
+        foreach ($values as $key => $value) {
+            if ($key) {
+                if (is_bool($value)) {
+                    if ($value === true) {
+                        $value = 'TRUE';
+                    } else {
+                        $value = 'FALSE';
+                    }
+                    $set_values[] = "{$key} = {$value}";
+                } else {
+                    $set_values[] = "{$key} = '{$value}'";
+                }
+            }
+        }
+        if (isset($this->columns['updated_at'])) $set_values[] = "updated_at = current_timestamp";
+        if ($set_values) $set_value = implode(', ', $set_values);
+
+        if ($set_value) {
+            $condition = $this->sqlConditions($this->conditions);
+            $sql = "UPDATE {$this->name} SET {$set_value} WHERE {$condition};";
+        }
+        return $sql;
+    }
+
+    /**
     * delete Sql
     * 
     * @return string
@@ -1027,8 +1180,9 @@ class PgsqlEntity extends Entity {
     * @param string $name
     * @return array
     **/
-    function pgDatabase() {
-        $sql = "SELECT * FROM pg_database WHERE datname = '{$this->dbname}';";
+    function pgDatabase($name = null) {
+        if (!$name) $name = $this->dbname;
+        $sql = "SELECT * FROM pg_database WHERE datname = '{$name}';";
         return $this->fetch_row($sql);
     }
 
@@ -1361,13 +1515,6 @@ class PgsqlEntity extends Entity {
     public function sqlColumnType($type, $length = 0) {
         if ($type == 'varchar' && $length > 0) {
             $type.= "({$posts['length']})";
-        }
-        return $type;
-    }
-
-    static function typeByPgAttribute($pg_attribute) {
-        if ($pg_attribute['udt_name']) {
-            $type = self::$udt_types[$pg_attribute['udt_name']];
         }
         return $type;
     }

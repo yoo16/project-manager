@@ -73,7 +73,10 @@
     </tr>
   </table>
 
-  <h2>PostgreSQL</h2>
+  <h2>
+    PostgreSQL
+    <a class="btn btn-outline-primary" href="<?= url_for('pgsql') ?>"><?= LABEL_SETTING ?></a>
+  </h2>
   <table class="table">
     <tr>
       <th>PG_INFO</th>
@@ -82,27 +85,16 @@
     <tr>
       <th>pg_connection()</th>
       <td>
-      <? if ($this->pg_connection): ?>
-      <?= $this->pg_connection ?>
+        <? if ($this->pg_connection): ?>
+        <?= $this->pg_connection ?>
       <? else: ?>
       <?= undefineLabelTag() ?>
-      <? endif ?>
-      </td>
-    </tr>
-    <tr>
-      <th>PG_INFO</th>
-      <td>
-      <? if (!file_exists($this->create_sql_path)): ?>
-      <?= undefineLabelTag() ?>
-      <? endif ?>
-      <?= $this->create_sql_path ?>
-      </td>
-    </tr>
-  </table>
-  <? if (!$this->pg_connection): ?>
-  <a class="btn btn-outline-primary" href="<?= url_for('create_database') ?>" onClick="return confirm('createdb for PostgreSQL?')"><?= LABEL_CREATE ?></a>
-  <? endif ?>
-  <a class="btn btn-outline-primary" href="<?= url_for('pgsql') ?>"><?= LABEL_SETTING ?></a>
-
+    <? endif ?>
+  </td>
+</tr>
+</table>
+<? if (!$this->pg_connection): ?>
+<a class="btn btn-outline-primary" href="<?= url_for('create_database') ?>" onClick="return confirm('createdb for PostgreSQL?')"><?= LABEL_CREATE ?></a>
+<? endif ?>
 </div>
 

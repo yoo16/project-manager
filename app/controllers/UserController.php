@@ -89,7 +89,7 @@ class UserController extends AppController {
     * @return void
     */ 
     function add() {
-        AppSession::setSession('posts', $_POST['user']);
+        AppSession::set('posts', $_POST['user']);
         DB::table('User')->takeValues($_POST['user'])->insert();
 
         if ($user->errors) {
@@ -108,7 +108,7 @@ class UserController extends AppController {
     * @return void
     */ 
     function update() {
-        AppSession::setSession('posts', $_POST['user']);
+        AppSession::set('posts', $_POST['user']);
         $user = DB::table('User')->update($_POST['user'], $this->params['id']);
 
         if ($user->errors) {

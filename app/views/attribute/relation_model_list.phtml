@@ -13,7 +13,7 @@
   <? foreach ($this->models as $model): ?>
   <tr>
     <td>
-      <a href="#" class="action" action="relation_attribute_list" attribute_id="<?= $this->attribute['id'] ?>" model_id="<?= $model['id'] ?>"><?= $model['name'] ?></a>
+      <a href="#" class="action" action="relation_attribute_list" attribute_id="<?= $this->attribute['id'] ?>" fk_model_id="<?= $model['id'] ?>"><?= $model['name'] ?></a>
     </td>
   </tr>
 <? endforeach ?>

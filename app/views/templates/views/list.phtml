@@ -25,7 +25,7 @@
     <td><? Tag::init()->php('FormHelper::linkButton(\'edit\', LABEL_EDIT, $values[\'id\'])') ?></td>
 <? foreach ($values['model']['attributes'] as $attribute): ?>
 <? if (!Model::$required_columns[$attribute['name']]): ?>
-    <td><? Tag::init()->php('$values[\''.$attribute['name'].'\']') ?></td>
+    <td><? Tag::init()->tableItemForAttribute($attribute) ?></td>
 <? endif ?>
 <? endforeach ?>
   </tr>

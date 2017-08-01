@@ -1,6 +1,6 @@
 <? include('_header.phtml') ?>
 <div id="database">
-  <form id="" action="<?=url_for('update', $this->database['id']) ?>" method="post">
+  <form id="" action="<?=url_for('update', $this->database->value['id']) ?>" method="post">
 
     <? include('_edit.phtml') ?>
 
@@ -9,8 +9,8 @@
 
   </form>
 
-  <? if ($this->database['id']): ?>
-  <form id="" action="<?=url_for('delete', $this->database['id']) ?>" method="post">
+  <? if ($this->database->value['id'] && !$this->database->value['is_lock']): ?>
+  <form id="" action="<?=url_for('delete', $this->database->value['id']) ?>" method="post">
     <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
 
     <label for="is_delete">

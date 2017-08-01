@@ -15,10 +15,9 @@
     <tr>
       <th></th>
       <th>Name</th>
-      <th>Label</th>
       <th>Class Name</th>
       <th></th>
-      <th></th>
+      <th>Overwrite</th>
       <th>Entity Name</th>
       <th>Model</th>
     </tr>
@@ -28,15 +27,21 @@
   <? foreach ($this->pages as $page): ?>
   <tr>
     <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $page['id']) ?></td>
-    <td><?= $page['name'] ?></td>
-    <td><?= $page['label'] ?></td>
+    <td>
+      <div>
+        <?= $page['name'] ?>
+      </div>
+      <div>
+        <?= $page['label'] ?>
+      </div>
+    </td>
     <td><?= Page::className($page) ?></td>
     <td><a class="btn btn-sm btn-outline-primary" href="<?= url_for('view/', array('page_id' => $page['id'])) ?>"><?= LABEL_VIEW ?></a></td>
     <td>
       <? if ($page['is_force_write']): ?>
-      <?= FormHelper::link('change_force_write', 'forced', $page['id'], ['class' => 'badge badge-danger']) ?>
+      <?= FormHelper::link('change_force_write', 'overwrite', $page['id'], ['class' => 'badge badge-danger']) ?>
     <? else: ?>
-    <?= FormHelper::link('change_force_write', 'forced', $page['id'], ['class' => 'badge badge-default']) ?>
+    <?= FormHelper::link('change_force_write', 'overwrite', $page['id'], ['class' => 'badge badge-default']) ?>
   <? endif ?>
 </td>
 <td><?= $page['entity_name'] ?></td>

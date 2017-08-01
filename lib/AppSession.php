@@ -12,107 +12,101 @@ if (!defined('APP_NAME')) exit ('not found APP_NAME');
 class AppSession {
 
    /**
-    * セッション読み込み
+    * load
     *
     * @param  string $key
     * @param  object $default_value
     * @param  int $sid
     * @return object
      **/ 
-    static function loadSession($key, $default_value = null, $sid = 0) {
-        if (isset($_REQUEST[$key])) {
-            AppSession::setSession($key, $_REQUEST[$key], $sid);
-        }
-        return AppSession::getSession($key, $default_value, $sid);
+    static function load($key, $default_value = null, $sid = 0) {
+        if (isset($_REQUEST[$key])) AppSession::set($key, $_REQUEST[$key], $sid);
+        return AppSession::get($key, $default_value, $sid);
     }
 
    /**
-    * セッション取得
-    *
-    * @param String $sid
-    * @return Array
-    */
-    static function clearAppSessions() {
-        unset($_SESSION[APP_NAME]);
-    }
-
-   /**
-    * セッション取得
-    *
-    * @param String $sid
-    * @return Array
-    */
-    static function getSessions($session_key = null, $sid = 0) {
-        if ($session_key) {
-            return $_SESSION[APP_NAME][$session_key][$sid];
-        } else {
-            return $_SESSION[APP_NAME][$sid];
-        }
-    }
-
-   /**
-    * セッション取得
+    * get
     *
     * @param String $key
     * @param object $default_value
-    * @param String $session_key
     * @param int $sid
     * @return object
     */
-    static function getSession($key, $default_value = null, $session_key = null, $sid = 0) {
+    static function get($key, $default_value = null, $sid = 0) {
         $value = null;
-        if ($session_key) {
-            $value = $_SESSION[APP_NAME][$session_key][$sid][$key];
-        } else if ($key) {
-            if (isset($_SESSION[APP_NAME][$sid][$key])) $value = $_SESSION[APP_NAME][$sid][$key];
-        }
+        if (isset($_SESSION[APP_NAME][$sid][$key])) $value = $_SESSION[APP_NAME][$sid][$key];
+        if (is_null($value)) $value = $default_value;
+        return $value;
+    }
+
+
+   /**
+    * get
+    *
+    * @param string $session_key
+    * @param string $key
+    * @param object $default_value
+    * @param int $sid
+    * @return object
+    */
+    static function getWithKey($session_key, $key, $default_value = null, $sid = 0) {
+        $value = null;
+        if (isset($_SESSION[APP_NAME][$session_key][$sid][$key])) $value = $_SESSION[APP_NAME][$session_key][$sid][$key];
         if (is_null($value)) $value = $default_value;
         return $value;
     }
 
    /**
-    * セッション設定
+    * set session
     *
-    * @param String $key
-    * @param Object $value
-    * @param String $session_key
+    * @param string $key
+    * @param object $value
     * @return void
     */
-    static function setSession($key, $value, $session_key = null, $sid = 0) {
-        if ($session_key) {
-            $_SESSION[APP_NAME][$session_key][$sid][$key] = $value;
-        } else {
-            $_SESSION[APP_NAME][$sid][$key] = $value;
-        }
+    static function set($key, $value, $sid = 0) {
+        $_SESSION[APP_NAME][$sid][$key] = $value;
     }
 
    /**
-    * セッションキーによる全クリア
+    * set session
     *
-    * @param String $session_key
+    * @param string $session_key
+    * @param string $key
+    * @param object $value
     * @return void
     */
-    static function clearSessions($session_key = null, $sid = 0) {
-        if ($session_key) {
-            unset($_SESSION[APP_NAME][$session_key][$sid]);
-        } else {
-            unset($_SESSION[APP_NAME][$session_key]);
-        }
+    static function setWithKey($session_key, $key, $value, $sid = 0) {
+        $_SESSION[APP_NAME][$session_key][$sid][$key] = $value;
     }
 
    /**
-    * セッションクリア
+    * flush
+    *
+    * @return void
+    */
+    static function flush() {
+        unset($_SESSION[APP_NAME]);
+    }
+
+   /**
+    * clear session
     *
     * @param String $key
     * @param String $session_key
     * @return void
     */
-    static function clearSession($key, $session_key = null, $sid = 0) {
-        if ($session_key) {
-            unset($_SESSION[APP_NAME][$session_key][$sid][$key]);
-        } else {
-            unset($_SESSION[APP_NAME][$sid][$key]);
-        }
+    static function clear($key, $sid = 0) {
+        unset($_SESSION[APP_NAME][$sid][$key]);
+    }
+
+   /**
+    * clear session
+    *
+    * @param String $session_key
+    * @return void
+    */
+    static function clearWithKey($session_key, $key, $sid = 0) {
+        unset($_SESSION[APP_NAME][$session_key][$sid][$key]);
     }
 
 }

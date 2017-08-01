@@ -10,28 +10,32 @@
     <tr>
       <th>pg_connection()</th>
       <td>
-      <? if ($this->pg_connection): ?>
-      <label class="badge badge-success">connected</label>
+        <? if ($this->pg_connection): ?>
+        <label class="badge badge-success">connected</label>
       <? else: ?>
       <?= undefineLabelTag() ?>
-      <? endif ?>
-      </td>
-    </tr>
-    <tr>
-      <th>PG_INFO</th>
-      <td>
-      <? if (!file_exists($this->create_sql_path)): ?>
-      <?= undefineLabelTag() ?>
-      <? endif ?>
-      <?= $this->create_sql_path ?>
-      </td>
-    </tr>
-  </table>
-  <? if (!$this->pg_connection): ?>
-  <a class="btn btn-outline-primary" href="<?= url_for('create_database') ?>" onClick="return confirm('createdb for PostgreSQL?')"><?= LABEL_CREATE ?></a>
-  <? endif ?>
-  <a class="btn btn-outline-primary" href="<?= url_for('init_database') ?>" onClick="return confirm('init database? *Data will be deleted on database.')"><?= LABEL_INIT ?></a>
+    <? endif ?>
+  </td>
+</tr>
+</table>
 
+<h3>Create Table SQL</h3>
+<div class="card">
+  <div class="card-block overflow-list">
+    <? if ($this->sql): ?><?= nl2br($this->sql) ?><? else: ?><?= undefineLabelTag() ?><? endif ?>
+  </div>
+
+  <div class="card-footer text-center">
+    <? if (!$this->pg_connection): ?>
+    <a class="btn btn-primary confirm-dialog" href="<?= url_for('create_database') ?>" message="createdb for PostgreSQL?"><?= LABEL_CREATE ?></a>
+  <? else: ?>
+  <? if ($this->sql): ?>
+  <a class="btn btn-primary confirm-dialog" href="<?= url_for('create_tables') ?>" message="Init Database? *Data will be deleted on database."><?= LABEL_UPDATE ?></a>
+<? endif ?>
+<? endif ?>
+  <a class="btn btn-outline-primary" href="<?= url_for('/') ?>"><?= LABEL_BACK ?></a>
+</div>
+</div>
 
 </div>
 

@@ -145,6 +145,25 @@ class Entity {
     }
 
     /**
+     * loadSession
+     * 
+     * @param  srray $request_column
+     * @return Class
+     */
+    public function loadSession($request_column = null) {
+        if (!$request_column) {
+            $request_column = "{$this->entity_name}_id";
+            //echo('Entity Error: not found $request_column');
+            //exit;
+        }
+        if (isset($_REQUEST[$request_column])) {
+            $this->fetch($_REQUEST[$request_column]);
+            AppSession::set($this->entity_name, $this);
+        }
+        return AppSession::get($this->entity_name);
+    }
+
+    /**
      * addError
      * 
      * @param  string $column
@@ -208,49 +227,42 @@ class Entity {
         }
     }
 
-    public function applyCast() {
-        $this->castRow($this->value);
-    }
-
+    /**
+     * castBool
+     * 
+     * @param  string $value
+     * @return string
+     */
     private function castString($value) {
         if (is_string($value)) return $value;
         return (string) $value;
     }
 
+    /**
+     * castBool
+     * 
+     * @param  string $value
+     * @return bool
+     */
     private function castBool($value) {
         if (is_bool($value)) return $value;
         return in_array($value, array('t', 'true', '1'));
     }
 
+    /**
+     * castTimestamp
+     * 
+     * @param  string $value
+     * @return string
+     */
     private function castTimestamp($value) {
         if ($value === '') return null;
 
         if (is_string($value)) {
-            preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2}) ?(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?/', $value, $m);
-            if (checkdate($m[2], $m[3], $m[1])) {
-                return sprintf('%4d-%02d-%02d %02d:%02d:%02d', $m[1], $m[2], $m[3], $m[4], $m[5], $m[6]);
-            } else {
-                $time = strtotime($value);
-                if ($time >= 0) return date('Y-m-d H:i:s', $time);
-                return null;
-            }
-        } elseif (is_array($value)) {
-            if (is_numeric($value['year']) && is_numeric($value['month']) && is_numeric($value['day'])) {
-                $timestamp = sprintf('%4d-%02d-%02d', $value['year'], $value['month'], $value['day']);
-                if (is_numeric($value['hour']) && is_numeric($value['minute'])) {
-                    $timestamp .= sprintf(' %02d:%02d', $value['hour'], $value['minute']);
-                    if (is_numeric($value['second'])) {
-                        $timestamp .= sprintf(':%02d', $value['second']);
-                    } else {
-                        $timestamp .= ':00';
-                    }
-                } else {
-                    $timestamp .= '00:00:00';
-                }
-                return $this->cast('t', $timestamp);
-            } else {
-                return null;
-            }
+            return DateHelper::stringToArray($value);
+        } else if (is_array($value)) {
+            $timestamp = DateHelper::arrayToString($value);
+            return $this->castTimestamp($timestamp);
         } else {
             return $value;
         }
@@ -313,6 +325,8 @@ class Entity {
 
     /**
      * cast
+     *
+     * TODO: functional
      * 
      * @param  string $type
      * @param  object $value
@@ -321,14 +335,17 @@ class Entity {
     private function cast($type, $value) {
         if (!$type) return $value;
         if (is_null($value)) return null;
-        if ($type == 's') return self::castString($value);
-        if ($type == 'b') return self::castBool($value);
-        if ($type == 't') return self::castTimestamp($value);
-        if ($type == 'i') return self::castInt($value);
-        if ($type == 'f') return self::castFloat($value);
-        if ($type == 'd') return self::castDouble($value);
-        if ($type == 'a') return self::castArray($value);
-        if ($type == 'j') return self::castJson($value);
+        if ($type == 'varchar') return self::castString($value);
+        if ($type == 'text') return self::castString($value);
+        if ($type == 'bool') return self::castBool($value);
+        if ($type == 'timestamp') return self::castTimestamp($value);
+        if (strstr($type, 'int')) {
+            return self::castInt($value);
+        }
+        if (strstr($type, 'float')) return self::castFloat($value);
+        if (strstr($type, 'double')) return self::castDouble($value);
+        if ($type == 'array') return self::castArray($value);
+        if ($type == 'json') return self::castJson($value);
     }
     
     /**
@@ -399,7 +416,7 @@ class Entity {
     * @param string $key
     * @return array
     */
-    function valuesWithKey($key) {
+    function valuesWithKey($key = null) {
         if (!$key) $key = $this->id_column;
         $values = null;
         if ($this->values) {
@@ -468,11 +485,38 @@ class Entity {
     function formSelect($column, $params = null) {
         if (!$column) return;
         $params['name'] = "{$this->entity_name}[{$column}]";
-
-        if ($params['model'] && !$params['value']) {
-            $params['value'] = $this->id_column;
-        }
+        if ($params['model'] && !$params['value']) $params['value'] = $this->id_column;
         $tag = FormHelper::select($params, $this->value[$column]);
+        return $tag;
+    }
+    /**
+     * selectタグ
+     *
+     * @param array $params
+     * @param string $selected
+     * @return string
+     */
+    function formSelectDate($column, $params = null) {
+        if (!$column) return;
+        $params['name'] = "{$this->entity_name}[{$column}]";
+
+        $tag = FormHelper::selectDate($params, $this->value[$column]);
+        return $tag;
+    }
+
+   /**
+    * formSelect
+    *
+    * @param string $column
+    * @param array $params
+    * @return string
+    */
+    function formRadio($column, $params = null) {
+        if (!$column) return;
+        $params['name'] = "{$this->entity_name}[{$column}]";
+
+        if ($params['model'] && !$params['value']) $params['value'] = $this->id_column;
+        $tag = FormHelper::radio($params, $this->value[$column]);
         return $tag;
     }
 
@@ -490,7 +534,6 @@ class Entity {
         return $tag;
     }
 
-
    /**
     * formDelete
     *
@@ -498,16 +541,18 @@ class Entity {
     * @param array $params
     * @return string
     */
-    function formDelete($action, $label, $params = null) {
+    function formDelete($action = 'delete', $label = LABEL_DELETE, $params = null) {
         if (!$action) return;
         if (!$this->value[$this->id_column]) return;
 
-        $href = url_for($action, $this->value[$this->id_column]);
+        if (!$params['class']) $params['class'] = 'btn btn-danger confirm-dialog';
+        if (!$params['message']) $params['message'] = 'Do you delete?';
 
-        //TODO FormHelper
-        $tag = "<form action=\"{$href}\" method=\"post\">\n";
-        $tag.= FormHelper::delete($label);
-        $tag.= "</form>\n";
+        $contents = FormHelper::delete($label, $params);
+
+        $params = null;
+        $params['action'] = url_for($action, $this->value[$this->id_column]);
+        $tag = FormHelper::form($contents, $params);
         return $tag;
     }
 
@@ -523,10 +568,10 @@ class Entity {
         if (!$this->values) return $this;
         if (!$model->values) return $this;
 
-        $bind_values = $model->valuesWithKey();
-        $bind_name = $model->entity_name;
-
         if ($this->values) {
+            $bind_values = $model->valuesWithKey();
+            $bind_name = $model->entity_name;
+
             foreach ($this->values as $index => $value) {
                 if ($model->entity_name) {
                     $id = $value[$bind_column];
@@ -556,4 +601,31 @@ class Entity {
         return $this->values;
     }
 
+   /**
+    * getSession
+    *
+    * @return Class
+    */
+    function getSession() {
+        return AppSession::get($this->entity_name);
+    }
+
+   /**
+    * setSession
+    *
+    * @return void
+    */
+    function setSession() {
+        AppSession::set($this->entity_name, $this);
+    }
+
+   /**
+    * setSession
+    *
+    * @return void
+    */
+    function clearSession() {
+        AppSession::clear($this->entity_name);
+    }
+    
 }

@@ -60,18 +60,18 @@ class ApplicationLocalize {
     static function loadLocale() {
         if ($_REQUEST['lang']) {
             if ($_REQUEST['lang'] == 'default') {
-                AppSession::clearSession('lang');
+                AppSession::clear('lang');
                 unset($_REQUEST['lang']);
             }
-            AppSession::setSession('lang', $_REQUEST['lang']);
+            AppSession::set('lang', $_REQUEST['lang']);
             self::claerLocaleValues();
         }
-        $lang = AppSession::getSession('lang');
+        $lang = AppSession::get('lang');
         return $lang;
     }
 
     static function claerLocaleValues() {
-        AppSession::clearSession('option');
+        AppSession::clear('option');
     }
 
 }

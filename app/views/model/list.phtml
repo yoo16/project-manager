@@ -3,13 +3,14 @@
 <div class="">
   <div class="pt-3">
     <form action="<?= url_for('project/sync_db') ?>" method="post" class="">
-      <?= FormHelper::linkModal('#add-table-window', LABEL_ADD) ?>
-      <?= FormHelper::submit('Sync with DB', ['class' => 'btn btn-outline-primary confirm-dialog']) ?>
+      <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
+      <?= FormHelper::submit('Sync with DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you import models by sync with Database?']) ?>
       <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
+      <?= FormHelper::linkButton('lock', 'Lock', null ,['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you lock models?']) ?>
     </form>
   </div>
 
-  <? include('add_table_window.phtml'); ?>
+  <? include('add_window.phtml'); ?>
 
   <table class="table">
     <thead class="thead-default">
@@ -22,6 +23,7 @@
         <th>DB</th>
       </tr>
     </thead>
+    <? if ($this->models): ?>
     <? foreach ($this->models as $model): ?>
     <tr>
       <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $model['id']) ?></td>
@@ -49,9 +51,9 @@
 
     <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
     <?= FormHelper::badgeTag('sync', null, 'success') ?>
-    <? else: ?>
-    <?= FormHelper::badgeTag('unsync', null, 'danger') ?>
-    <? endif ?>
+  <? else: ?>
+  <?= FormHelper::badgeTag('unsync', null, 'danger') ?>
+<? endif ?>
 
 <? if ($model['label'] == $model['pg_class']['comment']): ?>
 <?= FormHelper::badgeTag('label', null, 'success') ?>
@@ -59,9 +61,13 @@
 <?= FormHelper::badgeTag('different label', null, 'danger') ?>
 <?= FormHelper::badgeTag($model['pg_class']['comment'], null, 'default') ?>
 <? endif ?>
+<? if ($model['is_lock']): ?>
+<?= FormHelper::badgeTag('Delete Lock', null, 'danger') ?>
+<? endif ?>
 </td>
 
 </tr>
 <? endforeach ?>
+<? endif ?>
 </table>
 </div>

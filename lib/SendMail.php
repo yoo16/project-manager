@@ -17,7 +17,7 @@ class SendMail {
     /**
      * コンストラクタ
      *
-     * @param String $type
+     * @param string $type
      * @return void
      **/
     function SendMail($type) {
@@ -35,8 +35,8 @@ class SendMail {
     /**
      * メール本文生成
      *
-     * @param Array $values
-     * @return String
+     * @param array $values
+     * @return string
      **/
     function mail_body($values) {
         mb_language('Japanese');
@@ -55,7 +55,7 @@ class SendMail {
     /**
      * メール設定ファイルパス取得
      *
-     * @return String
+     * @return string
      **/
     function mail_template_path() {
         if ($this->type) {
@@ -71,7 +71,7 @@ class SendMail {
     /**
      * メール設定ファイル判別
      *
-     * @return Array
+     * @return array
      **/
     function has_setting_file() {
         if (!file_exists($this->setting_file_path)) {
@@ -83,8 +83,8 @@ class SendMail {
     /**
      * メール設定取得
      *
-     * @param String $file
-     * @return Array
+     * @param string $file
+     * @return array
      **/
     function mail_setting() {
         $values = mail_settings($this->setting_file);
@@ -102,8 +102,8 @@ class SendMail {
     /**
      * メール設定一覧取得
      *
-     * @param String $file
-     * @return Array
+     * @param string $file
+     * @return array
      **/
     function mail_settings($file) {
         if (file_exists($file)) {
@@ -115,8 +115,8 @@ class SendMail {
     /**
      * メール送信
      *
-     * @param Array $values
-     * @return Boolean
+     * @param array $values
+     * @return boolean
      **/
     function send($values) {
         mb_language('Japanese');
@@ -206,8 +206,8 @@ class SendMail {
     /**
      * TOアドレス成形
      *
-     * @param Array $values
-     * @return String
+     * @param array $values
+     * @return string
      **/
     function to_address($values) {
         if (is_array($values)) {

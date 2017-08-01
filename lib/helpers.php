@@ -34,13 +34,26 @@ function url_for_session($sid = 0, $params = null, $option = null) {
 * @return string
 */
 function url_for($params, $option = null) {
-    $controller =& $GLOBALS['controller'];
+    $controller = $GLOBALS['controller'];
     $path = $controller->url_for($params, $option);
     if (strpos($path, '://')) {
         return htmlspecialchars($path);
     } else {
         return htmlspecialchars($controller->relative_base . $path);
     }
+}
+
+/**
+* url_for_abs
+*
+* @param array $params
+* @param object $option
+* @return string
+*/
+function url_for_abs($params, $option = null) {
+    $controller = $GLOBALS['controller'];
+    $path = $controller->url_for($params, $option);
+    return htmlspecialchars($path);
 }
 
 /**

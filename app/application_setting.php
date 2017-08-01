@@ -5,7 +5,8 @@
 
     define('PHP_WORK_GIT_URL', 'https://github.com/yoo16/php-work.git');
 
-    define('PHP_START_PHP', '<?php');
+    define('PROJECT_MANAGER_DATABASE_NAME', 'project_manager');
+    define('PG_INFO', 'host=localhost user=postgres dbname='.PROJECT_MANAGER_DATABASE_NAME);
 
     define('APP_DIR', BASE_DIR.'app/');
     define('MODEL_DIR', APP_DIR.'models/');

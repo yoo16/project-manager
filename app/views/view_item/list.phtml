@@ -1,0 +1,59 @@
+<? include('_header.phtml') ?>
+<div class="pt-3">
+  <?= FormHelper::linkButton('new', LABEL_ADD) ?>
+  <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
+</div>
+
+<table class="table">
+  <thead class="thead-deffault">
+    <tr>
+      <th>&nbsp;</th>
+      <th>カラム</th>
+      <th>ラベル</th>
+    </tr>
+  </thead>
+
+  <? if ($this->attribute->values): ?>
+  <? foreach ($this->attribute->values as $values): ?>
+  <tr>
+    <td>
+    <form action="<?= url_for('add_for_attribute') ?>" method="post">
+    <?= FormHelper::submit(LABEL_ADD) ?>
+    <?= FormHelper::hidden('view_item[attribute_id]', $values['id']) ?>
+    </form>
+    </td>
+    <td><?= $values['name'] ?></td>
+    <td><?= $values['label'] ?></td>
+  </tr>
+  <? endforeach ?>
+  <? endif ?>
+
+</table>
+
+
+<table class="table">
+  <thead class="thead-deffault">
+    <tr>
+      <th>&nbsp;</th>
+      <th>カラム</th>
+      <th>ビュー</th>
+      <th>ラベル</th>
+      <th>Formタイプ</th>
+      <th>css_class</th>
+    </tr>
+  </thead>
+
+  <? if ($this->view_item->values): ?>
+  <? foreach ($this->view_item->values as $values): ?>
+  <tr>
+    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
+    <td><?= FormHelper::activeLabelTag($values['attribute_id']) ?></td>
+    <td><?= $values['view_id'] ?></td>
+    <td><?= $values['label'] ?></td>
+    <td><?= $values['form_type'] ?></td>
+    <td><?= FormHelper::activeLabelTag($values['CSSクラス']) ?></td>
+  </tr>
+  <? endforeach ?>
+  <? endif ?>
+
+</table>

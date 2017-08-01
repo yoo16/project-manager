@@ -21,11 +21,7 @@ class AttributeController extends ProjectController {
     function before_action($action) {
         parent::before_action($action);
 
-        if ($_REQUEST['model_id']) {
-            $model = DB::table('Model')->fetch($_REQUEST['model_id']);
-            AppSession::setSession('model', $model);
-        }
-        $this->model = AppSession::getSession('model');
+        $this->model = DB::table('Model')->loadSession();
         if (!$this->model->value) {
             $this->redirect_to('model/list');
             exit;
@@ -205,22 +201,11 @@ class AttributeController extends ProjectController {
         $this->redirect_to('list');
     }
 
-    function action_sync_db() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $attribute = new Attribute();
-            $attribute->importByModel($this->model);
-
-            $this->redirect_to('list');
-        }    
-    }
-
     function action_relation_model_list() {
         $this->layout = null;
 
         $this->models = DB::table('Model')->listByProject($this->project)->values;
-
         $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id'])->value;
-        $this->model = DB::table('Model')->fetch($this->attribute['model_id'])->value;
 
         if ($this->attribute['fk_attribute_id']) {
             $this->fk_attribute = DB::table('Attribute')
@@ -235,38 +220,33 @@ class AttributeController extends ProjectController {
     function action_relation_attribute_list() {
         $this->layout = null;
 
-        $model = DB::table('Model')->fetch($_REQUEST['model_id'])->value;
-        $this->attributes = DB::table('Attribute')
-                                ->where("model_id = {$model['id']}")
-                                ->order('name', 'asc')
-                                ->select()->values;
+        $this->fk_model = DB::table('Model')->fetch($_REQUEST['fk_model_id']);
+        if ($this->fk_model->value['id']) {
+            $this->fk_attributes = DB::table('Attribute')
+                                    ->where("model_id = {$this->fk_model->value['id']}")
+                                    ->order('name', 'asc')
+                                    ->select()->values;
+        }
+        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
 
-        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id'])->value;
-        $this->model = DB::table('Model')->fetch($this->attribute['model_id'])->value;
-
-        if ($this->attribute['fk_attribute_id']) {
-            $this->fk_attribute = DB::table('Attribute')
-                                            ->fetch($this->attribute['fk_attribute_id'])
-                                            ->value;
-            $this->fk_model = DB::table('Model')
-                                            ->fetch($this->fk_attribute['model_id'])
-                                            ->value;
+        if ($this->attribute->value['fk_attribute_id']) {
+            $this->fk_attribute = DB::table('Attribute')->fetch($this->attribute['fk_attribute_id']);
         }
     }
 
     function action_update_relation() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $fk_attribute = DB::table('Attribute')->fetch($_REQUEST['fk_attribute_id']);
-            if ($fk_attribute->value['id']) {
-                $attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
-                if ($attribute->value['id']) {
-                    $posts['fk_attribute_id'] = $fk_attribute->value['id'];
-                    $attribute->update($posts);
-                }
+        if (!isPost()) exit;
+
+        $fk_attribute = DB::table('Attribute')->fetch($_REQUEST['fk_attribute_id']);
+        if ($fk_attribute->value['id']) {
+            $attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
+            if ($attribute->value['id']) {
+                $posts['fk_attribute_id'] = $fk_attribute->value['id'];
+                $attribute->update($posts);
             }
-            $params['model_id'] = $attribute->value['model_id'];
-            $this->redirect_to('list', $params);
         }
+        $params['model_id'] = $attribute->value['model_id'];
+        $this->redirect_to('list', $params);
     }
 
     function action_remove_relation() {

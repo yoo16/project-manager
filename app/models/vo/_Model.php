@@ -13,22 +13,21 @@ class _Model extends PgsqlEntity {
     var $entity_name = 'model';
 
     var $columns = array(
-        'created_at' => array('type' => 't'),
-        'updated_at' => array('type' => 't'),
-        'sort_order' => array('type' => 'i'),
-        'name' => array('type' => 's', 'required' => true),
-        'label' => array('type' => 's'),
-        'pg_class_id' => array('type' => 'i', 'required' => true),
-        'relfilenode' => array('type' => 'i', 'required' => true),
-        'database_id' => array('type' => 'i', 'required' => true),
-        'entity_name' => array('type' => 's', 'required' => true),
-        'class_name' => array('type' => 's', 'required' => true),
-        //'auth_type' => array('type' => 's'),
-        //'creator_user_id' => array('type' => 'i'),
-        'is_unenable' => array('type' => 'b'),
-        'id_column_name' => array('type' => 's'),
-        'is_none_id_column' => array('type' => 'b'),
-        'sub_table_name' => array('type' => 's'),
+        'created_at' => array('type' => 'timestamp'),
+        'updated_at' => array('type' => 'timestamp'),
+        'sort_order' => array('type' => 'int4'),
+        'name' => array('type' => 'varchar', 'required' => true),
+        'label' => array('type' => 'varchar'),
+        'pg_class_id' => array('type' => 'int4', 'required' => true),
+        'relfilenode' => array('type' => 'int4', 'required' => true),
+        'database_id' => array('type' => 'int4', 'required' => true),
+        'entity_name' => array('type' => 'varchar', 'required' => true),
+        'class_name' => array('type' => 'varchar', 'required' => true),
+        'is_unenable' => array('type' => 'bool'),
+        'id_column_name' => array('type' => 'varchar'),
+        'is_none_id_column' => array('type' => 'bool'),
+        'sub_table_name' => array('type' => 'varchar'),
+        'is_lock' => array('type' => 'bool'),
     );
 
     function __construct($params = null) {

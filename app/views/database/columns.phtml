@@ -1,12 +1,12 @@
 <? include('_header.phtml') ?>
 
-<div class="alert alert-danger">
+<div class="alert alert-success">
 if you want create database's columns, please add columns on 'Project'.
 </div>
 
 <div class="card">
   <div class="card-header">
-    <h4><a href="<?= url_for('tables', array('database_id' => $this->database['id'])) ?>"><?= $this->pg_class['relname'] ?></a></h4>
+    <h4><a href="<?= url_for('tables', array('database_id' => $this->database->value['id'])) ?>"><?= $this->pg_class['relname'] ?></a></h4>
   </div>
 
   <div class="card-block overflow-list">
@@ -22,7 +22,7 @@ if you want create database's columns, please add columns on 'Project'.
         <th>NOT NULL</th>
       </tr>
     </thead>
-    <? foreach ($this->attributes as $attribute): ?>
+    <? foreach ($this->pg_attributes as $attribute): ?>
     <tr>
       <td><?= $attribute['attnum'] ?></td>
       <td><?= $attribute['attname'] ?></td>
@@ -34,7 +34,7 @@ if you want create database's columns, please add columns on 'Project'.
               <span class="input-group-btn">
                 <button class="btn btn-primary"><?= LABEL_UPDATE ?></button>
               </span>
-              <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
+              <input type="hidden" name="database_id" value="<?= $this->database->value['id'] ?>">
               <input type="hidden" name="relfilenode" value="<?= $this->pg_class['relfilenode'] ?>">
               <input type="hidden" name="attnum" value="<?= $attribute['attnum'] ?>">
             </div>
@@ -53,6 +53,7 @@ if you want create database's columns, please add columns on 'Project'.
 
 <div class="card-footer text-center">
   <div class="text-center">
+  <a class="btn btn-outline-primary" href="<?= url_for('tables') ?>"><?= LABEL_BACK ?></a>
   </div>
 </div>
 </div>

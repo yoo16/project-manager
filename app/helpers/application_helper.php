@@ -1,14 +1,9 @@
 <?php
 /**
- * helpersファイル読み込み
- *
- * @author  Yohei Yoshikawa 
- * @create  2010/02/06 
+ * application helper 
+ * 
+ * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
  */
-
-require_once 'lib/_application_helper.php';
-
-require_once 'message_helper.php';
 
 function undefineLabel($key, $value) {
     $tag = '';

@@ -37,127 +37,95 @@ class FormHelper {
     static function selectDate($params, $selected=null) {
         if (!$params) return;
         
-        $params['class'].= ' form-control action-change-date';
-        $params = self::checkParams($params);
-        if ($params['formatter']) $format_label = DateHelper::formatters($params['formatter']);
-        
-        if (!$selected) $selected = $params['selected'];
-        if ($selected && is_string($selected)) {
-            $params['selected'] = null;
-            $params['selected']['year'] = (int) date('Y', strtotime($selected));
-            $params['selected']['month'] = (int) date('m', strtotime($selected));
-            $params['selected']['day'] = (int) date('d', strtotime($selected));
-            $params['selected']['hour'] = (int) date('H', strtotime($selected));
-            $params['selected']['minute'] = (int) date('i', strtotime($selected));
-        }
+        $params['class'].= ' form-control';
+        if (!$params['hide_year']) $tag.= self::selectYear($params, $selected);
+        if (!$params['hide_month']) $tag.= self::selectMonth($params, $selected);
+        if (!$params['hide_day']) $tag.= self::selectDays($params, $selected);
+        if ($params['show_hour']) $tag = self::selectTime($params, $selected);
 
-        if (!$params['hide_year']) $tag.= self::selectYear($params);
-        if (!$params['hide_month']) $tag.= self::selectMonth($params);
-        if (!$params['hide_day']) $tag.= self::selectDays($params);
-        if ($params['show_hour']) $tag = self::selectTime($params);
-
-        $tag = "<div class=\"form-group\">{$tag}</div>";
-        $tag = "<div class=\"form-inline\">{$tag}</div>";
-
-        $selected = DateHelper::convertAtArrayToAt($params['selected']);
-        $hidden_tag = "<input type=\"hidden\" name=\"{$params['name']}\" value=\"{$selected}\">\n";
-        $tag = "{$hidden_tag}{$tag}\n";
+        $tag = "<div class=\"form-group\">\n{$tag}\n</div>\n";
+        $tag = "<div class=\"form-inline\">\n{$tag}\n</div>\n";
         return $tag;
     }
 
     /**
      * 日付ラベル
      *
-     * @param array $params
-     * @param string $selected
+     * @param string $formatter
+     * @param string $type
      * @return string
      */
     static function labelFormatTag($formatter, $type) {
         if (!$formatter) return;
         if (!$type) return;
         $tag = '';
-        $format_label = DateHelper::formatters($formatter);
+        $format_label = DateHelper::formatters($formatter, $type);
         if ($format_label) $tag = "&nbsp;{$format_label[$type]}&nbsp;";
         return $tag;
     }
 
     /**
-     * selectタグ（誕生日）
+     * select date tag
      *
      * @param array $params
-     * @param string $selected
      * @return string
      */
-    static function selectBirthday($params = null, $selected = null) {
-        $from_year = ($params['from'])? $params['from'] : 1900;
-        $to_year = ($params['to'])? $params['to'] : date('Y') + 1;
-        $params['years'] = range($to_year,  $from_year);
+    static function selectDateTag($type, $params, $selected = null) {
+        if ($params['values']) {
+            $option_params['values'] = $params['values'];
+            unset($params['values']);
+        }
+        if ($params['formatter']) {
+            $formatter = $params['formatter'];
+            unset($params['formatter']);
+        }
+        $value = self::selectDateValue($selected, $type);
+        $tag = self::dateOptions($option_params, $value);
 
-        //$params['id'] = 'birthday_at';
-        $params['default_unselect'] = true;
-        $params['unselect'] = true;
-        if (!$params['formatter']) $params['formatter'] = 'j';
-        if (!$params['name']) $params['name'] = "birthday_at";
-
-        $tag = self::selectDate($params, $selected);
+        $params['name'] = "{$params['name']}[{$type}]";
+        $tag = self::selectTag($tag, $params);
+        $tag.= self::labelFormatTag($formatter, $type);
         return $tag;
     }
 
     /**
      * selectタグ（年）
      *
-     * @param Array $params
-     * @return String
+     * @param array $params
+     * @return string
      */
-    static function selectYear($params) {
-        $current = self::selectDateValue($params, 'year');
-
+    static function selectYear($params, $selected = null) {
         if (is_array($params['years'])) {
             $params['values'] = $params['years'];
         } else {
             $params['values'] = range(date('Y'), 1900);
         }
-        $tag = self::dateOptions($params, $current);
-
-        $attribute = self::selectAttributeDate($params, 'year');
-        $tag = self::selectTag($tag, $attribute);
-        $tag.= self::labelFormatTag($params['formatter'], 'y');
+        if ($params['years']) unset($params['years']);
+        $tag = self::selectDateTag('year', $params, $selected);
         return $tag;
     }
 
     /**
      * selectタグ（月）
      *
-     * @param Array $params
-     * @return String
+     * @param array $params
+     * @return string
      */
-    static function selectMonth($params) {
-        $current = self::selectDateValue($params, 'month');
-
+    static function selectMonth($params, $selected = null) {
         $params['values'] = range(1, 12);
-        $tag.= self::dateOptions($params, $current);
-
-        $attribute = self::selectAttributeDate($params, 'month');
-        $tag = self::selectTag($tag, $attribute);
-        $tag.= self::labelFormatTag($params['formatter'], 'm');
+        $tag = self::selectDateTag('month', $params, $selected);
         return $tag;
     }
 
     /**
      * selectタグ（日）
      *
-     * @param Array $params
-     * @return String
+     * @param array $params
+     * @return string
      */
-    static function selectDays($params) {
-        $current = self::selectDateValue($params, 'day');
-
+    static function selectDays($params, $selected = null) {
         $params['values'] = range(1, 31);
-        $tag.= self::dateOptions($params, $current);
-
-        $attribute = self::selectAttributeDate($params, 'day');
-        $tag = self::selectTag($tag, $attribute);
-        $tag.= self::labelFormatTag($params['formatter'], 'd');
+        $tag = self::selectDateTag('day', $params, $selected);
         return $tag;
     }
 
@@ -211,19 +179,21 @@ class FormHelper {
     /**
      * 日付選択値
      *
-     * @param Array $params
+     * @param array $selected
      * @return String
      */
-    static function selectDateValue($params, $type) {
-        $types['year'] = 'Y';
-        $types['month'] = 'm';
-        $types['day'] = 'd';
+    static function selectDateValue($selected, $type) {
+        $formatters['year'] = 'Y';
+        $formatters['month'] = 'm';
+        $formatters['day'] = 'd';
+        $formatters['hour'] = 'H';
+        $formatters['minute'] = 'i';
+        $formatter = $formatters[$type];
 
-        $formatter = $types[$type];
-        $selected = $params['selected'];
-        if ($selected) {
-            $selected_value = $selected[$type];
-            $value = ($selected_value)? (int) $selected_value :(int) date($formatter, strtotime($selected));
+        if (is_array($selected) && $selected[$type]) {
+            $value = $selected[$type];
+        } else if (is_string($selected)) {
+            $value = date($formatter, strtotime($selected));
         }
         return $value;
     }
@@ -268,19 +238,6 @@ class FormHelper {
        return $tag;
     }
 
-
-    /**
-     * label tag
-     *
-     * @param string $tag
-     * @param array $attributes
-     * @return string
-     */
-    static function formLabel($tag, $attributes=null) {
-        if (!$attributes['class']) $attributes['class'] = 'col-2 col-form-label';
-        $tag = self::labelTag($tag, $attributes);
-        return $tag;
-    }
 
     /**
      * label badge tag
@@ -560,7 +517,7 @@ class FormHelper {
      * @param Object $selected
      * @return String
      */
-    static function radio($params, $selected=null, $value_key=null, $label_key=null, $values=null) {
+    static function radio($params, $selected = null) {
         if ($params['csv']) {
             $values = CsvLite::options($params['csv']);
         }
@@ -753,6 +710,19 @@ class FormHelper {
         return $tag;
     }
 
+
+    /**
+     * form
+     *
+     * @param string $name
+     * @param array $params
+     * @return string
+     */
+    static function form($tag, $params = null) {
+        $tag = self::tag('form', $tag, $params);
+        return $tag;
+    }
+
     /**
      * input
      *
@@ -839,7 +809,7 @@ class FormHelper {
      */
     static function groupButton($label, $params = null) {
         $tag = "<button {$attribute}>{$label}</button>\n";
-
+        
         $attributes['class'] = 'input-group-btn';
         $label = self::tag('span', $attribues);
         return $tag;
@@ -871,6 +841,23 @@ class FormHelper {
         $params['type'] = "hidden";
         $tag = self::input($params, $name, $value);
         return $tag;
+    }
+
+    /**
+     * label badge tag
+     *
+     * @param object $value
+     * @param array $attributes
+     * @param string $type
+     * @return string
+     */
+    static function activeLabelTag($value, $tag = LABEL_TRUE, $attributes = null, $type = 'danger') {
+        if ($value) {
+            $badge_class = " badge badge-pill badge-{$type}";
+            $attributes['class'].= $badge_class;
+            $tag = self::labelTag($tag, $attributes);
+            return $tag;
+        }
     }
 
 }

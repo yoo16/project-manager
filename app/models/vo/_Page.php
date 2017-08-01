@@ -14,16 +14,16 @@ class _Page extends SqlEntity {
     var $entity_name = 'page';
 
     var $columns = array(
-        'created_at' => array('type' => 't'),
-        'updated_at' => array('type' => 't'),
-        'sort_order' => array('type' => 'i'),
-        'project_id' => array('type' => 'i', 'required' => true),
-        'model_id' => array('type' => 'i'),
-        'name' => array('type' => 's', 'required' => true),
-        'entity_name' => array('type' => 's', 'required' => true),
-        'class_name' => array('type' => 's', 'required' => true),
-        'label' => array('type' => 's'),
-        'is_force_write' => array('type' => 'b'),
+        'created_at' => array('type' => 'timestamp', 'option' => 'NULL DEFAULT CURRENT_TIMESTAMP'),
+        'updated_at' => array('type' => 'timestamp'),
+        'sort_order' => array('type' => 'int4'),
+        'project_id' => array('type' => 'int4', 'required' => true),
+        'model_id' => array('type' => 'int4'),
+        'name' => array('type' => 'varchar', 'length' => 256, 'required' => true),
+        'entity_name' => array('type' => 'varchar', 'length' => 256, 'required' => true),
+        'class_name' => array('type' => 'varchar', 'length' => 256, 'required' => true),
+        'label' => array('type' => 'varchar', 'length' => 256),
+        'is_overwrite' => array('type' => 'bool'),
     );
 
     function __construct($params = null) {

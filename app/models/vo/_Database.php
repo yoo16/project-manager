@@ -14,14 +14,15 @@ class _Database extends PgsqlEntity {
     var $entity_name = 'database';
 
     var $columns = array(
-        'created_at' => array('type' => 't'),
-        'updated_at' => array('type' => 't'),
-        'name' => array('type' => 's', 'required' => true),
-        'hostname' => array('type' => 's', 'required' => true),
-        'user_name' => array('type' => 's', 'required' => true),
-        'port' => array('type' => 'i', 'required' => true),
-        'current_version' => array('type' => 'i'),
-        'type' => array('type' => 's'),
+        'created_at' => array('type' => 'timestamp'),
+        'updated_at' => array('type' => 'timestamp'),
+        'name' => array('type' => 'varchar', 'required' => true),
+        'hostname' => array('type' => 'varchar', 'required' => true),
+        'user_name' => array('type' => 'varchar', 'required' => true),
+        'port' => array('type' => 'int4', 'required' => true),
+        'type' => array('type' => 'varchar'),
+        'current_version' => array('type' => 'int4'),
+        'is_lock' => array('type' => 'bool'),
     );
 
     function __construct($params = null) {

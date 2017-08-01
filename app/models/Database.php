@@ -24,6 +24,12 @@ class Database extends _Database {
         parent::validate();
     }
 
+    function checkProjectManager() {
+        $pgsql_entity = new PgsqlEntity();
+        $pg_database = $pgsql_entity->pgDatabase();
+        return $pg_database;
+    }
+
     /**
      * export database
      *

@@ -19,22 +19,11 @@ class ProjectController extends AppController {
     */ 
     function before_action($action) {
         parent::before_action($action);
-        if ($_REQUEST['project_id']) {
-            $project = DB::table('project')->fetch($_REQUEST['project_id']);
-            AppSession::setSession('project', $project);
-        }
-        $this->project = AppSession::getSession('project');
 
-        //TODO relation
-        if ($this->project->value['database_id']) {
-            $this->database = DB::table('Database')->fetch($this->project->value['database_id']);
-        }
-
-        if ($this->project->value['id']) {
-            $this->user_project_settings = DB::table('UserProjectSetting')
-                                            ->where("project_id = {$this->project->value['id']}")
-                                            ->select()
-                                            ->values;
+        $this->project = DB::table('Project')->loadSession();
+        if ($this->project->value) {
+            $this->database = DB::table('Database')->relation($this->project, 'database_id');
+            $this->user_project_setting = DB::table('UserProjectSetting')->relations($this->project);
         }
     }
 
@@ -43,10 +32,12 @@ class ProjectController extends AppController {
     }
 
     function clearSession() {
-        AppSession::clearSession('project');
-        AppSession::clearSession('database');
-        AppSession::clearSession('model');
-        AppSession::clearSession('attribute');
+        AppSession::clear('project');
+        AppSession::clear('database');
+        AppSession::clear('model');
+        AppSession::clear('attribute');
+        AppSession::clear('page');
+        AppSession::clear('view');
         unset($this->session['posts']);
     }
 
@@ -88,7 +79,11 @@ class ProjectController extends AppController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->session['posts'] = $_POST['project'];
-        $project = DB::table('Project')->insert($posts);
+        if (!$posts['database_id']) {
+            $project = DB::table('Project')->add_error('database_id', 'required');
+        } else {
+            $project = DB::table('Project')->insert($posts);
+        }
 
         if ($project->errors) {
             $this->flash['errors'] = $project->errors;
@@ -149,13 +144,15 @@ class ProjectController extends AppController {
     function action_export_list() {
             $this->project = DB::table('Project')->fetch("{$this->params['id']}");
 
-            if ($this->project->value['id']) {
-                $this->database = DB::table('Database')->fetch("{$this->project->value['database_id']}");
-
-                $this->user_project_setting = DB::table('UserProjectSetting')
-                                                ->where("project_id = {$this->project->value['id']}")
-                                                ->select();
+            if (!$this->project->value['id']) {
+                $this->redirect_to('list');
+                exit;
             }
+            $this->database = DB::table('Database')->fetch("{$this->project->value['database_id']}");
+
+            $this->user_project_setting = DB::table('UserProjectSetting')
+                                            ->where("project_id = {$this->project->value['id']}")
+                                            ->select();
     }
 
     function action_export() {
@@ -201,21 +198,20 @@ class ProjectController extends AppController {
     }
 
     function action_add_user_project_setting() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['user_project_setting'] = $_POST['user_project_setting'];
+        if (!isPost()) exit;
+        $posts = $this->session['user_project_setting'] = $_REQUEST['user_project_setting'];
 
-            $project = DB::table('Project')->fetch($posts['project_id'])->value;
-            if ($project['id']) {
-                $user_project_setting = DB::table('UserProjectSetting')->insert($posts);
-            }
-
-            if ($user_project_setting->errors) {
-                $this->flash['errors'] = $project->errors;
-            } else {
-                unset($this->session['posts']);
-            }
-            $this->redirect_to('export_list', $posts['project_id']);
+        $project = DB::table('Project')->fetch($posts['project_id'])->value;
+        if ($project['id']) {
+            $user_project_setting = DB::table('UserProjectSetting')->insert($posts);
         }
+
+        if ($user_project_setting->errors) {
+            $this->flash['errors'] = $project->errors;
+        } else {
+            unset($this->session['posts']);
+        }
+        $this->redirect_to('export_list', $posts['project_id']);
     }
 
     function action_delete_user_project_setting() {
@@ -253,6 +249,9 @@ class ProjectController extends AppController {
 
     function action_sync_db() {
         if (!isPost()) exit;
+        if (!$this->database->value['id']) {
+            $this->redirect_to('project/');
+        }
         $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
         $this->pg_classes = $pgsql_entity->tableArray();
 
@@ -264,11 +263,11 @@ class ProjectController extends AppController {
 
             } else {
                 $model_values = null;
-                $model_values['database_id'] = $this->project->value['database_id'];
-                $model_values['project_id'] = $this->project->value['id'];
-                $model_values['relfilenode'] = $pg_class['relfilenode'];
-                $model_values['pg_class_id'] = $pg_class['pg_class_id'];
-                $model_values['name'] = $pg_class['relname'];
+                if ($this->project->value['database_id']) $model_values['database_id'] = $this->project->value['database_id'];
+                if ($this->project->value['id']) $model_values['project_id'] = $this->project->value['id'];
+                if ($pg_class['relfilenode']) $model_values['relfilenode'] = $pg_class['relfilenode'];
+                if ($pg_class['pg_class_id']) $model_values['pg_class_id'] = $pg_class['pg_class_id'];
+                if ($pg_class['relname']) $model_values['name'] = $pg_class['relname'];
                 if ($pg_class['comment']) $model_values['label'] = $pg_class['comment'];
 
                 $model_values['entity_name'] = FileManager::pluralToSingular($pg_class['relname']);
@@ -291,7 +290,7 @@ class ProjectController extends AppController {
 
         }
         $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('list', $params);
+        $this->redirect_to('model/list', $params);
     }
 
 }

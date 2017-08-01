@@ -1,0 +1,27 @@
+<? include('_header.phtml') ?>
+<form action="<?= url_for('add') ?>" method="post">
+
+  <table class="table">
+    <tr>
+      <th>カラム</th>
+      <td><?= $this->view_item->formInput('attribute_id') ?></td>
+    </tr>
+    <tr>
+      <th>ビュー</th>
+      <td><?= $this->view_item->formInput('view_id') ?></td>
+    </tr>
+    <tr>
+      <th>ラベル</th>
+      <td><?= $this->view_item->formInput('label') ?></td>
+    </tr>
+    <tr>
+      <th>Formタイプ</th>
+      <td><?= $this->view_item->formInput('form_type') ?></td>
+    </tr>
+    <tr>
+      <th>css_class</th>
+      <td><?= $this->view_item->formInput('CSSクラス') ?></td>
+    </tr>
+  </table>
+
+  <?= FormHelper::submit(LABEL_SAVE) ?>  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?></form>

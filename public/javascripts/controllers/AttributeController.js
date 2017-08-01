@@ -28,7 +28,7 @@ var AttributeController = function() {
 
     this.relation_attribute_list = function(dom) {
         var params = {};
-        params.model_id = $(dom).attr('model_id');
+        params.fk_model_id = $(dom).attr('fk_model_id');
         params.attribute_id = $(dom).attr('attribute_id');
         postApi(apiUrl(this.name, action), params, callback);
 

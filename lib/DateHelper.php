@@ -7,14 +7,15 @@
  */
 
 class DateHelper {
+
     /**
-     * 日時フォーマット（時間付き）
+     * datetimeFormat
      *
-     * @param String $value
-     * @param String $separate
-     * @return String
+     * @param string $value
+     * @param string $separate
+     * @return string
      */
-    static function datetimeFormat($value, $separate='s') {
+    static function datetimeFormat($value, $separate = 's') {
         if ($value) {
             $format = self::formatter($separate, true);
             return date($format, strtotime($value));
@@ -22,13 +23,13 @@ class DateHelper {
     }
 
     /**
-     * 日付フォーマット
+     * dateFormat
      *
-     * @param String $value
-     * @param String $separate
-     * @return String
+     * @param string $value
+     * @param string $separate
+     * @return string
      */
-    static function dateFormat($value, $separate='s') {
+    static function dateFormat($value, $separate = 's') {
         if ($value) {
             $format = self::formatter($separate);
             return date($format, strtotime($value));
@@ -36,13 +37,13 @@ class DateHelper {
     }
 
     /**
-     * 日付フォーマット取得
+     * formatter
      *
-     * @param String $separate
-     * @param Boolean $is_time
-     * @return String
+     * @param string $separate
+     * @param bool $is_time
+     * @return string
      */
-    static function formatter($separate, $is_time=false) {
+    static function formatter($separate, $is_time = false) {
         $formatters = self::formatters($separate);
         $year = $formatters['y'];
         $month = $formatters['m'];
@@ -56,56 +57,44 @@ class DateHelper {
     }
 
     /**
-     * 日付フォーマット群
+     * formatters
      *
-     * @param String $key
-     * @return String
+     * @param string $key
+     * @return string
      */
     static function formatters($key) {
-        $formatters['s'] = array ('y' => '/', 'm' => '/', 'd' => '');
-        $formatters['h'] = array ('y' => '-', 'm' => '-', 'd' => '');
-        $formatters['j'] = array ('y' => '年', 'm' => '月', 'd' => '日');
+        if (!$key) return;
+        $formatters['s'] = array ('year' => '/', 'month' => '/', 'day' => '');
+        $formatters['h'] = array ('year' => '-', 'month' => '-', 'day' => '');
+        $formatters['j'] = array ('year' => '年', 'month' => '月', 'day' => '日');
         return $formatters[$key];
     }
 
+
     /**
-     * formSelect
+     * convert array to string
      *
-     * selectタグ
-     *
-     * @param Array $params
-     * @param Object $selected
-     * @return String
-     */
-    static function selectAttributeDate($params, $date_key) {
-        $attributes = array('id', 'name', 'class', 'js');
-        if (is_array($params)) {
-            foreach ($params as $key => $param) {
-                if (in_array($key, $attributes)) {
-                    if ($key == 'js') {
-                        $event = $param['event'];
-                        $triger = $param['triger'];
-                        $attribute.= " {$event}=\"{$triger}\"";
-                    } elseif ($key == 'name') {
-                        $attribute.= " {$key}=\"{$param}:{$date_key}\"";
-                    } elseif ($key == 'id') {
-                        $attribute.= " {$key}=\"{$param}_{$date_key}\"";
-                    } else {
-                        $attribute.= " {$key}=\"{$param}\"";
-                    }
-                }
-            }
+     * @param string $value
+     * @return array
+     **/
+    static function stringToArray($value) {
+        preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2}) ?(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?/', $value, $m);
+        if (checkdate($m[2], $m[3], $m[1])) {
+            return sprintf('%4d-%02d-%02d %02d:%02d:%02d', $m[1], $m[2], $m[3], $m[4], $m[5], $m[6]);
+        } else {
+            $time = strtotime($value);
+            if ($time >= 0) return date('Y-m-d H:i:s', $time);
+            return null;
         }
-        return $attribute;
     }
 
     /**
-     * 日付配列から日付変更
+     * convert array to string
      *
-     * @param Array $values
-     * @return String
+     * @param array $values
+     * @return string
      **/
-    static function convertAtArrayToAt($values) {
+    static function arrayToString($values) {
         $date = '';
         if (is_array($values)) {
             $year = $values['year'];
@@ -113,7 +102,6 @@ class DateHelper {
             $day = $values['day'];
             $hour = (int) $values['hour'];
             $minute = (int) $values['minute'];
-
             if (!$day) $day = 1;
             $time = mktime($hour, $minute, 0, $month, $day, $year);
             $date = date('Y-m-d H:i', $time);

@@ -1,50 +1,44 @@
+<? include('_header.phtml'); ?>
 <div class="card">
   <h3 class="card-header">Page</h3>
   <div class="card-block">
-    <form id="form-edit" action="<?= url_for('update', $this->page['id']) ?>" method="post" autocomplete="off">
-      <div class="form-group row">
-        <label for="" class="col-2 col-form-label">Project</label>
-        <?= $this->project->value['name'] ?>
-      </div>
 
+      <? if ($this->model->value): ?>
       <div class="form-group row">
         <label for="" class="col-2 col-form-label">Model</label>
         <?= $this->model->value['name'] ?>
       </div>
+      <? endif ?>
       
       <div class="form-group row">
         <label for="page-name" class="col-2 col-form-label">Name</label>
-        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'name') ?>" type="text" name="page[name]" value="<?= $this->page['name'] ?>" required autocomplete="off">
+        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'name') ?>" type="text" name="page[name]" value="<?= $this->page->value['name'] ?>" required autocomplete="off">
       </div>
 
       <div class="form-group row">
         <label for="" class="col-2 col-form-label">Label</label>
-        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'label') ?>" type="text" name="page[label]" value="<?= $this->page['label'] ?>" required autocomplete="off">
+        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'label') ?>" type="text" name="page[label]" value="<?= $this->page->value['label'] ?>" required autocomplete="off">
       </div>
 
       <div class="form-group row">
         <label for="" class="col-2 col-form-label">Entity Name</label>
-        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'entity_name') ?>" type="text" name="page[entity_name]" value="<?= $this->page['entity_name'] ?>" required autocomplete="off">
+        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'entity_name') ?>" type="text" name="page[entity_name]" value="<?= $this->page->value['entity_name'] ?>" required autocomplete="off">
       </div>
       
       <div class="form-group row">
         <label for="" class="col-2 col-form-label">Layout</label>
-        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'layout_name') ?>" type="text" name="page[layout_name]" value="<?= $this->page['layout_name'] ?>" autocomplete="off">
+        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'layout_name') ?>" type="text" name="page[layout_name]" value="<?= $this->page->value['layout_name'] ?>" autocomplete="off">
       </div>
       
       <div class="form-group row">
-        <label for="" class="col-2 col-form-label">Forece Write</label>
-        <?= FormHelper::checkbox($this->forms['is_force_write'], (bool) $this->page['is_force_write']) ?>
+        <label for="" class="col-2 col-form-label">Overwrite</label>
+        <?= FormHelper::checkbox($this->forms['is_force_write'], (bool) $this->page->value['is_force_write']) ?>
       </div>
 
       <button class="btn btn-primary" type="submit"><?= LABEL_UPDATE ?></button>
       <a class="btn btn-outline-primary" href="<?= url_for('list') ?>"><?= LABEL_CANCEL ?></a>
     </form>
 
-    <? if ($this->page['id']): ?>
-    <form id="" action="<?=url_for('delete', $this->page['id']) ?>" method="post">
-      <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
-    </form>
-  <? endif ?>
+    <?= $this->page->formDelete() ?>
 </div>
 </div>

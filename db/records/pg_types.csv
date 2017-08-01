@@ -1,5 +1,5 @@
 value,label
-"boolean","boolean"
+"bool","boolean"
 "int2","smallint (int2)"
 "int4","integer (int4)"
 "int8","bigint (int8)"

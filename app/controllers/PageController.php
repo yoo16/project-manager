@@ -56,13 +56,10 @@ class PageController extends ProjectController {
     }
 
     function action_edit() {
-        $this->page = DB::table('Page')->fetch($this->params['id'])->value;
+        $this->page = DB::table('Page')->fetch($this->params['id']);
 
-        if ($this->page['project_id']) {
-            $this->project = DB::table('Project')->fetch($this->page['project_id'])->value;
-        }
-        if ($this->page['model_id']) {
-            $this->model = DB::table('Model')->fetch($this->page['model_id'])->value;
+        if ($this->page->value['model_id']) {
+            $this->model = DB::table('Model')->fetch($this->page->value['model_id']);
         }
 
         $this->forms['is_force_write']['name'] = 'page[is_force_write]';

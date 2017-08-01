@@ -14,18 +14,18 @@ class _User extends PgsqlEntity {
     var $entity_name = 'user';
 
     var $columns = array(
-        'created_at' => array('type' => 't'),
-        'updated_at' => array('type' => 't'),
-        'sort_order' => array('type' => 'i'),
-        'login_name' => array('type' => 's', 'required' => true),
-        'htaccess_name' => array('type' => 's'),
-        'last_name' => array('type' => 's'),
-        'first_name' => array('type' => 's'),
-        'password' => array('type' => 's'),
-        'email' => array('type' => 's'),
-        'default_dev_url' => array('type' => 's'),
-        'default_project_path' => array('type' => 's'),
-        'default_db_host' => array('type' => 's'),
+        'created_at' => array('type' => 'timestamp', 'option' => 'NULL DEFAULT CURRENT_TIMESTAMP'),
+        'updated_at' => array('type' => 'timestamp'),
+        'sort_order' => array('type' => 'int4'),
+        'login_name' => array('type' => 'varchar', 'length' => 256, 'required' => true),
+        'htaccess_name' => array('type' => 'varchar', 'length' => 256),
+        'last_name' => array('type' => 'varchar', 'length' => 256),
+        'first_name' => array('type' => 'varchar', 'length' => 256),
+        'password' => array('type' => 'varchar', 'length' => 256),
+        'email' => array('type' => 'varchar', 'length' => 256),
+        'default_dev_url' => array('type' => 'varchar', 'length' => 256),
+        'default_project_path' => array('type' => 'varchar', 'length' => 256),
+        'default_db_host' => array('type' => 'varchar', 'length' => 256),
     );
 
     function __construct($params = null) {

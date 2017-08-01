@@ -24,6 +24,7 @@ define('LABEL_PASSWORD', 'パスワード');
 define('LABEL_USER_ID', 'ユーザID');
 define('LABEL_LOGIN_NAME', 'ログイン名');
 define('LABEL_VIEW', 'View');
+define('LABEL_TABLE', 'テーブル');
 
 define('LABEL_SEARCH', '検索');
 define('LABEL_CANCEL', 'キャンセル');

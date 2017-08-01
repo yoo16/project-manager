@@ -1,24 +1,25 @@
 <table class="table">
-  <thead>
+  <thead class="thead-default">
     <tr>
       <th>&nbsp;</th>
       <th><?= DATABASE_NAME ?></th>
       <th><?= DATABASE_HOST ?></th>
       <th><?= DATABASE_USER ?></th>
       <th><?= DATABASE_PORT ?></th>
-      <th></th>
+      <th>Delete Lock</th>
     </tr>
   </thead>
 
-  <? if (is_array($this->databases)): ?> 
+  <? if ($this->database->values): ?> 
 
-  <? foreach ($this->databases as $key => $database): ?> 
+  <? foreach ($this->database->values as $database): ?> 
   <tr>
     <td><a class="btn btn-outline-primary" href="<?= url_for('edit', $database['id']) ?>"><?= LABEL_EDIT ?></a></td>
     <td><a href="<?= url_for('tables', array('database_id' => $database['id'])) ?>"><?= $database['name'] ?></a></td>
     <td><?= $database['hostname'] ?></td>
     <td><?= $database['user_name'] ?></td>
     <td><?= $database['port'] ?></td>
+    <td><?= FormHelper::activeLabelTag($database['is_lock']) ?></td>
   </tr>
   <? endforeach ?> 
 

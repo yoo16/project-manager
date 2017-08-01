@@ -14,13 +14,13 @@
     <div class="container">
       <ul class="nav nav-pills justify-content-left">
         <li class="nav-item">
-          <a class="nav-link" href="<?= $this->base ?>">Home</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link <?= cssClass('project', $this->params['controller'], 'active'); ?>" href="<?= url_for('project/') ?>">Project</a>
         </li>
         <li class="nav-item">
           <a class="nav-link <?= cssClass('database', $this->params['controller'], 'active'); ?>" href="<?= url_for('database/') ?>">Database</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <?= cssClass('root', $this->params['controller'], 'active'); ?>" href="<?= $this->base ?>">Setting</a>
         </li>
       </ul>
     </div>

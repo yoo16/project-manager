@@ -48,7 +48,7 @@ class Project extends _Project {
                 foreach ($attributes as $attribute) {
                     $pg_attribute = $pg_attributes[$attribute['name']];
                     $attribute['pg_attribute'] = $pg_attribute;
-                    $attribute['column_type'] = PgsqlEntity::typeByPgAttribute($pg_attribute);
+                    $attribute['column_type'] = $pg_attribute['type'];
 
                     $values['attribute'][] = $attribute;
                 }

@@ -14,14 +14,14 @@ class _UserProjectSetting extends PgsqlEntity {
     var $entity_name = 'user_project_setting';
 
     var $columns = array(
-        'created_at' => array('type' => 't'),
-        'updated_at' => array('type' => 't'),
-        'sort_order' => array('type' => 'i'),
-        'project_id' => array('type' => 'i', 'required' => true),
-        'project_path' => array('type' => 's', 'required' => true),
-        'user_id' => array('type' => 'i'),
-        'group_name' => array('type' => 's'),
-        'user_name' => array('type' => 's'),
+        'created_at' => array('type' => 'timestamp', 'option' => 'NULL DEFAULT CURRENT_TIMESTAMP'),
+        'updated_at' => array('type' => 'timestamp'),
+        'sort_order' => array('type' => 'int4'),
+        'user_id' => array('type' => 'int4'),
+        'project_id' => array('type' => 'int4', 'required' => true),
+        'project_path' => array('type' => 'varchar', 'length' => 256, 'required' => true),
+        'group_name' => array('type' => 'varchar', 'length' => 256),
+        'user_name' => array('type' => 'varchar', 'length' => 256),
     );
 
     function __construct($params = null) {

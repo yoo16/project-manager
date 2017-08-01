@@ -11,20 +11,21 @@
   <tr>
     <th></th>
     <th>Name</th>
-    <th>Label</th>
-    <th>Force Wirte</th>
-    <th>Page</th>
+    <th>Overwrite</th>
+    <th>URI</th>
   </tr>
   <? foreach ($this->view->values as $view): ?>
   <tr>
     <td><a class="btn btn-sm btn-outline-primary" href="<?= url_for('edit', $view['id']) ?>"><?= LABEL_EDIT ?></a></td>
-    <td><?= $view['name'] ?></td>
-    <td><?= $view['label'] ?></td>
+    <td>
+      <div><?= FormHelper::link('view_item/', $view['name'], ['view_id' => $view['id']]) ?></div>
+      <div><?= $view['label'] ?></div>
+    </td>
     <td>
       <? if ($view['is_force_write']): ?>
-      <?= FormHelper::link('change_force_write', 'forced', $view['id'], ['class' => 'badge badge-danger']) ?>
+      <?= FormHelper::link('change_force_write', 'overwrite', $view['id'], ['class' => 'badge badge-danger']) ?>
       <? else: ?>
-      <?= FormHelper::link('change_force_write', 'forced', $view['id'], ['class' => 'badge badge-default']) ?>
+      <?= FormHelper::link('change_force_write', 'off', $view['id'], ['class' => 'badge badge-default']) ?>
       <? endif ?>
     </td>
     <td><?= $this->page->value['entity_name'] ?>/<?= $view['name'] ?></td>
