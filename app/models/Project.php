@@ -83,7 +83,7 @@ class Project extends _Project {
                 }
 
                 $page_path = Page::projectFilePath($this->user_project_setting, $page);
-                if (!file_exists($page_path) || $page['is_force_write']) {
+                if (!file_exists($page_path) || $page['is_overwrite']) {
                     $page_template_path = Page::templateFilePath($page);
                     $contents = FileManager::bufferFileContetns($page_template_path, $values);
                     file_put_contents($page_path, $contents);
@@ -94,7 +94,7 @@ class Project extends _Project {
                 if ($views) {
                     foreach ($views as $view) {
                         $view_path = View::projectFilePath($this->user_project_setting, $page, $view);
-                        if (!file_exists($view_path) || $view['is_force_write']) {
+                        if (!file_exists($view_path) || $view['is_overwrite']) {
                             $values['view'] = $view;
 
                             $view_template_path = View::templateFilePath($view);

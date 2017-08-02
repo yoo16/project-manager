@@ -16,7 +16,7 @@ if (!defined('BASE_DIR')) {
 if (!defined('ROOT_CONTROLLER_NAME')) define('ROOT_CONTROLLER_NAME', 'root');
 if (!defined('APP_NAME')) define('APP_NAME', 'controller');
 
-class Controller {
+class Controller extends RuntimeException {
     static $routes = ['controller', 'action', 'id'];
     var $name;
     var $layout = true;
@@ -34,6 +34,24 @@ class Controller {
             $this->session_name = false;
         }
         if ($this->session_name === true) $this->session_name = $this->name;
+    }
+
+    // function __isset($name) {
+    //     var_dump($name);
+    // }
+
+    function __invoke() {
+    }
+
+    function __destruct() {
+    }
+
+    public function __call($name, $args) {
+        if(!method_exists($this, $name)) {
+            var_dump('error');
+            return false;
+        }
+        $this->{$name}($args);
     }
 
     /**
@@ -143,24 +161,39 @@ class Controller {
      * @return void
      */
     static function dispatch($params = array()) {
-        $dispatcher = basename($_SERVER['SCRIPT_NAME']);
-        if (strpos($_SERVER['REQUEST_URI'], "/{$dispatcher}")) {
-            define('DISPATCHER', $dispatcher);
-        } else {
-            define('DISPATCHER', false);
-        }
         if (empty($params['controller'])) $params = Controller::queryString();
         if (empty($params['controller'])) $params['controller'] = ROOT_CONTROLLER_NAME;
 
         $controller = Controller::load($params['controller']);
         if ($controller) {
-            $controller->run($params);
+            try {
+                $controller->run($params);
+            } catch (Throwable $t) {
+                $errors['code'] = $t->getCode();
+                $errors['message'] = $t->getMessage();
+
+                self::renderError($errors);
+            } catch (Error $e) {
+                var_dump($e);
+            } catch (Exception $e) {
+                var_dump($e);
+            } finally {
+
+            }
         } else {
-            header('HTTP/1.0 404 Not Found');
-            $error_message = "{$_SERVER['REQUEST_URI']} Not Found";
-            trigger_error($error_message, E_USER_NOTICE);
-            if (!@include("errors/404.php")) exit($error_message);
-            exit;
+            //TODO try catch
+            //$errors['type'] = '404 Not Found';
+            $errors['query'] = $_SERVER['QUERY_STRING'];
+            $errors['request'] = $_SERVER['REQUEST_URI'];
+            $errors['controller'] = $params['controller'];
+            $errors['signature'] = $_SERVER['SERVER_SIGNATURE'];
+            $content_for_layout = self::renderError($errors, false);
+
+            ob_start();
+            include BASE_DIR."app/views/layouts/error.phtml";
+            $contents = ob_get_contents();
+            ob_end_clean();
+            echo($contents);
         }
     }
 
@@ -171,8 +204,22 @@ class Controller {
      * @return void
      */
     function run($params = array()) {
+        $GLOBALS['controller'] = $this;
         $this->params = (empty($params)) ? $_GET : $params;
-        $this->_invoke();
+        try {
+            $this->_invoke();
+        } catch (Throwable $t) {
+            $errors['code'] = $t->getCode();
+            $errors['message'] = $t->getMessage();
+
+            self::renderError($errors);
+        } catch (Error $e) {
+            var_dump($e);
+        } catch (Exception $e) {
+            var_dump($e);
+        } finally {
+
+        }
     }
 
     /**
@@ -196,11 +243,10 @@ class Controller {
             $error_message = "template missing: {$template}";
             trigger_error($error_message, E_USER_ERROR);
         }
-
-        $GLOBALS['controller'] = $this;
+        
         $GLOBALS['template'] = $template;
 
-        @include_once "helpers.php";
+        //@include_once "helpers.php";
         @include_once BASE_DIR."app/helpers/application_helper.php";
 
         // layout
@@ -223,15 +269,63 @@ class Controller {
         }
 
         if (isset($layout) && file_exists(BASE_DIR."app/views/layouts/{$layout}.phtml")) {
-            ob_start();
-            include BASE_DIR."app/{$template}";
-            $this->content_for_layout = ob_get_contents();
-            ob_end_clean();
+            try {
+                ob_start();
+                include BASE_DIR."app/{$template}";
+                $this->content_for_layout = ob_get_contents();
+                ob_end_clean();
+            } catch (Throwable $t) {
+                $errors = $this->throwErrors($t);
+                self::renderError($errors);
+            } catch (Error $e) {
+                var_dump($e);
+            } catch (Exception $e) {
+                var_dump($e);
+            } finally {
+                
+            }
+
             include BASE_DIR."app/views/layouts/{$layout}.phtml";
         } else {
             include BASE_DIR."app/{$template}";
         }
         $this->_performed_render = true;
+    }
+
+    /**
+     * throwErrors
+     *
+     * @param  Throwable $t
+     * @return array
+     */
+    private function throwErrors($t) {
+        $errors['code'] = $t->getCode();
+        $errors['file'] = $t->getFile();
+        $errors['line'] = $t->getLine();
+        $errors['message'] = $t->getMessage();
+        $errors['trace'] = nl2br($t->getTraceAsString());
+        return $errors;
+    }
+
+    /**
+     * renderError
+     *
+     * @param  array $errors
+     * @return void
+     */
+    static function renderError($errors, $is_render = true) {
+        $error_template = BASE_DIR."app/views/components/php_error.phtml";
+        if (file_exists($error_template)) {
+            ob_start();
+            include $error_template;
+            $error_contents = ob_get_contents();
+            ob_end_clean();
+            if ($is_render) {
+                echo($error_contents);
+            } else {
+                return $error_contents;
+            }
+        }
     }
 
     /**
@@ -455,7 +549,7 @@ class Controller {
         }
 
         if (!isset($this->base)) {
-            $r = &$_SERVER['REQUEST_URI'];
+            $r = $_SERVER['REQUEST_URI'];
             if (defined('BASE_URL') && is_string(BASE_URL)) {
                 $this->base = BASE_URL;
             } else {
@@ -467,7 +561,7 @@ class Controller {
                 $this->base .= substr($r, 0, strlen($r) - strlen($_SERVER['QUERY_STRING']));
             }
 
-            if (!(defined('BASE_URL') && BASE_URL) && !DISPATCHER) {
+            if (!(defined('BASE_URL') && BASE_URL)) {
                 $count = substr_count($_SERVER['QUERY_STRING'], '/');
                 for ($i = 0; $i < $count; $i++) {
                     $this->relative_base .= '../';
@@ -483,6 +577,7 @@ class Controller {
             $action = substr($action, 0, $pos);
         }
 
+        //TODO
         if (((method_exists($this, $action) 
                 || method_exists($this, "action_{$action}"))
                 && substr($action, 0, 1) !== '_'
@@ -514,10 +609,23 @@ class Controller {
             }
             $this->render($action);
         } else {
-            header('HTTP/1.0 404 Not Found');
-            $error_message = "{$_SERVER['REQUEST_URI']} Not Found";
-            trigger_error($error_message, E_USER_NOTICE);
-            if (!@include("errors/404.php")) exit($error_message);
+            //TODO try catch
+            //$error_message = "{$_SERVER['REQUEST_URI']} Not Found";
+            //trigger_error($error_message, E_USER_NOTICE);
+
+            $errors['type'] = '404 Not Found';
+            $errors['query'] = $_SERVER['QUERY_STRING'];
+            $errors['request'] = $_SERVER['REQUEST_URI'];
+            $errors['controller'] = $this->name;
+            $errors['action'] = $action;
+            $errors['signature'] = $_SERVER['SERVER_SIGNATURE'];
+            $content_for_layout = self::renderError($errors, false);
+
+            ob_start();
+            include BASE_DIR."app/views/layouts/error.phtml";
+            $contents = ob_get_contents();
+            ob_end_clean();
+            echo($contents);
             exit;
         }
         unset($this->params['action']);

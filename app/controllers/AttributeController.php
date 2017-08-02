@@ -122,11 +122,17 @@ class AttributeController extends ProjectController {
                 }
 
                 //type
+                //TODO
                 if (($pg_attribute['udt_name'] != $posts['type']) || ($pg_attribute['character_maximum_length'] !== $posts['length'])) {
                     if ($posts['type'] != 'varchar') $posts['length'] = null;
                     $type = $pgsql_entity->sqlColumnType($posts['type'], $posts['length']);
                     if ($type) {
                         $results = $pgsql_entity->changeColumnType($this->model->value['name'], $pg_attribute['attname'], $type);
+                        if ($pgsql_entity->sql_error) {
+                            echo($pgsql_entity->sql);
+                            echo($pgsql_entity->sql_error);
+                            exit;
+                        }
                     }
                 }
 

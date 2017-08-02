@@ -16,7 +16,7 @@ class _ViewItem extends PgsqlEntity {
     var $columns = array(
         'created_at' => array('type' => 'timestamp', 'option' => 'NULL DEFAULT CURRENT_TIMESTAMP'),
         'updated_at' => array('type' => 'timestamp'),
-        'attribute_id' => array('type' => 'bool'),
+        'attribute_id' => array('type' => 'int4'),
         'view_id' => array('type' => 'int4', 'required' => true),
         'label' => array('type' => 'varchar', 'length' => 256),
         'form_type' => array('type' => 'varchar', 'length' => 256),

@@ -54,6 +54,7 @@ class CsvLite {
      * @return Array
      **/
     static function options($file_path) {
+        $results = array();
         $file_path = CsvLite::csvPath($file_path);
         if (file_exists($file_path)) {
             $fp = fopen($file_path, "r");
@@ -78,6 +79,7 @@ class CsvLite {
      * @return Array
      **/
      static function optionValues($file_path, $id_column='value', $label_column='label') {
+        $results = array();
         $file_path = CsvLite::csvPath($file_path);
         if (!$file_path || !file_exists($file_path)) return;
         $values = self::options($file_path);

@@ -34,3 +34,10 @@
 #main {
 	margin-top: 5rem;
 }
+
+.php_error {
+	position: absolute !important;
+	left: 5rem !important;
+	top: 5rem !important;
+	z-index: 100000;
+}

@@ -74,9 +74,9 @@ class ViewController extends AppController {
         $this->view = DB::table('View')
                     ->takeValues($this->session['posts']);
 
-        $this->forms['is_force_write']['name'] = 'view[is_force_write]';
-        $this->forms['is_force_write']['value'] = true;
-        $this->forms['is_force_write']['label'] = LABEL_TRUE;
+        $this->forms['is_overwrite']['name'] = 'view[is_overwrite]';
+        $this->forms['is_overwrite']['value'] = true;
+        $this->forms['is_overwrite']['label'] = LABEL_TRUE;
     }
 
    /**
@@ -90,9 +90,9 @@ class ViewController extends AppController {
                     ->fetch($this->params['id'])
                     ->takeValues($this->session['posts']);
 
-        $this->forms['is_force_write']['name'] = 'view[is_force_write]';
-        $this->forms['is_force_write']['value'] = true;
-        $this->forms['is_force_write']['label'] = LABEL_TRUE;
+        $this->forms['is_overwrite']['name'] = 'view[is_overwrite]';
+        $this->forms['is_overwrite']['value'] = true;
+        $this->forms['is_overwrite']['label'] = LABEL_TRUE;
     }
 
    /**
@@ -168,10 +168,10 @@ class ViewController extends AppController {
         }
     }
 
-    function action_change_force_write() {
+    function action_change_overwrite() {
         $view = DB::table('View')->fetch($this->params['id']);
         if ($view->value['id']) {
-            $posts['is_force_write'] = !$view->value['is_force_write'];
+            $posts['is_overwrite'] = !$view->value['is_overwrite'];
             $view->update($posts);
         }
         $this->redirect_to('list');

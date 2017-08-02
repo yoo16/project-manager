@@ -43,85 +43,52 @@ function url_for($params, $option = null) {
     }
 }
 
+
 /**
-* url_for_abs
+* is POST method
 *
-* @param array $params
-* @param object $option
-* @return string
-*/
-function url_for_abs($params, $option = null) {
-    $controller = $GLOBALS['controller'];
-    $path = $controller->url_for($params, $option);
-    return htmlspecialchars($path);
+* @param 
+* @return bool
+*/ 
+function isPost() {
+    return $_SERVER['REQUEST_METHOD'] == 'POST';
 }
 
 /**
-* base_tag
+* convert url
 *
+* @param string $values
 * @return string
-*/
-function base_tag() {
-    $controller =& $GLOBALS['controller'];
-    if (is_null($controller->relative_base)) {
-        return "<base href=\"{$controller->base}\">\n";
+*/ 
+function urlLinkConvert($values){
+    $values = mb_ereg_replace('(https?://[-_.!~*\'()a-zA-Z0-9;/?:@&=+$,%#]+)', '<a href="\1" target="_blank">\1</a>', $values);
+    return $values;
+}
+
+
+function jsonDump($object, $file = null, $line = null) {
+    $dump = json_encode($object);
+    error_log("<DUMP> {$file}:{$line}\n{$dump}");
+}
+
+function dump(&$object, $file = null, $line = null) {
+    if (!$object) return;
+    ob_start();
+    var_dump($object);
+    $dump = ob_get_contents();
+    ob_end_clean();
+    error_log("<DUMP> {$file}:{$line}\n{$dump}");
+}
+
+function email_valid($email) {
+    return preg_match("/^\w+[\w\-\.]*@([\w\-]+\.)+\w{2,4}$/", $email) == 1;
+}
+
+function random_string($length = "8", $elemstr = "abcdefghkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ2345679") {
+    $elem = preg_split("//", $elemstr, 0, PREG_SPLIT_NO_EMPTY);
+    $random_string = "";
+    for ($i = 0; $i < $length; $i++ ) {
+        $random_string .= $elem[array_rand($elem)];
     }
-}
-
-function meta_content_type_tag() {
-    $content_type = $GLOBALS['controller']->content_type();
-    return "<meta http-equiv=\"Content-Type\" content=\"{$content_type}\">\n";
-}
-
-function meta_javascript_tag() {
-    return "<meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\">\n";
-}
-
-function meta_stylesheet_tag() {
-    return "<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">\n";
-}
-
-function javascript_tag($name) {
-    if (is_string($name) && !empty($name)) {
-        $serial = time();
-        return "<script type=\"text/javascript\" src=\"{$GLOBALS['controller']->relative_base}javascripts/{$name}.js?serial={$serial}\"></script>\n";
-    }
-}
-
-function stylesheet_tag($name) {
-    if (is_string($name) && !empty($name)) {
-        $serial = time();
-        return "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$GLOBALS['controller']->relative_base}stylesheets/{$name}.css?serial={$serial}\" />\n";
-    }
-}
-
-function stylesheet_print_tag($name) {
-    if (is_string($name) && !empty($name)) {
-        $serial = time();
-        return "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$GLOBALS['controller']->relative_base}stylesheets/{$name}.css?serial={$serial}\" media=\"print\"  />\n";
-    }
-}
-
-function dateformat($date) {
-    if (preg_match('/^(\d{4})-(\d\d)-(\d\d)/', $date, $matches)) {
-        $year = $matches[1];
-        $month = $matches[2];
-        $day = $matches[3];
-        return sprintf('%4d/%02d/%02d', $year, $month, $day);
-    } else {
-        return null;
-    }
-}
-
-function datetimeformat($date) {
-    if (preg_match('/^(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d)/', $date, $matches)) {
-        $year = $matches[1];
-        $month = $matches[2];
-        $day = $matches[3];
-        $hour = $matches[4];
-        $minute = $matches[5];
-        return sprintf('%4d/%02d/%02d %02d:%02d', $year, $month, $day, $hour, $minute);
-    } else {
-        return null;
-    }
-}
+    return $random_string;
+} 

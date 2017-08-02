@@ -83,7 +83,11 @@
       <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
       <?= FormHelper::badgeTag('sync', null, 'success') ?>
       <?= FormHelper::badgeTag($attribute['pg_attribute']['attname'], null, 'info') ?>
+      <? if ($attribute['pg_attribute']['udt_name'] == $attribute['type']): ?>
       <?= FormHelper::badgeTag($attribute['pg_attribute']['udt_name'], null, 'info') ?>
+      <? else: ?>
+      <?= FormHelper::badgeTag($attribute['pg_attribute']['udt_name'], null, 'danger') ?>
+      <? endif ?>
       <?= FormHelper::badgeTag($attribute['pg_attribute']['character_maximum_length'], null, 'info') ?>
       <? if ($attribute['is_primary_key']): ?><?= FormHelper::badgeTag('Primary', null, 'info') ?><? endif ?>
       <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><?= FormHelper::badgeTag('Not Null', null, 'info') ?><? endif ?>

@@ -16,7 +16,7 @@
   <tr>
     <td><?= $fk_attribute['name'] ?></a></td>
     <td>
-      <form action="../<?= url_for('update_relation') ?>" method="post">
+      <form action="<?= url_for('update_relation') ?>" method="post">
       <input type="submit" class="btn btn-sm btn-primary" value="<?= LABEL_UPDATE ?>">
         <input type="hidden" name="fk_attribute_id" value="<?= $fk_attribute['id'] ?>">
         <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">

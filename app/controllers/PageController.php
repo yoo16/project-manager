@@ -50,9 +50,9 @@ class PageController extends ProjectController {
     function action_new() {
         $this->page = DB::table('Page')->takeValues($this->session['posts']);
 
-        $this->forms['is_force_write']['name'] = 'page[is_force_write]';
-        $this->forms['is_force_write']['value'] = true;
-        $this->forms['is_force_write']['label'] = LABEL_TRUE;
+        $this->forms['is_overwrite']['name'] = 'page[is_overwrite]';
+        $this->forms['is_overwrite']['value'] = true;
+        $this->forms['is_overwrite']['label'] = LABEL_TRUE;
     }
 
     function action_edit() {
@@ -62,9 +62,9 @@ class PageController extends ProjectController {
             $this->model = DB::table('Model')->fetch($this->page->value['model_id']);
         }
 
-        $this->forms['is_force_write']['name'] = 'page[is_force_write]';
-        $this->forms['is_force_write']['value'] = true;
-        $this->forms['is_force_write']['label'] = LABEL_TRUE;
+        $this->forms['is_overwrite']['name'] = 'page[is_overwrite]';
+        $this->forms['is_overwrite']['value'] = true;
+        $this->forms['is_overwrite']['label'] = LABEL_TRUE;
     }
 
     function action_add() {
@@ -168,10 +168,10 @@ class PageController extends ProjectController {
         $this->redirect_to('list');
     }
 
-    function action_change_force_write() {
+    function action_change_overwrite() {
         $page = DB::table('Page')->fetch($this->params['id']);
         if ($page->value['id']) {
-            $posts['is_force_write'] = !$page->value['is_force_write'];
+            $posts['is_overwrite'] = !$page->value['is_overwrite'];
             $page->update($posts);
         }
         $this->redirect_to('list');

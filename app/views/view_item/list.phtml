@@ -2,9 +2,10 @@
 <div class="pt-3">
   <?= FormHelper::linkButton('new', LABEL_ADD) ?>
   <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
+  <?= FormHelper::linkButton('view/', LABEL_BACK) ?>
 </div>
 
-<table class="table">
+<table class="table table-sm">
   <thead class="thead-deffault">
     <tr>
       <th>&nbsp;</th>
@@ -13,12 +14,12 @@
     </tr>
   </thead>
 
-  <? if ($this->attribute->values): ?>
-  <? foreach ($this->attribute->values as $values): ?>
+  <? if ($this->page->model->attribute->values): ?>
+  <? foreach ($this->page->model->attribute->values as $values): ?>
   <tr>
     <td>
     <form action="<?= url_for('add_for_attribute') ?>" method="post">
-    <?= FormHelper::submit(LABEL_ADD) ?>
+    <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-sm btn-primary']) ?>
     <?= FormHelper::hidden('view_item[attribute_id]', $values['id']) ?>
     </form>
     </td>
@@ -38,17 +39,17 @@
       <th>カラム</th>
       <th>ビュー</th>
       <th>ラベル</th>
-      <th>Formタイプ</th>
-      <th>css_class</th>
+      <th>Form</th>
+      <th>class</th>
     </tr>
   </thead>
 
-  <? if ($this->view_item->values): ?>
-  <? foreach ($this->view_item->values as $values): ?>
+  <? if ($this->view->view_item->values): ?>
+  <? foreach ($this->view->view_item->values as $values): ?>
   <tr>
     <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
     <td><?= FormHelper::activeLabelTag($values['attribute_id']) ?></td>
-    <td><?= $values['view_id'] ?></td>
+    <td><?= $this->view->value['name'] ?></td>
     <td><?= $values['label'] ?></td>
     <td><?= $values['form_type'] ?></td>
     <td><?= FormHelper::activeLabelTag($values['CSSクラス']) ?></td>

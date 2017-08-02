@@ -56,8 +56,9 @@ class ViewItemController extends AppController {
     * @return void
     */
     function action_list() {
-        $this->model = DB::table('Model')->relation($this->page, 'model_id');
-        $this->attribute = DB::table('Attribute')->relations($this->model);
+        $this->view->relationsBindId('ViewItem');
+        $this->page->bindRelationId('Model');
+        $this->page->model->relationsBindId('Attribute');
     }
 
    /**
@@ -90,7 +91,7 @@ class ViewItemController extends AppController {
         $attribute = DB::table('Attribute')->fetch($posts['attribute_id']);
         $posts['label'] = $attribute->value['label'];
 
-        DB::table('ViewItem')->insert($posts);
+        $view_item = DB::table('ViewItem')->insert($posts);
 
         $this->redirect_to('list');
     }

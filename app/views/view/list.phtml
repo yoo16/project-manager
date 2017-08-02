@@ -22,10 +22,10 @@
       <div><?= $view['label'] ?></div>
     </td>
     <td>
-      <? if ($view['is_force_write']): ?>
-      <?= FormHelper::link('change_force_write', 'overwrite', $view['id'], ['class' => 'badge badge-danger']) ?>
+      <? if ($view['is_overwrite']): ?>
+      <?= FormHelper::link('change_overwrite', 'overwrite', $view['id'], ['class' => 'badge badge-danger']) ?>
       <? else: ?>
-      <?= FormHelper::link('change_force_write', 'off', $view['id'], ['class' => 'badge badge-default']) ?>
+      <?= FormHelper::link('change_overwrite', 'off', $view['id'], ['class' => 'badge badge-default']) ?>
       <? endif ?>
     </td>
     <td><?= $this->page->value['entity_name'] ?>/<?= $view['name'] ?></td>

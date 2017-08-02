@@ -222,8 +222,17 @@ class PgsqlEntity extends Entity {
         if (!$column) return;
         if (!$type) return;
 
-        $sql = "ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE {$type};";
-        return $this->query($sql);
+        $using = '';
+        //TODO float double
+        if (strstr($type, 'int')) {
+            $sql = "ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE {$type}";
+            $using = " USING {$column}::int";
+        }
+        $sql = "ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE {$type}{$using};";
+        $results = $this->query($sql);
+        if ($this->sql_error) {
+            return false;
+        }
     }
 
     /**
@@ -285,11 +294,13 @@ class PgsqlEntity extends Entity {
     * @return resource
     */
     function query($sql) {
+        $this->sql_error = null;
         $this->sql = $sql;
-        $pg = $this->connection();
-
         if (defined('SQL_LOG') && SQL_LOG) error_log("<SQL> {$sql}");
-        $results = pg_query($pg, $sql);
+        if ($pg = $this->connection()) {
+            $results = pg_query($pg, $sql);
+            $this->sql_error = pg_last_error($pg);
+        }
         return $results;
     }
 
@@ -367,6 +378,81 @@ class PgsqlEntity extends Entity {
     /**
     * relation by model
     * 
+    * @param  string $relation_name
+    * @return Class
+    */
+    public function bindRelationId($relation_name, $relation_column = null) {
+        if (!is_string($relation_name)) return $this;
+        //if (!class_exists($relation_name)) return $this;
+
+        $relation = DB::table($relation_name);
+
+        $value_column = "{$relation->entity_name}_id";
+        $value = $this->value[$value_column];
+
+        if (!isset($value)) return $this;
+
+        $condition = "{$relation->id_column} = '{$value}'";
+        $column_name = $relation->entity_name;
+
+        $this->$column_name = $relation->selectOne();
+        return $this;
+    }
+
+    /**
+    * relation by model
+    * 
+    * @param  string $relation_name
+    * @return Class
+    */
+    public function relationBindId($relation_name, $relation_column = null) {
+        if (!$this->id) return $this;
+        if (!is_string($relation_name)) return $this;
+        //if (!class_exists($relation_name)) return $this;
+
+        $relation = DB::table($relation_name);
+
+        if ($relation_column) {
+            $conditions[] = "{$relation_column} = '{$this->id}'";
+        } else {
+            $conditions[] = "{$this->entity_name}_id = '{$this->id}'";
+        }
+        foreach ($conditions as $condition) {
+            $relation->where($condition);
+        }
+        $column_name = $relation->entity_name;
+        $this->$column_name = $relation->selectOne();
+        return $this;
+    }
+
+    /**
+    * relation by model
+    * 
+    * @param  string $relation_name
+    * @return Class
+    */
+    public function relationsBindId($relation_name, $conditions = null, $relation_column = null) {
+        if (!$this->id) return $this;
+        if (!is_string($relation_name)) return $this;
+        //if (!class_exists($relation_name)) return $this;
+
+        $relation = DB::table($relation_name);
+        if ($relation_column) {
+            $conditions[] = "{$relation_column} = '{$this->id}'";
+        } else {
+            $conditions[] = "{$this->entity_name}_id = '{$this->id}'";
+        }
+        foreach ($conditions as $condition) {
+            $relation->where($condition);
+        }
+        $column_name = $relation->entity_name;
+        $this->$column_name = $relation->select();
+        return $this;
+    }
+
+    /**
+    * relation by model
+    * 
     * @param  Class $relation
     * @param  string $relation_value_column
     * @return Class
@@ -377,7 +463,7 @@ class PgsqlEntity extends Entity {
         } else {
             $relation_column = "{$relation->entity_name}_id";
             if (isset($relation->id)) {
-                $condition = "{$relation_column} = {$relation->id}";
+                $condition = "{$relation_column} = '{$relation->id}'";
             }
         }
         if ($condition) return $this->where($condition)->selectOne();
@@ -397,7 +483,7 @@ class PgsqlEntity extends Entity {
         } else {
             $relation_column = "{$relation->entity_name}_id";
             if (isset($relation->id)) {
-                $condition = "{$relation_column} = {$relation->id}";
+                $condition = "{$relation_column} = '{$relation->id}'";
             }
         }
         if ($condition) return $this->where($condition)->select();
@@ -408,31 +494,24 @@ class PgsqlEntity extends Entity {
     * relation
     * 
     * @param  string $model_name
-    * @param  string $relation_column
+    * @param  string $relation_value_column
     * @return Class
     */
-    public function relationByModelName($model_name, $relation_column = null) {
+    public function relationByName($model_name, $relation_value_column = null) {
         $relation = DB::table($model_name);
-        if (!$relation_column) $relation_column = "{$relation->entity_name}_id";
-        if ($this->value && isset($this->value[$relation_column])) {
-            return $relation->fetch($this->value[$relation_column]);
-        }
+        return $this->relation($relation, $relation_value_column);
     }
 
     /**
     * relations
     * 
     * @param  string $model_name
-    * @param  string $relation_column
+    * @param  string $relation_value_column
     * @return Class
     */
-    public function relationsByModelName($model_name, $relation_column = null) {
+    public function relationsByName($model_name, $relation_value_column = null) {
         $relation = DB::table($model_name);
-        if (!$relation_column) $relation_column = "{$this->entity_name}_id";
-        if (isset($this->value[$this->id_column])) {
-            $condition = "{$relation_column} = {$this->value[$this->id_column]}";
-            return $relation->where($condition)->select();
-        }
+        return $this->relations($relation, $relation_value_column);
     }
 
 
@@ -649,6 +728,18 @@ class PgsqlEntity extends Entity {
         } else {
             unset($this->id);
         }
+        return $this;
+    }
+
+    /**
+    * wheres
+    * 
+    * @param  array $conditions
+    * @return Class
+    */
+    public function wheres($conditions) {
+        $this->conditions[] = $conditions; 
+        $this->conditions = array_unique($this->conditions);
         return $this;
     }
 

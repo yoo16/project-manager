@@ -1,0 +1,17 @@
+<div class="php_error">
+  <div class="card">
+
+    <div class="card-block">
+      <h2>Error</h2>
+      <table class="table">
+      <? foreach ($errors as $key => $error): ?>
+        <tr>
+          <th><?= $key ?></th>
+          <td><?= $error ?></td>
+        </tr>
+      <? endforeach ?>
+      </table>
+    </div>
+
+  </div>
+</div>

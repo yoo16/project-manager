@@ -1,31 +1,30 @@
 <?php
 /**
- * RootController 
+ * SettingController 
  *
  * @author  Yohei Yoshikawa
  * @create  2012/10/03 
  */
 require_once 'AppController.php';
 
-class RootController extends AppController {
+class SettingController extends AppController {
 
     function before_action($action) {
         $pgsql_entity = new PgsqlEntity();
         $this->pg_connection = $pgsql_entity->connection();
         if (!$this->pg_connection) {
-            $this->redirect_to('pgsql');
+            $this->redirect_to('setting/pgsql');
             exit;
         }
 
         $database = new Database();
         if (!$database->checkProjectManager()) {
-            $this->redirect_to('pgsql');
+            $this->redirect_to('setting/pgsql');
             exit;
         }
     }
 
     function index() {
-        $this->redirect_to('project/');
         // $this->hostname = hostname();
         // $this->debug_traces = debug_backtrace(true);
         // $this->create_sql_path = BASE_DIR."db/sql/create.sql";
