@@ -10,7 +10,6 @@ require_once 'AppController.php';
 class ViewController extends AppController {
 
     var $name = 'view';
-    var $session_name = 'view';
 
    /**
     * 事前処理
@@ -21,9 +20,9 @@ class ViewController extends AppController {
     function before_action($action) {
         parent::before_action($action);
 
-        $this->project = DB::table('Project')->loadSession();
-        $this->page = DB::table('Page')->loadSession();
-        $this->model = DB::table('Model')->relation($this->page, 'model_id');
+        $this->project = DB::table('Project')->requestSession();
+        $this->page = DB::table('Page')->requestSession();
+        $this->model = DB::table('Model')->belongTo($this->page, 'model_id');
 
         if (!$this->page) {
             $this->redirect_to('page/');
@@ -38,7 +37,7 @@ class ViewController extends AppController {
     * @return void
     */
     function index() {
-        unset($this->session['posts']);
+        $this->clearPosts();
         $this->redirect_to('list');
     }
 
@@ -50,7 +49,7 @@ class ViewController extends AppController {
     * @return void
     */
     function action_cancel() {
-        unset($this->session['posts']);
+        $this->clearPosts();
         $this->redirect_to('list');
     }
 
@@ -121,16 +120,15 @@ class ViewController extends AppController {
     * @return void
     */
     function action_update() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['posts'] = $_REQUEST["view"];
-            $view = DB::table('View')->update($posts, $this->params['id']);
+        $project = DB::table('View')
+                        ->fetch($this->params['id'])
+                        ->post()
+                        ->update();
 
-            if ($view->errors) {
-                $this->redirect_to('edit', $this->params['id']);
-            } else {
-                $this->redirect_to('index');
-            }
+        if (!$project->errors) {
+            $this->clearPosts();
         }
+        $this->redirect_to('list');
     }
 
    /**

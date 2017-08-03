@@ -23,8 +23,8 @@
             <td><?= $pg_database['datname'] ?></td>
             <td>
               <form method="post" action="<?= url_for('import_database') ?>">
-                <input class="btn btn-sm btn-primary" type="submit" value="<?= LABEL_IMPORT ?>">
-                <input type="hidden" name="database_name" value="<?= $pg_database['datname'] ?>">
+                <?= FormHelper::submit(LABEL_IMPORT) ?>
+                <?= FormHelper::hidden('database_name', $pg_database['datname']) ?>
               </form>
             </td>
           </tr>

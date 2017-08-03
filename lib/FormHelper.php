@@ -732,8 +732,11 @@ class FormHelper {
      * @return string
      */
     static function formLabel($tag, $attributes = null) {
-        $label_class = " col-form-label";
-        $attributes['class'].= $label_class;
+        if ($attributes['class']) {
+            $attributes['class'].= " col-form-label";
+        } else {
+            $attributes['class'] = "col-2 col-form-label";
+        }
         $tag = self::labelTag($tag, $attributes);
         return $tag;
     }

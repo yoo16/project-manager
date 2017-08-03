@@ -5,24 +5,24 @@
   <div class="card-block">
     <form id="form-edit" action="<?= url_for('update', $this->view->value['id']) ?>" method="post" autocomplete="off">
       <div class="form-group row">
-        <label for="view-name" class="col-1 col-form-label">Name</label>
-        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'name') ?>" type="text" name="view[name]" value="<?= $this->view->value['name'] ?>" required autocomplete="off">
+        <?= FormHelper::formLabel('Name') ?>
+        <?= $this->view->formInput('name') ?>
       </div>
 
       <div class="form-group row">
-        <label for="" class="col-1 col-form-label">Label</label>
-        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'label') ?>" type="text" name="view[label]" value="<?= $this->view->value['label'] ?>" required autocomplete="off">
+        <?= FormHelper::formLabel('Label') ?>
+        <?= $this->view->formInput('label') ?>
       </div>
 
       <div class="form-group row">
-        <label for="" class="col-2 col-form-label">Overwrite</label>
-        <?= FormHelper::checkbox($this->forms['is_overwrite'], (bool) $this->view->value['is_overwrite']) ?>
+        <?= FormHelper::formLabel('Overwrite') ?>
+        <?= $this->view->formCheckbox('is_overwrite') ?>
       </div>
 
-      <button class="btn btn-primary" type="submit"><?= LABEL_UPDATE ?></button>
-      <a class="btn btn-outline-primary" href="<?= url_for('list') ?>"><?= LABEL_CANCEL ?></a>
+      <?= FormHelper::submit(LABEL_UPDATE) ?>
+      <?= FormHelper::linkButton('list', LABEL_CANCEL) ?>
     </form>
 
     <?= $this->view->formDelete() ?>
-</div>
+  </div>
 </div>

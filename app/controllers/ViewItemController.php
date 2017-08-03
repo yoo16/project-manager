@@ -10,8 +10,6 @@ require_once 'AppController.php';
 class ViewItemController extends AppController {
 
     var $name = 'view_item';
-    var $session_name = 'view_item';
-
 
    /**
     * before_action
@@ -22,9 +20,14 @@ class ViewItemController extends AppController {
     function before_action($action) {
         parent::before_action($action);
 
-        $this->project = DB::table('Project')->loadSession();
-        $this->page = DB::table('Page')->loadSession();
-        $this->view = DB::table('View')->loadSession();
+        $this->project = DB::table('Project')->requestSession();
+        $this->page = DB::table('Page')->requestSession();
+        $this->view = DB::table('View')->requestSession();
+
+        if (!$this->project || !$this->page || !$this->view) {
+            $this->redirect_to('view/');
+            exit;
+        }
     }
 
    /**
@@ -34,7 +37,7 @@ class ViewItemController extends AppController {
     * @return void
     */
     function index() {
-        unset($this->session['posts']);
+        $this->clearPosts();
         $this->redirect_to('list');
     }
 
@@ -45,7 +48,7 @@ class ViewItemController extends AppController {
     * @return void
     */
     function action_cancel() {
-        unset($this->session['posts']);
+        $this->clearPosts();
         $this->redirect_to('list');
     }
 
@@ -56,9 +59,9 @@ class ViewItemController extends AppController {
     * @return void
     */
     function action_list() {
-        $this->view->relationsBindId('ViewItem');
-        $this->page->bindRelationId('Model');
-        $this->page->model->relationsBindId('Attribute');
+        $this->view->bindManyByName('ViewItem');
+        $this->page->bindOneByName('Model');
+        $this->page->model->bindManyByName('Attribute');
     }
 
    /**

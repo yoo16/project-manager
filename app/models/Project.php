@@ -8,7 +8,7 @@ require_once 'vo/_Project.php';
 
 class Project extends _Project {
 
-    function __construct($params=null) {
+    function __construct($params = null) {
         parent::__construct($params);        
     }
     

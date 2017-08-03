@@ -4,14 +4,13 @@ require_once 'AppController.php';
 class DatabaseController extends AppController {
 
     var $name = 'database';
-    var $session_name = 'database';
     
     function before_action($action) {
         parent::before_action($action);
 
-        $this->database = DB::table('Database')->loadSession();
-        $this->project = DB::table('Project')->loadSession();
-        $this->model = DB::table('Model')->loadSession();
+        $this->database = DB::table('Database')->requestSession();
+        $this->project = DB::table('Project')->requestSession();
+        $this->model = DB::table('Model')->requestSession();
     }
 
     function index() {
@@ -67,14 +66,13 @@ class DatabaseController extends AppController {
         }
     }
 
-
     function action_import_database() {
         $pg_infos['dbname'] = $_REQUEST['database_name'];
-
         $pgsql_entity = new PgsqlEntity($pg_infos);
         $pg_database = $pgsql_entity->pgDatabase();
 
         $database = DB::table('Database')->where("name = '{$pg_database['datname']}'")->selectOne();
+
         if (!$database->value) {
             $posts['name'] = $pgsql_entity->dbname;
             $posts['user_name'] = $pgsql_entity->user;
@@ -188,7 +186,7 @@ class DatabaseController extends AppController {
     }
 
 
-    function update_table_comment() {
+    function action_update_table_comment() {
         if (!isPost()) exit;
         if ($this->database) {
             if (!$_REQUEST['pg_class_id']) return;
@@ -202,16 +200,20 @@ class DatabaseController extends AppController {
         }
     }
 
-    function result() {
-        $this->results = $this->flash['results']; 
-    }
+    function action_update() {
+        $database = DB::table('Database')->fetch($this->params['id']);
 
-    function update() {
-        if (!isPost()) exit;
-        $this->session['posts'] = $_REQUEST['database'];
-        $database = DB::table('Database')->update($this->session['posts'], $this->params['id']);
+        $pgsql_entity = new PgsqlEntity();
+        $pgsql_entity->renameDatabase($database->value['name'], $this->posts['database']['name']);
+
+        if ($pgsql_entity->sql_error) {
+            echo($pgsql_entity->sql_error);
+            exit;
+        } else {
+            $database->post()->update();
+        }
+
         if ($database->errors) {
-            $this->flash['errors'] = $database->errors;
             $this->redirect_to('edit', $this->params['id']);
         } else {
             $this->redirect_to('list');
@@ -238,35 +240,8 @@ class DatabaseController extends AppController {
         }
     }
 
-    function action_add_column() {
-        $table_name = $_REQUEST['table_name'];
-        if ($table_name && $this->database) {
-            $column = $_REQUEST['name'];
-            //TODO type
-            $type = $_REQUEST['type'];
-            if ($_REQUEST['length']) $type.= "({$_REQUEST['length']})";
-
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
-            $pgsql_entity->addColumn($table_name, $column, $type);
-        }
-
-        $params['database_id'] = $_REQUEST['database_id'];
-        $params['table_name'] = $_REQUEST['table_name'];
-        $this->redirect_to('columns', $params);
-    }
-
-    function action_update_column() {
-        $table_name = $_REQUEST['table_name'];
-        if ($table_name && $this->database) {
-            if ($_REQUEST['old_column_name'] && ($_REQUEST['old_column_name'] != $_REQUEST['name'])) {
-                $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
-                $pgsql_entity->renameColumn($table_name, $_REQUEST['old_column_name'], $_REQUEST['name']);
-            }
-        }
-
-        $params['database_id'] = $_REQUEST['database_id'];
-        $params['table_name'] = $_REQUEST['table_name'];
-        $this->redirect_to('columns', $params);
+    function result() {
+        $this->results = $this->flash['results']; 
     }
 
     function table() {

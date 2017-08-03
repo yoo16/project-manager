@@ -13,8 +13,10 @@ class Entity {
     var $value = null;
     var $id = null;
     var $id_column = 'id';
+    var $posts = null;
+    var $session = null;
 
-    function __construct() {
+    function __construct($params = null) {
         $this->defaultValue();
     }
 
@@ -29,26 +31,89 @@ class Entity {
     function before_insert() {}
     function before_update() {}
 
+
+    /**
+     * loadSession
+     * 
+     * @param  string $request_column
+     * @return Entity
+     */
+    public function requestSession($request_column = null) {
+        if (!$request_column) $request_column = "{$this->entity_name}_id";
+        if (isset($_REQUEST[$request_column])) {
+            $this->fetch($_REQUEST[$request_column]);
+            AppSession::set($this->entity_name, $this);
+        }
+        return AppSession::get($this->entity_name);
+    }
+
+    /**
+     * load session
+     * 
+     * @param int $id
+     * @return Entity
+     */
+    public function session() {
+        return $this->getSession();
+    }
+
+   /**
+    * getSession
+    *
+    * @return Entity
+    */
+    public function getSession() {
+        return AppSession::get($this->entity_name);
+    }
+
+   /**
+    * setSession
+    *
+    * @return void
+    */
+    public function setSession() {
+        AppSession::set($this->entity_name, $this);
+    }
+
+   /**
+    * clearSession
+    *
+    * @return void
+    */
+    public function clearSession() {
+        AppSession::clear($this->entity_name);
+    }
+
     /**
      * reload
      * 
      * @param
-     * @return object
+     * @return Entity
+     */
+    public function post() {
+        if (!isPost()) exit('Not POST method');
+        if ($this->posts = $_POST[$this->entity_name]) {
+            $this->takeValues($this->posts);
+        }
+        return $this;
+    }
+
+    /**
+     * reload
+     * 
+     * @param
+     * @return Entity
      */
     public function reload() {
-        if (isset($this->id)) {
-            $this->select($this->id);
-        } else {
-            $this->value = null;
-        }
-        return $this->value;
+        if (isset($this->id)) $this->fetch($this->id);
+        return $this;
     }
 
     /**
      * default
      * 
      * @param
-     * @return bool
+     * @return void
      */
     public function defaultValue() {
         if ($this->columns) {
@@ -142,25 +207,6 @@ class Entity {
         }
         $this->castRow($this->value);
         return $this;
-    }
-
-    /**
-     * loadSession
-     * 
-     * @param  srray $request_column
-     * @return Class
-     */
-    public function loadSession($request_column = null) {
-        if (!$request_column) {
-            $request_column = "{$this->entity_name}_id";
-            //echo('Entity Error: not found $request_column');
-            //exit;
-        }
-        if (isset($_REQUEST[$request_column])) {
-            $this->fetch($_REQUEST[$request_column]);
-            AppSession::set($this->entity_name, $this);
-        }
-        return AppSession::get($this->entity_name);
     }
 
     /**
@@ -599,33 +645,6 @@ class Entity {
             }
         }
         return $this->values;
-    }
-
-   /**
-    * getSession
-    *
-    * @return Class
-    */
-    function getSession() {
-        return AppSession::get($this->entity_name);
-    }
-
-   /**
-    * setSession
-    *
-    * @return void
-    */
-    function setSession() {
-        AppSession::set($this->entity_name, $this);
-    }
-
-   /**
-    * setSession
-    *
-    * @return void
-    */
-    function clearSession() {
-        AppSession::clear($this->entity_name);
     }
     
 }

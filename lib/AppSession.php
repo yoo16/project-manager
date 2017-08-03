@@ -39,23 +39,6 @@ class AppSession {
         return $value;
     }
 
-
-   /**
-    * get
-    *
-    * @param string $session_key
-    * @param string $key
-    * @param object $default_value
-    * @param int $sid
-    * @return object
-    */
-    static function getWithKey($session_key, $key, $default_value = null, $sid = 0) {
-        $value = null;
-        if (isset($_SESSION[APP_NAME][$session_key][$sid][$key])) $value = $_SESSION[APP_NAME][$session_key][$sid][$key];
-        if (is_null($value)) $value = $default_value;
-        return $value;
-    }
-
    /**
     * set session
     *
@@ -68,6 +51,22 @@ class AppSession {
     }
 
    /**
+    * get
+    *
+    * @param string $session_key
+    * @param string $key
+    * @param object $default_value
+    * @param int $sid
+    * @return object
+    */
+    static function getWithKey($session_key, $key, $default_value = null, $sid = 0) {
+        $value = null;
+        if (isset($_SESSION[APP_NAME][$sid][$session_key][$key])) $value = $_SESSION[APP_NAME][$sid][$session_key][$key];
+        if (is_null($value)) $value = $default_value;
+        return $value;
+    }
+
+   /**
     * set session
     *
     * @param string $session_key
@@ -76,7 +75,7 @@ class AppSession {
     * @return void
     */
     static function setWithKey($session_key, $key, $value, $sid = 0) {
-        $_SESSION[APP_NAME][$session_key][$sid][$key] = $value;
+        $_SESSION[APP_NAME][$sid][$session_key][$key] = $value;
     }
 
    /**
@@ -106,7 +105,17 @@ class AppSession {
     * @return void
     */
     static function clearWithKey($session_key, $key, $sid = 0) {
-        unset($_SESSION[APP_NAME][$session_key][$sid][$key]);
+        unset($_SESSION[APP_NAME][$sid][$session_key][$key]);
+    }
+
+   /**
+    * clear session
+    *
+    * @param String $session_key
+    * @return void
+    */
+    static function flushWithKey($session_key, $sid = 0) {
+        unset($_SESSION[APP_NAME][$sid][$session_key]);
     }
 
 }

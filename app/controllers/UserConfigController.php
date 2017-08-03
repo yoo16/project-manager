@@ -4,8 +4,6 @@ require_once 'AppController.php';
 class UserConfigController extends AppController {
 
     var $name = 'user_config';
-    var $session_name = 'user_config';
-     
     var $layout = 'root';
     
     function before_action($action) {

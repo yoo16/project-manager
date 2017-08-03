@@ -13,15 +13,12 @@ class DB {
    /**
     * table
     *
-    * @param string $class_name
+    * @param
     * @return Class
     */
-    static function table($class_name) {
-        if (class_exists($class_name)) {
-            $instance = new $class_name();
-            return $instance;
-        }
-        return;
+    static function table($name) {
+        $instance = new $name();
+        return $instance;
     }
 
 }

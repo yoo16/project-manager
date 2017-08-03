@@ -3,7 +3,8 @@
 <? include('add_window.phtml') ?>
 
 <div class="pt-3">
-  <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-window"><?= LABEL_ADD ?></a>
+  <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
+  <?= FormHelper::linkButton('page/', LABEL_BACK) ?>
 </div>
 
 <? if ($this->view->values): ?>

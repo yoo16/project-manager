@@ -20,7 +20,7 @@ class Controller extends RuntimeException {
     static $routes = ['controller', 'action', 'id'];
     var $name;
     var $layout = true;
-    var $session_name = true;
+    var $session_name = '';
     var $headers = array();
     var $_performed_render = false;
     var $relative_base = '';
@@ -31,9 +31,8 @@ class Controller extends RuntimeException {
             if (!isset($this->name)) $this->name = substr($class_name, 0, strpos($class_name, 'controller'));
         } else if(isset($name)) {
             $this->name = $name;
-            $this->session_name = false;
         }
-        if ($this->session_name === true) $this->session_name = $this->name;
+        if (!$this->session_name) $this->session_name = "{$this->name}_controller";
     }
 
     // function __isset($name) {
@@ -48,10 +47,10 @@ class Controller extends RuntimeException {
 
     public function __call($name, $args) {
         if(!method_exists($this, $name)) {
-            var_dump('error');
-            return false;
+            $class_name = get_class($this);
+            $message = "Not declared {$class_name}->{$name}";
+            exit($message);
         }
-        $this->{$name}($args);
     }
 
     /**
@@ -164,9 +163,13 @@ class Controller extends RuntimeException {
         if (empty($params['controller'])) $params = Controller::queryString();
         if (empty($params['controller'])) $params['controller'] = ROOT_CONTROLLER_NAME;
 
+        //TODO static public contents
+        if (strpos($params['action'], '.')) return;
+
         $controller = Controller::load($params['controller']);
         if ($controller) {
             try {
+                session_start();
                 $controller->run($params);
             } catch (Throwable $t) {
                 $errors['code'] = $t->getCode();
@@ -206,6 +209,8 @@ class Controller extends RuntimeException {
     function run($params = array()) {
         $GLOBALS['controller'] = $this;
         $this->params = (empty($params)) ? $_GET : $params;
+        $this->loadPosts();
+
         try {
             $this->_invoke();
         } catch (Throwable $t) {
@@ -449,14 +454,8 @@ class Controller extends RuntimeException {
             $url = $params;
         } else {
             $url = $this->url_for($params, $options);
-            if (!strpos($url, '://')) {
-                $url = $this->base . $url;
-            }
+            if (!strpos($url, '://')) $url = $this->base . $url;
             if (SID) $url .= ((strpos($url, '?')) ? '&' : '?' ) . SID;
-        }
-
-        if ($this->session_name && isset($this->flash)) {
-            $this->session['flash'] = $this->flash;
         }
         if (defined('DEBUG') && DEBUG) error_log("<REDIRECT> {$url}");
         header("Location: {$url}");
@@ -527,17 +526,6 @@ class Controller extends RuntimeException {
     }
 
     /**
-     * session terminate
-     *
-     * @return void
-     */
-    function flushSsession() {
-        if ($this->session_name) {
-            unset($_SESSION[APP_NAME][$this->session_name]);
-        }
-    }
-
-    /**
      * invoke
      * 
      * @return void
@@ -577,36 +565,23 @@ class Controller extends RuntimeException {
             $action = substr($action, 0, $pos);
         }
 
+        if (method_exists($this, $action)) {
+            $method = $action;
+        } else if (method_exists($this, "action_{$action}")) {
+            $method = "action_{$action}";
+        }
+        if (method_exists(new Controller(), $method)) {
+            $method = null;
+        }
         //TODO
-        if (((method_exists($this, $action) 
-                || method_exists($this, "action_{$action}"))
-                && substr($action, 0, 1) !== '_'
-                && !method_exists(new Controller(), $action))) {
-
-            if ($this->session_name) {
-                session_start();
-                if (is_null($_SESSION[APP_NAME])) $_SESSION[APP_NAME] = array();
-                if (is_null($_SESSION[APP_NAME][$this->session_name])) $_SESSION[APP_NAME][$this->session_name] = array();
-
-                $this->session = $_SESSION[APP_NAME][$this->session_name];
-                if (isset($this->session['flash'])) {
-                    $this->flash = $this->session['flash'];
-                    unset($this->session['flash']);
-                }
-            }
+        if (!empty($method)) {
             $this->before_action($action);
-
             if ($this->_performed_render) return;
-            if (method_exists($this, $action)) {
-                $method = $action;
-            } else if (method_exists($this, "action_{$action}")) {
-                $method = "action_{$action}";
-            }
-            if (!empty($method)) {
-                $this->before_invocation($action);
-                $this->$method();
-                if (defined('DEBUG') && DEBUG) error_log("<INVOKED> {$action}");
-            }
+
+            $this->before_invocation($action);
+            $this->$method();
+            if (defined('DEBUG') && DEBUG) error_log("<INVOKED> {$action}");
+
             $this->render($action);
         } else {
             //TODO try catch
@@ -630,6 +605,62 @@ class Controller extends RuntimeException {
         }
         unset($this->params['action']);
         unset($this->params['id']);
+    }
+
+    function loadPosts() {
+        if ($_POST) {
+            $this->setSessions('posts', $_POST);
+        }
+        $this->posts = $this->getSessions('posts');
+    }
+
+    function clearPosts() {
+        $this->clearSessions('posts');
+    }
+
+    function getSessions($key) {
+        if (!$this->session_name) return;
+        return AppSession::getWithKey($this->session_name, $key); 
+    }
+
+    function setSessions($key, $values) {
+        if (!$this->session_name) return;
+        AppSession::setWithKey($this->session_name, $key, $values); 
+    }
+
+    function clearSessions($key) {
+        if (!$this->session_name) return;
+        AppSession::clearWithKey($this->session_name, $key); 
+    }
+
+    function loadErrors() {
+        if (!$this->session_name) return;
+        $this->errors = $this->getSessions('errors');
+    }
+
+    function getErrors() {
+        if (!$this->session_name) return;
+        return AppSession::getWithKey('errors', $this->session_name); 
+    }
+
+    function setErrors($errors) {
+        if (!$this->session_name) return;
+        AppSession::setWithKey('errors', $this->session_name, $errors); 
+    }
+
+    function flushErrors() {
+        if (!$this->session_name) return;
+        AppSession::clearWithKey('errors', $this->session_name); 
+    }
+
+    /**
+     * session terminate
+     *
+     * @return void
+     */
+    function flushSessions() {
+        if (!$this->session_name) return;
+        AppSession::flushWithKey($this->session_name);
     }
 
     function before_action($action) {} 

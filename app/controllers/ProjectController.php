@@ -9,7 +9,6 @@ require_once 'AppController.php';
 class ProjectController extends AppController {
 
     var $name = 'project';
-    var $session_name = 'project';
 
    /**
     * before_action
@@ -20,10 +19,10 @@ class ProjectController extends AppController {
     function before_action($action) {
         parent::before_action($action);
 
-        $this->project = DB::table('Project')->loadSession();
+        $this->project = DB::table('Project')->requestSession();
         if ($this->project->value) {
-            $this->database = DB::table('Database')->relation($this->project, 'database_id');
-            $this->user_project_setting = DB::table('UserProjectSetting')->relations($this->project);
+            $this->database = DB::table('Database')->belongTo($this->project, 'database_id');
+            $this->user_project_setting = DB::table('UserProjectSetting')->hasMany($this->project);
         }
     }
 
@@ -38,7 +37,7 @@ class ProjectController extends AppController {
         AppSession::clear('attribute');
         AppSession::clear('page');
         AppSession::clear('view');
-        unset($this->session['posts']);
+        $this->clearPosts();
     }
 
     function index() {
@@ -59,6 +58,9 @@ class ProjectController extends AppController {
     }
 
     function action_list() {
+        $params['dbname'] = 'project_manager';
+        $params['host'] = 'localhost';
+
         $this->database = DB::table('Database')->select();
         $this->project = DB::table('Project')
                             ->select()
@@ -71,38 +73,30 @@ class ProjectController extends AppController {
     function action_edit() {
         $this->project = DB::table('Project')
                         ->fetch($this->params['id'])
-                        ->takeValues($this->session['posts']);
+                        ->takeValues($this->posts['project']);
 
         $this->database = DB::table('Database')->fetch($this->project->value['database_id']);
     }
 
     function action_add() {
-        if (!isPost()) exit;
-        $posts = $this->session['posts'] = $_POST['project'];
-        if (!$posts['database_id']) {
-            $project = DB::table('Project')->add_error('database_id', 'required');
-        } else {
-            $project = DB::table('Project')->insert($posts);
-        }
+        $project = DB::table('Project')
+                        ->post($this->params['id'])
+                        ->insert();
 
-        if ($project->errors) {
-            $this->flash['errors'] = $project->errors;
-            $this->redirect_to('new');
-        } else {
-            unset($this->session['posts']);
-            $this->redirect_to('list');
+        if (!$project->errors) {
+            $this->clearPosts();
         }
+        $this->redirect_to('list');
     }
 
     function action_update() {
-        if (!isPost()) exit;
-        $posts = $this->session['posts'] = $_POST['project'];
-        $project = DB::table('Project')->update($posts, $this->params['id']);
+        $project = DB::table('Project')
+                        ->fetch($this->params['id'])
+                        ->post()
+                        ->update();
 
-        if ($project->errors) {
-            $this->flash['errors'] = $project->errors;
-        } else {
-            unset($this->session['posts']);
+        if (!$project->errors) {
+            $this->clearPosts();
         }
         $this->redirect_to('edit', $this->params['id']);
     }
@@ -245,7 +239,6 @@ class ProjectController extends AppController {
         $results['output'] = $output;
         $results['return'] = $return;
     }
-
 
     function action_sync_db() {
         if (!isPost()) exit;

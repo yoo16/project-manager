@@ -9,7 +9,6 @@ require_once 'ProjectController.php';
 class PageController extends ProjectController {
 
     var $name = 'page';
-    var $session_name = 'page';
 
    /**
     * 事前処理

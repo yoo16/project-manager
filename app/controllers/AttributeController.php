@@ -9,7 +9,6 @@ require_once 'ProjectController.php';
 class AttributeController extends ProjectController {
 
     var $name = 'attribute';
-    var $session_name = 'attribute';
 
    /**
     * 事前処理
@@ -21,7 +20,7 @@ class AttributeController extends ProjectController {
     function before_action($action) {
         parent::before_action($action);
 
-        $this->model = DB::table('Model')->loadSession();
+        $this->model = DB::table('Model')->requestSession();
         if (!$this->model->value) {
             $this->redirect_to('model/list');
             exit;

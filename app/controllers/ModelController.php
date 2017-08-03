@@ -9,7 +9,6 @@ require_once 'ProjectController.php';
 class ModelController extends ProjectController {
 
     var $name = 'model';
-    var $session_name = 'model';
 
    /**
     * before_action
