@@ -37,9 +37,12 @@ class Project extends _Project {
         $pg_database = $pgsql_entity->pgDatabase();
 
         //model
-        $models = DB::table('Model')->listByProject($this)->values;
-        if ($models) {
-            foreach ($models as $model) {
+        $models = DB::table('Model')->bindMany($this)->values;
+
+        $database->bindManyByName('Model');
+
+        if ($database->model->values) {
+            foreach ($database->model->values as $model) {
                 $values = null;
                 
                 $pg_attributes = $pgsql_entity->attributeArray($model['name']);
@@ -56,14 +59,14 @@ class Project extends _Project {
                 $values['model'] = $model;
                 $values['pg_attribute'] = $pg_attributes;
 
-                $model_path = Model::projectFilePath($this->user_project_setting, $model);
+                $model_path = Model::projectFilePath($this->user_project_setting->value->value, $model);
                 if (!file_exists($model_path)) {
                     $model_template_path = Model::templateFilePath($model);
                     $contents = FileManager::bufferFileContetns($model_template_path, $values);
                     file_put_contents($model_path, $contents);
                 }
 
-                $vo_model_path = Model::projectVoFilePath($this->user_project_setting, $model);
+                $vo_model_path = Model::projectVoFilePath($this->user_project_setting->value, $model);
                 $vo_model_template_path = Model::voTemplateFilePath($model);
                 $contents = FileManager::bufferFileContetns($vo_model_template_path, $values);
                 file_put_contents($vo_model_path, $contents);
@@ -82,7 +85,7 @@ class Project extends _Project {
                     $values['model'] = $model;
                 }
 
-                $page_path = Page::projectFilePath($this->user_project_setting, $page);
+                $page_path = Page::projectFilePath($this->user_project_setting->value, $page);
                 if (!file_exists($page_path) || $page['is_overwrite']) {
                     $page_template_path = Page::templateFilePath($page);
                     $contents = FileManager::bufferFileContetns($page_template_path, $values);
@@ -93,7 +96,7 @@ class Project extends _Project {
                 $views = DB::table('View')->valuesByPage($page);
                 if ($views) {
                     foreach ($views as $view) {
-                        $view_path = View::projectFilePath($this->user_project_setting, $page, $view);
+                        $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
                         if (!file_exists($view_path) || $view['is_overwrite']) {
                             $values['view'] = $view;
 

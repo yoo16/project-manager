@@ -60,7 +60,7 @@ class ViewItemController extends AppController {
     */
     function action_list() {
         $this->view->bindManyByName('ViewItem');
-        $this->page->bindOneByName('Model');
+        $this->page->bindBelongToByName('Model');
         $this->page->model->bindManyByName('Attribute');
     }
 

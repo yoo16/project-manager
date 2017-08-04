@@ -134,17 +134,17 @@ class Database extends _Database {
      * @return array
      */
     function pgInfo() {
-        $result['dbname'] = $this->value['name'];
-        $result['host'] = 'localhost';
-        $result['port'] = '5432';
-        $result['user'] = 'postgres';
+        $values['dbname'] = $this->value['name'];
+        $values['host'] = 'localhost';
+        $values['port'] = '5432';
+        $values['user'] = 'postgres';
 
-        if ($this->value['hostname']) $result['host'] = $this->value['hostname'];
-        if ($this->value['port']) $result['port'] = $this->value['port'];
-        if ($this->value['user_name']) $result['user'] = $this->value['user_name'];
+        if ($this->value['hostname']) $values['host'] = $this->value['hostname'];
+        if ($this->value['port']) $values['port'] = $this->value['port'];
+        if ($this->value['user_name']) $values['user'] = $this->value['user_name'];
 
-        if (!$result['dbname']) return;
-        return $result;
+        if (!$values['dbname']) return;
+        return $values;
     }
 
 }

@@ -203,6 +203,9 @@ class Entity {
     public function takeValues($values) {
         if (!$values) return $this;
         foreach ($values as $key => $value) {
+            if ($key == $this->id_column) {
+                if ($value > 0) $this->id = (int) $value;
+            }
             $this->value[$key] = $value;
         }
         $this->castRow($this->value);
@@ -418,6 +421,16 @@ class Entity {
     }
 
     /**
+     * idIndex
+     * 
+     * @return Entity
+     */
+    function idIndex() {
+        $this->id_index = true;
+        return $this;
+    }
+
+    /**
      * castRows
      * 
      * @param  array $row
@@ -603,27 +616,22 @@ class Entity {
     }
 
    /**
-    * bind
+    * bind by id
     *
-    * @param class $model
-    * @param string $column
-    * @param string $bind_key
+    * @param string $model_name
+    * @param string $value_key
     * @return class
     */
-    function bindById($model, $bind_column) {
+    function bindById($model_name, $value_key = null) {
         if (!$this->values) return $this;
+
+        $model = DB::table($model_name)->idIndex()->select();
         if (!$model->values) return $this;
+        if (!$value_key) $value_key = "{$model->entity_name}_id";
 
-        if ($this->values) {
-            $bind_values = $model->valuesWithKey();
-            $bind_name = $model->entity_name;
-
-            foreach ($this->values as $index => $value) {
-                if ($model->entity_name) {
-                    $id = $value[$bind_column];
-                    if ($id > 0) $this->values[$index][$bind_name] = $bind_values[$id];
-                }
-            }
+        $bind_name = $model->entity_name;
+        foreach ($this->values as $index => $value) {
+            if ($id = $value[$value_key]) $this->values[$index][$bind_name] = $model->values[$id];
         }
         return $this;
     }

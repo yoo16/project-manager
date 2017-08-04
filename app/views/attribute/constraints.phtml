@@ -1,0 +1,40 @@
+
+<div class="card">
+  <h4 class="card-header">Constraint</label></h4>
+
+  <div class="card-body">
+    <table class="table">
+      <thead class="thead-default">
+        <tr>
+          <th></th>
+          <th>Constraint Name</th>
+          <th>Column</th>
+        </tr>
+      </thead>
+      <tbody>
+        <? if ($this->pg_constraint_groups): ?>
+        <? foreach ($this->pg_constraint_groups as $constraint_name => $pg_constraint_group): ?>
+        <tr>
+          <td>
+            <form action="<?= url_for('delete_constraint') ?>" method="post">
+              <?= FormHelper::submit(LABEL_DELETE, ['class' => 'btn btn-danger confirm-dialog', 'message' => 'Do you delete Constrain key?']) ?></a>
+              <?= FormHelper::hidden('constraint_name', $constraint_name) ?></a>
+              <?= FormHelper::hidden('model_id', $this->model->value['id']) ?></a>
+              <?= FormHelper::hidden('database_id', $this->database->value['id']) ?></a>
+            </form>
+          </td>
+          <td><?= $constraint_name ?></td>
+          <td>
+            <ul>
+              <? foreach ($pg_constraint_group as $constraint_name => $pg_constraint): ?>
+              <li><?= $pg_constraint['column_name'] ?></li>
+            <? endforeach ?>
+          </ul>
+        </td>
+      </tr>
+    <? endforeach ?>
+  <? endif ?>
+</tbody>
+</table>
+</div>
+</div>

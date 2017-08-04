@@ -106,6 +106,10 @@ class ModelController extends ProjectController {
         if (!isPost()) exit;
 
         $posts = $this->session['posts'] = $_POST['model'];
+        $posts['entity_name'] = FileManager::pluralToSingular($posts['name']);
+        $posts['class_name'] = FileManager::phpClassName($posts['entity_name']);
+        $posts['project_id'] = $this->project->value['id'];
+
         $model = DB::table('Model')->fetch($this->params['id']);
         if ($model->value) {
             $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
@@ -160,11 +164,6 @@ class ModelController extends ProjectController {
         $this->redirect_to('list');
     }
 
-    function action_import_from_db() {
-        $this->databases = DB::table('Database')
-                            ->selectValues();
-    }
-
     function action_add_table() {
         if (!isPost()) exit;
 
@@ -189,6 +188,63 @@ class ModelController extends ProjectController {
             foreach ($models as $model) {
                 $attribute = new Attribute();
                 $attribute->deleteUnrelatedByModel($model);
+            }
+        }
+        $this->redirect_to('list');
+    }
+
+    function action_check_project_id() {
+        $models = DB::table('model')->select()->values;
+        if ($models) {
+            foreach ($models as $model) {
+                if (!$model['project_id']) {
+                    $database = DB::table('Database')->fetch($model['database_id'])->value;
+                    $project = DB::table('Project')->where("database_id = {$database['id']}")->selectOne();
+                    $posts['project_id'] = $project->value['id'];
+                    DB::table('Model')->update($posts, $model['id']);
+                }
+            }
+        }
+        $this->redirect_to('list');
+    }
+
+    function action_check_timestamp() {
+        $model = $this->project->hasMany('Model');
+
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $add_columns = ['created_at', 'updated_at'];
+        if ($model->values) {
+            foreach ($model->values as $model_value) {
+                $model = DB::table('Model')->takeValues($model_value);
+                $attribute = $model->hasMany('Attribute');
+
+                foreach ($attribute->values as $attribute_value) {
+                    $attribute_names[$attribute['name']] = $attribute['name'];
+                }
+                foreach ($add_columns as $add_column) {
+                    if (!$attribute_names[$add_column]) {
+                        Attribute::insertForModelRequire($add_column, $database, $model_value);
+                    }
+                }
+            }
+        }
+        $this->redirect_to('list');
+    }
+
+    function action_check_primary_id() {
+        $model = $this->project->hasMany('Model');
+
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        
+        if ($model->values) {
+            foreach ($model->values as $model_value) {
+                $attribute = DB::table('Attribute')->where("name = 'id'")
+                                                   ->where("model_id = {$model_value['id']}")
+                                                   ->selectOne();
+
+                if (!$attribute->value['id']) {
+                    Attribute::insertForModelRequire('id', $database, $model_value);
+                }
             }
         }
         $this->redirect_to('list');

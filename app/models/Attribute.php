@@ -7,6 +7,38 @@ class Attribute extends _Attribute {
         parent::validate();
     }
 
+    static function insertForModelRequire($key, $database, $model) {
+        if (!$database) return;
+        if (!$model) return;
+
+        $required_columns = Model::$required_columns;
+        $column = $required_columns[$key];
+        if (!$column) return;
+
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());
+        $pg_class = $pgsql_entity->pgClassByRelname($model['name']);
+
+        $type = "{$column['type']} {$column['option']}";
+
+        $results = $pgsql_entity->addColumn($pg_class['relname'], $column['name'], $type);
+        if (!$results) {
+            echo($pgsql_entity->sql_error);
+            return;
+        }
+        $pg_attribute = $pgsql_entity->pgAttributeByColumn($pg_class['relname'], $column['name']);
+
+        $posts = null;
+        $posts['model_id'] = $model['id'];
+        $posts['name'] = $column['name'];
+        $posts['pg_class_id'] = $pg_class['pg_class_id'];
+        $posts['attrelid'] = $pg_attribute['attrelid'];
+        $posts['attnum'] = $pg_attribute['attnum'];
+        $posts['type'] = $pg_attribute['udt_name'];
+
+        $attribute = DB::table('Attribute')->insert($posts);
+        return $attribute;
+    }
+
     //TODO
     function listByModel($model) {
         $this->where("model_id = {$model['id']}")

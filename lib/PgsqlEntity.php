@@ -187,7 +187,7 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * create table
+    * create table SQL
     * 
     * @param PgsqlEntity $model
     * @return string
@@ -206,6 +206,29 @@ class PgsqlEntity extends Entity {
         }
         $column_sql = implode(",\n", $column_sqls);
         $sql = "CREATE TABLE IF NOT EXISTS \"{$model->name}\" (\n{$column_sql}\n);\n";
+
+        return $sql;
+    }
+
+    /**
+    * create table SQL
+    * 
+    * @param string $table_name
+    * @param array $columns
+    * @return string
+    */
+    public function createTableSqlByName($table_name, $columns) {
+        if (!$table_name) return;
+        foreach ($columns as $column_name => $column) {
+            if ($column['type']) {
+                $type = self::columnTypeSql($column);
+                $option = $column['option'];
+
+                $column_sqls[] = "{$column_name} {$type} {$option}";
+            }
+        }
+        $column_sql = implode(",\n", $column_sqls);
+        $sql = "CREATE TABLE IF NOT EXISTS \"{$table_name}\" (\n{$column_sql}\n);\n";
 
         return $sql;
     }
@@ -234,11 +257,28 @@ class PgsqlEntity extends Entity {
     * 
     * @return resource
     */
+    function createTable($table_name, $columns) {
+        $sql = $this->createTableSqlByName($table_name, $columns);
+        return $this->query($sql);
+    }
+
+    /**
+    * create tables
+    * 
+    * @return resource
+    */
     function createTables() {
         $this->createTablesSql();
         return $this->query($this->sql);
     }
 
+    /**
+    * rename database
+    * 
+    * @param string $db_name
+    * @param string $new_db_name
+    * @return resource
+    */
     public function renameDatabase($db_name, $new_db_name) {
         if (!$db_name) return;
         if ($db_name == $new_db_name) return;
@@ -466,135 +506,133 @@ class PgsqlEntity extends Entity {
     /**
     * relation by model
     * 
-    * @param  PgsqlEntity $relation
+    * @param  string $model_name
+    * @param  string $foreign_key
+    * @param  string $value_key
     * @return PgsqlEntity
     */
-    public function bindOne($relation, $foreign_key = null, $local_key = null) {
-        if (is_null($this->value)) return $this;
-        //if (!class_exists($class_name)) return $this;
+    public function bindOne($model_name, $foreign_key = null, $value_key = null) {
+        if (!is_string($model_name)) exit('bindOne: $model_name is not string');
+        $relation = DB::table($model_name);
 
-        if (!$local_key) $local_key = "{$relation->entity_name}_id";
-        $value = $this->value[$local_key];
-        if (!isset($value)) return $this;
-
-        if (!$foreign_key) $foreign_key = $relation->id_column;
-        $condition = "{$foreign_key} = '{$value}'";
         $column_name = $relation->entity_name;
-
-        $this->$column_name = $relation->where($condition)->selectOne();
+        $relation = $this->hasOne(get_class($relation), $foreign_key, $value_key);
+        $this->$column_name = $relation;
         return $this;
     }
 
     /**
     * relation by model
     * 
-    * @param  PgsqlEntity $relation
+    * @param  string $model_name
     * @param  array $conditions
+    * @param  string $foreign_key
+    * @param  string $value_key
     * @return PgsqlEntity
     */
-    public function bindMany($relation, $conditions = null, $foreign_key = null, $local_key = null) {
-        if (is_null($this->value)) return $this;
-        if (is_null($this->id)) return $this;
+    public function bindMany($model_name, $conditions = null, $foreign_key = null, $value_key = null) {
+        if (!is_string($model_name)) exit('bindMany: $model_name is not string');
+        $relation = DB::table($model_name);
 
-        if (!$local_key) $local_key = "{$relation->entity_name}_id";
-        if (!$foreign_key) $foreign_key = "{$this->entity_name}_id";
-        $conditions[] = "{$foreign_key} = '{$this->id}'";
-        foreach ($conditions as $condition) {
-            $relation->where($condition);
-        }
         $column_name = $relation->entity_name;
-        $this->$column_name = $relation->select();
+        $relation = $this->hasMany(get_class($relation), $conditions, $foreign_key, $value_key);
+        $this->$column_name = $relation;
         return $this;
-    }
-
-    /**
-    * relation by model name
-    * 
-    * @param  string $class_name
-    * @return PgsqlEntity
-    */
-    public function bindOneByName($class_name) {
-        if (!is_string($class_name)) return $this;
-        $relation = DB::table($class_name);
-        return $this->bindOne($relation);
-    }
-
-    /**
-    * relation by model name
-    * 
-    * @param  string $class_name
-    * @return PgsqlEntity
-    */
-    public function bindManyByName($class_name, $conditions = null, $relation_column = null) {
-        if (!is_string($class_name)) return $this;
-        $relation = DB::table($class_name);
-        return $this->bindMany($relation, $conditions, $relation_column);
     }
 
     /**
     * relation by model
     * 
-    * @param  Class $relation
-    * @param  string $relation_value_column
+    * @param  string $model_name
+    * @param  string $foreign_key
+    * @param  string $value_key
     * @return PgsqlEntity
     */
-    public function belongTo($relation, $relation_value_column = null) {
-        if ($relation_value_column) {
-            $condition = "{$this->id_column} = '{$relation->value[$relation_value_column]}'";
-        } else {
-            $relation_column = "{$relation->entity_name}_id";
-            if (isset($relation->id)) {
-                $condition = "{$relation_column} = '{$relation->id}'";
-            }
-        }
-        if ($condition) return $this->where($condition)->selectOne();
+    public function bindBelongTo($model_name, $foreign_key = null, $value_key = null) {
+        if (!is_string($model_name)) exit('bindBelongTo: $model_name is not string');
+        $relation = DB::table($model_name);
+
+        $column_name = $relation->entity_name;
+        $relation = $this->belongTo($relation, $foreign_key, $value_key);
+        $this->$column_name = $relation;
         return $this;
     }
 
     /**
     * relations by model
     * 
-    * @param  Class $relation
-    * @param  string $relation_value_column
+    * @param  string $model_name
+    * @param  string $foreign_key
+    * @param  string $value_key
     * @return PgsqlEntity
     */
-    public function hasMany($relation, $relation_value_column = null) {
-        if ($relation_value_column) {
-            $condition = "{$this->id_column} = '{$relation->value[$relation_value_column]}'";
-        } else {
-            $relation_column = "{$relation->entity_name}_id";
-            if (isset($relation->id)) {
-                $condition = "{$relation_column} = '{$relation->id}'";
-            }
+    public function hasOne($model_name, $foreign_key = null, $value_key = null) {
+        if (is_null($this->value)) return $this;
+
+        if (!is_string($model_name)) exit('hasOne: $model_name is not string');
+        $relation = DB::table($model_name);
+
+        if (!$foreign_key) $foreign_key = "{$this->entity_name}_id";
+        if (!$value_key) $value_key = $this->id_column;
+
+        $value = $this->value[$value_key];
+        if (is_null($value)) return $this;
+
+        $condition = "{$foreign_key} = '{$value}'";
+        return $relation->where($condition)->selectOne();
+    }
+
+    /**
+    * relations by model
+    * 
+    * @param  string $class_name
+    * @param  array $conditions
+    * @param  string $foreign_key
+    * @param  string $value_key
+    * @return PgsqlEntity
+    */
+    public function hasMany($class_name, $conditions = null, $foreign_key = null, $value_key = null) {
+        if (is_null($this->value)) return $this;
+
+        if (!is_string($class_name)) exit('hasMany: $class_name is not string');
+        $relation = DB::table($class_name);
+
+
+        if (!$foreign_key) $foreign_key = "{$this->entity_name}_id";
+        if (!$value_key) $value_key = $this->id_column;
+
+        $value = $this->value[$value_key];
+        if (is_null($value)) return $this;
+
+        $conditions[] = "{$foreign_key} = '{$value}'";
+        foreach ($conditions as $condition) {
+            $relation->where($condition);
         }
-        if ($condition) return $this->where($condition)->select();
-        return $this;
+        return $relation->select();
     }
 
     /**
-    * relation
+    * relation by model
     * 
-    * @param  string $model_name
-    * @param  string $relation_value_column
+    * @param  string $class_name
+    * @param  string $foreign_key
+    * @param  string $value_key
     * @return PgsqlEntity
     */
-    public function belongToByName($model_name, $relation_value_column = null) {
-        $relation = DB::table($model_name);
-        return $this->belongTo($relation, $relation_value_column);
-    }
+    public function belongTo($class_name, $foreign_key = null, $value_key = null) {
+        if (is_null($this->value)) return $this;
 
-    /**
-    * relations
-    * 
-    * @param  string $model_name
-    * @param  string $relation_value_column
-    * @return PgsqlEntity
-    */
-    public function hasManyByName($model_name, $relation_value_column = null) {
-        $relation = DB::table($model_name);
-        return $this->hasMany($relation, $relation_value_column);
-    }
+        if (!is_string($class_name)) exit('belongTo: $class_name is not string');
+        $relation = DB::table($class_name);
 
+        if (!$foreign_key) $foreign_key = $relation->id_column;
+        if (!$value_key) $value_key = "{$relation->entity_name}_id";
+
+        $value = $this->value[$value_key];
+        if (is_null($value)) return $this;
+        $condition = "{$foreign_key} = '{$value}'";
+        return $relation->where($condition)->selectOne();
+    }
 
     /**
     * fetch
@@ -1634,6 +1672,103 @@ class PgsqlEntity extends Entity {
                 AND pd.objsubid = pa.attnum
                 ORDER BY pd.objsubid;";
         return $this->fetch_rows($sql);
+    }
+
+    /**
+     * pg constraints
+     *
+     * @param  string $table_name
+     * @return array
+     */
+    function pgConstraints($table_name) {
+        $sql = "SELECT * FROM information_schema.constraint_column_usage WHERE table_name = '{$table_name}';";
+        return $this->fetch_rows($sql);
+    }
+
+    /**
+     * pg constraint groups
+     *
+     * @param  string $table_name
+     * @return array
+     */
+    function pgConstraintGroup($table_name) {
+        $constraints = $this->pgConstraints($table_name);
+        if (!$constraints) return;
+
+        foreach ($constraints as $constraint) {
+            $constraint_groups[$constraint['constraint_name']][] = $constraint;
+        }
+        return $constraint_groups;
+    }
+
+    /**
+     * add pg primary key
+     *
+     * @param  string $table_name
+     * @param  array $columns
+     * @return void
+     */
+    function addPgPrimaryKey($table_name, $column_name) {
+        $sql = "ALTER TABLE {$table_name} ADD PRIMARY KEY ({$column_name});";
+        return $this->query($sql);
+    }
+
+    /**
+     * add pg unique
+     *
+     * @param  string $table_name
+     * @param  array $columns
+     * @return void
+     */
+    function addPgUnique($table_name, $columns) {
+        $constraint_name = '';
+        $column = implode(',', $columns);
+        $sql = "ALTER TABLE {$table_name} ADD CONSTRAINT {$constraint_name} UNIQUE ({$column});";
+        return $this->query($sql);
+    }
+
+    /**
+     * add pg foreign key
+     *
+     * @param  string $table_name
+     * @param  array $columns
+     * @return void
+     */
+    function addPgForeignKey($table_name, $foreign_key, $reference_table_name) {
+        $sql = "ALTER TABLE {$table_name} ADD FOREIGN KEY ({$foreign_key}) REFERENCES {$reference_table_name};";
+        return $this->query($sql);
+    }
+
+    /**
+     * remove pg constraint
+     *
+     * @param  string $table_name
+     * @return void
+     */
+    function removePgConstraint($table_name, $constraint_name) {
+        $sql = "ALTER TABLE {$table_name} DROP CONSTRAINT {$constraint_name};";
+        $results = $this->query($sql);
+        return;
+    }
+
+    /**
+     * remove pg constraints
+     *
+     * @param  string $table_name
+     * @return void
+     */
+    function removePgConstraints($table_name) {
+        $constraints = $this->pgConstraints($table_name);
+        if (!$constraints) return;
+
+        foreach ($constraints as $constraint) {
+            $constraint_groups[$constraint['constraint_name']][] = $constraint;
+        }
+        foreach ($constraint_groups as $constraint_name => $constraint) {
+            $sql = "ALTER TABLE {$table_name} DROP CONSTRAINT {$constraint_name};";
+            $results = $this->query($sql);
+        }
+        return;
     }
 
     /**

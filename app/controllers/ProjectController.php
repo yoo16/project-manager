@@ -21,8 +21,8 @@ class ProjectController extends AppController {
 
         $this->project = DB::table('Project')->requestSession();
         if ($this->project->value) {
-            $this->database = DB::table('Database')->belongTo($this->project, 'database_id');
-            $this->user_project_setting = DB::table('UserProjectSetting')->hasMany($this->project);
+            $this->database = $this->project->belongTo('Database');
+            $this->user_project_setting = $this->project->hasMany('UserProjectSetting');
         }
     }
 
@@ -58,13 +58,12 @@ class ProjectController extends AppController {
     }
 
     function action_list() {
-        $params['dbname'] = 'project_manager';
-        $params['host'] = 'localhost';
+        $this->database = DB::table('Database')
+                            ->select();
 
-        $this->database = DB::table('Database')->select();
         $this->project = DB::table('Project')
                             ->select()
-                            ->bindById($this->database, 'database_id');
+                            ->bindById('Database');
     }
 
     function action_new() {
@@ -80,7 +79,8 @@ class ProjectController extends AppController {
 
     function action_add() {
         $project = DB::table('Project')
-                        ->post($this->params['id'])
+                        ->fetch($this->params['id'])
+                        ->post()
                         ->insert();
 
         if (!$project->errors) {
@@ -106,29 +106,25 @@ class ProjectController extends AppController {
 
         $project = DB::table('Project')->delete($this->params['id']);
         if ($project->errors) {
-            $this->flash['errors'] = $project->errors;
             $this->redirect_to('edit', $this->params['id']);
         } else {
+            $this->clearPosts();
             $this->redirect_to('index');
         }
     }
 
     function action_export_php() {
-        $project = new Project();
-        $project->fetch($this->project->value['id']);
-        //TODO bind
-        $project->user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id'])->value;
-        $project->exportPHP();
+        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+        $this->project->exportPHP();
 
         $params['project_id'] = $this->project->value['id'];
         $this->redirect_to('model/list', $params);
     }
 
     function action_export_db() {
-        $database = new Database();
-        $database->fetch($this->project->value['database_id']);
-        //TODO bind
-        $database->exportDatabase();
+        $database = DB::table('Database')
+                            ->fetch($this->project->value['database_id'])
+                            ->exportDatabase();
 
         $params['project_id'] = $this->project->value['id'];
         $this->redirect_to('model/list', $params);
@@ -137,16 +133,14 @@ class ProjectController extends AppController {
 
     function action_export_list() {
             $this->project = DB::table('Project')->fetch("{$this->params['id']}");
-
             if (!$this->project->value['id']) {
                 $this->redirect_to('list');
                 exit;
             }
-            $this->database = DB::table('Database')->fetch("{$this->project->value['database_id']}");
+            $this->project->bindOne('Database');
+            $this->database = $this->project->database;
 
-            $this->user_project_setting = DB::table('UserProjectSetting')
-                                            ->where("project_id = {$this->project->value['id']}")
-                                            ->select();
+            $this->project->bindMany('UserProjectSetting');
     }
 
     function action_export() {

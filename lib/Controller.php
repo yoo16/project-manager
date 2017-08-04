@@ -172,9 +172,7 @@ class Controller extends RuntimeException {
                 session_start();
                 $controller->run($params);
             } catch (Throwable $t) {
-                $errors['code'] = $t->getCode();
-                $errors['message'] = $t->getMessage();
-
+                $errors = $this->throwErrors($t);
                 self::renderError($errors);
             } catch (Error $e) {
                 var_dump($e);
@@ -214,9 +212,7 @@ class Controller extends RuntimeException {
         try {
             $this->_invoke();
         } catch (Throwable $t) {
-            $errors['code'] = $t->getCode();
-            $errors['message'] = $t->getMessage();
-
+            $errors = $this->throwErrors($t);
             self::renderError($errors);
         } catch (Error $e) {
             var_dump($e);

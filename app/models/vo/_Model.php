@@ -19,6 +19,7 @@ class _Model extends PgsqlEntity {
         'name' => array('type' => 'varchar', 'required' => true),
         'label' => array('type' => 'varchar'),
         'pg_class_id' => array('type' => 'int4', 'required' => true),
+        'project_id' => array('type' => 'int4', 'required' => true),
         'relfilenode' => array('type' => 'int4', 'required' => true),
         'database_id' => array('type' => 'int4', 'required' => true),
         'entity_name' => array('type' => 'varchar', 'required' => true),

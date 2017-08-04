@@ -50,12 +50,15 @@ class AttributeController extends ProjectController {
         $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
         $this->pg_class = $pgsql_entity->pgClassByRelname($this->model->value['name']);
         $this->pg_attributes = $pgsql_entity->attributeArray($this->model->value['name']); 
+        //TODO refectoring
         if ($attributes) {
             foreach ($attributes as $attribute) {
                 $attribute['pg_attribute'] = $this->pg_attributes[$attribute['name']];
                 $this->attributes[] = $attribute;
             }
         }
+
+        $this->pg_constraint_groups = $pgsql_entity->pgConstraintGroup($this->model->value['name']);
     }
 
     function action_new() {
@@ -72,36 +75,36 @@ class AttributeController extends ProjectController {
     }
 
     function action_add() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['posts'] = $_POST['attribute'];
-            $posts['model_id'] = $this->model->value['id'];
+        if (!isPost()) exit;
 
-            $type = $posts['type'];
-            if ($type == 'varchar' && $posts['length']) $type.= "({$posts['length']})";
-            
-            //DB add column
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
-            $pg_class = $pgsql_entity->pgClassByRelname($this->model->value['name']);
+        $posts = $this->session['posts'] = $_POST['attribute'];
+        $posts['model_id'] = $this->model->value['id'];
 
-            $pgsql_entity->addColumn($this->model->value['name'], $posts['name'], $type);
-            $pg_attribute = $pgsql_entity->pgAttributeByColumn($this->model->value['name'], $posts['name']);
+        $type = $posts['type'];
+        if ($type == 'varchar' && $posts['length']) $type.= "({$posts['length']})";
+        
+        //DB add column
+        $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+        $pg_class = $pgsql_entity->pgClassByRelname($this->model->value['name']);
 
-            if ($posts['label']) {
-                $pgsql_entity->updateColumnComment($this->model->value['name'], $posts['name'], $posts['label']);
-            }
-            $posts['pg_class_id'] = $pg_class['pg_class_id'];
-            $posts['attrelid'] = $pg_attribute['attrelid'];
-            $posts['attnum'] = $pg_attribute['attnum'];
+        $pgsql_entity->addColumn($this->model->value['name'], $posts['name'], $type);
+        $pg_attribute = $pgsql_entity->pgAttributeByColumn($this->model->value['name'], $posts['name']);
 
-            $attribute = DB::table('Attribute')->insert($posts);
-
-            if ($attribute->errors) {
-                $this->flash['errors'] = $attribute->errors;
-            } else {
-                unset($this->session['posts']);
-            }
-            $this->redirect_to('list');
+        if ($posts['label']) {
+            $pgsql_entity->updateColumnComment($this->model->value['name'], $posts['name'], $posts['label']);
         }
+        $posts['pg_class_id'] = $pg_class['pg_class_id'];
+        $posts['attrelid'] = $pg_attribute['attrelid'];
+        $posts['attnum'] = $pg_attribute['attnum'];
+
+        $attribute = DB::table('Attribute')->insert($posts);
+
+        if ($attribute->errors) {
+            $this->flash['errors'] = $attribute->errors;
+        } else {
+            unset($this->session['posts']);
+        }
+        $this->redirect_to('list');
     }
 
     function action_update() {
@@ -222,6 +225,15 @@ class AttributeController extends ProjectController {
         }
     }
 
+    function action_delete_constraint() {
+        if (!isPost()) exit;
+        $database = DB::table('Database')->fetch($this->posts['database_id']);
+        $model = DB::table('Model')->fetch($this->posts['model_id']);
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());        
+        $pgsql_entity->removePgConstraint($model->value['name'], $this->posts['constraint_name']);
+        $this->redirect_to('list');
+    }
+
     function action_relation_attribute_list() {
         $this->layout = null;
 
@@ -264,6 +276,15 @@ class AttributeController extends ProjectController {
             $params['model_id'] = $attribute->value['model_id'];
             $this->redirect_to('list', $params);
         }
+    }
+
+
+    function action_remove_primary_key() {
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());
+        $pg_class = $pgsql_entity->pgClassByRelname($this->model->value['name']);
+        $pgsql_entity->removePgConstraints($pg_class['relname']);
+        $this->redirect_to('list');
     }
 
 }

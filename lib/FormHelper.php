@@ -719,6 +719,7 @@ class FormHelper {
      * @return string
      */
     static function form($tag, $params = null) {
+        if (!$params['method']) $params['method'] = 'post';
         $tag = self::tag('form', $tag, $params);
         return $tag;
     }
