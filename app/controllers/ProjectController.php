@@ -130,7 +130,6 @@ class ProjectController extends AppController {
         $this->redirect_to('model/list', $params);
     }
 
-
     function action_export_list() {
             $this->project = DB::table('Project')->fetch("{$this->params['id']}");
             if (!$this->project->value['id']) {

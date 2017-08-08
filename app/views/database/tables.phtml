@@ -1,44 +1,69 @@
 <? include('_header.phtml') ?>
 
 <div class="alert alert-success">
-if you want create database's table, please add model on 'Project'.
+  if you want create database's table, please add model on '<a href="<?= url_for('project/') ?>">Project</a>'.
 </div>
 <? if ($this->pg_classes): ?>
-<div class="card">
-  <div class="card-header">
-    <h4><?= $this->database->value['name'] ?></h4>
+<div class="row">
+  <? foreach ($this->pg_classes as $pg_class_id => $pg_class): ?>
+  <div class="col-6">
+    <div id="<?= $pg_class_id ?>" class="card">
+
+      <div class="card-header">
+        <div><?= $pg_class['tablename'] ?> : <?= $pg_class_id ?></div>
+        <div><?= $pg_class['comment'] ?></div>
+      </div>
+
+      <div class="card-block">
+        <dl>
+          <? foreach ($pg_class['pg_attribute'] as $attnum => $pg_attribute): ?>
+          <dd id="<?= $pg_class_id ?>-<?= $attnum ?>">
+            <small><?= $pg_attribute['attname'] ?></small>
+             : 
+            <small><?= $pg_attribute['comment'] ?></small>
+          </dd>
+          <? endforeach ?>
+      </dl>
+    </div>
+
+    <div class="card-block">
+    <strong>constraint</strong>
+        <dl>
+
+          <? foreach ($pg_class['pg_constraint'] as $pg_constraint): ?>
+          <? if ($pg_constraint['confkey']): ?>
+
+          <? foreach ($pg_constraint['confkey'] as $foreign_attnum): ?>
+          <dd>
+          <small>
+          <a href="#<?= $pg_constraint['confrelid'] ?>-<?= $foreign_attnum ?>"><?= $pg_constraint['conname'] ?></a>
+          (<?= $this->pg_classes[$pg_constraint['confrelid']]['relname'] ?>
+          :
+          <?= $this->pg_classes[$pg_constraint['confrelid']]['pg_attribute'][$foreign_attnum]['attname'] ?>)
+          </small>
+          </dd>
+          <? endforeach ?>
+
+          <? else: ?>
+
+          <? if ($pg_constraint['conkey']): ?>
+          <? foreach ($pg_constraint['conkey'] as $attnum): ?>
+          <dd>
+          <small><?= $pg_constraint['conname'] ?></small>
+          :
+          <small><?= $this->pg_classes[$pg_constraint['conrelid']]['pg_attribute'][$attnum]['attname'] ?></small>
+          </dd>
+          <? endforeach ?>
+          <? endif ?>
+
+          <? endif ?>
+          <? endforeach ?>
+      </dl>
+
+    </div>
   </div>
-  <div class="card-block overflow-list">
-    <table class="table">
-      <thead class="thead-default">
-        <tr>
-          <th>Name</th>
-          <th>Comment</th>
-        </tr>
-      </thead>
-      <? foreach ($this->pg_classes as $pg_class): ?>
-      <tr>
-        <td>
-          <a class="" href="<?= url_for('columns', array('database_id' => $this->database->value['id'], 'pg_class_id' => $pg_class['pg_class_id'])) ?>"><?= $pg_class['tablename'] ?></a>
-        </td>
-        <td>
-          <form method="post" action="<?= url_for('update_table_comment') ?>">
-            <div class="row">
-             <div class="input-group">
-              <input class="form-control col-6" type="text" name="comment" value="<?= $this->table_comments[$pg_class['tablename']] ?>">
-              <span class="input-group-btn">
-                <button class="btn btn-primary"><?= LABEL_UPDATE ?></button>
-              </span>
-            </div>
-          </div>
-          <input type="hidden" name="pg_class_id" value="<?= $pg_class['pg_class_id'] ?>">
-          <input type="hidden" name="database_id" value="<?= $this->database->value['id'] ?>">
-        </form>
-      </td>
-    </tr>
-  <? endforeach ?>
-</table>
 </div>
+<? endforeach ?>
 </div>
 <? endif ?>
 

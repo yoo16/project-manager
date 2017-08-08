@@ -54,11 +54,12 @@ class AttributeController extends ProjectController {
         if ($attributes) {
             foreach ($attributes as $attribute) {
                 $attribute['pg_attribute'] = $this->pg_attributes[$attribute['name']];
-                $this->attributes[] = $attribute;
+                $this->attributes[$attribute['attnum']] = $attribute;
             }
         }
 
-        $this->pg_constraint_groups = $pgsql_entity->pgConstraintGroup($this->model->value['name']);
+        $this->pg_constraints = $pgsql_entity->pgConstraintGroup($this->pg_class);
+        $this->pg_classes = $pgsql_entity->pgClassArrayByConstraints($this->pg_class, $this->pg_constraints);
     }
 
     function action_new() {
@@ -80,12 +81,11 @@ class AttributeController extends ProjectController {
         $posts = $this->session['posts'] = $_POST['attribute'];
         $posts['model_id'] = $this->model->value['id'];
 
-        $type = $posts['type'];
-        if ($type == 'varchar' && $posts['length']) $type.= "({$posts['length']})";
-        
         //DB add column
         $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
         $pg_class = $pgsql_entity->pgClassByRelname($this->model->value['name']);
+
+        $type = $pgsql_entity->sqlColumnType($posts['type'], $posts['length']);
 
         $pgsql_entity->addColumn($this->model->value['name'], $posts['name'], $type);
         $pg_attribute = $pgsql_entity->pgAttributeByColumn($this->model->value['name'], $posts['name']);
@@ -223,6 +223,16 @@ class AttributeController extends ProjectController {
                                             ->fetch($this->fk_attribute['model_id'])
                                             ->value;
         }
+    }
+
+    function action_rename_constraint() {
+        if (!isPost()) exit;
+        $database = DB::table('Database')->fetch($this->posts['database_id']);
+        $model = DB::table('Model')->fetch($this->posts['model_id']);
+
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());        
+        $results = $pgsql_entity->renamePgConstraint($model->value['name'], $this->posts['constraint_name'], $this->posts['new_constraint_name']);
+        $this->redirect_to('list');
     }
 
     function action_delete_constraint() {

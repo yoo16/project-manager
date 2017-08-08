@@ -6,34 +6,61 @@
     <table class="table">
       <thead class="thead-default">
         <tr>
-          <th></th>
           <th>Constraint Name</th>
+          <th>Type</th>
           <th>Column</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
-        <? if ($this->pg_constraint_groups): ?>
-        <? foreach ($this->pg_constraint_groups as $constraint_name => $pg_constraint_group): ?>
+        <? if ($this->pg_constraints): ?>
+        <? foreach ($this->pg_constraints as $pg_constraint): ?>
         <tr>
           <td>
-            <form action="<?= url_for('delete_constraint') ?>" method="post">
-              <?= FormHelper::submit(LABEL_DELETE, ['class' => 'btn btn-danger confirm-dialog', 'message' => 'Do you delete Constrain key?']) ?></a>
-              <?= FormHelper::hidden('constraint_name', $constraint_name) ?></a>
+            <form action="<?= url_for('rename_constraint') ?>" method="post">
+              <div class="input-group">
+                <?= FormHelper::input(['class' => 'form-control form-control-sm'], 'new_constraint_name', $pg_constraint['conname']) ?>
+                <span class="input-group-btn"><?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm confirm-dialog', 'message' => 'Do you rename Constrain key?']) ?></span>
+              </div>
+              <?= FormHelper::hidden('constraint_name', $pg_constraint['conname']) ?></a>
               <?= FormHelper::hidden('model_id', $this->model->value['id']) ?></a>
               <?= FormHelper::hidden('database_id', $this->database->value['id']) ?></a>
             </form>
           </td>
-          <td><?= $constraint_name ?></td>
+          <td><?= $pg_constraint['contype'] ?></td>
           <td>
+            <? if ($pg_constraint['conkey']): ?>
             <ul>
-              <? foreach ($pg_constraint_group as $constraint_name => $pg_constraint): ?>
-              <li><?= $pg_constraint['column_name'] ?></li>
+              <? foreach ($pg_constraint['conkey'] as $attnum): ?>
+              <li><?= $this->pg_classes[$this->pg_class['pg_class_id']]['pg_attribute'][$attnum]['attname'] ?></li>
+              <? endforeach ?>
+            </ul>
+            <? endif ?>
+
+            <? if ($pg_constraint['confkey']): ?>
+            <ul>
+              <? foreach ($pg_constraint['confkey'] as $foreign_attnum): ?>
+              <li>
+              <?= $this->pg_classes[$pg_constraint['confrelid']]['relname'] ?>
+              :
+              <?= $this->pg_classes[$pg_constraint['confrelid']]['pg_attribute'][$foreign_attnum]['attname'] ?>
+              </li>
             <? endforeach ?>
-          </ul>
+            </ul>
+            <? endif ?>
         </td>
+
+          <td>
+            <form action="<?= url_for('delete_constraint') ?>" method="post">
+              <?= FormHelper::submit(LABEL_DELETE, ['class' => 'btn btn-sm btn-danger confirm-dialog', 'message' => 'Do you delete Constrain key?']) ?></a>
+              <?= FormHelper::hidden('constraint_name', $pg_constraint['conname']) ?></a>
+              <?= FormHelper::hidden('model_id', $this->model->value['id']) ?></a>
+              <?= FormHelper::hidden('database_id', $this->database->value['id']) ?></a>
+            </form>
+          </td>
       </tr>
-    <? endforeach ?>
-  <? endif ?>
+<? endforeach ?>
+<? endif ?>
 </tbody>
 </table>
 </div>

@@ -29,6 +29,17 @@ class Database extends _Database {
         $pg_database = $pgsql_entity->pgDatabase();
         return $pg_database;
     }
+   
+    function drawBorders($sheet, $row, $numbers) {
+        for ($col = 0; $col <= $numbers; $col++) {
+            $sheet->getStyleByColumnAndRow($col, $row)
+                  ->getBorders()
+                  ->getAllBorders()
+                  ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+            $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex($col))->setAutoSize(true);
+        }
+        return $sheet;
+    }
 
     /**
      * export database
@@ -41,8 +52,8 @@ class Database extends _Database {
 
         $database = DB::table('Database')->fetch($this->value['id']);
         $pgsql_entity = new PgsqlEntity($database->pgInfo());
-        $pg_database = $pgsql_entity->pgDatabase();
-        $pg_classes = $pgsql_entity->tableArray();
+        //$pg_database = $pgsql_entity->pgDatabase();
+        $pg_classes = $pgsql_entity->pgClassArray();
 
         $file_name = "{$database->value['name']}.xlsx";
         $tmp_dir = BASE_DIR.'tmp/';
@@ -64,10 +75,10 @@ class Database extends _Database {
 
         $sheet = $book->removeSheetByIndex(0);
         foreach ($pg_classes as $pg_class) {
-            $relnames = explode('_', $pg_class['relname']);
-            $last_relname = end($relnames);
+            $row = 3;
 
-            if (!is_numeric($last_relname)) {
+            $is_numbering = PgsqlEntity::isNumberingName($pg_class['relname']);
+            if (!$is_numbering) {
                 $sheet_name = $pg_class['relname'];
                 if (mb_strlen($sheet_name) > 30) {
                     $sheet_name = mb_substr($sheet_name,0, 30);
@@ -78,21 +89,16 @@ class Database extends _Database {
                 $sheet->setCellValueByColumnAndRow(0, 1, 'Table Name');
                 $sheet->setCellValueByColumnAndRow(1, 1, $pg_class['relname']);
 
-                $row = 3;
                 $sheet->setCellValueByColumnAndRow(0, $row, 'attribute');
                 $sheet->setCellValueByColumnAndRow(1, $row, 'type');
                 $sheet->setCellValueByColumnAndRow(2, $row, 'length');
                 $sheet->setCellValueByColumnAndRow(3, $row, 'primary key');
                 $sheet->setCellValueByColumnAndRow(4, $row, 'not null');
                 $sheet->setCellValueByColumnAndRow(5, $row, 'comment');
-                for ($col = 0; $col <= 5; $col++) {
-                    $sheet->getStyleByColumnAndRow($col, $row)
-                          ->getBorders()
-                          ->getAllBorders()
-                          ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
-                    $sheet->calculateColumnWidths();
-                }
 
+                $this->drawBorders($sheet, $row, 5);
+
+                $attributes = null;
                 foreach ($pg_attributes as $pg_attribute) {
                     $row++;
                     $sheet->setCellValueByColumnAndRow(0, $row, $pg_attribute['attname']);
@@ -102,16 +108,33 @@ class Database extends _Database {
                     $sheet->setCellValueByColumnAndRow(4, $row, ($pg_attribute['attnotnull'] == 't'));
                     $sheet->setCellValueByColumnAndRow(5, $row, $pg_attribute['comment']);
 
-                    for ($col = 0; $col <= 5; $col++) {
-                        $sheet->getStyleByColumnAndRow($col, $row)
-                              ->getBorders()
-                              ->getAllBorders()
-                              ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
-                        $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex($col))->setAutoSize(true);
-                    }
+                    $this->drawBorders($sheet, $row, 5);
+                    $attributes[$pg_attribute['attnum']] = $pg_attribute;
                 }
             }
 
+
+            if ($pg_class['pg_constraint']) {
+                $row+= 3;
+                $sheet->setCellValueByColumnAndRow(0, $row, 'table');
+                $sheet->setCellValueByColumnAndRow(1, $row, 'attribute');
+
+                $this->drawBorders($sheet, $row, 1);
+
+                foreach ($pg_class['pg_constraint'] as $pg_constraint) {
+                    $is_numbering_constraint = PgsqlEntity::isNumberingName($pg_constraint['conname']);
+                    if (!$is_numbering_constraint) {
+                        foreach ($pg_constraint['conkey'] as $index => $attnum) {
+                            $row++;
+                            if ($index == 0) $sheet->setCellValueByColumnAndRow(0, $row, $pg_constraint['conname']);
+                            $attribute_name = $pg_attributes[$attnum]['attname'];
+                            $sheet->setCellValueByColumnAndRow(1, $row, $attributes[$attnum]['attname']);
+                            $this->drawBorders($sheet, $row, 1);
+                        }
+                    }
+
+                }
+            }
         }
         $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
         header("Pragma: public");

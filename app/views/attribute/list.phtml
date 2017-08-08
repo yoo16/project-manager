@@ -82,23 +82,23 @@
       <?= FormHelper::badgeTag($attribute['pg_attribute']['attnum'], null, 'info') ?>
       <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
       <?= FormHelper::badgeTag('sync', null, 'success') ?>
-      <?= FormHelper::badgeTag($attribute['pg_attribute']['attname'], null, 'info') ?>
-      <? if ($attribute['pg_attribute']['udt_name'] == $attribute['type']): ?>
-      <?= FormHelper::badgeTag($attribute['pg_attribute']['udt_name'], null, 'info') ?>
-      <? else: ?>
-      <?= FormHelper::badgeTag($attribute['pg_attribute']['udt_name'], null, 'danger') ?>
-      <? endif ?>
-      <?= FormHelper::badgeTag($attribute['pg_attribute']['character_maximum_length'], null, 'info') ?>
-      <? if ($attribute['is_primary_key']): ?><?= FormHelper::badgeTag('Primary', null, 'info') ?><? endif ?>
-      <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><?= FormHelper::badgeTag('Not Null', null, 'info') ?><? endif ?>
-    <? else: ?>
-    <label class="badge badge-pill badge-danger">unsync</label>
-    <form action="<?= url_for('add_table', $attribute['id']) ?>" method="post">
-      <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-outline-primary']) ?>
-      <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
-      <?= FormHelper::hidden('table_name', $this->model->value['name']) ?>
-    </form>
-  <? endif ?>
+
+      <? if ($attribute['pg_attribute']['attname'] != $attribute['name']): ?><?= FormHelper::badgeTag($attribute['pg_attribute']['attname'], null, 'danger') ?><? endif ?>
+
+      <? if ($attribute['pg_attribute']['udt_name'] != $attribute['type']): ?><?= FormHelper::badgeTag($attribute['pg_attribute']['udt_name'], null, 'danger') ?>
+      <?= FormHelper::badgeTag($attribute['pg_attribute']['character_maximum_length'], null, 'danger') ?><? endif ?>
+
+
+    <? if ($attribute['is_primary_key']): ?><?= FormHelper::badgeTag('Primary', null, 'info') ?><? endif ?>
+    <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><?= FormHelper::badgeTag('Not Null', null, 'info') ?><? endif ?>
+  <? else: ?>
+  <label class="badge badge-pill badge-danger">unsync</label>
+  <form action="<?= url_for('add_table', $attribute['id']) ?>" method="post">
+    <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-outline-primary']) ?>
+    <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
+    <?= FormHelper::hidden('table_name', $this->model->value['name']) ?>
+  </form>
+<? endif ?>
 </td>
 </tr>
 <? endforeach ?>

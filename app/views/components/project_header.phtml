@@ -1,7 +1,6 @@
-<? if ($this->project->value['id']): ?>
 
 <div class="row">
-
+<? if ($this->project->value['id']): ?>
   <div class="col-5">
     <table class="table">
       <tr>
@@ -13,7 +12,9 @@
       </tr>
     </table>
   </div>
+<? endif ?>
 
+<? if ($this->database->value['id']): ?>
   <div class="col-5">
     <table class="table">
       <tr>
@@ -23,9 +24,11 @@
       </tr>
     </table>
   </div>
+<? endif ?>
 
 </div>
 
+<? if ($this->project->value['id']): ?>
 <? include('php_export_window.phtml') ?>
 
 <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
@@ -35,5 +38,4 @@
     <li class="nav-item"><a class="nav-link <?= cssClass('layout', $this->params['controller'], 'active'); ?>" href="<?= url_for('layout/list', array('project_id' => $this->project->value['id'])) ?>">Layout</a></li>
   </ul>
 </nav>
-
 <? endif ?>

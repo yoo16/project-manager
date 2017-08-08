@@ -1,12 +1,2 @@
-<div class="row mt-3 mb-3">
-  <? if ($this->database->value): ?>
-  <div class="col-sm-4">
-    <div class="">
-      <div class="card-block">
-        <strong class="mr-1">Database</strong>
-        <?= $this->database->value['name'] ?>
-      </div>
-    </div>
-  </div>
-<? endif ?>
-</div>
+
+<? include('views/components/project_header.phtml') ?>

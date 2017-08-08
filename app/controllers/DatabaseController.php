@@ -9,12 +9,11 @@ class DatabaseController extends AppController {
         parent::before_action($action);
 
         $this->database = DB::table('Database')->requestSession();
-        $this->project = DB::table('Project')->requestSession();
-        $this->model = DB::table('Model')->requestSession();
     }
 
     function index() {
         AppSession::clear('database');
+        AppSession::clear('project');
         AppSession::clear('model');
         AppSession::clear('attribute');
         $this->redirect_to('list');
@@ -48,7 +47,7 @@ class DatabaseController extends AppController {
         $this->forms['port'] = CsvLite::form('db_ports', 'database[port]');
     }
 
-    function add() {
+    function action_add() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $posts = $this->session['posts'] = $_POST['database'];
             $database = DB::table('Database')->insert($posts);
@@ -64,6 +63,14 @@ class DatabaseController extends AppController {
                 $this->redirect_to('result');
             }
         }
+    }
+
+    function action_export_db() {
+        $database = DB::table('Database')
+                            ->fetch($this->database['id'])
+                            ->exportDatabase();
+
+        $this->redirect_to('list', $params);
     }
 
     function action_import_database() {
@@ -84,63 +91,12 @@ class DatabaseController extends AppController {
         $this->redirect_to('database/');
     }
 
-    function tables() {
+    function action_tables() {
         $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
-        $pg_classes = $pgsql_entity->pgClasses();
-
-        $this->table_comments = $pgsql_entity->tableCommentsArray();
-        if ($pg_classes) {
-            foreach ($pg_classes as $pg_class) {
-                $this->pg_classes[] = $pg_class;
-            }
-        }
+        $this->pg_classes = $pgsql_entity->pgClassArray();
     }
 
-
-    function add_table() {
-        if (!isPost()) exit;
-        if ($this->database) {
-            $columns = Model::$required_columns;
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo()); 
-            $pgsql_entity->createTable($_REQUEST['table_name'], $columns);
-            $this->redirect_to('tables', $_REQUEST['database_id']);
-        }
-    }
-
-
-    function drop_table() {
-        if (!isPost()) exit;
-        if ($this->database) {
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo()); 
-            $pgsql_entity->dropTable($_REQUEST['table_name']);
-            $this->redirect_to('tables', $_REQUEST['database_id']);
-        }
-    }
-
-    function edit_table() {
-        if ($this->database && $table_name = $_REQUEST['table_name']) {
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo()); 
-            $this->pg_table = $pgsql_entity->pgTableByTableName($table_name);
-
-            $this->database = $database->value;
-        }
-    }
-
-    function rename_table() {
-        if ($this->database) {
-            $table_name = $_REQUEST['table_name'];
-            $new_table_name = $_REQUEST['new_table_name'];
-            
-            if (!$table_name) return;
-
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo()); 
-            $this->pg_table = $pgsql_entity->renameTable($table_name, $new_table_name);
-            
-            $this->redirect_to('tables', $database['id']);
-        }
-    }
-
-    function columns() {
+    function action_columns() {
         if ($this->database && $pg_class_id = $_REQUEST['pg_class_id']) {
             $pgsql_entity = new PgsqlEntity($this->database->pgInfo()); 
             $this->pg_class = $pgsql_entity->pgClassById($pg_class_id);
@@ -151,100 +107,7 @@ class DatabaseController extends AppController {
         }
     }
 
-    function update_column_comment() {
-        if (!isPost()) exit;
-        if ($this->database) {
-            $comment = $_REQUEST['comment'];
-            $relfilenode = $_REQUEST['relfilenode'];
-            $attnum = $_REQUEST['attnum'];
-
-            $attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id'])->value;
-
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo()); 
-            $pg_class = $pgsql_entity->pgClassById($relfilenode);
-            $pg_attribute = $pgsql_entity->pgAttributeByColumn($pg_class['relname'], $attribute['name']);
-
-            if ($pg_class && $pg_attribute) {
-                $pgsql_entity->updateColumnComment($pg_class['relname'], $pg_attribute['attname'], $_REQUEST['comment']);
-            }
-
-            $params['database_id'] = $_REQUEST['database_id'];
-            $params['relfilenode'] = $relfilenode;
-            $this->redirect_to('columns', $params);
-        }
-    }
-
-    function action_update_table() {
-        $table_name = $_REQUEST['table_name'];
-        if ($table_name && $database->value) {
-            if ($_REQUEST['new_table_name'] && ($_REQUEST['new_table_name'] != $_REQUEST['table_name'])) {
-                $pgsql_entity = new PgsqlEntity($this->database->pgInfo()); 
-                $pgsql_entity->renameTable($_REQUEST['table_name'], $_REQUEST['new_table_name']);
-            }
-        }
-        $this->redirect_to('tables', $_REQUEST['database_id']);
-    }
-
-
-    function action_update_table_comment() {
-        if (!isPost()) exit;
-        if ($this->database) {
-            if (!$_REQUEST['pg_class_id']) return;
-
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
-            $pg_class = $pgsql_entity->pgClassById($_REQUEST['pg_class_id']);
-
-            $pgsql_entity->updateTableComment($pg_class['relname'], $_REQUEST['comment']);
-
-            $this->redirect_to('tables', $_REQUEST['database_id']);
-        }
-    }
-
-    function action_update() {
-        $database = DB::table('Database')->fetch($this->params['id']);
-
-        $pgsql_entity = new PgsqlEntity();
-        $pgsql_entity->renameDatabase($database->value['name'], $this->posts['database']['name']);
-
-        if ($pgsql_entity->sql_error) {
-            echo($pgsql_entity->sql_error);
-            exit;
-        } else {
-            $database->post()->update();
-        }
-
-        if ($database->errors) {
-            $this->redirect_to('edit', $this->params['id']);
-        } else {
-            $this->redirect_to('list');
-        }
-    }
-
-    function action_delete() {
-        if (!isPost()) exit;
-        if ($_REQUEST['is_delete']) {
-            $database = DB::table('Database')->fetch($this->params['id']);
-
-            if (!$database->value['is_lock']) {
-                $pgsql_entity = new PgsqlEntity($database->pgInfo());
-                $results = $pgsql_entity->dropDatabase();
-            }
-        }
-
-        $database = DB::table('Database')->delete($this->params['id']);
-        if ($database->errors) {
-            $this->flash['errors'] = $database->errors;
-            $this->redirect_to('edit', $this->params['id']);
-        } else {
-            $this->redirect_to('list', $this->database['id']);
-        }
-    }
-
-    function result() {
-        $this->results = $this->flash['results']; 
-    }
-
-    function table() {
+    function action_table() {
         if ($this->database && $this->params['id']) {
             $manage_database = new ManageDatabasePgsql($this->database);
             $this->pg_class = $manage_database->getPgClass($this->params['id']);
@@ -252,7 +115,7 @@ class DatabaseController extends AppController {
         }
     }
 
-    function create_table() {
+    function action_create_table() {
         if ($this->database['id'] > 0 && $this->params['id']) {
             $model = Model::_getValue($this->params['id']);
             $this->createTable($model);
@@ -261,7 +124,7 @@ class DatabaseController extends AppController {
         }
     }
 
-    function import_tables() {
+    function action_import_tables() {
         if ($this->database && $this->params['id']) {
             $manage_database = new ManageDatabasePgsql($this->database);
             $manage_database->import_tables();
@@ -269,7 +132,7 @@ class DatabaseController extends AppController {
         }
     }
 
-    function import_table() {
+    function action_import_table() {
         if ($this->database && $this->params['id']) {
             $manage_database = new ManageDatabasePgsql($this->database);
             $model = $manage_database->import_table($this->params['id']);

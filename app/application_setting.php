@@ -3,6 +3,8 @@
     define('HTML_TITLE', 'ProjectManager');
     define('VERSION', '0.1.0');
 
+    ini_set('memory_limit', '256M');
+
     define('PHP_WORK_GIT_URL', 'https://github.com/yoo16/php-work.git');
 
     define('PROJECT_MANAGER_DB_NAME', 'project_manager');
