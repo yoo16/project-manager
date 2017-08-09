@@ -1,5 +1,13 @@
 
-<h4><a class="btn btn-sm btn-outline-primary action" href="#" action="relation_model_list" attribute-id="<?= $this->attribute->value['id'] ?>"><?= LABEL_BACK ?></a></h4>
+<h4>
+    <?= FormHelper::link('#', LABEL_BACK, null,
+        [
+        'class' => 'pw-app btn btn-sm btn-outline-primary', 
+        'pw-controller' => 'attribute',
+        'pw-action' => 'relation_model_list', 
+        'attribute_id' => $this->attribute->value['id'], 
+        ]) ?>
+</h4>
 <h4 class=""><?= $this->model->value['name'] ?> -> <?= $this->attribute->value['name'] ?></h4>
 
 <? if ($this->fk_attribute->value): ?>
@@ -12,7 +20,7 @@
 
 <h4><?= $this->fk_model->value['name'] ?></h4>
 <table class="table table-sm">
-  <? foreach ($this->fk_attributes as $fk_attribute): ?>
+  <? foreach ($this->fk_model->attribute->values as $fk_attribute): ?>
   <tr>
     <td><?= $fk_attribute['name'] ?></a></td>
     <td>

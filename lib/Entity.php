@@ -16,6 +16,7 @@ class Entity {
     var $posts = null;
     var $session = null;
 
+
     function __construct($params = null) {
         $this->defaultValue();
     }

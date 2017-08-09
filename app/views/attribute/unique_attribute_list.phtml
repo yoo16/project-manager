@@ -1,0 +1,24 @@
+
+<h4><?= $this->model->value['name'] ?></h4>
+<form action="<?= url_for('add_unique') ?>" method="post">
+  <table class="table table-sm">
+    <thead>
+      <tr>
+        <th></th>
+      </tr>
+    </thead>
+    <? foreach ($this->model->attribute->values as $attribute): ?>
+    <tr>
+      <td>
+        <?= FormHelper::checkbox([
+          'name' => "attribute_id[{$attribute['id']}]",
+          'label' => $attribute['name'],
+          ]
+          ) ?>
+        </td>
+      </tr>
+    <? endforeach ?>
+  </table>
+  <input type="submit" class="btn btn-sm btn-primary" value="<?= LABEL_UPDATE ?>">
+  <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
+</form>

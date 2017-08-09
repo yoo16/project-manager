@@ -588,7 +588,7 @@ class FormHelper {
         $attributes['id'] = $params['id'];
         $attributes['class'] = $params['class'];
 
-        $tag.= self::hidden($params['name'], -1);
+        $tag.= self::hidden($params['name'], 0);
         $tag.= self::input($attributes);
         $tag = self::labelTag($tag.$label);
         return $tag;

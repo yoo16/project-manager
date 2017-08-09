@@ -209,22 +209,6 @@ class AttributeController extends ProjectController {
         $this->redirect_to('list');
     }
 
-    function action_relation_model_list() {
-        $this->layout = null;
-
-        $this->models = DB::table('Model')->listByProject($this->project)->values;
-        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id'])->value;
-
-        if ($this->attribute['fk_attribute_id']) {
-            $this->fk_attribute = DB::table('Attribute')
-                                            ->fetch($this->attribute['fk_attribute_id'])
-                                            ->value;
-            $this->fk_model = DB::table('Model')
-                                            ->fetch($this->fk_attribute['model_id'])
-                                            ->value;
-        }
-    }
-
     function action_rename_constraint() {
         if (!isPost()) exit;
         $database = DB::table('Database')->fetch($this->posts['database_id']);
@@ -244,18 +228,27 @@ class AttributeController extends ProjectController {
         $this->redirect_to('list');
     }
 
+    function action_relation_model_list() {
+        $this->layout = null;
+
+        $this->project->bindMany('Model');
+        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
+
+        if ($this->attribute->value['fk_attribute_id']) {
+            $this->fk_attribute = DB::table('Attribute')->fetch($this->attribute->value['fk_attribute_id']);
+            $this->fk_model = DB::table('Model')->fetch($this->fk_attribute->value['model_id']);
+        }
+    }
+
     function action_relation_attribute_list() {
         $this->layout = null;
 
         $this->fk_model = DB::table('Model')->fetch($_REQUEST['fk_model_id']);
         if ($this->fk_model->value['id']) {
-            $this->fk_attributes = DB::table('Attribute')
-                                    ->where("model_id = {$this->fk_model->value['id']}")
-                                    ->order('name', 'asc')
-                                    ->select()->values;
+            $this->fk_model->bindMany('Attribute');
         }
-        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
 
+        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
         if ($this->attribute->value['fk_attribute_id']) {
             $this->fk_attribute = DB::table('Attribute')->fetch($this->attribute['fk_attribute_id']);
         }
@@ -265,9 +258,18 @@ class AttributeController extends ProjectController {
         if (!isPost()) exit;
 
         $fk_attribute = DB::table('Attribute')->fetch($_REQUEST['fk_attribute_id']);
-        if ($fk_attribute->value['id']) {
-            $attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
-            if ($attribute->value['id']) {
+        $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']);
+
+        $attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
+        $model = DB::table('Model')->fetch($attribute->value['model_id']);
+
+        if ($fk_attribute->value['id'] && $attribute->value['id']) {
+            $database = DB::table('Database')->fetch($this->project->value['database_id']);
+            $pgsql_entity = new PgsqlEntity($database->pgInfo());
+            $results = $pgsql_entity->addPgForeignKey($model->value['name'], $attribute->value['name'],
+                                                      $fk_model->value['name'], $fk_attribute->value['name']);
+
+            if ($results) {
                 $posts['fk_attribute_id'] = $fk_attribute->value['id'];
                 $attribute->update($posts);
             }
@@ -294,6 +296,32 @@ class AttributeController extends ProjectController {
         $pgsql_entity = new PgsqlEntity($database->pgInfo());
         $pg_class = $pgsql_entity->pgClassByRelname($this->model->value['name']);
         $pgsql_entity->removePgConstraints($pg_class['relname']);
+        $this->redirect_to('list');
+    }
+
+    function action_unique_attribute_list() {
+        $this->layout = null;
+
+        $this->model = DB::table('Model')->fetch($_REQUEST['model_id']);
+        if ($this->model->value['id']) {
+            $this->model->bindMany('Attribute');
+        }
+    }
+
+    function action_add_unique() {
+        if (!isPost()) exit;
+
+        $model = DB::table('Model')->fetch($_REQUEST['model_id'])->value;
+
+        foreach ($_REQUEST['attribute_id'] as $attribute_id => $selected) {
+            if ($selected) {
+                $column_names[] = DB::table('Attribute')->fetch($attribute_id)->value['name'];
+            }
+        }
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());
+        $pgsql_entity->addPgUnique($model['name'], $column_names);
+
         $this->redirect_to('list');
     }
 

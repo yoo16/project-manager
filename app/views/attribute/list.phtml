@@ -53,16 +53,18 @@
           <? if ($attribute['fk_attribute_id'] > 0): ?>
           <?= FormHelper::linkModal('#relation-window', 'relation', 
             [
-            'class' => 'btn btn-success btn-sm action', 
-            'action' => 'relation_model_list', 
-            'attribute-id' => $attribute['id'], 
+            'class' => 'btn btn-success btn-sm pw-app', 
+            'pw-controller' => 'attribute',
+            'pw-action' => 'relation_model_list', 
+            'attribute_id' => $attribute['id'], 
             ]) ?>
           <? else: ?>
           <?= FormHelper::linkModal('#relation-window', 'relation', 
             [
-            'class' => 'btn btn-outline-primary btn-sm action', 
-            'action' => 'relation_model_list', 
-            'attribute-id' => $attribute['id'], 
+            'class' => 'btn btn-outline-primary btn-sm pw-app', 
+            'pw-controller' => 'attribute',
+            'pw-action' => 'relation_model_list', 
+            'attribute_id' => $attribute['id'], 
             ]) ?>
           <? endif ?>
         </td>

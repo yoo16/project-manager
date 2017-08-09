@@ -17,16 +17,6 @@ class Model extends _Model {
                                                            ),
                                      );
 
-    static $s_type = array('ies' => array('name' => 'ies', 
-                                          'number' => '3',
-                                         ),
-                           'sses' => array('name' => 'sses',
-                                          'number' => '4',
-                                         ),
-                           'uses' => array('name' => 'uses',
-                                          'number' => '2',
-                                         ),
-                   );
 
     function validate() {
         parent::validate();

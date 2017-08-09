@@ -29,6 +29,15 @@ class PgsqlEntity extends Entity {
     var $table_name = null;
 
     static $pg_info_columns = ['dbname', 'user', 'host', 'port', 'password'];
+    static $constraint_keys = ['p' => 'Primary Key',
+                              'u' => 'Unique',
+                              'f' => 'Foreign Key',
+                              'c' => 'Check'
+                              ];
+    static $constraint_actions = [
+                               'a' => 'NOT ACTION',
+                               'c' => 'CASCADE',
+                              ];
 
     function __construct($params = null) {
         parent::__construct($params);
@@ -592,11 +601,13 @@ class PgsqlEntity extends Entity {
     * @return PgsqlEntity
     */
     public function hasMany($class_name, $conditions = null, $foreign_key = null, $value_key = null) {
-        if (is_null($this->value)) return $this;
+        if (is_null($this->value)) {
+            echo('Not Found: value');
+            exit;
+        }
 
         if (!is_string($class_name)) exit('hasMany: $class_name is not string');
         $relation = DB::table($class_name);
-
 
         if (!$foreign_key) $foreign_key = "{$this->entity_name}_id";
         if (!$value_key) $value_key = $this->id_column;
@@ -1842,8 +1853,8 @@ class PgsqlEntity extends Entity {
      */
     function addPgUnique($table_name, $columns) {
         $constraint_name = '';
-        $column = implode(',', $columns);
-        $sql = "ALTER TABLE {$table_name} ADD CONSTRAINT {$constraint_name} UNIQUE ({$column});";
+        $column = implode(', ', $columns);
+        $sql = "ALTER TABLE {$table_name} ADD UNIQUE ({$column});";
         return $this->query($sql);
     }
 
@@ -1851,11 +1862,21 @@ class PgsqlEntity extends Entity {
      * add pg foreign key
      *
      * @param  string $table_name
-     * @param  array $columns
+     * @param  string $foreign_column
+     * @param  string $reference_table_name
+     * @param  string $reference_column
      * @return void
      */
-    function addPgForeignKey($table_name, $foreign_key, $reference_table_name) {
-        $sql = "ALTER TABLE {$table_name} ADD FOREIGN KEY ({$foreign_key}) REFERENCES {$reference_table_name};";
+    function addPgForeignKey($table_name, $foreign_column, $reference_table_name, $reference_column,
+                             $is_not_deferrable = true, $update = 'NO ACTION', $delete = 'CASCADE') {
+        $reference_column = "{$reference_table_name}({$reference_column})";
+        $sql = "ALTER TABLE {$table_name} ADD FOREIGN KEY ({$foreign_column}) REFERENCES {$reference_column}";
+
+        if ($update) $sql.= " ON UPDATE {$update}";
+        if ($delete) $sql.= " ON DELETE {$delete}";
+        if ($is_not_deferrable) $sql.= " NOT DEFERRABLE";
+
+        $sql.= ';';
         return $this->query($sql);
     }
 
