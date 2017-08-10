@@ -7,7 +7,7 @@
 
     define('PHP_WORK_GIT_URL', 'https://github.com/yoo16/php-work.git');
 
-    define('PROJECT_MANAGER_DB_NAME', 'project_manager');
+    define('PROJECT_MANAGER_DB_NAME', 'project_manager_2017');
     define('PROJECT_MANAGER_DB_HOST', 'localhost');
     define('PROJECT_MANAGER_DB_USER', 'postgres');
     define('PROJECT_MANAGER_DB_PORT', '5432');

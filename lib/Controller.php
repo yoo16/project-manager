@@ -178,7 +178,7 @@ class Controller extends RuntimeException {
                 var_dump($e);
             } catch (Exception $e) {
                 var_dump($e);
-            } finally {
+            // } finally {
 
             }
         } else {
@@ -218,7 +218,7 @@ class Controller extends RuntimeException {
             var_dump($e);
         } catch (Exception $e) {
             var_dump($e);
-        } finally {
+        // } finally {
 
         }
     }
@@ -282,7 +282,7 @@ class Controller extends RuntimeException {
                 var_dump($e);
             } catch (Exception $e) {
                 var_dump($e);
-            } finally {
+            // } finally {
                 
             }
 
