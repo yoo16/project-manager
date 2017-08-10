@@ -17,7 +17,7 @@ class _User extends PgsqlEntity {
         'created_at' => array('type' => 'timestamp', 'option' => 'NULL DEFAULT CURRENT_TIMESTAMP'),
         'updated_at' => array('type' => 'timestamp'),
         'sort_order' => array('type' => 'int4'),
-        'login_name' => array('type' => 'varchar', 'length' => 256, 'required' => true),
+        'login_name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
         'htaccess_name' => array('type' => 'varchar', 'length' => 256),
         'last_name' => array('type' => 'varchar', 'length' => 256),
         'first_name' => array('type' => 'varchar', 'length' => 256),

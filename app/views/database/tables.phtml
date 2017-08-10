@@ -21,6 +21,8 @@
             <small><?= $pg_attribute['attname'] ?></small>
              : 
             <small><?= $pg_attribute['comment'] ?></small>
+            
+            <small>(<?= $pg_attribute['udt_name'] ?>)</small>
           </dd>
           <? endforeach ?>
       </dl>

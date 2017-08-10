@@ -23,8 +23,8 @@
         <th>DB</th>
       </tr>
     </thead>
-    <? if ($this->models): ?>
-    <? foreach ($this->models as $model): ?>
+    <? if ($this->model->values): ?>
+    <? foreach ($this->model->values as $model): ?>
     <tr>
       <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $model['id']) ?></td>
       <td>

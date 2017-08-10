@@ -119,6 +119,18 @@ class PgsqlEntity extends Entity {
     /**
     * pgInfo
     * 
+    * @param array $database_name
+    * @return PgsqlEntity
+    */
+    function setDBName($database_name) {
+        $this->dbname = $database_name;
+        $this->loadDBInfo();
+        return $this;
+    }
+
+    /**
+    * pgInfo
+    * 
     * @param array $params
     * @return PgsqlEntity
     */
@@ -191,7 +203,7 @@ class PgsqlEntity extends Entity {
     */
     static function columnOptionSql($values) {
         $option = '';
-        if ($values['required']) $option.= "NOT NULL";
+        if ($values['is_required']) $option.= "NOT NULL";
         return $option;
     }
 
@@ -204,7 +216,8 @@ class PgsqlEntity extends Entity {
     public function createTableSql($model) {
         if (!$model) return;
 
-        $column_sqls[] = "{$model->id_column} SERIAL PRIMARY KEY NOT NULL";
+        $column_sqls[] = "{$model->id_column} BIGSERIAL PRIMARY KEY NOT NULL";
+        //$column_sqls[] = "{$model->id_column} SERIAL PRIMARY KEY NOT NULL";
         foreach ($model->columns as $column_name => $column) {
             if ($column['type']) {
                 $type = self::columnTypeSql($column);
@@ -333,16 +346,17 @@ class PgsqlEntity extends Entity {
     * 
     * @param string $table_name
     * @param string $column
-    * @param string $type
+    * @param array $options
     * @return resource
     */
-    public function changeColumnType($table_name, $column, $type) {
+    public function changeColumnType($table_name, $column, $options) {
         if (!$table_name) return;
         if (!$column) return;
-        if (!$type) return;
+        if (!$options) return;
 
         $using = '';
         //TODO float double
+        $type = $this->sqlColumnType($options['type'], $options['length']);
         if (strstr($type, 'int')) {
             $sql = "ALTER TABLE \"{$table_name}\" ALTER COLUMN \"{$column}\" TYPE {$type}";
             $using = " USING {$column}::int";
@@ -387,14 +401,18 @@ class PgsqlEntity extends Entity {
     * 
     * @param string $table_name
     * @param string $column
-    * @param string $type
+    * @param array $options
     * @return resource
     */
-    public function addColumn($table_name, $column, $type) {
+    public function addColumn($table_name, $column, $options) {
         if (!$table_name) return;
         if (!$column) return;
-        if (!$type) return;
-        $sql = "ALTER TABLE \"{$table_name}\" ADD COLUMN \"{$column}\" {$type};";
+        if (!$options) return;
+
+        $type = $this->sqlColumnType($options['type'], $options['length']);
+        $option = $option = self::columnOptionSql($options);
+
+        $sql = "ALTER TABLE \"{$table_name}\" ADD COLUMN \"{$column}\" {$type}{$option};";
         return $this->query($sql);
     }
 
@@ -776,8 +794,6 @@ class PgsqlEntity extends Entity {
 
         $sql = $this->updateSql();
         if (!$sql) {
-            //TODO session
-            $this->addError('sql', 'error');
             return $this;
         }
 
@@ -801,7 +817,6 @@ class PgsqlEntity extends Entity {
         if (!$posts) return;
         $sql = $this->updatesSql($posts);
         if (!$sql) {
-            //$this->addError('sql', 'error');
             $message = "SQL Error: {$sql}";
             echo($message);
             exit;
@@ -1398,16 +1413,13 @@ class PgsqlEntity extends Entity {
         if (!$table_name) return;
         $column_comments = $this->columnCommentArray($table_name);
 
-        //TODO
-        $pg_primary_keys = $this->pgPrimaryKeys($this->dbname, $table_name);
-        $primary_key = $pg_primary_keys[0]['column_name'];
-
         $pg_attributes = $this->pgAttributes($table_name);
         if ($pg_attributes) {
             foreach ($pg_attributes as $pg_attribute) {
-                $pg_attribute['is_primary_key'] = ($primary_key && $pg_attribute['attname'] == $primary_key);
-                $pg_attribute['comment'] = $column_comments[$pg_attribute['attname']];
-                $values[$pg_attribute['attname']] = $pg_attribute;
+                if ($pg_attribute['attnum'] > 0) {
+                    $pg_attribute['comment'] = $column_comments[$pg_attribute['attname']];
+                    $values[$pg_attribute['attnum']] = $pg_attribute;
+                }
             }
         }
         return $values;
@@ -1530,12 +1542,12 @@ class PgsqlEntity extends Entity {
     function pgAttributes($table_name = null) {
         $sql = "SELECT pg_class.oid AS pg_class_id, * FROM pg_class 
                 LEFT JOIN pg_attribute ON pg_class.oid = pg_attribute.attrelid
+                LEFT JOIN information_schema.columns ON information_schema.columns.table_name = pg_class.relname
+                AND information_schema.columns.column_name = pg_attribute.attname 
                 WHERE pg_attribute.attnum > 0
                 AND atttypid > 0 
                 AND relacl IS NULL";
 
- //                AND information_schema.columns.column_name = pg_attribute.attname 
- //               LEFT JOIN information_schema.columns ON information_schema.columns.table_name = pg_class.relname
         if ($table_name) $sql.= " AND relname = '{$table_name}'";
         $sql.= ';';
         return $this->fetch_rows($sql);
@@ -1938,6 +1950,21 @@ class PgsqlEntity extends Entity {
     }
 
     /**
+     * change not null
+     *
+     * @param  string $table_name
+     * @param  string $column_name
+     * @return array
+     */
+    public function changeNotNull($table_name, $column_name, $is_required = true) {
+        if ($is_required) {
+            return $this->setNotNull($table_name, $column_name);
+        } else {
+            return $this->dropNotNull($table_name, $column_name);
+        }
+    }
+
+    /**
      * not null
      *
      * @param  string $table_name
@@ -1946,6 +1973,18 @@ class PgsqlEntity extends Entity {
      */
     public function setNotNull($table_name, $column_name) {
         $sql = "ALTER TABLE \"{$table_name}\" ALTER COLUMN {$column_name} SET NOT NULL;";
+        return $this->query($sql);
+    }
+
+    /**
+     * not null
+     *
+     * @param  string $table_name
+     * @param  string $column_name
+     * @return array
+     */
+    public function dropNotNull($table_name, $column_name) {
+        $sql = "ALTER TABLE \"{$table_name}\" ALTER COLUMN {$column_name} DROP NOT NULL;";
         return $this->query($sql);
     }
 
@@ -1980,12 +2019,13 @@ class PgsqlEntity extends Entity {
     /**
      * parseConstraintKeys
      *
+     * TODO: preg
+     *
      * @param  string $values
      * @return array
      */
     static function parseConstraintKeys($values) {
         if (!$values) return;
-        //TODO preg
         $values = str_replace('{', '', $values);
         $values = str_replace('}', '', $values);
         $values = explode(',', $values);

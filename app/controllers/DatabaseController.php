@@ -27,8 +27,8 @@ class DatabaseController extends AppController {
     function action_list() {
         $this->database = DB::table('database')->select();
 
-        $pgsql_entity = new PgsqlEntity();
-        $this->pg_databases = $pgsql_entity->pgDatabases();
+        $pgsql = new PgsqlEntity();
+        $this->pg_databases = $pgsql->pgDatabases();
     }
 
     function action_new() {
@@ -52,8 +52,8 @@ class DatabaseController extends AppController {
             $posts = $this->session['posts'] = $_POST['database'];
             $database = DB::table('Database')->insert($posts);
 
-            $pgsql_entity = new PgsqlEntity($database->pgInfo());
-            $this->flash['results'] = $pgsql_entity->createDatabase();
+            $pgsql = $database->pgsql();
+            $this->flash['results'] = $pgsql->createDatabase();
 
             if ($database->errors) {
                 $this->flash['errors'] = $database->errors;
@@ -74,17 +74,21 @@ class DatabaseController extends AppController {
     }
 
     function action_import_database() {
-        $pg_infos['dbname'] = $_REQUEST['database_name'];
-        $pgsql_entity = new PgsqlEntity($pg_infos);
-        $pg_database = $pgsql_entity->pgDatabase();
+        $pgsql = new PgsqlEntity();
+        $pg_database = $pgsql->pgDatabase($_REQUEST['database_name']);
 
-        $database = DB::table('Database')->where("name = '{$pg_database['datname']}'")->selectOne();
+        if (!$pg_database) {
+            echo("Not found DB name : {$_REQUEST['database_name']}");
+            exit;
+        }
 
+        $database = DB::table('Database')->where("name = '{$_REQUEST['database_name']}'")->selectOne();
         if (!$database->value) {
-            $posts['name'] = $pgsql_entity->dbname;
-            $posts['user_name'] = $pgsql_entity->user;
-            $posts['hostname'] = $pgsql_entity->host;
-            $posts['port'] = $pgsql_entity->port;
+            $posts['name'] = $pg_database['datname'];
+            $posts['user_name'] = $pgsql->user;
+            $posts['hostname'] = $pgsql->host;
+            $posts['port'] = $pgsql->port;
+
             DB::table('Database')->insert($posts);
         }
 
@@ -92,15 +96,15 @@ class DatabaseController extends AppController {
     }
 
     function action_tables() {
-        $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
-        $this->pg_classes = $pgsql_entity->pgClassArray();
+        $pgsql = $this->database->pgsql();
+        $this->pg_classes = $pgsql->pgClassArray();
     }
 
     function action_columns() {
         if ($this->database && $pg_class_id = $_REQUEST['pg_class_id']) {
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo()); 
-            $this->pg_class = $pgsql_entity->pgClassById($pg_class_id);
-            $this->pg_attributes = $pgsql_entity->attributeArray($this->pg_class['relname']); 
+            $pgsql = $this->database->pgsql();
+            $this->pg_class = $pgsql->pgClassById($pg_class_id);
+            $this->pg_attributes = $pgsql->attributeArray($this->pg_class['relname']); 
 
             $this->forms['pg_types'] = CsvLite::form('pg_types', 'type');
             $this->forms['pg_types']['class'] = "col-6";

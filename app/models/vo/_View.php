@@ -16,8 +16,8 @@ class _View extends PgsqlEntity {
         'created_at' => array('type' => 'timestamp', 'option' => 'NULL DEFAULT CURRENT_TIMESTAMP'),
         'updated_at' => array('type' => 'timestamp'),
         'sort_order' => array('type' => 'int4'),
-        'page_id' => array('type' => 'int4', 'required' => true),
-        'name' => array('type' => 'varchar', 'length' => 256, 'required' => true),
+        'page_id' => array('type' => 'int4', 'is_required' => true),
+        'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
         'label' => array('type' => 'varchar', 'length' => 256),
         'is_overwrite' => array('type' => 'bool'),
     );

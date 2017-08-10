@@ -194,6 +194,17 @@ class Database extends _Database {
     }
 
     /**
+     * PgsqlEntity
+     *
+     * @return PgsqlEntity
+     */
+    function pgsql() {
+        if ($pg_info = $this->pgInfo()) {
+            return new PgsqlEntity($pg_info);
+        }
+    }
+
+    /**
      * pg_connect info
      *
      * @return array

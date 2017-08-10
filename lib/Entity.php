@@ -185,7 +185,7 @@ class Entity {
         foreach ($this->columns as $column_name => $column) {
             $value = isset($this->value[$column_name]) ? $this->value[$column_name] : null;
             if ($column === $this->id_column) continue;
-            if (isset($column['required']) && $column['required'] && (is_null($value) || $value === '')) {
+            if (isset($column['is_required']) && $column['is_required'] && (is_null($value) || $value === '')) {
                 $this->addError($column_name, 'required');
             } else {
                 $type = $column['type'];
@@ -621,7 +621,7 @@ class Entity {
     *
     * @param string $model_name
     * @param string $value_key
-    * @return class
+    * @return Entity
     */
     function bindById($model_name, $value_key = null) {
         if (!$this->values) return $this;
@@ -638,22 +638,41 @@ class Entity {
     }
 
    /**
-    * bind values
+    * bind array values
     *
-    * @param array $values
-    * @param string $column
-    * @param string $bind_key
-    * @return array
+    * @param array $bind_values
+    * @param string $bind_name
+    * @param string $bind_value_key
+    * @return Entity
     */
-    function bindValues($values, $column, $bind_key) {
-        if (!$values) return $this->values;
+    function bindValuesArray($bind_values, $bind_name, $bind_value_key) {
+        if (!$this->values) return $this;
+        if (!$bind_values) return $this;
 
-        if ($this->values) {
-            foreach ($this->values as $index => $value) {
-                $this->values[$index][$column] = $values[$value[$bind_key]];
-            }
+        foreach ($this->values as $index => $value) {
+            $this->values[$index][$bind_name] = $bind_values[$value[$bind_value_key]];
         }
-        return $this->values;
+        return $this;
     }
-    
+ 
+    /**
+    * bind array values
+    *
+    * @param Entity $entity
+    * @param string $bind_name
+    * @param string $bind_value_key
+    * @return Entity
+    */
+    function bindValues($entity, $bind_value_key) {
+        if (!$this->values) return $this;
+        if (!$entity->values) return $this;
+
+        $entity_name = $entity->entity_name;
+        if ($entity_name) exit('Not found: Bind Class entity_name.');
+        foreach ($this->values as $index => $value) {
+            $this->values[$index][$entity_name] = $bind_values[$value[$bind_value_key]];
+        }
+        return $this;
+    }
+
 }

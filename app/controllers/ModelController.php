@@ -45,12 +45,12 @@ class ModelController extends ProjectController {
     }
 
     function action_list() {
-        $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
-        $this->pg_classes = $pgsql_entity->tableArray();
+        $pgsql = $this->database->pgsql();
+        $this->pg_classes = $pgsql->tableArray();
 
-        $this->models = DB::table('Model')
-                            ->listByProject($this->project)
-                            ->bindValues($this->pg_classes, 'pg_class', 'name');
+        $this->model = DB::table('Model')
+                           ->listByProject($this->project)
+                           ->bindValuesArray($this->pg_classes, 'pg_class', 'name');
     }
 
     function action_new() {
@@ -66,19 +66,19 @@ class ModelController extends ProjectController {
 
         $posts = $this->session['posts'] = $_POST['model'];
         if ($this->database && $posts['name']) {
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo()); 
+            $pgsql = $this->database->pgsql();
 
             $columns = Model::$required_columns;
-            $results = $pgsql_entity->createTable($posts['name'], $columns);
+            $results = $pgsql->createTable($posts['name'], $columns);
             if (!$results) {
-                echo("SQL Error: {$pgsql_entity->sql}");
+                echo("SQL Error: {$pgsql->sql}");
                 exit;
             }
             if ($posts['label']) {
-                $results = $pgsql_entity->updateTableComment($posts['name'], $posts['label']);
+                $results = $pgsql->updateTableComment($posts['name'], $posts['label']);
             }
             
-            $pg_class = $pgsql_entity->pgClassByRelname($posts['name']);
+            $pg_class = $pgsql->pgClassByRelname($posts['name']);
             if (!$pg_class) {
                 echo("Not found: {$table_name} pg_class");
                 exit;
@@ -112,14 +112,14 @@ class ModelController extends ProjectController {
 
         $model = DB::table('Model')->fetch($this->params['id']);
         if ($model->value) {
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+            $pgsql = $this->database->pgsql();
 
             if ($model->value['name'] != $posts['name']) {
-                $results = $pgsql_entity->renameTable($model->value['name'], $posts['name']);
+                $results = $pgsql->renameTable($model->value['name'], $posts['name']);
             }
 
             if ($model->value['label'] != $posts['label']) {
-                $results = $pgsql_entity->updateTableComment($model->value['name'], $posts['label']);
+                $results = $pgsql->updateTableComment($model->value['name'], $posts['label']);
             }
 
             $model = $model->update($posts);
@@ -140,8 +140,8 @@ class ModelController extends ProjectController {
 
             if (!$database->value['is_lock']) {
                 $database = DB::table('Database')->fetch($this->database->value['id']);
-                $pgsql_entity = new PgsqlEntity($database->pgInfo());
-                $results = $pgsql_entity->dropTable($model->value['name']);
+                $pgsql = $database->pgsql();
+                $results = $pgsql->dropTable($model->value['name']);
             }
             $model = DB::table('Model')->delete($model->value['id']);
             
@@ -176,8 +176,8 @@ class ModelController extends ProjectController {
             $columns = Model::$required_columns;
 
             $pg_connection_array = $database->pgInfo();
-            $pgsql_entity = new PgsqlEntity($pg_connection_array); 
-            $pgsql_entity->createTable($table_name, $columns);
+            $pgsql = new PgsqlEntity($pg_connection_array); 
+            $pgsql->createTable($table_name, $columns);
         }
         $this->redirect_to('list');
     }
@@ -194,6 +194,8 @@ class ModelController extends ProjectController {
     }
 
     function action_check_project_id() {
+        if (!$this->is_admin) exit;
+
         $models = DB::table('model')->select()->values;
         if ($models) {
             foreach ($models as $model) {
@@ -208,18 +210,20 @@ class ModelController extends ProjectController {
         $this->redirect_to('list');
     }
 
-    function action_check_timestamp() {
+    function action_check_require_columns() {
+        //if (!$this->is_admin) exit;
+
         $model = $this->project->hasMany('Model');
 
         $database = DB::table('Database')->fetch($this->project->value['database_id']);
-        $add_columns = ['created_at', 'updated_at'];
+        $add_columns = ['created_at', 'updated_at', 'sort_order'];
         if ($model->values) {
             foreach ($model->values as $model_value) {
                 $model = DB::table('Model')->takeValues($model_value);
                 $attribute = $model->hasMany('Attribute');
 
                 foreach ($attribute->values as $attribute_value) {
-                    $attribute_names[$attribute['name']] = $attribute['name'];
+                    $attribute_names[$attribute_value['name']] = $attribute_value['name'];
                 }
                 foreach ($add_columns as $add_column) {
                     if (!$attribute_names[$add_column]) {
@@ -232,6 +236,8 @@ class ModelController extends ProjectController {
     }
 
     function action_check_primary_id() {
+        if (!$this->is_admin) exit;
+
         $model = $this->project->hasMany('Model');
 
         $database = DB::table('Database')->fetch($this->project->value['database_id']);
@@ -244,6 +250,28 @@ class ModelController extends ProjectController {
 
                 if (!$attribute->value['id']) {
                     Attribute::insertForModelRequire('id', $database, $model_value);
+                }
+            }
+        }
+        $this->redirect_to('list');
+    }
+
+
+    function action_check_id_int8() {
+        //if (!$this->is_admin) exit;
+
+        $model = $this->project->hasMany('Model');
+
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        
+        if ($model->values) {
+            foreach ($model->values as $model_value) {
+                $attribute = DB::table('Attribute')->where("name = 'id'")
+                                                   ->where("model_id = {$model_value['id']}")
+                                                   ->selectOne();
+
+                if ($attribute->value) {
+                    Attribute::changeSerialInt8($database, $model_value, $attribute->value);
                 }
             }
         }

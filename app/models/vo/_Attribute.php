@@ -21,17 +21,17 @@ class _Attribute extends PgsqlEntity {
         'is_required' => array('type' => 'bool'),
         'is_unique' => array('type' => 'bool'),
         'length' => array('type' => 'int4'),
-        'name' => array('type' => 'varchar', 'required' => true),
-        'type' => array('type' => 'varchar', 'required' => true),
+        'name' => array('type' => 'varchar', 'is_required' => true),
+        'type' => array('type' => 'varchar', 'is_required' => true),
         'default_value' => array('type' => 'varchar'),
         'is_array' => array('type' => 'bool'),
-        'attnum' => array('type' => 'int4', 'required' => true),
-        'model_id' => array('type' => 'int4', 'required' => true),
+        'attnum' => array('type' => 'int4', 'is_required' => true),
+        'model_id' => array('type' => 'int4', 'is_required' => true),
         'fk_attribute_id' => array('type' => 'int4'),
         'is_lock' => array('type' => 'bool'),
         'label' => array('type' => 'varchar'),
         'note' => array('type' => 'text'),
-        'attrelid' => array('type' => 'int4', 'required' => true),
+        'attrelid' => array('type' => 'int4', 'is_required' => true),
     );
 
     function __construct($params = null) {

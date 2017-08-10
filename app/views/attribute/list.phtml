@@ -30,8 +30,8 @@
         </tr>
       </thead>
       <tbody>
-        <? if ($this->attributes): ?>
-        <? foreach ($this->attributes as $attribute): ?>
+        <? if ($this->attribute->values): ?>
+        <? foreach ($this->attribute->values as $attribute): ?>
         <tr>
           <td>
             <? if (!Model::$required_columns[$attribute['name']]): ?><?= FormHelper::linkButton('edit', LABEL_EDIT, $attribute['id']) ?><? endif ?>

@@ -126,16 +126,6 @@ class UserController extends AppController {
         }
     }
 
-
-    function test_add_column() {
-        $columns['default_dev_url'] = array('type' => 'VARCHAR(256)');
-        $columns['default_project_path'] = array('type' => 'VARCHAR(256)');
-        $columns['default_db_host'] = array('type' => 'VARCHAR(256)');
-
-        foreach ($columns as $column_name => $column) {
-            DB::table('User')->addColumn($column_name, $column['type']);
-        }
-    }
 }
 
 ?>

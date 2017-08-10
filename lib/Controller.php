@@ -455,6 +455,7 @@ class Controller extends RuntimeException {
         }
         if (defined('DEBUG') && DEBUG) error_log("<REDIRECT> {$url}");
         header("Location: {$url}");
+        exit;
     }
 
     /**

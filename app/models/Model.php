@@ -15,6 +15,10 @@ class Model extends _Model {
                                                            'type' => 'TIMESTAMP',
                                                            'option' => 'NULL'
                                                            ),
+                                     'sort_order' => array('name' => 'sort_order',
+                                                           'type' => 'INT4',
+                                                           'option' => 'NULL'
+                                                           ),
                                      );
 
 
@@ -112,7 +116,7 @@ class Model extends _Model {
     static function columnProperty($attribute) {
         $propaties[] = "'type' => '{$attribute['type']}'";
         if (!self::$required_columns[$attribute['name']] && $attribute['is_required']) {
-            $propaties[] = "'required' => true";
+            $propaties[] = "'is_required' => true";
         }
         $propaty = implode(', ', $propaties);
 
