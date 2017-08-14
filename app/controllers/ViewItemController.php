@@ -59,9 +59,9 @@ class ViewItemController extends AppController {
     * @return void
     */
     function action_list() {
-        $this->view->bindManyByName('ViewItem');
-        $this->page->bindBelongToByName('Model');
-        $this->page->model->bindManyByName('Attribute');
+        $this->view->bindMany('ViewItem');
+        $this->page->bindBelongTo('Model');
+        $this->page->model->bindMany('Attribute');
     }
 
    /**

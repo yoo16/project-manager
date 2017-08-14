@@ -5,9 +5,9 @@
  * @create  2017-07-24 18:04:18 
  */
 
-require_once 'AppController.php';
+require_once 'ProjectController.php';
 
-class ViewController extends AppController {
+class ViewController extends ProjectController {
 
     var $name = 'view';
 
@@ -20,11 +20,11 @@ class ViewController extends AppController {
     function before_action($action) {
         parent::before_action($action);
 
-        $this->project = DB::table('Project')->requestSession();
+        //$this->project = DB::table('Project')->requestSession();
         $this->page = DB::table('Page')->requestSession();
         $this->model = DB::table('Model')->belongTo($this->page, 'model_id');
 
-        if (!$this->page) {
+        if (!$this->project->value || !$this->page->value) {
             $this->redirect_to('page/');
         }
     }
@@ -60,7 +60,7 @@ class ViewController extends AppController {
     * @return void
     */
     function action_list() {
-        $this->view = DB::table('View')->listByPage($this->page);
+        $this->page->bindMany('View');
     }
 
    /**
@@ -150,7 +150,7 @@ class ViewController extends AppController {
     * @param
     * @return void
     */
-    function sort_order() {
+    function action_sort_order() {
 
     }
 

@@ -74,10 +74,12 @@
           </label>
         </td>
         <td>
+        <? if (!Model::$required_columns[$attribute['name']]): ?>
           <? if ($attribute['is_required']): ?>
           <?= FormHelper::link('change_required', 'required', $attribute['id'], ['class' => 'badge badge-success']) ?>
         <? else: ?>
         <?= FormHelper::link('change_required', 'required', $attribute['id'], ['class' => 'badge badge-default']) ?>
+      <? endif ?>
       <? endif ?>
     </td>
     <td>
@@ -89,7 +91,6 @@
 
       <? if ($attribute['pg_attribute']['udt_name'] != $attribute['type']): ?><?= FormHelper::badgeTag($attribute['pg_attribute']['udt_name'], null, 'danger') ?>
       <?= FormHelper::badgeTag($attribute['pg_attribute']['character_maximum_length'], null, 'danger') ?><? endif ?>
-
 
     <? if ($attribute['is_primary_key']): ?><?= FormHelper::badgeTag('Primary', null, 'info') ?><? endif ?>
     <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><?= FormHelper::badgeTag('Not Null', null, 'info') ?><? endif ?>

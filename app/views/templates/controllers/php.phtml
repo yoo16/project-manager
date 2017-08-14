@@ -101,7 +101,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     function action_add() {
         if (!isPost()) exit;
 <? if ($values['model']): ?>
-        $posts = $this->session['posts'] = $_REQUEST["<?= $values['model']['entity_name'] ?>"];
+        $posts = $this->posts["<?= $values['model']['entity_name'] ?>"];
         DB::table('<?= $values['model']['class_name'] ?>')->insert($posts);
 
         if ($<?= $values['model']['entity_name'] ?>->errors) {
@@ -121,7 +121,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     function action_update() {
         if (!isPost()) exit;
 <? if ($values['model']): ?>
-        $posts = $this->session['posts'] = $_REQUEST["<?= $values['model']['entity_name'] ?>"];
+        $posts = $this->posts["<?= $values['model']['entity_name'] ?>"];
         $<?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->update($posts, $this->params['id']);
 
         if ($<?= $values['model']['entity_name'] ?>->errors) {

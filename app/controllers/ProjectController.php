@@ -19,6 +19,13 @@ class ProjectController extends AppController {
     function before_action($action) {
         parent::before_action($action);
 
+        if (!defined('IS_PM_ADMIN') || !IS_PM_ADMIN) {
+            if (!DB::table('Database')->myList()) {
+                $this->redirect_to('database/');
+                exit;
+            }
+        }
+
         $this->project = DB::table('Project')->requestSession();
         if ($this->project->value) {
             $this->database = $this->project->belongTo('Database');
@@ -66,8 +73,6 @@ class ProjectController extends AppController {
                             ->bindById('Database');
     }
 
-    function action_new() {
-    }
 
     function action_edit() {
         $this->project = DB::table('Project')
@@ -114,7 +119,9 @@ class ProjectController extends AppController {
     }
 
     function action_export_php() {
-        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+        if (!isPost()) exit;
+        $this->project = DB::table('Project')->fetch($this->posts['project_id']);
+        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($this->posts['user_project_setting_id']);
         $this->project->exportPHP();
 
         $params['project_id'] = $this->project->value['id'];
@@ -277,6 +284,43 @@ class ProjectController extends AppController {
         }
         $params['project_id'] = $this->project->value['id'];
         $this->redirect_to('model/list', $params);
+    }
+
+    function action_create_git_dir() {
+        $user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+        $path = $user_project_setting->value['project_path'];
+        if ($path && !file_exists($path)) {
+            FileManager::createDir($path);
+        }
+        if ($path && file_exists($path)) {
+            $cmd = "chmod 775 {$path}";
+            exec($cmd, $output, $return);
+            $this->results['cmd'] = $cmd;
+            $this->results['output'] = $output;
+            $this->results['return'] = $return;
+        }
+    }
+
+    function action_git_clone_php_work() {
+        $user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+        $path = $user_project_setting->value['project_path'];
+        if ($path && !file_exists($path)) {
+            FileManager::createDir($path);
+        }
+        if ($path && file_exists($path)) {
+            $cmd = "chmod 775 {$path}";
+            exec($cmd, $output, $return);
+            $this->results['cmd'] = $cmd;
+            $this->results['output'] = $output;
+            $this->results['return'] = $return;
+
+            $url = PHP_WORK_GIT_URL;
+            $cmd = "git clone {$url} {$path}";
+            exec($cmd, $output, $return);
+            $this->results['cmd'] = $cmd;
+            $this->results['output'] = $output;
+            $this->results['return'] = $return;
+        }
     }
 
 }

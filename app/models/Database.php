@@ -24,10 +24,26 @@ class Database extends _Database {
         parent::validate();
     }
 
+    
+    function myList() {
+        $database_name = DB_NAME;
+        $database = DB::table('Database')->where("name != '{$database_name}'")
+                                         ->limit(1)
+                                         ->select();
+        return $database->values;
+    }
+
     function checkProjectManager() {
         $pgsql_entity = new PgsqlEntity();
         $pg_database = $pgsql_entity->pgDatabase();
-        return $pg_database;
+        if (!$pg_database) return false;
+        
+        $pg_tables = $pgsql_entity->pgTables();
+        if (!$pg_tables) {
+            $this->is_not_has_tables;
+            return false;
+        }
+        return true;
     }
 
     /**

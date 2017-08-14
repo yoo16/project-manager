@@ -1,100 +1,69 @@
 
 <div class="hero-unit">
+  <div class="alert alert-success">
+    <h1>Hello, project-manager! </h1>
+    <h2>Required</h2>
+    <ul>
+      <li>PHP 7.x</li>
+      <li>PostgreSQL 9.x</li>
+      <li><a href="https://github.com/yoo16/phpwork" target="_blank">php-work</a></li>
+    </ul>
+    <p>
+      <dl>
+        <dd>* If you want control PostgreSQL on browser, please set the permission on pg_hba.conf, postgresql.conf </dd>
+        <dd>* If you export php files(Model, Controller, View etc...) by project-manager, please download PHP Framework '<a href="https://github.com/yoo16/phpwork" target="_blank">php-work</a>'.</dd>
+      </dl>
+    </p>
+    <a class="btn btn-primary" href="<?= PHP_WORK_GIT_URL ?>" target="_blank">Download php-work(GitHub)</a>
+  </div>
 
-  <h1>Hello, ProjectManager! (Made in <a href="https://github.com/yoo16/phpwork" target="_blank">PHPWork</a>)</h1>
+  <? if ($this->pgsql_entity->is_connection_error): ?>
+  <div class="alert alert-danger">
+    Not Found project-manager's database '<?= DB_NAME ?>'
+    <p>createdb <?= DB_NAME ?></p>
+    <a class="btn btn-primary" href="<?= url_for('create_database') ?>" onClick="return confirm('createdb for PostgreSQL?')">Create Database</a>
+    * If you want createdb on browser, please set the permission on pg_hba.conf, postgresql.conf
+  </div>
+<? endif ?>
 
-  build with 
-  <ul>
-    <li><a href="https://jquery.com/" target="_blank">jQuery</a></li>
-    <li><a href="https://v4-alpha.getbootstrap.com/" target="_blank">Bootstrap4</a></li>
-  </ul>
-
-  <h2>Application Information</h2>
-  <table class="table">
-    <tr>
-      <th>setting file path</th>
-      <td><?= undefineLabel('APP_SETTING_FILE_PATH', APP_SETTING_FILE_PATH) ?></td>
-    </tr>
-    <tr>
-      <th>BASE_DIR</th>
-      <td><?= undefineLabel('BASE_DIR', BASE_DIR) ?></td>
-    </tr>
-    <tr>
-      <th>PROJECT_NAME</th>
-      <td><?= undefineLabel('PROJECT_NAME', PROJECT_NAME) ?></td>
-    </tr>
-    <tr>
-      <th>PROJECT_DIR</th>
-      <td><?= undefineLabel('PROJECT_DIR', PROJECT_DIR) ?></td>
-    </tr>
-    <tr>
-      <th>TMP_DIR</th>
-      <td><?= undefineLabel('TMP_DIR', TMP_DIR) ?></td>
-    </tr>
-    <tr>
-      <th>DB_DIR</th>
-      <td><?= undefineLabel('DB_DIR', DB_DIR) ?></td>
-    </tr>
-    <tr>
-      <th>DEBUG</th>
-      <td><?= undefineLabel('DEBUG', DEBUG) ?></td>
-    </tr>
-    <tr>
-      <th>PG_INFO</th>
-      <td><?= undefineLabel('PG_INFO', PG_INFO) ?></td>
-    </tr>
-    <tr>
-      <th>MAIL_SETTING_FILE</th>
-      <td><?= undefineLabel('MAIL_SETTING_FILE', MAIL_SETTING_FILE) ?></td>
-    </tr>
-    <tr>
-      <th>DEFAULT_LOCALE</th>
-      <td><?= undefineLabel('DEFAULT_LOCALE', DEFAULT_LOCALE) ?></td>
-    </tr>
-  </table>
-
-  <h2>Application Setting</h2>
-  <table class="table">
-    <tr>
-      <th>file path</th>
-      <td><?= BASE_DIR."app/application_setting.php" ?></td>
-    </tr>
-    <tr>
-      <th>APP_NAME</th>
-      <td><?= undefineLabel('APP_NAME', APP_NAME) ?></td>
-    </tr>
-    <tr>
-      <th>HTML_TITLE</th>
-      <td><?= undefineLabel('HTML_TITLE', HTML_TITLE) ?></td>
-    </tr>
-    <tr>
-      <th>VERSION</th>
-      <td><?= undefineLabel('VERSION', VERSION) ?></td>
-    </tr>
-  </table>
-
-  <h2>
-    PostgreSQL
-    <a class="btn btn-outline-primary" href="<?= url_for('pgsql') ?>"><?= LABEL_SETTING ?></a>
-  </h2>
-  <table class="table">
-    <tr>
-      <th>PG_INFO</th>
-      <td><?= undefineLabel('PG_INFO', PG_INFO) ?></td>
-    </tr>
-    <tr>
-      <th>pg_connection()</th>
-      <td>
-        <? if ($this->pg_connection): ?>
-        <?= $this->pg_connection ?>
-      <? else: ?>
-      <?= undefineLabelTag() ?>
-    <? endif ?>
-  </td>
+<? if ($this->database->is_not_has_tables): ?>
+<div class="alert alert-danger">
+  Not Found <?= DB_NAME ?>'s tables.
+  <a class="btn btn-primary" href="<?= url_for('pgsql') ?>">Create Table</a>
+</div>
+<? endif ?>
+<h2>PostgreSQL</h2>
+<div class="alert alert-success">
+  *DB setting file'path is <?= DB_SETTING_FILE ?>'.
+</div>
+<table class="table">
+  <tr>
+    <th>DB_NAME</th>
+    <td>
+      <?= undefineLabel('DB_NAME', DB_NAME) ?>
+    </td>
+  </tr>
+  <tr>
+    <th>DB_HOST</th>
+    <td><?= undefineLabel('DB_HOST', DB_HOST) ?></td>
+  </tr>
+  <tr>
+    <th>DB_NAME</th>
+    <td><?= undefineLabel('DB_PORT', DB_PORT) ?></td>
+  </tr>
+  <tr>
+    <th>DB_USER</th>
+    <td><?= undefineLabel('DB_USER', DB_USER) ?></td>
+  </tr>
+  <tr>
+    <th>pg_connection()</th>
+    <td>
+      <? if ($this->pg_connection): ?>
+      <?= $this->pg_connection ?>
+    <? else: ?>
+    <?= undefineLabelTag() ?>
+  <? endif ?>
+</td>
 </tr>
 </table>
-<? if (!$this->pg_connection): ?>
-<a class="btn btn-outline-primary" href="<?= url_for('create_database') ?>" onClick="return confirm('createdb for PostgreSQL?')"><?= LABEL_CREATE ?></a>
-<? endif ?>
-</div>
 

@@ -7,3 +7,5 @@ HOSTNAME
 tmp
 .DS_Store
 .DS_Store
+.phpintel
+composer.json

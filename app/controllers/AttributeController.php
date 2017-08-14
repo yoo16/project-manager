@@ -189,6 +189,11 @@ class AttributeController extends ProjectController {
         if ($attribute->value['id'] && $attribute->value['attnum']) {
             $posts['is_required'] = !$attribute->value['is_required'];
             $attribute->update($posts);
+
+            //NOT NULL
+            $pgsql = $this->database->pgsql();
+            $pgsql->changeNotNull($this->model->value['name'], $attribute->value['name'], $attribute->value['is_required']);
+            if ($pgsql->sql_error) exit($pgsql->sql_error);
         }
         $this->redirect_to('list');
     }

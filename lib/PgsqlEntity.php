@@ -4,9 +4,6 @@
 *
 * @copyright  Copyright (c) 2017 Yohei Yoshikawa (http://yoo-s.com/)
 */
-
-if (!defined('DB_NAME')) exit('not found DB_NAME');
-
 require_once 'Entity.php';
 
 class PgsqlEntity extends Entity {
@@ -40,6 +37,8 @@ class PgsqlEntity extends Entity {
                               ];
 
     function __construct($params = null) {
+        if (!defined('DB_NAME') || !DB_NAME) exit('not found DB_NAME');
+
         parent::__construct($params);
         if (!$params) {
             $this->defaultDBInfo();
@@ -216,8 +215,8 @@ class PgsqlEntity extends Entity {
     public function createTableSql($model) {
         if (!$model) return;
 
-        $column_sqls[] = "{$model->id_column} BIGSERIAL PRIMARY KEY NOT NULL";
-        //$column_sqls[] = "{$model->id_column} SERIAL PRIMARY KEY NOT NULL";
+        //$column_sqls[] = "{$model->id_column} BIGSERIAL PRIMARY KEY NOT NULL";
+        $column_sqls[] = "{$model->id_column} SERIAL PRIMARY KEY NOT NULL";
         foreach ($model->columns as $column_name => $column) {
             if ($column['type']) {
                 $type = self::columnTypeSql($column);
@@ -422,20 +421,28 @@ class PgsqlEntity extends Entity {
     * @return resource
     */
     function connection() {
-        try {
-            if (!$this->is_pconnect) {
-                return pg_connect($this->pg_info);
+        if (!$this->is_pconnect) {
+            return pg_connect($this->pg_info);
+        } else {
+            if ($this->is_connect_forece_new) {
+                return pg_pconnect($this->pg_info, PGSQL_CONNECT_FORCE_NEW);
             } else {
-                if ($this->is_connect_forece_new) {
-                    return pg_pconnect($this->pg_info, PGSQL_CONNECT_FORCE_NEW);
-                } else {
-                    return pg_pconnect($this->pg_info);
-                }
+                return pg_pconnect($this->pg_info);
             }
-        } catch (Exception $e) {
-            var_dump($e);
-            exit;
         }
+    }
+
+    /**
+    * check connection
+    * 
+    * @return resource
+    */
+    function checkConnection() {
+        $connection = $this->connection();
+        if (!$connection) {
+            $this->is_connection_error = true;
+        }
+        return $connection;
     }
 
     /**
@@ -454,8 +461,6 @@ class PgsqlEntity extends Entity {
             $results = pg_query($pg, $sql);
             $this->sql_error = pg_last_error($pg);
             return $results;
-        } else {
-            exit('DB connection error.');
         }
     }
 
@@ -580,7 +585,7 @@ class PgsqlEntity extends Entity {
         $relation = DB::table($model_name);
 
         $column_name = $relation->entity_name;
-        $relation = $this->belongTo($relation, $foreign_key, $value_key);
+        $relation = $this->belongTo(get_class($relation), $foreign_key, $value_key);
         $this->$column_name = $relation;
         return $this;
     }
@@ -619,10 +624,7 @@ class PgsqlEntity extends Entity {
     * @return PgsqlEntity
     */
     public function hasMany($class_name, $conditions = null, $foreign_key = null, $value_key = null) {
-        if (is_null($this->value)) {
-            echo('Not Found: value');
-            exit;
-        }
+        if (is_null($this->value)) return $this;
 
         if (!is_string($class_name)) exit('hasMany: $class_name is not string');
         $relation = DB::table($class_name);

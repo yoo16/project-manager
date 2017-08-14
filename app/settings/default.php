@@ -1,6 +1,6 @@
 <?php
-define('PROJECT_NAME', 'ProjectManager');
-define('PROJECT_ROOT', 'ProjectManager');
+define('PROJECT_NAME', 'project-manager');
+define('PROJECT_ROOT', 'project-manager');
 define('LOG_DIR', BASE_DIR.'log/');
 
 ini_set('error_log', LOG_DIR.date('Ymd').'.log');
@@ -11,6 +11,8 @@ error_reporting(E_ALL & ~E_NOTICE);
 define('PROJECT_DIR', BASE_DIR);
 define('TMP_DIR', BASE_DIR . 'tmp/');
 define('DB_DIR', BASE_DIR.'db/');
+
+define('DB_SETTING_FILE', BASE_DIR.'app/settings/db.php');
 
 define('DEBUG', false);
 define('SQL_LOG', false);

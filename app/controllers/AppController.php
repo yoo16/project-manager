@@ -4,16 +4,29 @@
  *
  * @copyright 2017 copyright Yohei Yoshikawa (http://yoo-s.com)
  */
-require_once '_AppController.php';
 
-class AppController extends _AppController {
+ApplicationLoader::autoloadModel();
+
+require_once 'Controller.php';
+
+class AppController extends Controller {
     var $title = HTML_TITLE;
     var $csv_options = array();
     var $layout = 'root';
 
     function before_action($action) {
-        parent::before_action($action);
 
+        $pgsql_entity = new PgsqlEntity();
+        if (!$pgsql_entity->connection()) {
+            $this->redirect_to('setting/');
+            exit;
+        }
+        $database = new Database();
+        if (!$database->checkProjectManager()) {
+            $this->is_not_has_tables = true;
+            $this->redirect_to('setting/');
+            exit;
+        }
         $this->loadDefaultOptions();
     }
 

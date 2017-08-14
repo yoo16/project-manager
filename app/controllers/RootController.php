@@ -10,18 +10,7 @@ require_once 'AppController.php';
 class RootController extends AppController {
 
     function before_action($action) {
-        $pgsql_entity = new PgsqlEntity();
-        $this->pg_connection = $pgsql_entity->connection();
-        if (!$this->pg_connection) {
-            $this->redirect_to('pgsql');
-            exit;
-        }
-
-        $database = new Database();
-        if (!$database->checkProjectManager()) {
-            $this->redirect_to('pgsql');
-            exit;
-        }
+        parent::before_action();
     }
 
     function index() {

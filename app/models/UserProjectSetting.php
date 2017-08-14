@@ -16,6 +16,12 @@ class UserProjectSetting extends _UserProjectSetting {
         parent::validate();
     }
 
+    static function gitCloneCommand($value) {
+    	$path = $value['project_path'];
+        $url = PHP_WORK_GIT_URL;
+        $cmd = "git clone {$url} {$path}";
+        return $cmd;
+    }
 }
 
 ?>

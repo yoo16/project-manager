@@ -10,18 +10,11 @@ require_once 'AppController.php';
 class SettingController extends AppController {
 
     function before_action($action) {
-        $pgsql_entity = new PgsqlEntity();
-        $this->pg_connection = $pgsql_entity->connection();
-        if (!$this->pg_connection) {
-            $this->redirect_to('setting/pgsql');
-            exit;
-        }
+        $this->pgsql_entity = new PgsqlEntity();
+        $this->pg_connection = $this->pgsql_entity->checkConnection();
 
-        $database = new Database();
-        if (!$database->checkProjectManager()) {
-            $this->redirect_to('setting/pgsql');
-            exit;
-        }
+        $this->database = new Database();
+        $this->database->checkProjectManager();
     }
 
     function index() {

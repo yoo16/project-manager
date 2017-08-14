@@ -32,10 +32,7 @@ class DatabaseController extends AppController {
     }
 
     function action_new() {
-        $database = DB::table('Database');
-        if (isset($this->session['posts'])) $database->takeValues($this->session['posts']);
-        $this->database = $database->value;
-
+        $this->database = DB::table('Database')->takeValues($this->session['posts']);
     }
 
     function action_edit() {
@@ -48,20 +45,18 @@ class DatabaseController extends AppController {
     }
 
     function action_add() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['posts'] = $_POST['database'];
-            $database = DB::table('Database')->insert($posts);
+        if (!$this->isPost()) exit;
+        $posts = $this->posts['database'];
+        $database = DB::table('Database')->insert($posts);
 
-            $pgsql = $database->pgsql();
-            $this->flash['results'] = $pgsql->createDatabase();
+        $pgsql = $database->pgsql();
+        $this->flash['results'] = $pgsql->createDatabase();
 
-            if ($database->errors) {
-                $this->flash['errors'] = $database->errors;
-                $this->redirect_to('new');
-            } else {
-                unset($this->session['posts']);
-                $this->redirect_to('result');
-            }
+        if ($database->errors) {
+            $this->render('result');
+        } else {
+            unset($this->session['posts']);
+            $this->redirect_to('list');
         }
     }
 

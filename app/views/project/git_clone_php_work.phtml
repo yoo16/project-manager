@@ -1,14 +1,13 @@
 
 <div class="hero-unit">
-
   <table class="table">
     <tr>
       <th>command</th>
       <td><?= $this->results['cmd'] ?></td>
     </tr>
-    <? foreach ($this->results['output'] as $value): ?>
+    <? foreach ($this->results['output'] as $key => $value): ?>
     <tr>
-      <th></th>
+      <th><?= $key ?></th>
       <td><?= $value ?></td>
     </tr>
     <? endforeach ?>

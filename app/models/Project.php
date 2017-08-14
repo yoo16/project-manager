@@ -32,17 +32,14 @@ class Project extends _Project {
      * @return bool
      */
     function exportPHP() {
-        $database = DB::table('Database')->fetch($this->value['database_id']);
+        $database = DB::table('Database')->hasOne($this);
         $pgsql_entity = new PgsqlEntity($database->pgInfo());
         $pg_database = $pgsql_entity->pgDatabase();
 
         //model
-        $models = DB::table('Model')->bindMany($this)->values;
-
-        $database->bindManyByName('Model');
-
-        if ($database->model->values) {
-            foreach ($database->model->values as $model) {
+        $this->bindMany('Model');
+        if ($this->model->values) {
+            foreach ($this->model->values as $model) {
                 $values = null;
                 
                 $pg_attributes = $pgsql_entity->attributeArray($model['name']);
@@ -59,7 +56,8 @@ class Project extends _Project {
                 $values['model'] = $model;
                 $values['pg_attribute'] = $pg_attributes;
 
-                $model_path = Model::projectFilePath($this->user_project_setting->value->value, $model);
+                $model_path = Model::projectFilePath($this->user_project_setting->value, $model);
+
                 if (!file_exists($model_path)) {
                     $model_template_path = Model::templateFilePath($model);
                     $contents = FileManager::bufferFileContetns($model_template_path, $values);
@@ -74,15 +72,15 @@ class Project extends _Project {
         }
 
         //controller view
-        $pages = DB::table('Page')->listByProject($this)->values;
+        $pages = $this->hasMany('Page')->values;
         if ($pages) {
             foreach ($pages as $page) {
                 $values = null;
                 $values['page'] = $page;
                 if ($page['model_id']) {
-                    $model = DB::table('Model')->fetch($page['model_id'])->value;
-                    $model['attributes'] = DB::table('Attribute')->valuesByModel($model);
-                    $values['model'] = $model;
+                    $model = DB::table('Model')->fetch($page['model_id']);
+                    $values['model'] = $model->value;
+                    $values['model']['attributes'] = $model->hasMany('Attribute')->values;
                 }
 
                 $page_path = Page::projectFilePath($this->user_project_setting->value, $page);
@@ -93,13 +91,12 @@ class Project extends _Project {
                 }
 
                 //view
-                $views = DB::table('View')->valuesByPage($page);
+                $views = DB::table('Page')->fetch($page['id'])->hasMany('View')->values;
                 if ($views) {
                     foreach ($views as $view) {
                         $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
                         if (!file_exists($view_path) || $view['is_overwrite']) {
                             $values['view'] = $view;
-
                             $view_template_path = View::templateFilePath($view);
                             if (file_exists($view_template_path)) {
                                 $contents = FileManager::bufferFileContetns($view_template_path, $values);

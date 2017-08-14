@@ -1,5 +1,8 @@
 
 <? if ($this->results): ?>
+<div class="alert alert-success">
+	Create database is successl
+</div>
 <h3>Create Table</h3>
 <div class="card">
   <div class="card-block overflow-list">
@@ -7,7 +10,7 @@
   </div>
 
   <div class="card-footer text-center">
-    <a class="btn btn-outline-primary" href="<?= url_for('pgsql') ?>"><?= LABEL_BACK ?></a>
+    <a class="btn btn-outline-primary" href="<?= url_for('setting/') ?>"><?= LABEL_BACK ?></a>
   </div>
 </div>
 <? else: ?>
