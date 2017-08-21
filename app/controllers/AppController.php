@@ -23,7 +23,6 @@ class AppController extends Controller {
         }
         $database = new Database();
         if (!$database->checkProjectManager()) {
-            $this->is_not_has_tables = true;
             $this->redirect_to('setting/');
             exit;
         }

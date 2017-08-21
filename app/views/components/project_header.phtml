@@ -20,7 +20,13 @@
     <tr>
       <th>Database</th>
       <td><?= $this->database->value['name'] ?></td>
-      <td><?= FormHelper::linkButton('project/export_db', 'DB Export (Excel)', null, ['class' => 'btn btn-sm btn-success confirm-dialog']) ?></td>
+      <td>
+      <?= FormHelper::linkButton('project/export_db', 'DB Export (Excel)', ['database_id' => $this->database->value['id']], ['class' => 'btn btn-sm btn-success confirm-dialog']) ?></td>
+    </tr>
+    <tr>
+      <th></th>
+      <td><?= $this->database->value['hostname'] ?></td>
+      <td><?= $this->database->value['user_name'] ?></td>
     </tr>
   </table>
 </div>

@@ -8,7 +8,11 @@
     <tr>
       <th><?= DATABASE_HOST ?></th>
       <td>
+        <? if (defined('DB_HOSTS_FILE') && DB_HOSTS_FILE): ?>
+        <?= $this->database->formSelect('hostname', ['csv' => DB_HOSTS_FILE]) ?>
+        <? else: ?>
         <?= $this->database->formSelect('hostname', ['csv' => 'db_hosts']) ?>
+        <? endif ?>
       </td>
     </tr>
                  

@@ -130,11 +130,16 @@ class ProjectController extends AppController {
 
     function action_export_db() {
         $database = DB::table('Database')
-                            ->fetch($this->project->value['database_id'])
+                            ->fetch($_REQUEST['database_id'])
                             ->exportDatabase();
 
-        $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('model/list', $params);
+        if ($this->project->value) {
+            $params['project_id'] = $this->project->value['id'];
+            $this->redirect_to('model/list', $params);
+        } else {
+            $params['database_id'] = $database->value['id'];
+            $this->redirect_to('database/tables', $params);
+        }
     }
 
     function action_export_list() {

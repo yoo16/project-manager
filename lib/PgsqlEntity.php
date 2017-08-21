@@ -1369,13 +1369,17 @@ class PgsqlEntity extends Entity {
                     if ($pg_attributes) {
                         $attributes = null;
                         $column_comments = $this->columnCommentArray($table_name);
+
+                        $names = null;
                         foreach ($pg_attributes as $pg_attribute) { 
                             if ($pg_attribute['attnum'] > 0) {
                                 $pg_attribute['comment'] = $column_comments[$pg_attribute['attname']];
                                 $attributes[$pg_attribute['attnum']] = $pg_attribute;
+                                //$names[] = $pg_attribute['attname'];
                             }
                         }
                     }
+                    //array_multisort($names, SORT_ASC, $attributes);
                     $pg_class['pg_attribute'] = $attributes;
                     $pg_class['pg_constraint'] = $this->pgConstraintsByPgClassID($pg_class['pg_class_id']);
                     $values[$pg_class['pg_class_id']] = $pg_class;
@@ -1882,7 +1886,7 @@ class PgsqlEntity extends Entity {
      * @return void
      */
     function addPgForeignKey($table_name, $foreign_column, $reference_table_name, $reference_column,
-                             $is_not_deferrable = true, $update = 'NO ACTION', $delete = 'CASCADE') {
+                             $is_not_deferrable = true, $update = 'NO ACTION', $delete = 'NO ACTION') {
         $reference_column = "{$reference_table_name}({$reference_column})";
         $sql = "ALTER TABLE {$table_name} ADD FOREIGN KEY ({$foreign_column}) REFERENCES {$reference_column}";
 

@@ -256,8 +256,11 @@ class ModelController extends ProjectController {
         $this->redirect_to('list');
     }
 
-
-    function action_check_id_int8() {
+    function action_change_id_int() {
+        $int_list = ['int2', 'int4', 'int8'];
+        if (!in_array($_REQUEST['type'], $int_list)) {
+            exit('Not set params : int');
+        }
         //if (!$this->is_admin) exit;
 
         $model = $this->project->hasMany('Model');
@@ -269,9 +272,148 @@ class ModelController extends ProjectController {
                 $attribute = DB::table('Attribute')->where("name = 'id'")
                                                    ->where("model_id = {$model_value['id']}")
                                                    ->selectOne();
-
                 if ($attribute->value) {
-                    Attribute::changeSerialInt8($database, $model_value, $attribute->value);
+                    Attribute::changeSerialInt($_REQUEST['type'], $database, $model_value, $attribute->value);
+                }
+            }
+        }
+        $this->redirect_to('list');
+    }
+
+    function action_check_column() {
+        $columns = [
+                'x_value' => 'value_x',
+                'y_value' => 'value_y',
+                'z_value' => 'value_z',
+                'x_default_value' => 'default_value_x',
+                'y_default_value' => 'default_value_y',
+                'z_default_value' => 'default_value_z',
+                'x_temperature' => 'temperature',
+                'x_upper_limit' => 'upper_limit_x',
+                'y_upper_limit' => 'upper_limit_y',
+                'z_upper_limit' => 'upper_limit_z',
+                'x_lower_limit' => 'lower_limit_x',
+                'y_lower_limit' => 'lower_limit_y',
+                'z_lower_limit' => 'lower_limit_z',
+                'x_axis_name' => 'axis_name_x',
+                'y_axis_name' => 'axis_name_y',
+                'z_axis_name' => 'axis_name_z',
+                'x_plus_name' => 'plus_name_x',
+                'y_plus_name' => 'plus_name_y',
+                'z_plus_name' => 'plus_name_z',
+                'x_minus_name' => 'minus_name_x',
+                'y_minus_name' => 'minus_name_y',
+                'z_minus_name' => 'minus_name_z',
+                'is_graph_opened' => 'is_opened_graph',
+                'is_rainfall_graph' => 'is_opened_rainfall_graph',
+                'is_opened_rainfall_graph' => 'is_opened_rainfall',
+                'is_provide' => 'is_opened',
+                'invalid' => 'is_invalid',
+                'confirm' => 'is_confirm',
+                ];
+        //if (!$this->is_admin) exit;
+
+        if (!$this->database->value) exit;
+        $pgsql = $this->database->pgsql();
+
+        $model = $this->project->hasMany('Model');
+
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        
+        if ($model->values) {
+            foreach ($model->values as $model) {
+                $attributes = DB::table('Attribute')->where("model_id = {$model['id']}")
+                                                   ->select()
+                                                   ->values;
+                foreach ($attributes as $attribute) {
+                    foreach ($columns as $column => $after_column) {
+                        if ($attribute['name'] == $column) {
+                            //rename
+                            $results = $pgsql->renameColumn($model['name'], $column, $after_column);
+                            if ($results) {
+                                $posts = null;
+                                $posts['name'] = $after_column;
+                                DB::table('Attribute')->update($posts, $attribute['id']);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        $this->redirect_to('list');
+    }
+
+    function action_check_delete_column() {
+        $columns = [
+                'y_temperature',
+                'z_temperature',
+                'temperature_y',
+                'temperature_z',
+                ];
+        //if (!$this->is_admin) exit;
+
+        if (!$this->database->value) exit;
+        $pgsql = $this->database->pgsql();
+
+        $model = $this->project->hasMany('Model');
+
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        
+        if ($model->values) {
+            foreach ($model->values as $model) {
+                $attributes = DB::table('Attribute')->where("model_id = {$model['id']}")
+                                                   ->select()
+                                                   ->values;
+                foreach ($attributes as $attribute) {
+                    foreach ($columns as $column) {
+                        if ($attribute['name'] == $column) {
+                            //rename
+                            $results = $pgsql->dropColumn($model['name'], $column);
+                            if ($results) {
+                                DB::table('Attribute')->delete($attribute['id']);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        $this->redirect_to('list');
+    }
+
+
+    function action_check_comment() {
+        $columns = [
+                'temperature' => '温度',
+                'value_x' => '計測値(X)',
+                'value_y' => '計測値(Y)',
+                'value_z' => '計測値(Z)',
+                ];
+        //if (!$this->is_admin) exit;
+
+        if (!$this->database->value) exit;
+        $pgsql = $this->database->pgsql();
+
+        $model = $this->project->hasMany('Model');
+
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        
+        if ($model->values) {
+            foreach ($model->values as $model) {
+                $attributes = DB::table('Attribute')->where("model_id = {$model['id']}")
+                                                   ->select()
+                                                   ->values;
+                foreach ($attributes as $attribute) {
+                    foreach ($columns as $column => $comment) {
+                        if ($attribute['name'] == $column) {
+                            //comment
+                            $results = $pgsql->updateColumnComment($model['name'], $column, $comment);
+                            if ($results) {
+                                $posts = null;
+                                $posts['label'] = $comment;
+                                DB::table('Attribute')->update($posts, $attribute['id']);
+                            }
+                        }
+                    }
                 }
             }
         }

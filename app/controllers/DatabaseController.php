@@ -39,7 +39,11 @@ class DatabaseController extends AppController {
         $this->database = DB::table('Database')->fetch($this->params['id'])
                                                ->takeValues($this->session['posts']);
 
-        $this->forms['hostname'] = CsvLite::form('db_hosts', 'database[hostname]');
+        if (defined('DB_HOSTS_FILE') && DB_HOSTS_FILE) {
+            $this->forms['hostname'] = CsvLite::form(DB_HOSTS_FILE, 'database[hostname]');
+        } else {
+            $this->forms['hostname'] = CsvLite::form('db_hosts', 'database[hostname]');
+        }
         $this->forms['user_name'] = CsvLite::form('db_users', 'database[user_name]');
         $this->forms['port'] = CsvLite::form('db_ports', 'database[port]');
     }
@@ -66,6 +70,23 @@ class DatabaseController extends AppController {
                             ->exportDatabase();
 
         $this->redirect_to('list', $params);
+    }
+
+    function action_delete() {
+        // $pgsql = new PgsqlEntity();
+        // $pg_database = $pgsql->pgDatabase($_REQUEST['database_name']);
+
+        // if (!$pg_database) {
+        //     echo("Not found DB name : {$_REQUEST['database_name']}");
+        //     exit;
+        // }
+
+        $database = DB::table('Database')->fetch($this->params['id']);
+        if ($database->value) {
+            DB::table('Database')->delete($this->params['id']);
+        }
+
+        $this->redirect_to('database/');
     }
 
     function action_import_database() {

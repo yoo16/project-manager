@@ -26,7 +26,7 @@
   </div>
 <? endif ?>
 
-<? if ($this->database->is_not_has_tables): ?>
+<? if (!$this->database->is_has_tables): ?>
 <div class="alert alert-danger">
   Not Found <?= DB_NAME ?>'s tables.
   <a class="btn btn-primary" href="<?= url_for('pgsql') ?>">Create Table</a>

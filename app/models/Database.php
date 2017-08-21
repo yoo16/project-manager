@@ -40,7 +40,6 @@ class Database extends _Database {
         
         $pg_tables = $pgsql_entity->pgTables();
         if (!$pg_tables) {
-            $this->is_not_has_tables;
             return false;
         }
         return true;
@@ -55,11 +54,10 @@ class Database extends _Database {
         date_default_timezone_set('Asia/Tokyo');
         require BASE_DIR.'/vendor/autoload.php';
 
-        $database = DB::table('Database')->fetch($this->value['id']);
-        $pgsql_entity = new PgsqlEntity($database->pgInfo());
+        $pgsql_entity = new PgsqlEntity($this->pgInfo());
         $pg_classes = $pgsql_entity->pgClassArray();
 
-        $file_name = "{$database->value['name']}.xlsx";
+        $file_name = "{$this->value['name']}.xlsx";
         $tmp_dir = BASE_DIR.'tmp/';
         $export_path = "{$tmp_dir}{$file_name}";
 
@@ -93,7 +91,7 @@ class Database extends _Database {
 
                 //TODO pg_attributes index is attnum
                 foreach ($pg_attributes as $pg_attribute) {
-                    $attributes[$pg_attribute['attnum']] = $pg_attribute;
+                    if ($pg_attribute['attnum'] > 0) $attributes[$pg_attribute['attnum']] = $pg_attribute;
                 }
 
                 //constraint 
@@ -161,22 +159,22 @@ class Database extends _Database {
 
     function createExcelAttributes($row, $pg_attributes) {
         $this->sheet->setCellValueByColumnAndRow(0, $row, 'attribute');
-        $this->sheet->setCellValueByColumnAndRow(1, $row, 'type');
-        $this->sheet->setCellValueByColumnAndRow(2, $row, 'length');
-        $this->sheet->setCellValueByColumnAndRow(3, $row, 'primary key');
-        $this->sheet->setCellValueByColumnAndRow(4, $row, 'not null');
-        $this->sheet->setCellValueByColumnAndRow(5, $row, 'comment');
+        $this->sheet->setCellValueByColumnAndRow(1, $row, 'comment');
+        $this->sheet->setCellValueByColumnAndRow(2, $row, 'type');
+        $this->sheet->setCellValueByColumnAndRow(3, $row, 'length');
+        $this->sheet->setCellValueByColumnAndRow(4, $row, 'primary key');
+        $this->sheet->setCellValueByColumnAndRow(5, $row, 'not null');
 
         $this->drawBorders($row, 5);
 
         foreach ($pg_attributes as $pg_attribute) {
             $row++;
             $this->sheet->setCellValueByColumnAndRow(0, $row, $pg_attribute['attname']);
-            $this->sheet->setCellValueByColumnAndRow(1, $row, $pg_attribute['udt_name']);
-            $this->sheet->setCellValueByColumnAndRow(2, $row, $pg_attribute['character_maximum_length']);
-            $this->sheet->setCellValueByColumnAndRow(3, $row, $pg_attribute['is_primary_key']);
-            $this->sheet->setCellValueByColumnAndRow(4, $row, ($pg_attribute['attnotnull'] == 't'));
-            $this->sheet->setCellValueByColumnAndRow(5, $row, $pg_attribute['comment']);
+            $this->sheet->setCellValueByColumnAndRow(1, $row, $pg_attribute['comment']);
+            $this->sheet->setCellValueByColumnAndRow(2, $row, $pg_attribute['udt_name']);
+            $this->sheet->setCellValueByColumnAndRow(3, $row, $pg_attribute['character_maximum_length']);
+            $this->sheet->setCellValueByColumnAndRow(4, $row, $pg_attribute['is_primary_key']);
+            $this->sheet->setCellValueByColumnAndRow(5, $row, ($pg_attribute['attnotnull'] == 't'));
 
             $this->drawBorders($row, 5);
         }
