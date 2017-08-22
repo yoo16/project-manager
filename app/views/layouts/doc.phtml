@@ -1,8 +1,18 @@
 <html lang="ja">
 <head>
   <? include('components/meta.phtml') ?>
-  <? include('components/stylesheet.phtml') ?>
-  <? include('components/javascript.phtml') ?>
+
+<?= TagHelper::stylesheet('bootstrap.min') ?>
+<?= TagHelper::stylesheet('font-awesome.min') ?>
+<?= TagHelper::stylesheet('default') ?>
+
+<?= TagHelper::javascript('jquery/jquery-1.11.1.min') ?>
+<?= TagHelper::javascript('jquery/jquery-ui.min') ?>
+
+<?= TagHelper::javascript('bootstrap/tether.min') ?>
+<?= TagHelper::javascript('bootstrap/bootstrap.min') ?>
+
+<?= TagHelper::javascript('default') ?>
 
 </head>
 <body>

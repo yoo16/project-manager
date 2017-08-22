@@ -5,7 +5,7 @@
  */
 
 $(document).on('click', '.change-list-col', function() {
-    var target = $(this).attr('target');
+    var target = $(this).attr('target-class');
     if (target) {
         var data = $(this).attr('data');
         if (data) {

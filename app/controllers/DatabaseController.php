@@ -76,6 +76,7 @@ class DatabaseController extends AppController {
         $this->layout = 'doc';
         $pgsql = $this->database->pgsql();
         $this->pg_classes = $pgsql->pgClassArray();
+        $this->render('tables_html');
     }
 
     function action_delete() {
