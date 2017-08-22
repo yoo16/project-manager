@@ -9,7 +9,6 @@ $(document).on('click', '.confirm-dialog', function() {
     return confirm($message);
 });
 
-
 $(document).on('click', '.action-close', function() {
     var window_id = '#' + $(this).attr('window-id');
     $(window_id).hide();

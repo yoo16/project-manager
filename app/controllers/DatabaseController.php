@@ -66,10 +66,16 @@ class DatabaseController extends AppController {
 
     function action_export_db() {
         $database = DB::table('Database')
-                            ->fetch($this->database['id'])
+                            ->fetch($this->database->value['id'])
                             ->exportDatabase();
 
         $this->redirect_to('list', $params);
+    }
+
+    function action_export_html() {
+        $this->layout = 'doc';
+        $pgsql = $this->database->pgsql();
+        $this->pg_classes = $pgsql->pgClassArray();
     }
 
     function action_delete() {
