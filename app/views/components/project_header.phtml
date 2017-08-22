@@ -1,35 +1,32 @@
 
 <div class="row">
   <? if ($this->project->value['id']): ?>
-  <div class="col-5">
-    <table class="table">
-      <tr>
-        <th>Project</th>
-        <td><?= $this->project->value['name'] ?></td>
-        <? if ($this->user_project_setting): ?>
-        <td><?= FormHelper::linkModal('#php-export-window', 'PHP Export', ['class' => 'btn btn-sm btn-success']) ?></td>
-      <? endif ?>
-    </tr>
-  </table>
-</div>
-<? endif ?>
-
-<? if ($this->database->value['id']): ?>
-<div class="col-5">
   <table class="table">
     <tr>
-      <th>Database</th>
-      <td><?= $this->database->value['name'] ?></td>
-      <td>
-      <?= FormHelper::linkButton('project/export_db', 'DB Export (Excel)', ['database_id' => $this->database->value['id']], ['class' => 'btn btn-sm btn-success confirm-dialog']) ?></td>
+      <th>Project</th>
+      <td><?= $this->project->value['name'] ?></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <? if ($this->user_project_setting): ?>
+      <td><?= FormHelper::linkModal('#php-export-window', 'PHP Export', ['class' => 'btn btn-sm btn-success']) ?></td>
     </tr>
-    <tr>
-      <th></th>
-      <td><?= $this->database->value['hostname'] ?></td>
-      <td><?= $this->database->value['user_name'] ?></td>
-    </tr>
-  </table>
-</div>
+  <? endif ?>
+
+  <? if ($this->database->value['id']): ?>
+  <tr>
+    <th>Database</th>
+    <td><?= $this->database->value['name'] ?></td>
+    <td><?= $this->database->value['hostname'] ?></td>
+    <td><?= $this->database->value['user_name'] ?></td>
+    <td><?= $this->database->value['port'] ?></td>
+    <td colspan="3">
+      <?= FormHelper::linkButton('project/export_db', 'Excel', ['database_id' => $this->database->value['id']], ['class' => 'btn btn-sm btn-success confirm-dialog']) ?>
+      <?= FormHelper::linkButton('project/export_html', 'HTML', ['database_id' => $this->database->value['id']], ['class' => 'btn btn-sm btn-success confirm-dialog', 'target' => '_blank']) ?>
+    </td>
+  </tr>
+<? endif ?>
+</table>
 <? endif ?>
 </div>
 
@@ -43,9 +40,9 @@
       <li class="nav-item"><a class="nav-link <?= cssClass('page', $this->params['controller'], 'active'); ?>" href="<?= url_for('page/list', array('project_id' => $this->project->value['id'])) ?>">Controller</a></li>
       <? if ($this->page->value): ?>
       <li class="nav-item"><a class="nav-link <?= cssClass('view', $this->params['controller'], 'active'); ?>" href="<?= url_for('view/', array('page_id' => $this->page->value['id'])) ?>">View</a></li>
-      <? endif ?>
-      <li class="nav-item"><a class="nav-link <?= cssClass('layout', $this->params['controller'], 'active'); ?>" href="<?= url_for('layout/list', array('project_id' => $this->project->value['id'])) ?>">Layout</a></li>
-    </ul>
-  </nav>
+    <? endif ?>
+    <li class="nav-item"><a class="nav-link <?= cssClass('layout', $this->params['controller'], 'active'); ?>" href="<?= url_for('layout/list', array('project_id' => $this->project->value['id'])) ?>">Layout</a></li>
+  </ul>
+</nav>
 </div>
 <? endif ?>

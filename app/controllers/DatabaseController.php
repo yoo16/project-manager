@@ -135,11 +135,7 @@ class DatabaseController extends AppController {
     }
 
     function action_table() {
-        if ($this->database && $this->params['id']) {
-            $manage_database = new ManageDatabasePgsql($this->database);
-            $this->pg_class = $manage_database->getPgClass($this->params['id']);
-            $this->attributes = $manage_database->getAttributes($this->pg_class['relname']);
-        }
+
     }
 
     function action_create_table() {
@@ -152,22 +148,11 @@ class DatabaseController extends AppController {
     }
 
     function action_import_tables() {
-        if ($this->database && $this->params['id']) {
-            $manage_database = new ManageDatabasePgsql($this->database);
-            $manage_database->import_tables();
-            $this->redirect_to('model/list', $this->database['id']);
-        }
+
     }
 
     function action_import_table() {
-        if ($this->database && $this->params['id']) {
-            $manage_database = new ManageDatabasePgsql($this->database);
-            $model = $manage_database->import_table($this->params['id']);
-            if ($model->errors) {
-                $this->flash['errors'] = $model->errors;
-            }
-            $this->redirect_to('model/list', $this->database['id']);
-        }
+
     }
 
 }
