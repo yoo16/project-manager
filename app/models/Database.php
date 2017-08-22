@@ -36,12 +36,15 @@ class Database extends _Database {
     function checkProjectManager() {
         $pgsql_entity = new PgsqlEntity();
         $pg_database = $pgsql_entity->pgDatabase();
-        if (!$pg_database) return false;
+        if (!$pg_database) {
+            return false;
+        }
         
         $pg_tables = $pgsql_entity->pgTables();
         if (!$pg_tables) {
             return false;
         }
+        $this->is_success = true;
         return true;
     }
 
@@ -73,7 +76,22 @@ class Database extends _Database {
                 ->setDescription("Description");
 
         $this->sheet = $book->getActiveSheet();
-        $this->sheet = $book->removeSheetByIndex(0);
+        $this->sheet->setTitle('tables');
+
+        $row = 1;
+        $this->sheet->setCellValueByColumnAndRow(0, $row, 'Table Name');
+        $this->sheet->setCellValueByColumnAndRow(1, $row, 'Comment');
+        $this->drawBorders($row, 1);
+
+        foreach ($pg_classes as $pg_class) {
+            $row++;
+            $this->sheet->setCellValueByColumnAndRow(0, $row, $pg_class['relname']);
+            $this->sheet->setCellValueByColumnAndRow(1, $row, $pg_class['comment']);
+
+            $this->drawBorders($row, 1);
+        }
+        $this->autoSize(10);
+
         foreach ($pg_classes as $pg_class) {
             $row = 3;
 
@@ -103,6 +121,8 @@ class Database extends _Database {
 
             $this->autoSize(10);
         }
+
+        $book->setActiveSheetIndex(0);
         $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
         header("Pragma: public");
         header("Expires: 0");

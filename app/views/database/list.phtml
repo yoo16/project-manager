@@ -1,5 +1,15 @@
 <? include('_header.phtml') ?>
 
+<div class="alert alert-success">
+  <h2>Database</h2>
+  <p>
+    <dl>
+      <dd>* If you want manage PostgreSQL on browser, please set the permission on pg_hba.conf, postgresql.conf. </dd>
+      <dd>* project-manager need database '<?= DB_NAME ?>' by PostgreSQL 9.x. </dd>
+    </dl>
+  </p>
+</div>
+
 <div>
   <a class="btn btn-primary" href="<?= url_for('new') ?>"><?= LABEL_ADD ?></a>
   <a class="btn btn-outline-primary" href="#" data-toggle="modal" data-target="#import-table"><?= LABEL_IMPORT ?></a>

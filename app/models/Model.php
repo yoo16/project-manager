@@ -27,6 +27,48 @@ class Model extends _Model {
     }
 
     /**
+     * update DB comments
+     * 
+     * @param  Project $project
+     * @param  array $columns 
+     * @return void
+     */
+    static function updateComments($project, $columns) {
+        if (!$project->value) return;
+
+        $database = DB::table('Database')->fetch($project->value['database_id']);
+
+        if (!$database->value) return;
+
+        $pgsql = $database->pgsql();
+        $model = $project->hasMany('Model');
+
+        $coulmn_keys = array_keys($columns);
+        
+        if ($model->values) {
+            foreach ($model->values as $model) {
+                $attributes = DB::table('Attribute')->where("model_id = {$model['id']}")
+                                                   ->select()
+                                                   ->values;
+                foreach ($attributes as $attribute) {
+                    if (in_array($attribute['name'], $coulmn_keys)) {
+                        $column = $attribute['name'];
+                        $comment = $columns[$column];
+                        if ($attribute['name'] == $column) {
+                            $results = $pgsql->updateColumnComment($model['name'], $column, $comment);
+                            if ($results) {
+                                $posts = null;
+                                $posts['label'] = $comment;
+                                DB::table('Attribute')->update($posts, $attribute['id']);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * list by project
      * 
      * @param Project $project

@@ -11,7 +11,7 @@
     <div id="<?= $pg_class_id ?>" class="card">
 
       <div class="card-header">
-        <div><?= $pg_class['tablename'] ?> : <?= $pg_class_id ?></div>
+        <div><?= $pg_class['tablename'] ?></div>
         <div><?= $pg_class['comment'] ?></div>
       </div>
 
@@ -23,7 +23,11 @@
               <small><?= $pg_attribute['attname'] ?></small>
             </td>
             <td>
+              <? if ($pg_attribute['comment']): ?>
               <small><?= $pg_attribute['comment'] ?></small>
+              <? else: ?>
+              <small><span class="badge badge-danger">undefined</span></small>
+              <? endif ?>
             </td>
             <td>
               <small><?= $pg_attribute['udt_name'] ?></small>

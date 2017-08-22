@@ -2,6 +2,9 @@
 <div class="hero-unit">
   <div class="alert alert-success">
     <h1>Hello, project-manager! </h1>
+    <p>
+    'project-manager' is PostgreSQL manager and generates PHP files(MVC) by PHP frame work 'php-work'.
+    </p>
     <h2>Required</h2>
     <ul>
       <li>PHP 7.x</li>
@@ -10,8 +13,9 @@
     </ul>
     <p>
       <dl>
-        <dd>* If you want control PostgreSQL on browser, please set the permission on pg_hba.conf, postgresql.conf </dd>
-        <dd>* If you export php files(Model, Controller, View etc...) by project-manager, please download PHP Framework '<a href="https://github.com/yoo16/phpwork" target="_blank">php-work</a>'.</dd>
+        <dd>* If you want manage PostgreSQL on browser, please set the permission on pg_hba.conf, postgresql.conf. </dd>
+        <dd>* project-manager need database '<?= DB_NAME ?>' by PostgreSQL 9.x. </dd>
+        <dd>* If you export PHP files(Model, Controller, View etc...) by project-manager, please download PHP Framework '<a href="https://github.com/yoo16/phpwork" target="_blank">php-work</a>'.</dd>
       </dl>
     </p>
     <a class="btn btn-primary" href="<?= PHP_WORK_GIT_URL ?>" target="_blank">Download php-work(GitHub)</a>
@@ -26,7 +30,7 @@
   </div>
 <? endif ?>
 
-<? if (!$this->database->is_has_tables): ?>
+<? if (!$this->database->is_success): ?>
 <div class="alert alert-danger">
   Not Found <?= DB_NAME ?>'s tables.
   <a class="btn btn-primary" href="<?= url_for('pgsql') ?>">Create Table</a>
