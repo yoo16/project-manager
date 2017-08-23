@@ -25,7 +25,7 @@ class DatabaseController extends AppController {
     }
 
     function action_list() {
-        $this->database = DB::table('database')->select();
+        $this->database = DB::table('database')->select()->all();
 
         $pgsql = new PgsqlEntity();
         $this->pg_databases = $pgsql->pgDatabases();
@@ -49,7 +49,7 @@ class DatabaseController extends AppController {
     }
 
     function action_add() {
-        if (!$this->isPost()) exit;
+        if (!isPost()) exit;
         $posts = $this->posts['database'];
         $database = DB::table('Database')->insert($posts);
 
@@ -63,6 +63,15 @@ class DatabaseController extends AppController {
             $this->redirect_to('list');
         }
     }
+
+    function action_update() {
+        if (!isPost()) exit;
+        $posts = $this->posts['database'];
+        $database = DB::table('Database')->update($posts, $this->params['id']);
+
+        $this->redirect_to('list');
+    }
+
 
     function action_export_db() {
         $database = DB::table('Database')
@@ -98,7 +107,7 @@ class DatabaseController extends AppController {
             exit;
         }
 
-        $database = DB::table('Database')->where("name = '{$_REQUEST['database_name']}'")->selectOne();
+        $database = DB::table('Database')->where("name = '{$_REQUEST['database_name']}'")->one();
         if (!$database->value) {
             $posts['name'] = $pg_database['datname'];
             $posts['user_name'] = $pgsql->user;

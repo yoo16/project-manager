@@ -1,5 +1,15 @@
 <? include('_header.phtml') ?>
 
+<div class="alert alert-success">
+<h3>Attributes</h3>
+<ul>
+  <li>if you 'Import from DB', will automatically add model's information for O/R mapping from PostgreSQL.</li>
+  <li>if you 'Add', create attribute's information  on 'project-manager' and add attribute on PostgreSQL.</li>
+  <li>The columns (id, created_at, updated_at, sort_order) is required.</li>
+  <li>You can add and delete constraint on PostgreSQL.</li>
+</ul>
+</div>
+
 <div class="pt-3">
   <form action="<?= url_for('sync_db') ?>" method="post">
     <?= FormHelper::linkModal('#add-attribute', LABEL_ADD) ?>

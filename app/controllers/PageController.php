@@ -123,7 +123,7 @@ class PageController extends ProjectController {
             $page = DB::table('Page')
                 ->where("project_id = {$this->project->value['id']}")
                 ->where("name = '{$model['class_name']}'")
-                ->selectOne()
+                ->one()
                 ->value;
 
             if (!$page['id']) {
@@ -152,7 +152,7 @@ class PageController extends ProjectController {
             $page = DB::table('Page')
                 ->where("project_id = {$this->project->value['id']}")
                 ->where("name = '{$model['class_name']}'")
-                ->selectOne()
+                ->one()
                 ->value;
 
             if (!$page['id']) {

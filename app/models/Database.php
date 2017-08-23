@@ -29,7 +29,8 @@ class Database extends _Database {
         $database_name = DB_NAME;
         $database = DB::table('Database')->where("name != '{$database_name}'")
                                          ->limit(1)
-                                         ->select();
+                                         ->select()
+                                         ->all();
         return $database->values;
     }
 

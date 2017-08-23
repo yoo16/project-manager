@@ -1,5 +1,17 @@
 <? include('_header.phtml') ?>
 
+<div class="alert alert-success">
+<h3>Models</h3>
+<ul>
+  <li>if you 'Import from DB', will automatically add model's information for O/R mapping from PostgreSQL.</li>
+  <li>if you 'Add', create model's information on 'project-manager' and create table on PostgreSQL.</li>
+  <li>Model's name by plural form is recommended.</li>
+  <li>When table is created, will automatically add columns. * id, created_at, updated_at, sort_order</li>
+  <li>When you click 'PHP Export', PHP model's file(O/R map) to local path specified. * your_project_dir(php-work)/app/models/</li>
+  <li>You can generate PHP controller files by models.</li>
+</ul>
+</div>
+
 <div class="">
   <div class="pt-3">
     <form action="<?= url_for('project/sync_db') ?>" method="post" class="">
@@ -19,8 +31,8 @@
         <th>Name</th>
         <th>Entity</th>
         <th>Class</th>
-        <th>Page</th>
-        <th>DB</th>
+        <th>Controller</th>
+        <th>DB info</th>
       </tr>
     </thead>
     <? if ($this->model->values): ?>

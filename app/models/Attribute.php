@@ -38,7 +38,7 @@ class Attribute extends _Attribute {
             $attribute = DB::table('Attribute')
                                 ->where("model_id = '{$model['id']}'")
                                 ->where("name = '{$pg_attribute['attname']}'")
-                                ->selectOne();
+                                ->one();
 
             $value = null;
             $value['model_id'] = $model['id'];

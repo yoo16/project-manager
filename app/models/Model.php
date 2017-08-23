@@ -57,13 +57,13 @@ class Model extends _Model {
                             $fk_model = DB::table('Model')
                                                         ->where("pg_class_id = {$foreign_pg_class['pg_class_id']}")
                                                         ->where("project_id = {$project->value['id']}")
-                                                        ->selectOne();
+                                                        ->one();
 
                             if ($fk_model->value) {
                                 $fk_attribute = DB::table('Attribute')
                                                         ->where("name = '{$fk_model->id_column}'")
                                                         ->where("model_id = {$model['id']}")
-                                                        ->selectOne();
+                                                        ->one();
 
                                 if ($fk_attribute->value) {
                                     if ($fk_attribute->value['id'] && $attribute['id']) {

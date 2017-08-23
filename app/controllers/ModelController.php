@@ -48,9 +48,8 @@ class ModelController extends ProjectController {
         $pgsql = $this->database->pgsql();
         $this->pg_classes = $pgsql->tableArray();
 
-        $this->model = DB::table('Model')
-                           ->listByProject($this->project)
-                           ->bindValuesArray($this->pg_classes, 'pg_class', 'name');
+        $this->model = $this->project->hasMany('Model')
+                            ->bindValuesArray($this->pg_classes, 'pg_class', 'name');
     }
 
     function action_new() {

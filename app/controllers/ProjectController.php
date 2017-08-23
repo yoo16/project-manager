@@ -66,10 +66,12 @@ class ProjectController extends AppController {
 
     function action_list() {
         $this->database = DB::table('Database')
-                            ->select();
+                            ->select()
+                            ->all();
 
         $this->project = DB::table('Project')
                             ->select()
+                            ->all()
                             ->bindById('Database');
     }
 
@@ -274,7 +276,7 @@ class ProjectController extends AppController {
                 $model = DB::table('Model')
                                 ->where("pg_class_id = '{$pg_class['pg_class_id']}'")
                                 ->where("database_id = {$this->database->value['id']}")
-                                ->selectOne();
+                                ->one();
 
                 if ($model->value['id']) {
                     $model = DB::table('Model')->update($model_values, $model->value['id']);

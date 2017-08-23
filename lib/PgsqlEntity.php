@@ -290,8 +290,6 @@ class PgsqlEntity extends Entity {
                 $sql.= $this->createTableSql($vo);
             }
         }
-        var_dump($sql);
-        exit;
         return $sql;
     }
 
@@ -553,7 +551,7 @@ class PgsqlEntity extends Entity {
     public function fetch($id, $params=null) {
         $this->values = null;
         if (!$id) return $this;
-        $this->where("{$this->id_column} = {$id}")->selectOne($params);
+        $this->where("{$this->id_column} = {$id}")->one($params);
         $this->_value = $this->value;
         return $this;
     }
@@ -634,7 +632,7 @@ class PgsqlEntity extends Entity {
         if (is_null($value)) return $this;
 
         $condition = "{$foreign_key} = '{$value}'";
-        return $relation->where($condition)->selectOne();
+        return $relation->where($condition)->one();
     }
 
     /**
@@ -662,7 +660,7 @@ class PgsqlEntity extends Entity {
         foreach ($conditions as $condition) {
             $relation->where($condition);
         }
-        return $relation->select();
+        return $relation->select()->all();
     }
 
     /**
@@ -685,7 +683,7 @@ class PgsqlEntity extends Entity {
         $value = $this->value[$value_key];
         if (is_null($value)) return $this;
         $condition = "{$foreign_key} = '{$value}'";
-        return $relation->where($condition)->selectOne();
+        return $relation->where($condition)->one();
     }
 
     /**
@@ -706,31 +704,19 @@ class PgsqlEntity extends Entity {
     * @return PgsqlEntity
     */
     public function select($params = null) {
-        if (isset($params['id_index'])) $this->id_index = $params['id_index'];
-        $sql = $this->selectSql($params);
-        $values = $this->fetch_rows($sql);
-        $this->values = $this->castRows($values, $params);
+        $this->select_columns = null;
+        if ($params) $this->select_columns;
         unset($this->id);
         return $this;
     }
 
     /**
-    * select
+    * one
     * 
     * @param  array $params
     * @return array
     */
-    public function selectValues($params = null) {
-        return $this->select($params)->values;
-    }
-
-    /**
-    * selectOne
-    * 
-    * @param  array $params
-    * @return array
-    */
-    public function selectOne($params = null) {
+    public function one($params = null) {
         $this->values = null;
         $sql = $this->selectSql($params);
         $value = $this->fetch_row($sql);
@@ -744,13 +730,37 @@ class PgsqlEntity extends Entity {
     }
 
     /**
+    * select all
+    * 
+    * @param  array $params
+    * @return array
+    */
+    public function all() {
+        $sql = $this->selectSql();
+        $values = $this->fetch_rows($sql);
+        $this->values = $this->castRows($values);
+        return $this;
+    }
+
+    /**
+    * select
+    * 
+    * @param  array $params
+    * @return array
+    */
+    public function selectValues($params = null) {
+        return $this->select($params)->values;
+    }
+
+
+    /**
     * selectOneValue
     * 
     * @param  array $params
     * @return array
     */
     public function selectOneValue($params = null) {
-        return $this->selectOne($params)->value;
+        return $this->one($params)->value;
     }
 
     /**
@@ -1135,27 +1145,11 @@ class PgsqlEntity extends Entity {
     * @return string
     */
     private function selectSql($params = null) {
-        //TODO join column
-        // if ($this->joins) {
-        //     if ($this->columns) {
-        //         $columns[] = "{$this->table_name}.{$this->id_column}";
-        //         foreach ($this->columns as $key => $value) {
-        //             $columns[] = "{$this->table_name}.{$key}\n";
-        //         }
-        //     }
-        //     foreach ($this->joins as $join) {
-        //         $join_class = $join['join_class'];
-        //         if ($join_class->columns) {
-        //             foreach ($join_class->columns as $key => $value) {
-        //                 $columns[] = "{$join['join_name']}.{$key}\n";
-        //             }
-        //         }
-        //     }
-        //     $column = implode(', ', $columns);
-        // } else {
-        //     $column = "{$this->table_name}.*";
-        // }
-        $column = "{$this->table_name}.*";
+        if ($this->select_columns) {
+            $column = $this->select_columns;
+        } else {
+            $column = "{$this->table_name}.*";
+        }
 
         $sql = "SELECT {$column} FROM {$this->table_name}";
         $sql.= $this->whereSql($params);

@@ -19,7 +19,7 @@ class AdminController extends AppController {
 
     function action_new() {
         $admin = new Admin();
-        $admin->selectOne();
+        $admin->one();
         if ($admin->value) {
             $this->redirect_to('index'); 
             exit;
@@ -28,7 +28,7 @@ class AdminController extends AppController {
 
     function action_add() {
         $admin = new Admin();
-        $admin->selectOne();
+        $admin->one();
         if ($admin->value) {
             $this->redirect_to('index'); 
             exit;
@@ -58,7 +58,7 @@ class AdminController extends AppController {
 
     function checkAdminTable() {
         $admin = new Admin();
-        $admin->selectOne();
+        $admin->one();
         if (!$admin->value) {
             $this->redirect_to('new');
             exit;
@@ -88,7 +88,7 @@ class AdminController extends AppController {
             $admin = new Admin();
             $admin->where("login_name = '{$_POST['login_name']}'")
                   ->where("password = '{$_POST['password']}'")
-                  ->selectOne();
+                  ->one();
 
             if ($admin->value) {
                 AppSession::set('admin', $admin->value, 'admin');

@@ -67,7 +67,7 @@ class View extends _View {
             $view = DB::table('View')
                      ->where("page_id = {$page['id']}")
                      ->where("name = '{$action['name']}'")
-                     ->selectOne();
+                     ->one();
 
             if (!$view->value['id']) {
                 $posts = null;
