@@ -41,6 +41,7 @@ class Project extends _Project {
         if ($this->model->values) {
             foreach ($this->model->values as $model) {
                 $values = null;
+                $values['project'] = $this->value;
                 
                 $pg_attributes = $pgsql_entity->attributeArray($model['name']);
                 $attributes = DB::table('Attribute')->valuesByModel($model);

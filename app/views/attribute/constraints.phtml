@@ -27,7 +27,8 @@
         </thead>
         <tbody>
           <? if ($this->pg_constraints): ?>
-          <? foreach ($this->pg_constraints as $pg_constraint): ?>
+          <? foreach ($this->pg_constraints as $contype => $pg_constraints): ?>
+          <? foreach ($pg_constraints as $pg_constraint): ?>
           <tr>
             <td>
               <form action="<?= url_for('rename_constraint') ?>" method="post">
@@ -40,7 +41,7 @@
                 <?= FormHelper::hidden('database_id', $this->database->value['id']) ?></a>
               </form>
             </td>
-            <td><small><?= PgsqlEntity::$constraint_keys[$pg_constraint['contype']] ?></small></td>
+            <td><?= PgsqlEntity::$constraint_keys[$pg_constraint['contype']] ?></td>
             <td>
               <? if ($pg_constraint['conkey']): ?>
               <ul>
@@ -63,9 +64,9 @@
       <? endif ?>
     </td>
 
-    <td><small><?= PgsqlEntity::$constraint_actions[$pg_constraint['confupdtype']] ?></small></td>
-    <td><small><?= PgsqlEntity::$constraint_actions[$pg_constraint['confdeltype']] ?></small></td>
-    <td><small><?= $pg_constraint['condeferrable'] ?></small></td>
+    <td><?= PgsqlEntity::$constraint_actions[$pg_constraint['confupdtype']] ?></td>
+    <td><?= PgsqlEntity::$constraint_actions[$pg_constraint['confdeltype']] ?></td>
+    <td><?= $pg_constraint['condeferrable'] ?></td>
 
     <td>
       <form action="<?= url_for('delete_constraint') ?>" method="post">
@@ -76,6 +77,7 @@
       </form>
     </td>
   </tr>
+<? endforeach ?>
 <? endforeach ?>
 <? endif ?>
 </tbody>

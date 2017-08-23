@@ -26,7 +26,7 @@ class SettingController extends AppController {
     function action_pgsql() {
         $pgsql_entity = new PgsqlEntity();
         $this->pg_connection = $pgsql_entity->connection();
-        $this->sql = $pgsql_entity->createTablesSql();
+        $this->sql = $pgsql_entity->createTablesSQLForPath();
     }
 
     function action_create_database() {

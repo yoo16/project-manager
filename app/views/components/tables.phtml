@@ -19,63 +19,61 @@
           <? foreach ($pg_class['pg_attribute'] as $attnum => $pg_attribute): ?>
           <tr id="<?= $pg_class_id ?>-<?= $attnum ?>">
             <td>
-              <small><?= $pg_attribute['attname'] ?></small>
+              <?= $pg_attribute['attname'] ?>
             </td>
             <td>
               <? if ($pg_attribute['comment']): ?>
-              <small><?= $pg_attribute['comment'] ?></small>
-              <? else: ?>
-              <small><span class="badge badge-danger">undefined</span></small>
-              <? endif ?>
-            </td>
-            <td>
-              <small><?= $pg_attribute['udt_name'] ?></small>
-            </td>
-          </tr>
-        <? endforeach ?>
-      </table>
-    </div>
-
-    <div class="">
-      <table class="table">
-      <tr>
-        <th colspan="3">constraint</th>
+              <?= $pg_attribute['comment'] ?>
+            <? else: ?>
+            <span class="badge badge-danger">undefined</span>
+          <? endif ?>
+        </td>
+        <td>
+          <?= $pg_attribute['udt_name'] ?>
+        </td>
       </tr>
+    <? endforeach ?>
+  </table>
+</div>
 
-        <? if ($pg_class['pg_constraint']): ?>
-        <? foreach ($pg_class['pg_constraint'] as $pg_constraint): ?>
-        <? if ($pg_constraint['confkey']): ?>
+<div class="">
+  <table class="table">
+    <tr>
+      <th colspan="3">constraint</th>
+    </tr>
 
-        <? foreach ($pg_constraint['confkey'] as $foreign_attnum): ?>
-        <tr>
-          <td>
-            <small>
-              <a href="#<?= $pg_constraint['confrelid'] ?>-<?= $foreign_attnum ?>"><?= $pg_constraint['conname'] ?></a>
-            </small>
-          </td>
-          <td>
-            <small>
-              <?= $this->pg_classes[$pg_constraint['confrelid']]['relname'] ?>
-              :
-              <?= $this->pg_classes[$pg_constraint['confrelid']]['pg_attribute'][$foreign_attnum]['attname'] ?>
-            </small>
-          </td>
-        </tr>
-      <? endforeach ?>
+    <? if ($pg_class['pg_constraint']): ?>
+    <? foreach ($pg_class['pg_constraint'] as $pg_constraint): ?>
+    <? if ($pg_constraint['confkey']): ?>
 
-    <? else: ?>
-
-    <? if ($pg_constraint['conkey']): ?>
-    <? foreach ($pg_constraint['conkey'] as $attnum): ?>
+    <? foreach ($pg_constraint['confkey'] as $foreign_attnum): ?>
     <tr>
       <td>
-        <small><?= $pg_constraint['conname'] ?></small>
+        <a href="#<?= $pg_constraint['confrelid'] ?>-<?= $foreign_attnum ?>"><?= $pg_constraint['conname'] ?></a>
       </td>
       <td>
-        <small><?= $this->pg_classes[$pg_constraint['conrelid']]['pg_attribute'][$attnum]['attname'] ?></small>
+        <a href="#<?= $pg_constraint['confrelid'] ?>"><?= $this->pg_classes[$pg_constraint['confrelid']]['relname'] ?></a>
+        :
+        <?= $this->pg_classes[$pg_constraint['confrelid']]['pg_attribute'][$foreign_attnum]['attname'] ?>
       </td>
     </tr>
   <? endforeach ?>
+
+<? else: ?>
+
+<? if ($pg_constraint['conkey']): ?>
+<? foreach ($pg_constraint['conkey'] as $index => $attnum): ?>
+<tr>
+  <td>
+    <? if ($index == 0): ?>
+    <?= $pg_constraint['conname'] ?>
+  <? endif ?>
+</td>
+<td>
+  <?= $this->pg_classes[$pg_constraint['conrelid']]['pg_attribute'][$attnum]['attname'] ?>
+</td>
+</tr>
+<? endforeach ?>
 <? endif ?>
 
 <? endif ?>

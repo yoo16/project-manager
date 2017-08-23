@@ -291,6 +291,21 @@ class ProjectController extends AppController {
         $this->redirect_to('model/list', $params);
     }
 
+    function action_export_sql_from_models() {
+        if (!$this->database->value['id']) return;
+
+        $user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+        if (!$user_project_setting->value) return;
+
+        $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+        $vo_path = "{$user_project_setting->value['project_path']}app/models/vo/";
+        $sql = $pgsql_entity->createTablesSQLForPath($vo_path);
+
+var_dump($sql);
+        exit;
+    }
+
+
     function action_create_git_dir() {
         $user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
         $path = $user_project_setting->value['project_path'];

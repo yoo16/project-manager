@@ -66,6 +66,7 @@ class PgsqlEntity extends Entity {
         return $results;
     }
 
+
     /**
     * createDatabase
     * 
@@ -205,6 +206,19 @@ class PgsqlEntity extends Entity {
         if ($values['is_required']) $option.= "NOT NULL";
         return $option;
     }
+    /**
+    * create table SQL
+    * 
+    * @param array $models
+    * @return string
+    */
+    function createTablesSQLFromModels($models) {
+        foreach ($models as $model) {
+            $sql.= $this->createTableSql($model);
+            $sql.= PHP_EOL;
+        }
+        return $sql;
+    }
 
     /**
     * create table SQL
@@ -215,7 +229,6 @@ class PgsqlEntity extends Entity {
     public function createTableSql($model) {
         if (!$model) return;
 
-        //$column_sqls[] = "{$model->id_column} BIGSERIAL PRIMARY KEY NOT NULL";
         $column_sqls[] = "{$model->id_column} SERIAL PRIMARY KEY NOT NULL";
         foreach ($model->columns as $column_name => $column) {
             if ($column['type']) {
@@ -257,20 +270,29 @@ class PgsqlEntity extends Entity {
     /**
     * create table SQL
     * 
-    * @return void
+    * @param string $vo_path
+    * @param string $ext
+    * @return string
     */
-    function createTablesSql() {
-        $vo_path = BASE_DIR."app/models/vo/*.php";
-        foreach (glob($vo_path) as $file_path) {
+    function createTablesSQLForPath($vo_path, $ext = 'php') {
+        if (!file_exists($vo_path)) {
+            $message = "Not exists : {$vo_path}";
+            echo($message);
+            exit;
+        }
+        $vo_files_path = "{$vo_path}*.{$ext}";
+        foreach (glob($vo_files_path) as $file_path) {
             if (is_file($file_path)) {
                 $file = pathinfo($file_path);
                 $class_name = $file['filename'];
+                require_once $file_path;
                 $vo = new $class_name();
-
-                $this->sql.= $this->createTableSql($vo);
+                $sql.= $this->createTableSql($vo);
             }
         }
-        return $this->sql;
+        var_dump($sql);
+        exit;
+        return $sql;
     }
 
     /**
@@ -284,13 +306,14 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * create tables
+    * create tables for project-manager
     * 
     * @return resource
     */
-    function createTables() {
-        $this->createTablesSql();
-        return $this->query($this->sql);
+    function createTablesForProjectManager() {
+        $vo_path = BASE_DIR."app/models/vo/";
+        $sql = $this->createTablesSQLForPath($vo_path, 'php');
+        return $this->query($sql);
     }
 
     /**
@@ -1344,8 +1367,10 @@ class PgsqlEntity extends Entity {
     **/
     public function pgClassArrayByConstraints($pg_class, $pg_constraints) {
         $relids[$pg_class['pg_class_id']] = $pg_class['pg_class_id'];
-        foreach ($pg_constraints as $pg_constraint) {
-            if ($pg_constraint['confrelid'] > 0) $relids[$pg_constraint['confrelid']] = $pg_constraint['confrelid'];
+        foreach ($pg_constraints as $contype => $_pg_constraints) {
+            foreach ($_pg_constraints as $pg_constraint) {
+                if ($pg_constraint['confrelid'] > 0) $relids[$pg_constraint['confrelid']] = $pg_constraint['confrelid'];
+            }
         }
         return $this->pgClassArray($relids);
     }
@@ -1797,12 +1822,10 @@ class PgsqlEntity extends Entity {
      * pg constraints by constraint name
      *
      * @param  string $name
-     * @param  int $pg_class_id
      * @return array
      */
-    function pgConstraintsByConstrainName($name, $pg_class_id = null) {
+    function pgConstraintsByConstrainName($name) {
         $sql = "SELECT * FROM pg_constraint WHERE conname LIKE '%{$name}%'";
-        if ($table_name) $sql.= " AND conrelid = '{$pg_class_id}'"; 
         $sql.= ';';
         return $this->fetch_rows($sql);
     }
@@ -1817,7 +1840,10 @@ class PgsqlEntity extends Entity {
         $constraints = $this->pgConstraintsByPgClassID($pg_class['pg_class_id']);
         if (!$constraints) return;
 
-        return $constraints;
+        foreach ($constraints as $constraint) {
+            $values[$constraint['contype']][$constraint['conname']] = $constraint;
+        }
+        return $values;
     }
 
     /**
@@ -1831,7 +1857,9 @@ class PgsqlEntity extends Entity {
         if (!$constraints) return;
 
         foreach ($constraints as $index => $constraint) {
+            //TODO
             $is_numbering = self::isNumberingName($constraint['conname']);
+
             $constraints[$index]['conkey'] = self::parseConstraintKeys($constraint['conkey']);
             $constraints[$index]['confkey'] = self::parseConstraintKeys($constraint['confkey']);
         }
@@ -2037,4 +2065,6 @@ class PgsqlEntity extends Entity {
         $values = explode(',', $values);
         return $values;
     }
+
+
 }

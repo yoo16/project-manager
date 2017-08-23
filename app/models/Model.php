@@ -27,6 +27,66 @@ class Model extends _Model {
     }
 
     /**
+     * check DB foreign key
+     * 
+     * @param  Project $project
+     * @return void
+     */
+    static function checkForeignKey($project) {
+        if (!$project->value) return;
+
+        $database = DB::table('Database')->fetch($project->value['database_id']);
+
+        if (!$database->value) return;
+
+        $pgsql = $database->pgsql();
+        $model = $project->hasMany('Model');
+
+        if ($model->values) {
+            foreach ($model->values as $model) {
+                $attributes = DB::table('Attribute')->where("model_id = {$model['id']}")
+                                                   ->select()
+                                                   ->values;
+                foreach ($attributes as $attribute) {
+                    if ($model['pg_class_id'] && Entity::isForeignColumnName($attribute['name'])) {
+                        $pg_constraints = $pgsql->pgConstraints($model['pg_class_id'], 'f');
+                        if (!$pg_constraints) {
+                            $foreign_table_name = Entity::foreignTableByColumnName($attribute['name']);
+                            $foreign_pg_class = $pgsql->pgClassByRelname($foreign_table_name);
+
+                            $fk_model = DB::table('Model')
+                                                        ->where("pg_class_id = {$foreign_pg_class['pg_class_id']}")
+                                                        ->where("project_id = {$project->value['id']}")
+                                                        ->selectOne();
+
+                            if ($fk_model->value) {
+                                $fk_attribute = DB::table('Attribute')
+                                                        ->where("name = '{$fk_model->id_column}'")
+                                                        ->where("model_id = {$model['id']}")
+                                                        ->selectOne();
+
+                                if ($fk_attribute->value) {
+                                    if ($fk_attribute->value['id'] && $attribute['id']) {
+                                        $results = $pgsql->addPgForeignKey($model['name'], $attribute['name'],
+                                                                                  $fk_model->value['name'], $fk_attribute->value['name']);
+
+                                        if ($results) {
+                                            $posts = null;
+                                            $posts['fk_attribute_id'] = $fk_attribute->value['id'];
+                                            DB::table('Attribute')->update($posts, $attribute['id']);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * update DB comments
      * 
      * @param  Project $project

@@ -675,4 +675,30 @@ class Entity {
         return $this;
     }
 
+
+    /**
+     * column_name is maybe foreign key
+     *
+     * @param  string $column_name
+     * @return int
+     */
+    static function isForeignColumnName($column_name) {
+        $pattern = "/_id\z/";
+        return preg_match($pattern, $column_name);
+    }
+
+    /**
+     * table_name is maybe by foreign column_name
+     *
+     * @param  string $column_name
+     * @return string
+     */
+    static function foreignTableByColumnName($column_name) {
+        if ($pos = strpos($column_name, '_id')) {
+            $table_name = substr($column_name, 0, $pos);
+            $table_name = FileManager::singularToPlural($table_name);
+            return $table_name;
+        }
+    }
+    
 }
