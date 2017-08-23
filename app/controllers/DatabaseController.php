@@ -72,13 +72,6 @@ class DatabaseController extends AppController {
         $this->redirect_to('list', $params);
     }
 
-    function action_export_html() {
-        $this->layout = 'doc';
-        $pgsql = $this->database->pgsql();
-        $this->pg_classes = $pgsql->pgClassArray();
-        $this->render('tables_html');
-    }
-
     function action_delete() {
         // $pgsql = new PgsqlEntity();
         // $pg_database = $pgsql->pgDatabase($_REQUEST['database_name']);
@@ -120,7 +113,14 @@ class DatabaseController extends AppController {
 
     function action_tables() {
         $pgsql = $this->database->pgsql();
-        $this->pg_classes = $pgsql->pgClassArray();
+        $this->pg_classes = $pgsql->pgClassesArray();
+    }
+
+    function action_export_html() {
+        $this->layout = 'doc';
+        $pgsql = $this->database->pgsql();
+        $this->pg_classes = $pgsql->pgClassesArray();
+        $this->render('tables_html');
     }
 
     function action_columns() {

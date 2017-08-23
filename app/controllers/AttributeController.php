@@ -43,7 +43,10 @@ class AttributeController extends ProjectController {
     function action_list() {
         $database = DB::table('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();
-        $this->pg_class = $pgsql->pgClassByRelname($this->model->value['name']);
+
+        $pg_class = $pgsql->pgClassByRelname($this->model->value['name']);
+        $this->pg_class = $pgsql->pgClassArray($pg_class['pg_class_id']);
+
         $this->pg_attributes = $pgsql->attributeArray($this->model->value['name']); 
 
         $this->attribute = DB::table('Attribute')
@@ -52,8 +55,6 @@ class AttributeController extends ProjectController {
                                 ->select()
                                 ->bindValuesArray($this->pg_attributes, 'pg_attribute', 'attnum');
 
-        $this->pg_constraints = $pgsql->pgConstraintGroup($this->pg_class);
-        $this->pg_classes = $pgsql->pgClassArrayByConstraints($this->pg_class, $this->pg_constraints);
     }
 
     function action_new() {

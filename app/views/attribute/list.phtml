@@ -4,7 +4,7 @@
   <form action="<?= url_for('sync_db') ?>" method="post">
     <?= FormHelper::linkModal('#add-attribute', LABEL_ADD) ?>
     <?= FormHelper::linkButton('model/list', LABEL_BACK) ?>
-    <?= FormHelper::submit('Import from DB', ['class' => 'btn btn-outline-success confirm-dialog', 'message' => 'Do you import from DB?']) ?>
+    <?= FormHelper::submit('Import from DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you import from DB?']) ?>
     <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
   </form>
 </div>

@@ -20,7 +20,6 @@ class ViewController extends ProjectController {
     function before_action($action) {
         parent::before_action($action);
 
-        //$this->project = DB::table('Project')->requestSession();
         $this->page = DB::table('Page')->requestSession();
         $this->model = DB::table('Model')->belongTo($this->page, 'model_id');
 

@@ -115,7 +115,7 @@ class Database extends _Database {
                 //constraint 
                 if ($pg_class['pg_constraint']) {
                     $row+= 3;
-                    $row = $this->createExcelConstraints($row, $pg_class['pg_constraint'], $attributes);
+                    $row = $this->createExcelConstraints($row, $pg_class, $attributes);
                 }
             }
 
@@ -202,14 +202,14 @@ class Database extends _Database {
     }
 
     function createExcelConstraints($row, $pg_constraints, $attributes) {
-        if ($pg_constraints) {
+        if ($pg_constraints['pg_constraint']) {
             $this->sheet->setCellValueByColumnAndRow(0, $row, 'table');
             $this->sheet->setCellValueByColumnAndRow(1, $row, 'type');
             $this->sheet->setCellValueByColumnAndRow(2, $row, 'attribute');
 
             $this->drawBorders($row, 2);
 
-            foreach ($pg_constraints as $pg_constraint) {
+            foreach ($pg_constraints['pg_constraint'] as $pg_constraint) {
                 $is_numbering_constraint = PgsqlEntity::isNumberingName($pg_constraint['conname']);
                 if (!$is_numbering_constraint) {
                     foreach ($pg_constraint['conkey'] as $index => $attnum) {

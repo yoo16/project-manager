@@ -1,0 +1,28 @@
+  <? if ($this->pg_class['pg_constraint']['primary']): ?>
+  <? foreach ($this->pg_class['pg_constraint']['primary'] as $pg_constraint): ?>
+  <div class="row">
+    <div class="col-6">
+      <form action="<?= url_for('rename_constraint') ?>" method="post">
+        <div class="input-group">
+          <?= FormHelper::input(['class' => 'form-control form-control'], 'new_constraint_name', $pg_constraint['conname']) ?>
+          <span class="input-group-btn"><?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm confirm-dialog', 'message' => 'Do you rename Constrain key?']) ?></span>
+        </div>
+        <?= FormHelper::hidden('constraint_name', $pg_constraint['conname']) ?></a>
+        <?= FormHelper::hidden('model_id', $this->model->value['id']) ?></a>
+        <?= FormHelper::hidden('database_id', $this->database->value['id']) ?></a>
+      </form>
+    </div>
+    <div class="col-5"><?= $pg_constraint['attname'] ?></div>
+
+    <div class="col-1">
+      <form action="<?= url_for('delete_constraint') ?>" method="post">
+        <?= FormHelper::submit(LABEL_DELETE, ['class' => 'btn btn-sm btn-danger confirm-dialog', 'message' => 'Do you delete Constrain key?']) ?></a>
+        <?= FormHelper::hidden('constraint_name', $pg_constraint['conname']) ?></a>
+        <?= FormHelper::hidden('model_id', $this->model->value['id']) ?></a>
+        <?= FormHelper::hidden('database_id', $this->database->value['id']) ?></a>
+      </form>
+    </div>
+  </div>
+<? endforeach ?>
+
+<? endif ?>

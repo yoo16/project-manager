@@ -2,9 +2,37 @@
 <? include('unique_attribute_window.phtml') ?>
 
 <div class="card">
+  <div class="card-header">Primary</div>
+
+  <div class="card-body">
+
+    <div class="p-4">
+      <? include('constraints_primary.phtml') ?>
+    </div>
+
+  </div>
+
+</div>
+
+
+<div class="card">
+  <div class="card-header">Foreign</div>
+
+  <div class="card-body">
+
+    <div class="p-4">
+      <? include('constraints_foreign.phtml') ?>
+    </div>
+
+  </div>
+
+</div>
+
+
+<div class="card">
   <div class="card-header">
-    Constraint
-    <?= FormHelper::linkModal('#unique_attribute_window', '+ UNIQUE', 
+    Unique
+    <?= FormHelper::linkModal('#unique_attribute_window', LABEL_ADD, 
       ['class' => 'btn btn-sm btn-primary pw-app',
       'pw-controller' => 'attribute',
       'pw-action' => 'unique_attribute_list',
@@ -13,74 +41,11 @@
     </div>
 
     <div class="card-body">
-      <table class="table">
-        <thead class="thead-default">
-          <tr>
-            <th>Constraint Name</th>
-            <th>Type</th>
-            <th>Column</th>
-            <th>UPDATE</th>
-            <th>DELETE</th>
-            <th>DEFERRED</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <? if ($this->pg_constraints): ?>
-          <? foreach ($this->pg_constraints as $contype => $pg_constraints): ?>
-          <? foreach ($pg_constraints as $pg_constraint): ?>
-          <tr>
-            <td>
-              <form action="<?= url_for('rename_constraint') ?>" method="post">
-                <div class="input-group">
-                  <?= FormHelper::input(['class' => 'form-control form-control-sm'], 'new_constraint_name', $pg_constraint['conname']) ?>
-                  <span class="input-group-btn"><?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm confirm-dialog', 'message' => 'Do you rename Constrain key?']) ?></span>
-                </div>
-                <?= FormHelper::hidden('constraint_name', $pg_constraint['conname']) ?></a>
-                <?= FormHelper::hidden('model_id', $this->model->value['id']) ?></a>
-                <?= FormHelper::hidden('database_id', $this->database->value['id']) ?></a>
-              </form>
-            </td>
-            <td><?= PgsqlEntity::$constraint_keys[$pg_constraint['contype']] ?></td>
-            <td>
-              <? if ($pg_constraint['conkey']): ?>
-              <ul>
-                <? foreach ($pg_constraint['conkey'] as $attnum): ?>
-                <li><?= $this->pg_classes[$this->pg_class['pg_class_id']]['pg_attribute'][$attnum]['attname'] ?></li>
-              <? endforeach ?>
-            </ul>
-          <? endif ?>
 
-          <? if ($pg_constraint['confkey']): ?>
-          <ul>
-            <? foreach ($pg_constraint['confkey'] as $foreign_attnum): ?>
-            <li>
-              <?= $this->pg_classes[$pg_constraint['confrelid']]['relname'] ?>
-              :
-              <?= $this->pg_classes[$pg_constraint['confrelid']]['pg_attribute'][$foreign_attnum]['attname'] ?>
-            </li>
-          <? endforeach ?>
-        </ul>
-      <? endif ?>
-    </td>
+      <div class="p-4">
+        <? include('constraints_unique.phtml') ?>
+      </div>
 
-    <td><?= PgsqlEntity::$constraint_actions[$pg_constraint['confupdtype']] ?></td>
-    <td><?= PgsqlEntity::$constraint_actions[$pg_constraint['confdeltype']] ?></td>
-    <td><?= $pg_constraint['condeferrable'] ?></td>
+    </div>
 
-    <td>
-      <form action="<?= url_for('delete_constraint') ?>" method="post">
-        <?= FormHelper::submit(LABEL_DELETE, ['class' => 'btn btn-sm btn-danger confirm-dialog', 'message' => 'Do you delete Constrain key?']) ?></a>
-        <?= FormHelper::hidden('constraint_name', $pg_constraint['conname']) ?></a>
-        <?= FormHelper::hidden('model_id', $this->model->value['id']) ?></a>
-        <?= FormHelper::hidden('database_id', $this->database->value['id']) ?></a>
-      </form>
-    </td>
-  </tr>
-<? endforeach ?>
-<? endforeach ?>
-<? endif ?>
-</tbody>
-</table>
-</div>
-</div>
+  </div>

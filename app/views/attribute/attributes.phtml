@@ -15,6 +15,7 @@
           <th>DB</th>
         </tr>
       </thead>
+
       <tbody>
         <? if ($this->attribute->values): ?>
         <? foreach ($this->attribute->values as $attribute): ?>
@@ -35,6 +36,7 @@
              <?= FormHelper::hidden('database_id', $this->database->value['id']) ?>
            </form>
          </td>
+
          <td>
           <? if ($attribute['fk_attribute_id'] > 0): ?>
           <?= FormHelper::linkModal('#relation-window', 'relation', 
@@ -68,6 +70,7 @@
       <? endif ?>
     <? endif ?>
   </td>
+  
   <td>
     <?= FormHelper::badgeTag($attribute['pg_attribute']['attnum'], null, 'info') ?>
     <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
