@@ -7,7 +7,7 @@
 
 if (!defined('BASE_DIR')) {
     define('BASE_DIR', dirname(dirname(__FILE__)) . '/');
-    if (!@include_once(BASE_DIR."lib/setting.php")) {
+    if (!@include_once(BASE_DIR."lib/PwSetting.php")) {
         set_include_path(BASE_DIR.'app'.PATH_SEPARATOR.BASE_DIR.'lib');
         @include_once(BASE_DIR.'app/setting.php');
         @include_once(BASE_DIR.'app/application.php');

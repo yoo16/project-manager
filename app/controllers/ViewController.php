@@ -21,7 +21,7 @@ class ViewController extends ProjectController {
         parent::before_action($action);
 
         $this->page = DB::table('Page')->requestSession();
-        $this->model = DB::table('Model')->belongTo($this->page, 'model_id');
+        $this->model = DB::table('Model')->belongsTo($this->page, 'model_id');
 
         if (!$this->project->value || !$this->page->value) {
             $this->redirect_to('page/');

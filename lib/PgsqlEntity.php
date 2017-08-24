@@ -268,6 +268,17 @@ class PgsqlEntity extends Entity {
     }
 
     /**
+    * create tables for project
+    * 
+    * @return $sql
+    */
+    function createTablesSQLForProject() {
+        $vo_path = BASE_DIR."app/models/vo/";
+        $sql = $this->createTablesSQLForPath($vo_path, 'php');
+        return $sql;
+    }
+
+    /**
     * create table SQL
     * 
     * @param string $vo_path
@@ -303,14 +314,14 @@ class PgsqlEntity extends Entity {
         return $this->query($sql);
     }
 
+
     /**
-    * create tables for project-manager
+    * create tables for project
     * 
     * @return resource
     */
-    function createTablesForProjectManager() {
-        $vo_path = BASE_DIR."app/models/vo/";
-        $sql = $this->createTablesSQLForPath($vo_path, 'php');
+    function createTablesForProject() {
+        $sql = $this->createTablesSQLForProject();
         return $this->query($sql);
     }
 
@@ -474,6 +485,8 @@ class PgsqlEntity extends Entity {
     function query($sql) {
         $this->sql_error = null;
         $this->sql = $sql;
+        $this->conditions = null;
+        $this->joins = null;
         if (defined('SQL_LOG') && SQL_LOG) error_log("<SQL> {$sql}");
         if ($pg = $this->connection()) {
             if ($is_busy = pg_connection_busy($pg)) {
@@ -557,6 +570,49 @@ class PgsqlEntity extends Entity {
     }
 
     /**
+    * find
+    * 
+    * @param  int $id
+    * @return Object
+    */
+    public function find($id) {
+        return $this->fetch($id);
+    }
+
+    /**
+    * first
+    * 
+    * @param  int $id
+    * @return Object
+    */
+    public function first() {
+        $this->limit(1);
+        return $this->all();
+    }
+
+    public function chunk($limit) {
+        $count = $this->count();
+        $offset = 0;
+        $amount = ceil($count / $limit);
+
+        if ($amount == 0) return;
+        if ($amount == 1) return $this->all();
+
+        $this->limit = $limit;
+        for ($i = 1; $i <= $amount; $i++) {
+            $this->offset = $i * $limit;
+            if ($this->offset <= $count) {
+                $_values = $this->all();
+                if ($values) {
+                    $values = array($values, $_values);
+                } else {
+                    $values = $_values;
+                }
+            }
+        }
+    }
+
+    /**
     * relation by model
     * 
     * @param  string $model_name
@@ -601,12 +657,12 @@ class PgsqlEntity extends Entity {
     * @param  string $value_key
     * @return PgsqlEntity
     */
-    public function bindBelongTo($model_name, $foreign_key = null, $value_key = null) {
-        if (!is_string($model_name)) exit('bindBelongTo: $model_name is not string');
+    public function bindBelongsTo($model_name, $foreign_key = null, $value_key = null) {
+        if (!is_string($model_name)) exit('bindBelongsTo: $model_name is not string');
         $relation = DB::table($model_name);
 
         $column_name = $relation->entity_name;
-        $relation = $this->belongTo(get_class($relation), $foreign_key, $value_key);
+        $relation = $this->belongsTo(get_class($relation), $foreign_key, $value_key);
         $this->$column_name = $relation;
         return $this;
     }
@@ -663,6 +719,33 @@ class PgsqlEntity extends Entity {
         return $relation->select()->all();
     }
 
+
+    /**
+    * relations by model
+    * 
+    * @param  string $class_name
+    * @param  array $conditions
+    * @param  string $foreign_key
+    * @param  string $value_key
+    * @return PgsqlEntity
+    */
+    public function hasManyThrough($class_name, $through_class_name, $conditions = null, $foreign_key = null, $value_key = null) {
+        if (!is_string($class_name)) exit('hasMany: $class_name is not string');
+        $relation = DB::table($class_name);
+
+        if (!is_string($through_class_name)) exit('hasMany: $through_class_name is not string');
+        $through = DB::table($through_class_name);
+
+        $through_left_column = "{$this->entity_name}_id";
+        $through_right_column = "{$relation->entity_name}_id";
+
+        $this->join($through_class_name, $through_left_column, 'id');
+        $this->join($through_class_name, $through_right_column, 'id', $class_name);
+
+        return $relation->select()->all();
+    }
+
+
     /**
     * relation by model
     * 
@@ -671,10 +754,10 @@ class PgsqlEntity extends Entity {
     * @param  string $value_key
     * @return PgsqlEntity
     */
-    public function belongTo($class_name, $foreign_key = null, $value_key = null) {
+    public function belongsTo($class_name, $foreign_key = null, $value_key = null) {
         if (is_null($this->value)) return $this;
 
-        if (!is_string($class_name)) exit('belongTo: $class_name is not string');
+        if (!is_string($class_name)) exit('belongsTo: $class_name is not string');
         $relation = DB::table($class_name);
 
         if (!$foreign_key) $foreign_key = $relation->id_column;
@@ -685,6 +768,25 @@ class PgsqlEntity extends Entity {
         $condition = "{$foreign_key} = '{$value}'";
         return $relation->where($condition)->one();
     }
+
+    /**
+    * relation by model
+    *
+    * TODO
+    * 
+    * @param  string $class_name
+    * @param  string $foreign_key
+    * @param  string $value_key
+    * @return PgsqlEntity
+    */
+    public function belongsToMany($class_name, $foreign_key = null, $value_key = null) {
+        //TODO
+        // foreach ($this->values as $value) {
+
+        // }
+        return $this;
+    }
+
 
     /**
     * fetch
@@ -705,7 +807,7 @@ class PgsqlEntity extends Entity {
     */
     public function select($params = null) {
         $this->select_columns = null;
-        if ($params) $this->select_columns;
+        if (is_array($params)) $this->select_columns = $params;
         unset($this->id);
         return $this;
     }
@@ -713,12 +815,11 @@ class PgsqlEntity extends Entity {
     /**
     * one
     * 
-    * @param  array $params
     * @return array
     */
-    public function one($params = null) {
+    public function one() {
         $this->values = null;
-        $sql = $this->selectSql($params);
+        $sql = $this->selectSql();
         $value = $this->fetch_row($sql);
 
         $this->value = $this->castRow($value);
@@ -743,24 +844,31 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * select
+    * select all (get)
     * 
     * @param  array $params
     * @return array
     */
-    public function selectValues($params = null) {
-        return $this->select($params)->values;
+    public function get() {
+        return $this->all();
     }
 
-
     /**
-    * selectOneValue
+    * select all values
     * 
-    * @param  array $params
     * @return array
     */
-    public function selectOneValue($params = null) {
-        return $this->one($params)->value;
+    public function allValues() {
+        return $this->all()->values;
+    }
+
+    /**
+    * select one value
+    * 
+    * @return array
+    */
+    public function oneValue() {
+        return $this->one()->value;
     }
 
     /**
@@ -1009,7 +1117,7 @@ class PgsqlEntity extends Entity {
 
         $join['join_class'] = $join_class;
         $join['join_name'] = $join_class->name;
-        $join['condition'] = "{$this->table_name}.{$column} = {$join_class->name}.{$join_column}";
+        //$join['condition'] = "{$join_class->name}.{$join_column} {$eq} {$this->table_name}.{$column}";
         $join['type'] = $type;
         $this->joins[] = $join;
         return $this;
@@ -1018,20 +1126,27 @@ class PgsqlEntity extends Entity {
     /**
     * join
     * 
-    * @param  string $model_name
-    * @param  array $conditions
+    * @param  string $join_class_name
+    * @param  string $join_column
+    * @param  string $column
+    * @param  string $class_name
+    * @param  string $eq
+    * @param  string $type
     * @return PgsqlEntity
     */
-    public function join($join_class_name, $column, $join_column, $eq = '=', $type = 'LEFT') {
+    public function join($join_class_name, $join_column, $column, $class_name = null, $eq = '=', $type = 'LEFT') {
+        //TODO join conditions
         if (!$join_class_name) return $this;
-        if (!$column) return $this;
         if (!$join_column) return $this;
+        if (!$column) return $this;
+        if (!$class_name) $class_name = get_class($this);
 
+        $origin_class = DB::table($class_name);
         $join_class = DB::table($join_class_name);
 
         $join['join_class'] = $join_class;
         $join['join_name'] = $join_class->name;
-        $join['condition'] = "{$this->table_name}.{$column} = {$join_class->name}.{$join_column}";
+        $join['condition'] = "{$origin_class->table_name}.{$column} {$eq} {$join_class->table_name}.{$join_column}";
         $join['type'] = $type;
         $this->joins[] = $join;
         return $this;
@@ -1072,12 +1187,10 @@ class PgsqlEntity extends Entity {
     /**
     * where Sql
     * 
-    * @param  array $params
     * @return string
     */
-    private function whereSql($params = null) {
+    private function whereSql() {
         $sql = '';
-        if (isset($params['conditions'])) $this->conditions = $params['conditions'];
         if ($condition = $this->sqlConditions($this->conditions)) $sql = " WHERE {$condition}";
         return $sql;
     }
@@ -1091,9 +1204,9 @@ class PgsqlEntity extends Entity {
         $sql = '';
         if (is_array($this->joins)) {
             foreach ($this->joins as $join) {
-                $joins[] = " {$join['type']} JOIN \"{$join['join_name']}\" ON {$join['condition']}";
+                $joins[] = PHP_EOL." {$join['type']} JOIN \"{$join['join_name']}\" ON {$join['condition']}";
             }
-            $sql = implode(' AND ', $joins);
+            $sql = implode(' ', $joins).PHP_EOL;
         }
         return $sql;
     }
@@ -1101,12 +1214,10 @@ class PgsqlEntity extends Entity {
     /**
     * orderBySql
     * 
-    * @param  array $params
     * @return string
     */
-    private function orderBySql($params = null) {
+    private function orderBySql() {
         $sql = '';
-        if (isset($params['orders'])) $this->orders = $params['orders'];
         if (!$this->orders) return;
         if ($order = $this->sqlOrders($this->orders)) $sql = " ORDER BY {$order}";
         return $sql;
@@ -1141,26 +1252,34 @@ class PgsqlEntity extends Entity {
     /**
     * selectSql
     * 
-    * @param  array $params
     * @return string
     */
-    private function selectSql($params = null) {
+    private function selectSql() {
         if ($this->select_columns) {
-            $column = $this->select_columns;
+            $column = implode(", \n", $this->select_columns).PHP_EOL;
         } else {
-            $column = "{$this->table_name}.*";
+            if ($this->joins) {
+                $columns[] = "{$this->table_name}.*";
+                foreach ($this->joins as $join) {
+                    $join_class = $join['join_class'];
+                    foreach ($join_class->columns as $join_column_name => $join_column) {
+                        $columns[] = "{$join['join_name']}.{$join_column_name} AS {$join['join_name']}_{$join_column_name}";
+                    }
+                }
+                $column = implode(", \n", $columns).PHP_EOL;
+            } else {
+                $column = "{$this->table_name}.*";
+            }
         }
 
         $sql = "SELECT {$column} FROM {$this->table_name}";
-        $sql.= $this->whereSql($params);
 
-        if ($this->joins) {
-            $sql.= $this->joinSql();
-        }
+        if ($this->joins) $sql.= $this->joinSql();
 
-        $sql.= $this->orderBySql($params);
-        $sql.= $this->offsetSql($params);
-        $sql.= $this->limitSql($params);
+        $sql.= $this->whereSql();
+        $sql.= $this->orderBySql();
+        $sql.= $this->offsetSql();
+        $sql.= $this->limitSql();
         $sql.= ";";
         return $sql;
     }
@@ -1168,13 +1287,74 @@ class PgsqlEntity extends Entity {
     /**
     * selectCountSql
     * 
-    * @param  array $params
+    * @param  string $column
     * @return string
     */
-    private function selectCountSql($params = null) {
-        $sql = "SELECT count({$this->table_name}.*) FROM {$this->table_name}";
-        $sql.= $this->whereSql($params);
+    private function selectCountSql($column = null) {
         // TODO GROUP BY
+        if (!$column) $column = $this->table_name;
+        $sql = "SELECT count({$column}) FROM {$this->table_name}";
+        $sql.= $this->whereSql();
+        $sql.= ";";
+        return $sql;
+    }
+
+    /**
+    * selectMaxSql
+    * 
+    * @param  string $column
+    * @return string
+    */
+    private function selectMaxSql($column = null) {
+        // TODO GROUP BY
+        if (!$column) $column = $this->table_name;
+        $sql = "SELECT max({$column}) FROM {$this->table_name}";
+        $sql.= $this->whereSql();
+        $sql.= ";";
+        return $sql;
+    }
+
+    /**
+    * selectMaxSql
+    * 
+    * @param  string $column
+    * @return string
+    */
+    private function selectMinSql($column = null) {
+        // TODO GROUP BY
+        if (!$column) $column = $this->table_name;
+        $sql = "SELECT min({$column}) FROM {$this->table_name}";
+        $sql.= $this->whereSql();
+        $sql.= ";";
+        return $sql;
+    }
+
+    /**
+    * selectMaxSql
+    * 
+    * @param  string $column
+    * @return string
+    */
+    private function selectSumSql($column = null) {
+        // TODO GROUP BY
+        if (!$column) $column = $this->table_name;
+        $sql = "SELECT sum({$column}) FROM {$this->table_name}";
+        $sql.= $this->whereSql();
+        $sql.= ";";
+        return $sql;
+    }
+
+    /**
+    * selectMaxSql
+    * 
+    * @param  string $column
+    * @return string
+    */
+    private function selectAvgSql($column = null) {
+        // TODO GROUP BY
+        if (!$column) $column = $this->table_name;
+        $sql = "SELECT avg({$column}) FROM {$this->table_name}";
+        $sql.= $this->whereSql();
         $sql.= ";";
         return $sql;
     }
@@ -1269,7 +1449,7 @@ class PgsqlEntity extends Entity {
     private function deleteSql() {
         $sql = '';
         if (!$this->id) return;
-        $where = $this->whereSql($params);
+        $where = $this->whereSql();
         if ($where) $sql = "DELETE FROM {$this->table_name} {$where};";
         return $sql;
     }
@@ -1281,7 +1461,7 @@ class PgsqlEntity extends Entity {
     */
     private function deletesSql() {
         $sql = '';
-        $where = $this->whereSql($params);
+        $where = $this->whereSql();
         $sql = "DELETE FROM {$this->table_name} {$where};";
         return $sql;
     }
@@ -1291,28 +1471,11 @@ class PgsqlEntity extends Entity {
     /**
     * count
     * 
-    * @param array $conditions
     * @return int
     **/
-    public function count() {
+    public function count($column = null) {
         //TODO GROUP BY
-        if (is_bool($this->group_columns) && $this->group_columns) {
-            $this->group_columns = array_keys($this->columns);
-            array_unshift($this->group_columns, $this->id_column);
-        }
-        if (empty($this->group_columns)) {
-            $select_str = "COUNT({$this->table_name}.{$this->id_column})";
-        } else {
-            $select_str = $this->group_columns[0];
-            foreach ($this->group_columns as $i => $group_column) {
-                if (!strpos($group_column, '.')) {
-                    $this->group_columns[$i] = $this->table_name . "." . $group_column;
-                }
-            }
-            $group_str = implode(', ', $this->group_columns);
-        }
-
-        $sql = $this->selectCountSql();
+        $sql = $this->selectCountSql($column);
         $count = $this->fetch_result($sql); 
         if (is_null($count)) $count = 0;
         return $count;
@@ -1627,7 +1790,7 @@ class PgsqlEntity extends Entity {
         $sql = "SELECT pg_class.oid AS pg_class_id, * FROM pg_class 
                 LEFT JOIN pg_attribute ON pg_class.oid = pg_attribute.attrelid
                 LEFT JOIN information_schema.columns ON information_schema.columns.table_name = pg_class.relname
-                AND information_schema.columns.column_name = pg_attribute.attname 
+                          AND information_schema.columns.column_name = pg_attribute.attname 
                 WHERE pg_attribute.attnum > 0
                 AND atttypid > 0 
                 AND relacl IS NULL";
@@ -2156,6 +2319,5 @@ class PgsqlEntity extends Entity {
         $values = explode(',', $values);
         return $values;
     }
-
 
 }

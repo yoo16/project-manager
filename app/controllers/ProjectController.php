@@ -28,7 +28,7 @@ class ProjectController extends AppController {
 
         $this->project = DB::table('Project')->requestSession();
         if ($this->project->value) {
-            $this->database = $this->project->belongTo('Database');
+            $this->database = $this->project->belongsTo('Database');
             $this->user_project_setting = $this->project->hasMany('UserProjectSetting');
         }
     }
