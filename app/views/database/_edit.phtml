@@ -8,25 +8,21 @@
     <tr>
       <th><?= DATABASE_HOST ?></th>
       <td>
-        <? if (defined('DB_HOSTS_FILE') && DB_HOSTS_FILE): ?>
-        <?= $this->database->formSelect('hostname', ['csv' => DB_HOSTS_FILE]) ?>
-        <? else: ?>
-        <?= $this->database->formSelect('hostname', ['csv' => 'db_hosts']) ?>
-        <? endif ?>
+        <?= $this->database->formSelect('hostname', ['csv' => DB_HOSTS_CSV]) ?>
       </td>
     </tr>
                  
     <tr>
       <th><?= DATABASE_USER ?></th>
       <td>
-        <?= $this->database->formSelect('user_name', ['csv' => 'db_users']) ?>
+        <?= $this->database->formSelect('user_name', ['csv' => DB_USERS_CSV]) ?>
       </td>
     </tr>
                  
     <tr>
       <th><?= DATABASE_PORT ?></th>
       <td>
-        <?= $this->database->formSelect('port', ['csv' => 'db_ports']) ?>
+        <?= $this->database->formSelect('port', ['csv' => DB_PORTS_CSV]) ?>
       </td>
     </tr>
 

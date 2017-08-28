@@ -45,10 +45,12 @@ class ModelController extends ProjectController {
     }
 
     function action_list() {
-        $pgsql = $this->database->pgsql();
-        $this->pg_classes = $pgsql->tableArray();
+        $this->pg_classes = $this->database->pgsql()->tableArray();
 
-        $this->model = $this->project->hasMany('Model')
+        $this->model = $this->project
+                            ->relationMany('Model')
+                            ->order('name')
+                            ->all()
                             ->bindValuesArray($this->pg_classes, 'pg_class', 'name');
     }
 
@@ -63,7 +65,8 @@ class ModelController extends ProjectController {
     function action_add() {
         if (!isPost()) exit;
 
-        $posts = $this->session['posts'] = $_POST['model'];
+        $posts = $this->posts['model'];
+
         if ($this->database && $posts['name']) {
             $pgsql = $this->database->pgsql();
 

@@ -12,3 +12,8 @@ composer.json
 db/records/db_hosts_debian8.csv
 script/upload_git_kona
 app/controllers/CheckController.php
+app/settings/pgsql/debian8.php
+app/settings/pgsql/kona.php
+app/settings/kona.telepath.php
+db/db_info/db_hosts_debian8.csv
+db/db_info/db_hosts_kona.csv

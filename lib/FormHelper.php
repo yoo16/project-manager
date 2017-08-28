@@ -333,8 +333,11 @@ class FormHelper {
         if (isset($params['csv']) && $params['csv']) {
             $values = CsvLite::options($params['csv']);
         } else if (isset($params['model']) && $params['model']) {
-            $entity = DB::table($params['model']);
-            $values = $entity->select()->values;
+            $values = DB::table($params['model'])
+                                ->where($params['where'])
+                                ->order($params['order'])
+                                ->all()
+                                ->values;
         } else {
             $values = $params['values'];
         }

@@ -44,6 +44,7 @@ class CsvLite {
         $file_path = BASE_DIR."db/records/{$csv_name}.csv";
         if (!file_exists($file_path)) $file_path = BASE_DIR."db/records/{$csv_name}";
         if (!file_exists($file_path)) $file_path = BASE_DIR."{$csv_name}";
+        if (!file_exists($file_path)) $file_path = $csv_name;
         if (file_exists($file_path)) return $file_path;
     }
 

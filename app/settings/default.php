@@ -12,9 +12,15 @@ define('PROJECT_DIR', BASE_DIR);
 define('TMP_DIR', BASE_DIR . 'tmp/');
 define('DB_DIR', BASE_DIR.'db/');
 
-define('DB_SETTING_FILE', BASE_DIR.'app/settings/db.php');
-
 define('DEBUG', false);
 define('SQL_LOG', false);
 
 define('MAIL_SETTING_FILE', DB_DIR.'mail/default.csv');
+
+//Database Host
+define('DB_HOSTS_CSV', DB_DIR.'db_info/db_hosts.csv');
+define('DB_USERS_CSV', DB_DIR.'db_info/db_users.csv');
+define('DB_PORTS_CSV', DB_DIR.'db_info/db_ports.csv');
+
+//PostgreSQL
+define('DB_SETTING_FILE', BASE_DIR.'app/settings/pgsql/default.php');

@@ -1,7 +1,7 @@
 <?php
 
     define('DB_NAME', 'project_manager_2017');
-    define('DB_HOST', 'kona.telepath');
+    define('DB_HOST', 'localhost');
     define('DB_USER', 'postgres');
     define('DB_PORT', '5432');
     //define('DB_PASS', PROJECT_MANAGER_DB_PASS);

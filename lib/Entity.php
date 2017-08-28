@@ -408,7 +408,7 @@ class Entity {
         if (is_array($row)) {
             foreach ($row as $column_name => $value) {
                 if ($column_name === $this->id_column) {
-                    $row[$this->id_column] = $value;
+                    $row[$this->id_column] = (int) $value;
                 } else {
                     if (isset($this->columns[$column_name])) {
                         $column = $this->columns[$column_name];
@@ -574,7 +574,6 @@ class Entity {
     function formRadio($column, $params = null) {
         if (!$column) return;
         $params['name'] = "{$this->entity_name}[{$column}]";
-
         if ($params['model'] && !$params['value']) $params['value'] = $this->id_column;
         $tag = FormHelper::radio($params, $this->value[$column]);
         return $tag;
@@ -626,13 +625,13 @@ class Entity {
     function bindById($model_name, $value_key = null) {
         if (!$this->values) return $this;
 
-        $model = DB::table($model_name)->idIndex()->select();
+        //TODO join SQL?
+        $model = DB::table($model_name)->idIndex()->all();
         if (!$model->values) return $this;
         if (!$value_key) $value_key = "{$model->entity_name}_id";
 
-        $bind_name = $model->entity_name;
         foreach ($this->values as $index => $value) {
-            if ($id = $value[$value_key]) $this->values[$index][$bind_name] = $model->values[$id];
+            if ($id = $value[$value_key]) $this->values[$index][$model->entity_name] = $model->values[$id];
         }
         return $this;
     }

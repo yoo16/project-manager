@@ -66,11 +66,10 @@ class ProjectController extends AppController {
 
     function action_list() {
         $this->database = DB::table('Database')
-                            ->select()
                             ->all();
 
         $this->project = DB::table('Project')
-                            ->select()
+                            ->order('name')
                             ->all()
                             ->bindById('Database');
     }
