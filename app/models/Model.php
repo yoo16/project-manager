@@ -100,7 +100,6 @@ class Model extends _Model {
 
         if (!$database->value) return;
 
-        $pgsql = $database->pgsql();
         $model = $project->hasMany('Model');
 
         $coulmn_keys = array_keys($columns);
@@ -108,14 +107,15 @@ class Model extends _Model {
         if ($model->values) {
             foreach ($model->values as $model) {
                 $attributes = DB::table('Attribute')->where("model_id = {$model['id']}")
-                                                   ->select()
+                                                   ->all()
                                                    ->values;
+                                                   
                 foreach ($attributes as $attribute) {
                     if (in_array($attribute['name'], $coulmn_keys)) {
                         $column = $attribute['name'];
                         $comment = $columns[$column];
                         if ($attribute['name'] == $column) {
-                            $results = $pgsql->updateColumnComment($model['name'], $column, $comment);
+                            $results = $database->pgsql()->updateColumnComment($model['name'], $column, $comment);
                             if ($results) {
                                 $posts = null;
                                 $posts['label'] = $comment;

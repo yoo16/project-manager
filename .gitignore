@@ -17,3 +17,4 @@ app/settings/pgsql/kona.php
 app/settings/kona.telepath.php
 db/db_info/db_hosts_debian8.csv
 db/db_info/db_hosts_kona.csv
+app/settings/kona.php

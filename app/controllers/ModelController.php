@@ -184,16 +184,4 @@ class ModelController extends ProjectController {
         $this->redirect_to('list');
     }
 
-    function action_delete_unrelated() {
-        $models = DB::table('Model')->listByProject($this->project)->values;
-        if ($models) {
-            foreach ($models as $model) {
-                $attribute = new Attribute();
-                $attribute->deleteUnrelatedByModel($model);
-            }
-        }
-        $this->redirect_to('list');
-    }
-
-
 }

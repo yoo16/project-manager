@@ -39,10 +39,10 @@ class PageController extends ProjectController {
     }
 
     function action_list() {
-        $this->models = DB::table('Model')->listByProject($this->project)->valuesWithKey('id');
-        $this->pages = DB::table('Page')
+        $this->models = $this->project->hasMany('Model')->values;
+        $this->pages = $this->project->relationMany('Page')
                             ->order('name')
-                            ->listByProject($this->project)
+                            ->all()
                             ->values;
     }
 
