@@ -234,7 +234,9 @@ class Database extends _Database {
             $this->sheet->setCellValueByColumnAndRow(2, $row, $pg_attribute['udt_name']);
             $this->sheet->setCellValueByColumnAndRow(3, $row, $pg_attribute['character_maximum_length']);
             //$this->sheet->setCellValueByColumnAndRow(4, $row, $pg_attribute['is_primary_key']);
-            $this->sheet->setCellValueByColumnAndRow(4, $row, ($pg_attribute['attnotnull'] == 't'));
+            if ($pg_attribute['attnotnull'] == 't') {
+                $this->sheet->setCellValueByColumnAndRow(4, $row, ($pg_attribute['attnotnull'] == 't'));
+            }
 
             $this->drawBorders($row, 4);
             $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
