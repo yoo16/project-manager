@@ -59,11 +59,13 @@ class Database extends _Database {
         require BASE_DIR.'/vendor/autoload.php';
 
         $pgsql_entity = new PgsqlEntity($this->pgInfo());
-        $pg_classes = $pgsql_entity->pgClassArray();
+        $pg_classes = $pgsql_entity->pgClassesArray();
 
         $file_name = "{$this->value['name']}.xlsx";
         $tmp_dir = BASE_DIR.'tmp/';
         $export_path = "{$tmp_dir}{$file_name}";
+
+        $this->cell_height = 25;
 
         $book = new PHPExcel();
         $book->getProperties()
@@ -78,11 +80,17 @@ class Database extends _Database {
 
         $this->sheet = $book->getActiveSheet();
         $this->sheet->setTitle('tables');
+        $this->sheet->getDefaultStyle()
+                    ->getAlignment()
+                    ->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 
         $row = 1;
         $this->sheet->setCellValueByColumnAndRow(0, $row, 'Table Name');
         $this->sheet->setCellValueByColumnAndRow(1, $row, 'Comment');
-        $this->drawBorders($row, 1);
+
+        $this->drawBorders(1, 1);
+        $this->drawFillColor(1, 1, 'FFEEEEEE');
+        $this->sheet->getRowDimension(1)->setRowHeight($this->cell_height);
 
         foreach ($pg_classes as $pg_class) {
             $row++;
@@ -90,21 +98,30 @@ class Database extends _Database {
             $this->sheet->setCellValueByColumnAndRow(1, $row, $pg_class['comment']);
 
             $this->drawBorders($row, 1);
+            $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
         }
-        $this->autoSize(10);
+        //$this->autoSize(10);
+        $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(0))->setWidth(40);
+        $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(1))->setWidth(30);
 
         foreach ($pg_classes as $pg_class) {
-            $row = 3;
-
             $is_numbering = PgsqlEntity::isNumberingName($pg_class['relname']);
             if (!$is_numbering) {
                 $this->sheet_name = $this->excelSheetName($pg_class['relname']);
                 $this->sheet = $book->createSheet()->setTitle($this->sheet_name);
+                $this->sheet->getDefaultStyle()
+                            ->getAlignment()
+                            ->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 
                 $this->sheet->setCellValueByColumnAndRow(0, 1, 'Table Name');
                 $this->sheet->setCellValueByColumnAndRow(1, 1, $pg_class['relname']);
 
+                $this->drawBorders(1, 1);
+                $this->drawFillColor(1, 0, 'FFEEEEEE');
+                $this->sheet->getRowDimension(1)->setRowHeight($this->cell_height);
+
                 //attribute
+                $row = 3;
                 $pg_attributes = $pgsql_entity->attributeArray($pg_class['relname']);
                 $row = $this->createExcelAttributes($row, $pg_attributes);
 
@@ -120,7 +137,12 @@ class Database extends _Database {
                 }
             }
 
-            $this->autoSize(10);
+            //$this->autoSize(10);
+            $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(0))->setWidth(40);
+            $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(1))->setWidth(30);
+            $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(2))->setWidth(20);
+            $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(3))->setWidth(10);
+            $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(4))->setWidth(10);
         }
 
         $book->setActiveSheetIndex(0);
@@ -167,6 +189,21 @@ class Database extends _Database {
     }
 
     /**
+     * excel draw border
+     * @param  [type] $numbers [description]
+     * @return [type]          [description]
+     */ 
+    function drawFillColor($row, $numbers, $color) {
+        for ($col = 0; $col <= $numbers; $col++) {
+            $this->sheet->getStyleByColumnAndRow($col, $row)
+                  ->getFill()
+                  ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                  ->getStartColor()
+                  ->setARGB($color);
+        }
+    }
+
+    /**
      * excel auto size
      *
      * @param  [type] $numbers [description]
@@ -183,10 +220,12 @@ class Database extends _Database {
         $this->sheet->setCellValueByColumnAndRow(1, $row, 'comment');
         $this->sheet->setCellValueByColumnAndRow(2, $row, 'type');
         $this->sheet->setCellValueByColumnAndRow(3, $row, 'length');
-        $this->sheet->setCellValueByColumnAndRow(4, $row, 'primary key');
-        $this->sheet->setCellValueByColumnAndRow(5, $row, 'not null');
+        //$this->sheet->setCellValueByColumnAndRow(4, $row, 'primary key');
+        $this->sheet->setCellValueByColumnAndRow(4, $row, 'not null');
 
-        $this->drawBorders($row, 5);
+        $this->drawBorders($row, 4);
+        $this->drawFillColor($row, 4, 'FFEEEEEE');
+        $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
 
         foreach ($pg_attributes as $pg_attribute) {
             $row++;
@@ -194,33 +233,37 @@ class Database extends _Database {
             $this->sheet->setCellValueByColumnAndRow(1, $row, $pg_attribute['comment']);
             $this->sheet->setCellValueByColumnAndRow(2, $row, $pg_attribute['udt_name']);
             $this->sheet->setCellValueByColumnAndRow(3, $row, $pg_attribute['character_maximum_length']);
-            $this->sheet->setCellValueByColumnAndRow(4, $row, $pg_attribute['is_primary_key']);
-            $this->sheet->setCellValueByColumnAndRow(5, $row, ($pg_attribute['attnotnull'] == 't'));
+            //$this->sheet->setCellValueByColumnAndRow(4, $row, $pg_attribute['is_primary_key']);
+            $this->sheet->setCellValueByColumnAndRow(4, $row, ($pg_attribute['attnotnull'] == 't'));
 
-            $this->drawBorders($row, 5);
+            $this->drawBorders($row, 4);
+            $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
         }
         return $row;
     }
 
-    function createExcelConstraints($row, $pg_constraints, $attributes) {
-        if ($pg_constraints['pg_constraint']) {
-            $this->sheet->setCellValueByColumnAndRow(0, $row, 'table');
+    function createExcelConstraints($row, $pg_class, $attributes) {
+        if ($pg_class['pg_constraint']) {
+            $this->sheet->setCellValueByColumnAndRow(0, $row, 'constraint');
             $this->sheet->setCellValueByColumnAndRow(1, $row, 'type');
             $this->sheet->setCellValueByColumnAndRow(2, $row, 'attribute');
 
             $this->drawBorders($row, 2);
+            $this->drawFillColor($row, 2, 'FFEEEEEE');
+            $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
 
-            foreach ($pg_constraints['pg_constraint'] as $pg_constraint) {
-                $is_numbering_constraint = PgsqlEntity::isNumberingName($pg_constraint['conname']);
-                if (!$is_numbering_constraint) {
-                    foreach ($pg_constraint['conkey'] as $index => $attnum) {
+            foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
+                foreach ($pg_constraints as $pg_constraint) {
+                    $is_numbering_constraint = PgsqlEntity::isNumberingName($pg_constraint['conname']);
+                    if (!$is_numbering_constraint) {
                         $row++;
                         if ($index == 0) {
                             $this->sheet->setCellValueByColumnAndRow(0, $row, $pg_constraint['conname']);
                             $this->sheet->setCellValueByColumnAndRow(1, $row, PgsqlEntity::$constraint_keys[$pg_constraint['contype']]);
                         }
-                        $this->sheet->setCellValueByColumnAndRow(2, $row, $attributes[$attnum]['attname']);
+                        $this->sheet->setCellValueByColumnAndRow(2, $row, $pg_constraint['attname']);
                         $this->drawBorders($row, 2);
+                        $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
                     }
                 }
             }

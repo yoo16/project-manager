@@ -1728,6 +1728,7 @@ class PgsqlEntity extends Entity {
         $table_comment = $this->tableComment($pg_class['relname']);
         $pg_class['comment'] = $table_comment['description'];
         $pg_attributes = $this->pgAttributes($table_name);
+        
         if ($pg_attributes) {
             $attributes = null;
             $column_comments = $this->columnCommentArray($pg_class['relname']);
