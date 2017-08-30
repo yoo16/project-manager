@@ -50,7 +50,6 @@ class AttributeController extends ProjectController {
         $this->pg_attributes = $pgsql->attributeArray($this->model->value['name']); 
 
         $this->attribute = DB::table('Attribute')
-                                ->select()
                                 ->where("model_id = {$this->model->value['id']}")
                                 ->order('name', 'asc')
                                 ->all()

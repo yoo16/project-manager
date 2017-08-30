@@ -42,18 +42,22 @@ class PwSetting {
     }
 
     static function loadAppSettingFile() {
-        if (!@include_once(BASE_DIR.'app/setting.php')) {
-            $path = self::appSettingFilePath();
-            if (!@include_once($path)) {
-                error_log('cannot find setting');
-                $path = BASE_DIR.'app/settings/';
-                $msg = "cannot find setting file in '{$path}'";
-                exit($msg);
-            } else {
-                define('APP_SETTING_FILE_PATH', $path);
-            }
+        $path = self::appSettingFilePath();
+        if (!@include_once($path)) {
+            error_log('cannot find setting');
+            $msg = "cannot find setting file in '{$path}'";
+            exit($msg);
+        } else {
+            define('APP_SETTING_FILE_PATH', $path);
+            set_include_path(BASE_DIR.'app'.PATH_SEPARATOR.BASE_DIR.'lib');
         }
-        @include_once BASE_DIR.'app/application.php';
+        $application_path = BASE_DIR.'app/application.php';
+        if (!@include_once $application_path) {
+            error_log('cannot find setting');
+            $msg = "cannot find setting file in '{$application_path}'";
+            exit($msg);
+        }
+
     }
 
 }

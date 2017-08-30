@@ -64,7 +64,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     */
     function action_list() {
 <? if ($values['model']): ?>
-        $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->select();
+        $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->all();
 <? endif ?>
     }
 
@@ -154,7 +154,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     */
     function action_sort_order() {
 <? if ($values['model']): ?>
-        $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->select();
+        $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->all();
 <? endif ?>
     }
 

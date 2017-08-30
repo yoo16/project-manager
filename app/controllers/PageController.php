@@ -110,7 +110,8 @@ class PageController extends ProjectController {
     }
 
     function action_import_from_models() {
-        $this->model = DB::table('Model')->listByProject($this->project);
+        $this->model = $this->project->hasMany('Model');
+
         foreach ($this->model->values as $model) {
             $posts['model_id'] = $model['id'];
             $posts['project_id'] = $this->project->value['id'];

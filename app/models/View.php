@@ -23,38 +23,6 @@ class View extends _View {
     }
 
     /**
-     * list by page
-     * 
-     * @param Page $page
-     * @return View
-     */
-    function listByPage($page) {
-        if (!$page) return;
-
-        $this->where("page_id = {$page->value['id']}")
-             ->order('name')
-             ->order('sort_order')
-             ->select();
-        return $this;
-    }
-
-    /**
-     * list by page
-     * 
-     * @param array $page
-     * @return View
-     */
-    function valuesByPage($page) {
-        if (!$page) return;
-
-        $this->where("page_id = {$page['id']}")
-             ->order('name')
-             ->order('sort_order')
-             ->select();
-        return $this->values;
-    }
-
-    /**
      * generate default actions
      * 
      * @param array $page

@@ -291,11 +291,35 @@ class PgsqlEntity extends Entity {
                 $type = self::columnTypeSql($column);
                 $option = self::columnOptionSql($column);
 
-                $column_sqls[] = "{$column_name} {$type} {$option}";
+                $column_sql = "{$column_name} {$type}";
+                if ($option) $column_sql.= $option;
+                $column_sqls[] = $column_sql;
             }
         }
         $column_sql = implode(",\n", $column_sqls);
         $sql = "CREATE TABLE IF NOT EXISTS \"{$model->name}\" (\n{$column_sql}\n);\n";
+
+        return $sql;
+    }
+
+
+    /**
+    * create sequence SQL
+    * 
+    * @param PgsqlEntity $model
+    * @return string
+    */
+    public function createSequenceSql($model) {
+        if (!$model) return;
+
+        $column_sqls[] = "{$model->id_column} SERIAL PRIMARY KEY NOT NULL";
+        foreach ($model->foreign as $conname => $foreign) {
+            $sql = "ALTER TABLE {$model['name']}
+                     ADD CONSTRAINT {$conname} FOREIGN KEY ({$foreign['attname']})
+                     REFERENCES {$foreign['attname']}({$foreign['attname']})
+                     ON NO ACTION
+                     ON UPDATE NO ACTION;";
+        }
 
         return $sql;
     }
@@ -335,6 +359,17 @@ class PgsqlEntity extends Entity {
     }
 
     /**
+    * create tables for project
+    * 
+    * @return $sql
+    */
+    function createSequenceSQLForProject() {
+        $vo_path = BASE_DIR."app/models/vo/";
+        $sql = $this->createSequenceSQLForPath($vo_path, 'php');
+        return $sql;
+    }
+
+    /**
     * create table SQL
     * 
     * @param string $vo_path
@@ -342,6 +377,32 @@ class PgsqlEntity extends Entity {
     * @return string
     */
     function createTablesSQLForPath($vo_path, $ext = 'php') {
+        if (!file_exists($vo_path)) {
+            $message = "Not exists : {$vo_path}";
+            echo($message);
+            exit;
+        }
+        $vo_files_path = "{$vo_path}*.{$ext}";
+        foreach (glob($vo_files_path) as $file_path) {
+            if (is_file($file_path)) {
+                $file = pathinfo($file_path);
+                $class_name = $file['filename'];
+                require_once $file_path;
+                $vo = new $class_name();
+                $sql.= $this->createTableSql($vo);
+            }
+        }
+        return $sql;
+    }
+
+    /**
+    * create table SQL
+    * 
+    * @param string $vo_path
+    * @param string $ext
+    * @return string
+    */
+    function createSequenceSQLForPath($vo_path, $ext = 'php') {
         if (!file_exists($vo_path)) {
             $message = "Not exists : {$vo_path}";
             echo($message);
@@ -2201,16 +2262,34 @@ class PgsqlEntity extends Entity {
     function pgForeignConstraints($pg_class_id, $type = null) {
         if (!$pg_class_id) return;
 
-        $sql = "SELECT * FROM pg_constraint
-                    LEFT JOIN pg_attribute ON pg_constraint.confrelid = pg_attribute.attrelid
-                    AND pg_attribute.attnum = ANY(pg_constraint.confkey)
-                    LEFT JOIN pg_class ON pg_constraint.confrelid = pg_class.oid";
-
-        $conditions[] = "pg_constraint.contype = 'f'";
-        if ($pg_class_id) $conditions[] = "pg_constraint.conrelid = '{$pg_class_id}'";
-
-        if ($conditions) $condition = implode(' AND ', $conditions);
-        $sql.= " WHERE {$condition};";
+        $sql = "SELECT 
+                    origin.*,
+                    pg_class.oid as foreign_class_id,
+                    pg_class.relname as foreign_relname,
+                    pg_attribute.attnum as foreign_attnum,
+                    pg_attribute.attname as foreign_attname
+                    FROM 
+                    (
+                        SELECT 
+                        pg_constraint.conrelid
+                        , pg_constraint.conname
+                        , pg_class.oid as pg_class_id
+                        , pg_class.relname
+                        , pg_attribute.attnum
+                        , pg_attribute.attname
+                        , pg_constraint.confrelid
+                        , pg_constraint.confkey
+                        , pg_constraint.contype
+                        FROM  pg_constraint
+                            LEFT JOIN pg_attribute ON pg_constraint.conrelid = pg_attribute.attrelid 
+                                AND pg_attribute.attnum = ANY(pg_constraint.conkey)
+                            LEFT JOIN pg_class ON pg_constraint.conrelid = pg_class.oid
+                        WHERE pg_constraint.contype = 'f' AND pg_constraint.conrelid = '{$pg_class_id}'
+                        ) AS origin
+                    LEFT JOIN pg_attribute ON origin.confrelid = pg_attribute.attrelid 
+                        AND pg_attribute.attnum = ANY(origin.confkey)
+                    LEFT JOIN pg_class ON origin.confrelid = pg_class.oid
+                    ;";
 
         return $this->fetchRows($sql);
     }

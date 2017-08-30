@@ -8,22 +8,6 @@ class Attribute extends _Attribute {
         parent::validate();
     }
 
-    //TODO
-    function listByModel($model) {
-        $this->where("model_id = {$model['id']}")
-                   ->order('sort_order', false)
-                   ->select();
-        return $this;
-    }
-
-    function valuesByModel($model) {
-        $values = $this->where("model_id = {$model['id']}")
-                       ->order('sort_order', false)
-                       ->select()
-                       ->values;
-        return $values;
-    }
-
     function importByModel($model) {
         if (!$model['id']) return;
 
@@ -64,13 +48,14 @@ class Attribute extends _Attribute {
     /**
      * delete Unrelated
      * 
-     * @param  array $model [description]
+     * @param  array $model_array [description]
      * @return 
      */
-    function deleteUnrelatedByModel($model) {
-        if (!$model['id']) return;
+    function deleteUnrelatedByModel($model_array) {
+        if (!$model_array['id']) return;
 
-        $attributes = DB::table('Attribute')->listByModel($model);
+        $model = DB::table('Model')->fetch($model_array['id']);
+        $attributes = $model->hasMany('Attribute')->values;
         if (!$attributes) return;
         foreach ($attributes as $attribute) {
             if ($attribute['attnum'] > 0) {
@@ -80,7 +65,6 @@ class Attribute extends _Attribute {
             }
         }
     }
-
 
     static function insertForModelRequire($key, $database, $model) {
         if (!$database) return;

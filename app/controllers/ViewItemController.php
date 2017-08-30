@@ -154,7 +154,7 @@ class ViewItemController extends AppController {
     * @return void
     */
     function action_sort_order() {
-        $this->view_item = DB::table('ViewItem')->select();
+        $this->view_item = DB::table('ViewItem')->all();
     }
 
    /**

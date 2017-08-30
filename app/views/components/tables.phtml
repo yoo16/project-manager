@@ -6,7 +6,7 @@
 <? if ($this->pg_classes): ?>
 <div class="row">
   <? foreach ($this->pg_classes as $pg_class): ?>
-  <div class="db-table col-6 mb-3">
+  <div class="db-table col-12 mb-3">
     <div id="<?= $pg_class['pg_class_id'] ?>" class="card">
 
       <div class="card-header">
@@ -41,12 +41,13 @@
 
         <tr>
           <td>
-            <a href="#<?= $pg_constraint['confrelid'] ?>-<?= $pg_constraint['attnum'] ?>"><?= $pg_constraint['conname'] ?></a>
+            <?= $pg_constraint['conname'] ?>
           </td>
           <td>
-            <a href="#<?= $pg_constraint['confrelid'] ?>"><?= $pg_constraint['relname'] ?></a>
+            <?= $pg_constraint['attname'] ?> => 
+            <a href="#<?= $pg_constraint['confrelid'] ?>"><?= $pg_constraint['foreign_relname'] ?></a>
             :
-            <?= $pg_constraint['attname'] ?>
+            <?= $pg_constraint['foreign_attname'] ?>
           </td>
         </tr>
 

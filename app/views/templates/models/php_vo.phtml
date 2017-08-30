@@ -42,6 +42,26 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
     );
 <? endif ?>
 
+<? if ($values['foreign']): ?>
+    var $foreign = array(
+<? foreach ($values['foreign'] as $conname => $foreign): ?>
+            '<?= $conname ?>' => '<?= $foreign['attname'] ?>',
+<? endforeach ?>
+    );
+<? endif ?>
+
+<? if ($values['unique']): ?>
+    var $unique = array(
+<? foreach ($values['unique'] as $conname => $uniques): ?>
+            '<?= $conname ?>' => [
+<? foreach ($uniques as $unique): ?>
+                        '<?= $unique['attname'] ?>',
+<? endforeach ?>
+                        ],
+<? endforeach ?>
+    );
+<? endif ?>
+
     function __construct($params = null) {
         parent::__construct($params);
     }

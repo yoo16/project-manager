@@ -29,7 +29,6 @@ class Database extends _Database {
         $database_name = DB_NAME;
         $database = DB::table('Database')->where("name != '{$database_name}'")
                                          ->limit(1)
-                                         ->select()
                                          ->all();
         return $database->values;
     }
@@ -141,7 +140,7 @@ class Database extends _Database {
             $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(0))->setWidth(40);
             $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(1))->setWidth(30);
             $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(2))->setWidth(20);
-            $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(3))->setWidth(10);
+            $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(3))->setWidth(20);
             $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(4))->setWidth(10);
         }
 
@@ -249,9 +248,10 @@ class Database extends _Database {
             $this->sheet->setCellValueByColumnAndRow(0, $row, 'constraint');
             $this->sheet->setCellValueByColumnAndRow(1, $row, 'type');
             $this->sheet->setCellValueByColumnAndRow(2, $row, 'attribute');
+            $this->sheet->setCellValueByColumnAndRow(3, $row, '');
 
-            $this->drawBorders($row, 2);
-            $this->drawFillColor($row, 2, 'FFEEEEEE');
+            $this->drawBorders($row, 3);
+            $this->drawFillColor($row, 3, 'FFEEEEEE');
             $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
 
             foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
@@ -264,7 +264,13 @@ class Database extends _Database {
                             $this->sheet->setCellValueByColumnAndRow(1, $row, PgsqlEntity::$constraint_keys[$pg_constraint['contype']]);
                         }
                         $this->sheet->setCellValueByColumnAndRow(2, $row, $pg_constraint['attname']);
-                        $this->drawBorders($row, 2);
+
+                        if ($pg_constraint['foreign_relname'] && $pg_constraint['foreign_attname']) {
+                            $foreign_key = "{$pg_constraint['foreign_relname']} : {$pg_constraint['foreign_attname']}";
+                            $this->sheet->setCellValueByColumnAndRow(3, $row, $foreign_key);
+                        }
+
+                        $this->drawBorders($row, 3);
                         $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
                     }
                 }

@@ -16,18 +16,6 @@ class Page extends _Page {
         parent::validate();
     }
 
-    /**
-     * list by project
-     * 
-     * @param Project $project
-     * @return Page
-     */
-    function listByProject($project) {
-        if (!$project->value['id']) return;
-        $this->where("project_id = {$project->value['id']}")->select();
-        return $this;
-    }
-
     function default_value() {
         $this->value['dev_url'] = 'http://';
         return $this->value;

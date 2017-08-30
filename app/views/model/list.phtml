@@ -1,15 +1,15 @@
 <? include('_header.phtml') ?>
 
 <div class="alert alert-success">
-<h3>Models</h3>
-<ul>
-  <li>if you 'Import from DB', will automatically add model's information for O/R mapping from PostgreSQL.</li>
-  <li>if you 'Add', create model's information on 'project-manager' and create table on PostgreSQL.</li>
-  <li>Model's name by plural form is recommended.</li>
-  <li>When table is created, will automatically add columns. * id, created_at, updated_at, sort_order</li>
-  <li>When you click 'PHP Export', PHP model's file(O/R map) to local path specified. * your_project_dir(php-work)/app/models/</li>
-  <li>You can generate PHP controller files by models.</li>
-</ul>
+  <h3>Models</h3>
+  <ul>
+    <li>if you 'Import from DB', will automatically add model's information for O/R mapping from PostgreSQL.</li>
+    <li>if you 'Add', create model's information on 'project-manager' and create table on PostgreSQL.</li>
+    <li>Model's name by plural form is recommended.</li>
+    <li>When table is created, will automatically add columns. * id, created_at, updated_at, sort_order</li>
+    <li>When you click 'PHP Export', PHP model's file(O/R map) to local path specified. * your_project_dir(php-work)/app/models/</li>
+    <li>You can generate PHP controller files by models.</li>
+  </ul>
 </div>
 
 <div class="">
@@ -29,8 +29,10 @@
       <tr>
         <th></th>
         <th>Name</th>
-        <th>Entity</th>
-        <th>Class</th>
+        <th>
+          <div>Entity</div>
+          <div>Class</div>
+        </th>
         <th>Controller</th>
         <th>DB info</th>
       </tr>
@@ -44,7 +46,10 @@
         <div><?= FormHelper::link('attribute/', $model['name'], ['model_id' => $model['id']]) ?></div>
         <div><?= $model['label'] ?></div>
       </td>
-      <td><?= $model['class_name'] ?></td>
+      <td>
+        <div><?= $model['entity_name'] ?></div>
+        <div><?= $model['class_name'] ?></div>
+      </td>
       <td>
         <form action="<?= url_for('page/create_page_from_model') ?>" method="post">
           <?= FormHelper::button(LABEL_CREATE, ['class' => 'btn btn-sm btn-primary confirm-dialog', 'message' => "Create page?"]) ?>

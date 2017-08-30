@@ -7,12 +7,8 @@
 
 if (!defined('BASE_DIR')) {
     define('BASE_DIR', dirname(dirname(__FILE__)) . '/');
-    if (!@include_once(BASE_DIR."lib/PwSetting.php")) {
-        set_include_path(BASE_DIR.'app'.PATH_SEPARATOR.BASE_DIR.'lib');
-        @include_once(BASE_DIR.'app/setting.php');
-        @include_once(BASE_DIR.'app/application.php');
-    }
 }
+@include_once(BASE_DIR."lib/PwSetting.php");
 if (!defined('ROOT_CONTROLLER_NAME')) define('ROOT_CONTROLLER_NAME', 'root');
 if (!defined('APP_NAME')) define('APP_NAME', 'controller');
 

@@ -32,30 +32,38 @@ class Project extends _Project {
      * @return bool
      */
     function exportPHP() {
-        $database = DB::table('Database')->hasOne($this);
-        $pgsql_entity = new PgsqlEntity($database->pgInfo());
-        $pg_database = $pgsql_entity->pgDatabase();
+        $database = DB::table('Database')->fetch($this->value['database_id']);
+        $pgsql = $database->pgsql();
+        //$pg_database = $pgsql->pgDatabase();
 
         //model
         $this->bindMany('Model');
+
         if ($this->model->values) {
             foreach ($this->model->values as $model) {
+                $pg_class = $pgsql->pgClassArray($model['pg_class_id']);
+
+                $unique = null;
+                $foreign = null;
                 $values = null;
                 $values['project'] = $this->value;
                 
-                $pg_attributes = $pgsql_entity->attributeArray($model['name']);
-                $attributes = DB::table('Attribute')->valuesByModel($model);
-
-                foreach ($attributes as $attribute) {
-                    $pg_attribute = $pg_attributes[$attribute['name']];
-                    $attribute['pg_attribute'] = $pg_attribute;
-                    $attribute['column_type'] = $pg_attribute['type'];
-
-                    $values['attribute'][] = $attribute;
-                }
+                $_model = DB::table('Model')->takeValues($model);
+                $attributes = $_model->hasMany('Attribute')->values;
 
                 $values['model'] = $model;
-                $values['pg_attribute'] = $pg_attributes;
+                $values['attribute'] = $attributes;
+                foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
+                    foreach ($pg_constraints as $pg_constraint) {
+                        if ($type == 'unique') {
+                            $unique[$pg_constraint['conname']][] = $pg_constraint;
+                        } else if ($type == 'foreign') {
+                            $foreign[$pg_constraint['conname']] = $pg_constraint;
+                        }
+                    }
+                }
+                if ($unique) $values['unique'] = $unique;
+                if ($foreign) $values['foreign'] = $foreign;
 
                 $model_path = Model::projectFilePath($this->user_project_setting->value, $model);
 

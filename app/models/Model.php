@@ -45,7 +45,7 @@ class Model extends _Model {
         if ($model->values) {
             foreach ($model->values as $model) {
                 $attributes = DB::table('Attribute')->where("model_id = {$model['id']}")
-                                                   ->select()
+                                                   ->all()
                                                    ->values;
                 foreach ($attributes as $attribute) {
                     if ($model['pg_class_id'] && Entity::isForeignColumnName($attribute['name'])) {
@@ -126,21 +126,6 @@ class Model extends _Model {
                 }
             }
         }
-    }
-
-    /**
-     * list by project
-     * 
-     * @param Project $project
-     * @return Model
-     */
-    function listByProject($project) {
-        if (!$project->value['id']) return;
-        $this->where("database_id = {$project->value['database_id']}")
-             ->order('name')
-             ->order('sort_order')
-             ->select();
-        return $this;
     }
 
     /**
