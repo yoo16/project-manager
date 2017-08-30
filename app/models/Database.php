@@ -96,6 +96,10 @@ class Database extends _Database {
             $this->sheet->setCellValueByColumnAndRow(0, $row, $pg_class['relname']);
             $this->sheet->setCellValueByColumnAndRow(1, $row, $pg_class['comment']);
 
+            $sheet_name = $this->excelSheetName($pg_class['relname']);
+            $url = "sheet://{$sheet_name}!A1";
+            $this->sheet->getCellByColumnAndRow(0, $row)->getHyperlink()->setUrl($url);
+
             $this->drawBorders($row, 1);
             $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
         }
