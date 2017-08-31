@@ -54,6 +54,37 @@ class ModelController extends ProjectController {
                             ->bindValuesArray($this->pg_classes, 'pg_class', 'name');
     }
 
+    function action_values() {
+        $this->model = DB::table('model')->fetch($this->params['id']);
+
+        $database = $this->project->belongsTo('Database');
+        $this->pg_class = $database->pgsql()->pgClassArray($this->model->value['pg_class_id']);
+        $this->values = $database->pgsql()
+                                 ->table($this->model->value['name'])
+                                 ->all()
+                                 ->values;
+    }
+
+    function action_add_value() {
+        if (!isPost()) exit;
+
+        $posts = $this->posts['model'];
+
+        $this->model = DB::table('model')->fetch($this->params['id']);
+
+        $database = $this->project->belongsTo('Database');
+        $pgsql = $database->pgsql()->table($this->model->value['name'])->insert($posts);
+
+        if ($pgsql->sql_error) {
+            echo($pgsql->sql_error.PHP_EOL);
+            echo($pgsql->sql.PHP_EOL);
+            echo($pgsql->dbname.PHP_EOL);
+            echo($pgsql->host.PHP_EOL);
+            exit;
+        }
+        $this->redirect_to('values', $this->params['id']);
+    }
+
     function action_new() {
 
     }
@@ -65,13 +96,21 @@ class ModelController extends ProjectController {
     function action_add() {
         if (!isPost()) exit;
 
+        if (!$this->database->value) $this->redirect_to('list');
+
         $posts = $this->posts['model'];
 
         if ($this->database && $posts['name']) {
-            $pgsql = $this->database->pgsql();
-
             $columns = Model::$required_columns;
-            $results = $pgsql->createTable($posts['name'], $columns);
+            if ($columns) {
+                $pgsql = $this->database->pgsql();
+                $results = $pgsql->createTable($posts['name'], $columns);
+
+                foreach ($columns as $column_name => $column) {
+                    $pgsql->updateColumnComment($posts['name'], $column_name, $column['comment']);
+                }
+            }
+
             if (!$results) {
                 echo("SQL Error: {$pgsql->sql}");
                 exit;
@@ -177,9 +216,13 @@ class ModelController extends ProjectController {
         if ($database && $table_name) {
             $columns = Model::$required_columns;
 
-            $pg_connection_array = $database->pgInfo();
-            $pgsql = new PgsqlEntity($pg_connection_array); 
-            $pgsql->createTable($table_name, $columns);
+            if ($columns) {
+                $pgsql = $database->pgsql()->createTable($table_name, $columns);
+
+                foreach ($columns as $column_name => $column) {
+                    $database->pgsql()->updateColumnComment($table_name, $column_name, $column['comment']);
+                }
+            }
         }
         $this->redirect_to('list');
     }

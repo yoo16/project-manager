@@ -11,23 +11,23 @@ require_once 'Entity.php';
 //TODO pg_field_num, pg_field_name
 
 class PgsqlEntity extends Entity {
-    var $extra_columns = false;
-    var $group_columns = false;
-    var $joins = array();
     var $pg_info = null;
     var $dbname = null;
     var $host = 'localhost';
     var $user = 'postgres';
     var $port = 5432;
     var $password = null;
+    var $is_pconnect = false;
+    var $is_connect_forece_new = false;
+    var $table_name = null;
     var $values = null;
     var $value = null;
     var $conditions = null;
     var $orders = null;
     var $limits = null;
-    var $is_pconnect = false;
-    var $is_connect_forece_new = false;
-    var $table_name = null;
+    var $extra_columns = false;
+    var $group_columns = false;
+    var $joins = array();
 
     static $pg_info_columns = ['dbname', 'user', 'host', 'port', 'password'];
     static $constraint_keys = ['p' => 'Primary Key',
@@ -84,7 +84,6 @@ class PgsqlEntity extends Entity {
         return $results;
     }
 
-
     /**
     * createDatabase
     * 
@@ -99,6 +98,46 @@ class PgsqlEntity extends Entity {
         $results['output'] = $output;
         $results['return'] = $return;
         return $results;
+    }
+
+    /**
+    * sequenceName
+    * 
+    * @param string $table_name
+    * @param string $id_column
+    * @return string
+    */
+    function sequenceName($table_name, $id_column = 'id') {
+        if (!$table_name) return;
+        $sequence_name = "{$table_name}_{$id_column}_seq";
+        return $sequence_name;
+    }
+
+    /**
+    * sequenceName
+    * 
+    * @param string $table_name
+    * @param string $id_column
+    * @return string
+    */
+    function createSequence($table_name, $id_column = 'id') {
+        $sequence_name = self::sequenceName($table_name, $id_column);
+        $sql = "CREATE SEQUENCE {$sequence_name};";
+        //$sql = "CREATE SEQUENCE IF NOT EXISTS {$sequence_name};";
+        return $this->query($sql);
+    }
+
+    /**
+    * reset sequence
+    * 
+    * @param string $table_name
+    * @param string $id_column
+    * @return string
+    */
+    function resetSequence($table_name, $id_column = 'id') {
+        $sequence_name = self::sequenceName($table_name, $id_column);
+        $sql = "SELECT SETVAL ('{$sequence_name}', '1', false);";
+        return $this->query($sql);
     }
 
     /**
@@ -292,33 +331,46 @@ class PgsqlEntity extends Entity {
                 $option = self::columnOptionSql($column);
 
                 $column_sql = "{$column_name} {$type}";
-                if ($option) $column_sql.= $option;
+                if ($option) $column_sql.= " {$option}";
                 $column_sqls[] = $column_sql;
             }
         }
-        $column_sql = implode(",\n", $column_sqls);
-        $sql = "CREATE TABLE IF NOT EXISTS \"{$model->name}\" (\n{$column_sql}\n);\n";
+        $column_sql = implode("\n, ", $column_sqls);
+        $sql = "CREATE TABLE IF NOT EXISTS \"{$model->name}\" (\n{$column_sql}\n);".PHP_EOL;
+        $sql.= PHP_EOL;
 
         return $sql;
     }
 
 
     /**
-    * create sequence SQL
+    * create constraint SQL
     * 
     * @param PgsqlEntity $model
     * @return string
     */
-    public function createSequenceSql($model) {
+    public function constraintSql($model) {
         if (!$model) return;
 
-        $column_sqls[] = "{$model->id_column} SERIAL PRIMARY KEY NOT NULL";
-        foreach ($model->foreign as $conname => $foreign) {
-            $sql = "ALTER TABLE {$model['name']}
-                     ADD CONSTRAINT {$conname} FOREIGN KEY ({$foreign['attname']})
-                     REFERENCES {$foreign['attname']}({$foreign['attname']})
-                     ON NO ACTION
-                     ON UPDATE NO ACTION;";
+        if ($model->foreign) {
+            foreach ($model->foreign as $conname => $foreign) {
+                $sql.= "ALTER TABLE {$model->name}".PHP_EOL;
+                $sql.= "      ADD CONSTRAINT {$conname} FOREIGN KEY ({$foreign['column']})".PHP_EOL;
+                $sql.= "      REFERENCES {$foreign['foreign_table']}({$foreign['foreign_column']})".PHP_EOL;
+                $sql.= "      ON NO ACTION".PHP_EOL;
+                $sql.= "      ON UPDATE NO ACTION;".PHP_EOL;
+                $sql.= PHP_EOL;
+            }
+        }
+
+        if ($model->unique) {
+            foreach ($model->unique as $conname => $uniques) {
+                $unique_column = implode(', ', $uniques);
+                $sql.= "ALTER TABLE {$model->name}".PHP_EOL;
+                $sql.= "      ADD CONSTRAINT {$conname}".PHP_EOL;
+                $sql.= "      UNIQUE ({$unique_column});".PHP_EOL;
+                $sql.= PHP_EOL;
+            }
         }
 
         return $sql;
@@ -359,17 +411,6 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * create tables for project
-    * 
-    * @return $sql
-    */
-    function createSequenceSQLForProject() {
-        $vo_path = BASE_DIR."app/models/vo/";
-        $sql = $this->createSequenceSQLForPath($vo_path, 'php');
-        return $sql;
-    }
-
-    /**
     * create table SQL
     * 
     * @param string $vo_path
@@ -383,39 +424,28 @@ class PgsqlEntity extends Entity {
             exit;
         }
         $vo_files_path = "{$vo_path}*.{$ext}";
+
         foreach (glob($vo_files_path) as $file_path) {
             if (is_file($file_path)) {
                 $file = pathinfo($file_path);
                 $class_name = $file['filename'];
                 require_once $file_path;
                 $vo = new $class_name();
+
                 $sql.= $this->createTableSql($vo);
             }
         }
-        return $sql;
-    }
 
-    /**
-    * create table SQL
-    * 
-    * @param string $vo_path
-    * @param string $ext
-    * @return string
-    */
-    function createSequenceSQLForPath($vo_path, $ext = 'php') {
-        if (!file_exists($vo_path)) {
-            $message = "Not exists : {$vo_path}";
-            echo($message);
-            exit;
-        }
-        $vo_files_path = "{$vo_path}*.{$ext}";
+        //$sql.= '/*** constraint ***/'.PHP_EOL;
+        $sql.= PHP_EOL;
         foreach (glob($vo_files_path) as $file_path) {
             if (is_file($file_path)) {
                 $file = pathinfo($file_path);
                 $class_name = $file['filename'];
                 require_once $file_path;
                 $vo = new $class_name();
-                $sql.= $this->createTableSql($vo);
+
+                $sql.= $this->constraintSql($vo);
             }
         }
         return $sql;
@@ -430,7 +460,6 @@ class PgsqlEntity extends Entity {
         $sql = $this->createTableSqlByName($table_name, $columns);
         return $this->query($sql);
     }
-
 
     /**
     * create tables for project
@@ -1551,7 +1580,6 @@ class PgsqlEntity extends Entity {
         foreach ($this->columns as $key => $type) {
             $value = $this->sqlValue($this->value[$key]);
             if ($key == 'created_at') $value = 'current_timestamp';
-
             $columns[] = $key;
             $values[] = $value;
         }
@@ -1559,7 +1587,10 @@ class PgsqlEntity extends Entity {
         $value = implode(',', $values);
 
         $sql = "INSERT INTO {$this->table_name} ({$column}) VALUES ({$value});";
-        $sql.= "SELECT currval('{$this->table_name}_id_seq');";
+
+        $sequence_name = $this->sequenceName($this->table_name);
+        $sql.= "SELECT lastval();";
+        //$sql.= "SELECT currval('{$sequence_name}'::regclass);";
         return $sql;
     }
 
@@ -1788,7 +1819,7 @@ class PgsqlEntity extends Entity {
 
         $table_comment = $this->tableComment($pg_class['relname']);
         $pg_class['comment'] = $table_comment['description'];
-        $pg_attributes = $this->pgAttributes($table_name);
+        $pg_attributes = $this->pgAttributes($pg_class['relname']);
         
         if ($pg_attributes) {
             $attributes = null;
@@ -1856,6 +1887,22 @@ class PgsqlEntity extends Entity {
         return $values;
     }
 
+
+    /**
+    * pgFields
+    * 
+    * TODO: pg_field_table ?
+    * TODO: pg_field_type_oid ?
+    * TODO: pg_field_type ?
+    * 
+    * @param string $table_name
+    * @return array
+    **/
+    public function pgFields($table_name) {
+        if (!$table_name) return;
+
+        return $values;
+    }
     /**
     * databases
     * 
@@ -2003,7 +2050,7 @@ class PgsqlEntity extends Entity {
                 AND relacl IS NULL";
 
         if ($table_name) $sql.= " AND relname = '{$table_name}'";
-        $sql.= 'ORDER BY pg_attribute.attname;';
+        $sql.= ' ORDER BY pg_attribute.attname;';
         return $this->fetchRows($sql);
     }
 
@@ -2246,6 +2293,25 @@ class PgsqlEntity extends Entity {
         return $this->fetchRows($sql);
     }
 
+    /**
+     * pg indexes
+     *
+     * @param  string $table_name
+     * @param  string $schema_name
+     * @return array
+     */
+    function pgIndexes($table_name = null, $schema_name = 'public') {
+        if (!$pg_class_id) return;
+
+        $sql = "SELECT * FROM pg_indexes WHERE schemaname = '{$schema_name}'";
+
+        $conditions[] = "schemaname = '{$schema_name}'";
+        if ($table_name) $conditions[] = "table_name = '{$table_name}'";
+
+        $condition = implode(' AND ', $conditions);
+        $sql.= " WHERE {$condition};";
+        return $this->fetchRows($sql);
+    }
 
     /**
      * pg constraints
@@ -2527,6 +2593,38 @@ class PgsqlEntity extends Entity {
             if (is_numeric($column)) return true;
         }
         return false;
+    }
+
+    /**
+     * set Model(table name, columns ...) By pg_attributes
+     *
+     * @param  string $model_name
+     * @return PgsqlEntity
+     */
+    function table($table_name) {
+        $this->id_column = 'id';
+        $this->entity_name = FileManager::pluralToSingular($table_name);
+        $this->name = $table_name;
+        $this->from($this->name);
+
+        $pg_attributes = $this->pgAttributes($this->name);
+        if (!$pg_attributes) return;
+
+        foreach ($pg_attributes as $pg_attribute) {
+            if ($pg_attribute['attname'] != $this->id_column) {
+                $value = null;
+                $value['type'] = $pg_attribute['udt_name'];
+                if ($pg_attribute['attnotnull'] == 't') {
+                    $value['is_required'] = true;
+                }
+                if ($pg_attribute['attname']) {
+                    $columns[$pg_attribute['attname']] = $value;
+                }
+            }
+        }
+        $this->columns = $columns;
+        $this->sql = null;
+        return $this;
     }
 
     /**

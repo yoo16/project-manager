@@ -21,7 +21,7 @@ class DatabaseController extends AppController {
     }
 
     function cancel() {
-        $this->redirect_to('list', $this->database['id']);
+        $this->redirect_to('list');
     }
 
     function action_list() {
@@ -117,10 +117,6 @@ class DatabaseController extends AppController {
         $this->layout = 'doc';
         $this->pg_classes = $this->database->pgsql()->pgClassesArray();
         $this->render('tables_html');
-    }
-
-    function action_table() {
-
     }
 
     function action_create_table() {

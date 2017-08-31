@@ -1,5 +1,7 @@
 <? include('_header.phtml') ?>
 
+<? include('add_window.phtml'); ?>
+
 <div class="alert alert-success">
   <h3>Models</h3>
   <ul>
@@ -22,13 +24,12 @@
     </form>
   </div>
 
-  <? include('add_window.phtml'); ?>
-
   <table class="table">
     <thead class="thead-default">
       <tr>
         <th></th>
         <th>Name</th>
+        <th></th>
         <th>
           <div>Entity</div>
           <div>Class</div>
@@ -46,6 +47,7 @@
         <div><?= FormHelper::link('attribute/', $model['name'], ['model_id' => $model['id']]) ?></div>
         <div><?= $model['label'] ?></div>
       </td>
+      <td><a href="<?= url_for('values', $model['id']) ?>">DB Data</a></td>
       <td>
         <div><?= $model['entity_name'] ?></div>
         <div><?= $model['class_name'] ?></div>

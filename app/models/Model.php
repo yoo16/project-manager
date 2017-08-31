@@ -5,19 +5,23 @@ class Model extends _Model {
 
     static $required_columns = array('id' => array('name' => 'id', 
                                                    'type' => 'SERIAL',
-                                                   'option' => 'PRIMARY KEY NOT NULL'
+                                                   'option' => 'PRIMARY KEY NOT NULL',
+                                                   'comment' => 'ID'
                                                    ),
                                      'created_at' => array('name' => 'created_at',
                                                            'type' => 'TIMESTAMP',
-                                                           'option' => 'NOT NULL DEFAULT CURRENT_TIMESTAMP'
+                                                           'option' => 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+                                                           'comment' => '作成日'
                                                            ),
                                      'updated_at' => array('name' => 'updated_at',
                                                            'type' => 'TIMESTAMP',
-                                                           'option' => 'NULL'
+                                                           'option' => 'NULL',
+                                                           'comment' => '更新日'
                                                            ),
                                      'sort_order' => array('name' => 'sort_order',
                                                            'type' => 'INT4',
-                                                           'option' => 'NULL'
+                                                           'option' => 'NULL',
+                                                           'comment' => '並び順'
                                                            ),
                                      );
 
@@ -200,8 +204,15 @@ class Model extends _Model {
         return $path;
     }
 
-    static function columnProperty($attribute) {
+    /**
+     * columns property for Vo Model Template
+     * 
+     * @param array $attribute
+     * @return string
+     */
+    static function columnPropertyForTemplate($attribute) {
         $propaties[] = "'type' => '{$attribute['type']}'";
+        if ($attribute['length'] > 0) $propaties[] = "'length' => {$attribute['length']}";
         if (!self::$required_columns[$attribute['name']] && $attribute['is_required']) {
             $propaties[] = "'is_required' => true";
         }
@@ -210,4 +221,5 @@ class Model extends _Model {
         $value = "'{$attribute['name']}' => array({$propaty})";
         return $value;
     }
+
 }

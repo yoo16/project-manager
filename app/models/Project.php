@@ -49,7 +49,10 @@ class Project extends _Project {
                 $values['project'] = $this->value;
                 
                 $_model = DB::table('Model')->takeValues($model);
-                $attributes = $_model->hasMany('Attribute')->values;
+                $attributes = $_model->relationMany('Attribute')
+                                     ->order('name')
+                                     ->all()
+                                     ->values;
 
                 $values['model'] = $model;
                 $values['attribute'] = $attributes;

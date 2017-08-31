@@ -28,13 +28,13 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
     var $columns = array(
 <? foreach ($values['attribute'] as $attribute): ?>
 <? if ($attribute['name'] != 'id'): ?>
-        <?= Model::columnProperty($attribute) ?>,
+        <?= Model::columnPropertyForTemplate($attribute) ?>,
 <? endif ?>
 <? endforeach ?>
     );
 
     var $column_labels = array (
-<? foreach ($values['model']['attribute'] as $attribute): ?>
+<? foreach ($values['attribute'] as $attribute): ?>
 <? if ($attribute['name'] != 'id'): ?>
         '<?= $attribute['name'] ?>' => '<?= $attribute['label'] ?>',
 <? endif ?>
@@ -45,7 +45,11 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
 <? if ($values['foreign']): ?>
     var $foreign = array(
 <? foreach ($values['foreign'] as $conname => $foreign): ?>
-            '<?= $conname ?>' => '<?= $foreign['attname'] ?>',
+            '<?= $conname ?>' => [
+                                  'column' => '<?= $foreign['attname'] ?>',
+                                  'foreign_table' => '<?= $foreign['foreign_relname'] ?>',
+                                  'foreign_column' => '<?= $foreign['foreign_attname'] ?>',
+                                  ],
 <? endforeach ?>
     );
 <? endif ?>
