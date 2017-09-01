@@ -15,6 +15,18 @@ var DatabaseController = function() {
     this.params = {};
     this.name = 'database';
 
+    this.import_list = function(dom) {
+        var params = {};
+        params.host = $(dom).val();
+
+        console.log(params);
+        pw_app.apiPost(dom, params, callback);
+
+        function callback(data) {
+            $('#import_list').html(data);
+        }
+    }
+
     this.list = function(dom) {
         postApi(apiUrl(this.name, 'list'), this.params, callback);
 

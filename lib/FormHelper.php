@@ -20,10 +20,10 @@ class FormHelper {
 
         $tag = self::selectOptions($params, $selected);
 
-        $attribues['id'] = $params['id'];
-        $attribues['class'] = $params['class'];
-        $attribues['name'] = $params['name'];
-        $tag = self::selectTag($tag, $attribues);
+        //$attribues['id'] = $params['id'];
+        //$attribues['class'] = $params['class'];
+        //$attribues['name'] = $params['name'];
+        $tag = self::selectTag($tag, $params);
         return $tag;
     }
 

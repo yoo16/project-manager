@@ -28,6 +28,9 @@ class PgsqlEntity extends Entity {
     var $extra_columns = false;
     var $group_columns = false;
     var $joins = array();
+    var $sql = null;
+    var $sqls = null;
+    var $is_bulk_select = false;
 
     static $pg_info_columns = ['dbname', 'user', 'host', 'port', 'password'];
     static $constraint_keys = ['p' => 'Primary Key',
@@ -124,6 +127,20 @@ class PgsqlEntity extends Entity {
         $sequence_name = self::sequenceName($table_name, $id_column);
         $sql = "CREATE SEQUENCE {$sequence_name};";
         //$sql = "CREATE SEQUENCE IF NOT EXISTS {$sequence_name};";
+        return $this->query($sql);
+    }
+
+    /**
+    * sequenceName
+    * 
+    * @param string $table_name
+    * @param string $id_column
+    * @return string
+    */
+    function dropSequence($table_name, $id_column = 'id') {
+        $sequence_name = self::sequenceName($table_name, $id_column);
+        $sql = "DROP SEQUENCE {$sequence_name};";
+        //$sql = "DROP SEQUENCE IF EXISTS {$sequence_name};";
         return $this->query($sql);
     }
 
@@ -241,7 +258,7 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * pgInfo
+    * load database information
     * 
     * @param array $params
     * @return PgsqlEntity
@@ -257,7 +274,7 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * pgInfo
+    * set database information
     * 
     * @param $pg_info
     * @return void
@@ -299,8 +316,10 @@ class PgsqlEntity extends Entity {
     static function columnOptionSql($values) {
         $option = '';
         if ($values['is_required']) $option.= "NOT NULL";
+        if ($values['is_default_null']) $option.= "DEFAULT NULL";
         return $option;
     }
+
     /**
     * create table SQL
     * 
@@ -1021,12 +1040,63 @@ class PgsqlEntity extends Entity {
     /**
     * select all
     * 
+    * @return PgsqlEntity
+    */
+    public function bulkSelect() {
+        $this->is_bulk_select = true;
+        return $this;
+    }
+
+    /**
+    * select all
+    * 
     * @param  array $params
-    * @return array
+    * @return PgsqlEntity
     */
     public function all() {
-        $sql = $this->selectSql();
-        $this->values = $this->fetchRows($sql);
+        if ($this->is_bulk_select) {
+            return $this->bulkAll($this->limit);
+        } else {
+            $sql = $this->selectSql();
+            $this->values = $this->fetchRows($sql);
+            return $this;
+        }
+    }
+
+    /**
+    * select all
+    * 
+    * @param  array $params
+    * @return PgsqlEntity
+    */
+    public function bulkAll($limit) {
+        $this->sqls = null;
+        $has_data = true;
+        $offset = 0;
+        $i = 0;
+
+        if (!$limit) $limit = 100;
+        $this->limit = $limit;
+        while ($has_data) {
+            $offset = $limit * $i;
+            $this->offset = $offset;
+
+            $sql = $this->selectSql();
+            $rows = $this->fetchRows($sql);
+
+            if (!$rows) break;
+
+            $this->sqls[] = $sql;
+            if ($rows) {
+                if ($values) {
+                    $values = array_merge($values, $rows);
+                } else {
+                    $values = $rows;
+                }
+            }
+            $i++;
+        }
+        $this->values = $values;
         return $this;
     }
 
@@ -1103,6 +1173,16 @@ class PgsqlEntity extends Entity {
             //TODO session
             $this->addError('sql', 'error');
         }
+        return $this;
+    }
+
+    /**
+    * inserts
+    * 
+    * @param  array $posts
+    * @return PgsqlEntity
+    */
+    public function inserts($posts) {
         return $this;
     }
 
@@ -1485,8 +1565,8 @@ class PgsqlEntity extends Entity {
 
         $sql.= $this->whereSql();
         $sql.= $this->orderBySql();
-        $sql.= $this->offsetSql();
         $sql.= $this->limitSql();
+        $sql.= $this->offsetSql();
         $sql.= ";";
         return $sql;
     }
@@ -1909,6 +1989,8 @@ class PgsqlEntity extends Entity {
     * @return array
     **/
     function pgDatabases() {
+        $this->dbname = null;
+        $this->loadDBInfo();
         $sql = "SELECT * FROM pg_database WHERE datacl IS NULL;";
         return $this->fetchRows($sql);
     }
@@ -2116,6 +2198,22 @@ class PgsqlEntity extends Entity {
         return $this->fetchRow($sql);
     }
 
+    /**
+    * diff pg_attribute
+    *
+    * @param int $pg_class_id
+    * @param string $attnum
+    * @return array
+    **/
+    function diffPgAttributes($orign_pgsql, $orign_table_name) {
+        $orign_pg_attributes = $orign_pgsql->pgAttributes($orign_table_name);
+        var_dump(array_keys($orign_pg_attributes));
+        exit;
+        foreach ($orign_pg_attributes as $orign_pg_attribute) {
+
+        }
+        $pg_attributes = $this->pgAttributes($this->name);
+    }
 
     /**
      * update table comment

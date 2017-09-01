@@ -74,7 +74,6 @@ class ProjectController extends AppController {
                             ->bindById('Database');
     }
 
-
     function action_edit() {
         $this->project = DB::table('Project')
                         ->fetch($this->params['id'])

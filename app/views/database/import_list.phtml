@@ -1,0 +1,23 @@
+
+<?= FormHelper::select(
+        [
+        'class' => 'pw-app',
+        'csv' => DB_HOSTS_CSV,
+        'pw-controller' => 'database',
+        'pw-action' => 'import_list', 
+        ],
+        $this->host) ?>
+<table class="table">
+<? foreach ($this->pg_databases as $pg_database): ?>
+<tr>
+  <td><?= $pg_database['datname'] ?></td>
+  <td>
+    <form method="post" action="<?= url_for('import_database') ?>">
+      <?= FormHelper::submit(LABEL_IMPORT) ?>
+      <?= FormHelper::hidden('database_name', $pg_database['datname']) ?>
+      <?= FormHelper::hidden('host', $this->host) ?>
+    </form>
+  </td>
+</tr>
+<? endforeach ?>
+</table>

@@ -88,19 +88,42 @@ class DatabaseController extends AppController {
         $this->redirect_to('database/');
     }
 
+    function action_import_list() {
+        $this->layout = null;
+
+        $this->host = $_REQUEST['host'];
+        if (!$this->host) $this->host = DB_HOST;
+
+        $pgsql = new PgsqlEntity();
+        $this->pg_databases = $pgsql->setDBHost($this->host)
+                                    ->pgDatabases();
+        if ($pgsql->sql_error) {
+            echo($pgsql->sql_error);
+            exit;
+        }
+    }
+
     function action_import_database() {
-        $pg_database = $this->pm_pgsql->pgDatabase($_REQUEST['database_name']);
+        $host = $_REQUEST['host'];
+        if (!$host) $host = DB_HOST;
+        $pgsql = new PgsqlEntity();
+        $pg_database = $pgsql->setDBHost($host)
+                             ->setDBName($_REQUEST['database_name'])
+                             ->pgDatabase($_REQUEST['database_name']);
 
         if (!$pg_database) {
             echo("Not found DB name : {$_REQUEST['database_name']}");
             exit;
         }
 
-        $database = DB::table('Database')->where("name = '{$_REQUEST['database_name']}'")->one();
+        $database = DB::table('Database')
+                                ->where("name = '{$_REQUEST['database_name']}'")
+                                ->where("hostname = '{$host}'")
+                                ->one();
         if (!$database->value) {
             $posts['name'] = $pg_database['datname'];
             $posts['user_name'] = $this->pm_pgsql->user;
-            $posts['hostname'] = $this->pm_pgsql->host;
+            $posts['hostname'] = $host;
             $posts['port'] = $this->pm_pgsql->port;
 
             DB::table('Database')->insert($posts);
