@@ -44,6 +44,7 @@ class FileManager {
         'fish'      =>  'fish',
         'sheep'     =>  'sheep',
         'swiss'     =>  'swiss',
+        'staff'       =>  'staffs',
     );
 
     static $singular_rules = array(
@@ -612,44 +613,57 @@ class FileManager {
     /**
      * singular to plural
      *
-     * @param string $value
+     * @param string $singular
      * @return string
      */
-    static function singularToPlural($value) {
-        //TODO
-        $value = preg_replace("/(s|sh|ch|o|x)$/", "$1es",$value);
-        $value = preg_replace("/(f|fe)$/","ves", $value);
-        $value = preg_replace("/(a|i|u|e|o)y$/", "$1ys",$value);
-        $value = preg_replace("/y$/","ies",$value);
-        if (!preg_match("/s$/",$value)) {
-            $value = $value."s";
+    static function singularToPlural($singular) {
+        $values = explode('_', $singular);
+
+        $last_value = end($values);
+        $last_index = key($values);
+
+        $last_value = preg_replace("/(s|sh|ch|o|x)$/", "$1es" ,$last_value);
+        $last_value = preg_replace("/(f|fe)$/","ves", $last_value);
+        $last_value = preg_replace("/(a|i|u|e|o)y$/", "$1ys" ,$last_value);
+        $last_value = preg_replace("/y$/","ies", $last_value);
+        if (!preg_match("/s$/", $last_value)) {
+            $last_value = $last_value."s";
         }
-        return $value;
+
+        $values[$last_index] = $last_value;
+        $result = implode('_', $values);
+        return $result;
     }
 
     /**
      * plural to singular
      *
-     * @param string $value
+     * @param string $plural
      * @return string
      */
     static function pluralToSingular($plural) {
         $irregular_rules = self::$irregular_rules;
         $singular_rules = self::$singular_rules;
 
-        $singular = $plural;
-        if (array_key_exists(strtolower($plural), $irregular_rules)) {
-            $singular = $irregular_rules[strtolower($plural)];
+        $values = explode('_', $plural);
+        $last_value = end($values);
+        $last_index = key($values);
+
+        if (array_key_exists(strtolower($last_value), $irregular_rules)) {
+            $last_value = $irregular_rules[strtolower($last_value)];
         } else {
-            foreach($singular_rules as $key => $value) {
+            foreach($singular_rules as $key => $singular_rule) {
                 $reg = '/' . $key . '/';
-                if (preg_match($reg, $plural)) {
-                    $singular = preg_replace($reg, $value, $plural);
+                if (preg_match($reg, $last_value)) {
+                    $last_value = preg_replace($reg, $singular_rule, $last_value);
                     break;
                 }
             }
         }
-        return $singular;
+        $values[$last_index] = $last_value;
+
+        $result = implode('_', $values);
+        return $result;
     }
 
     static function phpClassName($name) {

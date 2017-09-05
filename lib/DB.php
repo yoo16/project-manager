@@ -13,10 +13,23 @@ class DB {
    /**
     * table
     *
-    * @param
+    * TODO: param is table_name ?
+    *
+    * @param string name
     * @return Class
     */
     static function table($name) {
+        $instance = new $name();
+        return $instance;
+    }
+
+   /**
+    * model
+    *
+    * @param string name
+    * @return Class
+    */
+    static function model($name) {
         $instance = new $name();
         return $instance;
     }

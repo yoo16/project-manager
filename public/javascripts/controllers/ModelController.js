@@ -4,19 +4,9 @@
  * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
-var database;
-var action = '';
-
-$(document).ready(function(){
-    model = new ModelController();
-});
-
 var ModelController = function() {
-    this.params = {};
-    this.name = 'model';
 
     this.relation_list = function(dom) {
-        alert('list');
         postApi(apiUrl(this.name, 'list'), this.params, callback);
 
         function callback(data) {
@@ -24,18 +14,14 @@ var ModelController = function() {
         }
     }
 
-    this.closeColumns = function(dom) {
-        $('#columns').html('');
-    }
+    this.old_table_list = function(dom) {
+        var params = {};
+        params.model_id = $(dom).attr('model_id');
+        pw_app.apiPost(dom, params, callback);
 
-    $(document).on('click', '.action', function() {
-        params = {};
-        action = $(this).attr('action');
-        if (!action) {
-            window.alert('not found action');
-            return;
+        function callback(data) {
+            $('#old_table_list').html(data);
         }
-        model[action](this);
-    }); 
+    }
 
 }

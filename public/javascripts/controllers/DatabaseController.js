@@ -136,14 +136,4 @@ var DatabaseController = function() {
         $('#columns').html('');
     }
 
-    $(document).on('click', '.action', function() {
-        params = {};
-        action = $(this).attr('action');
-        if (!action) {
-            window.alert('not found action');
-            return;
-        }
-        database[action](this);
-    }); 
-
 }

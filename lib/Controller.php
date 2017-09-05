@@ -110,16 +110,20 @@ class Controller extends RuntimeException {
     /**
      * query string
      * 
-     * @param  string $query
      * @return string
      */
-    static function queryString($query = null) {
-        if (is_null($query)) {
-            $request = $_SERVER['REQUEST_URI'];
-            $query = $_SERVER['QUERY_STRING'];
-        }
-       
-        $query_url = parse_url($query);
+    static function queryString() {
+        $params = self::urlParams(self::MVCParams());
+        return $params;
+    }
+
+    /**
+     * MVC params
+     * 
+     * @return array
+     */
+    static function MVCParams() {
+        $query_url = parse_url($_SERVER['QUERY_STRING']);
         $values = explode('&', $query_url['path']);
         if ($values[0]) {
             $paths = explode('/', $values[0]);
@@ -129,24 +133,36 @@ class Controller extends RuntimeException {
             } else {
                 foreach ($paths as $key => $path) {
                     $column = self::$routes[$key];
-                    if ($column && $path) $params[$column] = $path;
+                    if (isset($column) && $path) $params[$column] = $path;
                 }
             }
         } 
-
-        $request_url = parse_url($request);
-        if (isset($request_url['query'])) {
-            $values = explode('&', $request_url['query']);
-            if ($values) {
-                foreach ($values as $value) {
-                    $param_array = explode('=', $value);
-                    if (isset($param_array[0]) && isset($param_array[1])) {
-                        $params[$param_array[0]] = $param_array[1];
-                    }
-                }
-            }
-        }
         return $params;
+    }
+
+    /**
+     * url params
+     * 
+     * @return array
+     */
+    static function urlParams($params) {
+        $request_url = parse_url($_SERVER['REQUEST_URI']);
+        if (isset($request_url['query'])) {
+            parse_str($request_url['query'], $values);
+            if ($values) $params = array_merge($params, $values);
+        }
+        if (is_numeric($params['id'])) $_REQUEST['id'] = $params['id'];
+        return $params;
+    }
+
+    /**
+     * full url
+     * 
+     * @return array
+     */
+    static function fullURL() {
+        $url = (empty($_SERVER["HTTPS"]) ? "http://" : "https://") . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+        return $url;
     }
 
     /**
@@ -171,9 +187,11 @@ class Controller extends RuntimeException {
                 $errors = $this->throwErrors($t);
                 self::renderError($errors);
             } catch (Error $e) {
-                var_dump($e);
+                $errors = $this->throwErrors($e);
+                self::renderError($errors);
             } catch (Exception $e) {
-                var_dump($e);
+                $errors = $this->throwErrors($e);
+                self::renderError($errors);
             // } finally {
 
             }

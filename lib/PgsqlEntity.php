@@ -1404,6 +1404,7 @@ class PgsqlEntity extends Entity {
 
         $join['join_class'] = $join_class;
         $join['join_name'] = $join_class->name;
+        $join['join_entity_name'] = $join_class->entity_name;
         //$join['condition'] = "{$join_class->name}.{$join_column} {$eq} {$this->table_name}.{$column}";
         $join['type'] = $type;
         $this->joins[] = $join;
@@ -1433,6 +1434,7 @@ class PgsqlEntity extends Entity {
 
         $join['join_class'] = $join_class;
         $join['join_name'] = $join_class->name;
+        $join['join_entity_name'] = $join_class->entity_name;
         $join['condition'] = "{$origin_class->table_name}.{$column} {$eq} {$join_class->table_name}.{$join_column}";
         $join['type'] = $type;
         $this->joins[] = $join;
@@ -1550,7 +1552,7 @@ class PgsqlEntity extends Entity {
                 foreach ($this->joins as $join) {
                     $join_class = $join['join_class'];
                     foreach ($join_class->columns as $join_column_name => $join_column) {
-                        $columns[] = "{$join['join_name']}.{$join_column_name} AS {$join['join_name']}_{$join_column_name}";
+                        $columns[] = "{$join['join_name']}.{$join_column_name} AS {$join['join_entity_name']}_{$join_column_name}";
                     }
                 }
                 $column = implode(", \n", $columns).PHP_EOL;
@@ -2042,11 +2044,12 @@ class PgsqlEntity extends Entity {
     * pg_class
     *
     * @param int $pg_class_id
+    * @param array $conditinos
     * @param string $relkind
     * @param string $schema_name
     * @return array
     **/
-    function pgClass($pg_class_id = null, $conditinos = null, $relkind = 'r', $schema_name = 'public') {
+    function pgClass($pg_class_id, $conditinos = null, $relkind = 'r', $schema_name = 'public') {
         $sql = "SELECT pg_class.oid AS pg_class_id, * FROM pg_class 
                 LEFT JOIN pg_tables ON pg_tables.tablename = pg_class.relname
                 LEFT JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace";
@@ -2056,14 +2059,25 @@ class PgsqlEntity extends Entity {
         $conditions[] = "nspname = '{$schema_name}'";
         $conditions[] = "pg_class.oid = {$pg_class_id}";
         $condition = implode(' AND ', $conditions);
-        $sql.= " WHERE {$condition};";
+        $sql.= " WHERE {$condition}";
+        $sql.= " ORDER BY relname;";
         return $this->fetchRow($sql);
     }
 
     /**
     * pg_classes
     *
+    * relkind
+    * r: table
+    * s: sequence
+    * v: view
+    * m: materialized view
+    * c:
+    * t: toast table
+    * f: foreign table
+    *
     * @param array $pg_class_ids
+    * @param array $conditinos
     * @param string $relkind
     * @param string $schema_name
     * @return array
@@ -2082,7 +2096,7 @@ class PgsqlEntity extends Entity {
         }
         $condition = implode(' AND ', $conditions);
         $sql.= " WHERE {$condition}";
-        $sql.= " ORDER BY relname";
+        $sql.= " ORDER BY relname;";
         return $this->fetchRows($sql);
     }
 

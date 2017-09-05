@@ -1,0 +1,52 @@
+<? include('old_table_window.phtml') ?>
+
+<? include('old_attribute_window.phtml') ?>
+
+<? foreach ($this->values as $values): ?>
+
+<? if ($values['attribute']): ?>
+
+<? if ($values['model']['old_name']): ?>
+<h3><?= $values['model']['name'] ?> <--> <?= $values['model']['old_name'] ?></h3>
+<? else: ?>
+<h3>
+  <?= $values['model']['name'] ?> <-->
+  <?= FormHelper::linkModal(
+    '#old-table-window',
+    'Old Table', 
+    [
+    'class' => 'btn btn-success btn-sm pw-app', 
+    'pw-controller' => 'model',
+    'pw-action' => 'old_table_list', 
+    'model_id' => $values['model']['id'], 
+    ]) ?>
+  </h3>
+<? endif ?>
+
+<table class="table">
+  <? foreach ($values['attribute'] as $attribute): ?>
+  <tr>
+    <td class="col-3"><?= $attribute['name'] ?></td>
+    <td>
+  <?= FormHelper::linkModal(
+    '#old-attribute-window',
+    'Old Attribute', 
+    [
+    'class' => 'btn btn-success btn-sm pw-app', 
+    'pw-controller' => 'attribute',
+    'pw-action' => 'old_attribute_list', 
+    'model_id' => $values['model']['id'], 
+    'attribute_id' => $attribute['id'], 
+    ]) ?>
+    </td>
+  </tr>
+<? endforeach ?>
+</table>
+
+<? endif ?>
+
+<? endforeach ?>
+
+<?= TagHelper::javascript('controllers/ModelController') ?>
+
+<?= TagHelper::javascript('controllers/AttributeController') ?>

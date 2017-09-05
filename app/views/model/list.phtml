@@ -46,6 +46,7 @@
       <td>
         <div><?= FormHelper::link('attribute/', $model['name'], ['model_id' => $model['id']]) ?></div>
         <div><?= $model['label'] ?></div>
+        <? if ($model['old_name']): ?><div>(<?= $model['old_name'] ?>)</div><? endif ?>
       </td>
       <td><a href="<?= url_for('values', $model['id']) ?>">DB Data</a></td>
       <td>

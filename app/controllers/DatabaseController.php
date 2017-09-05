@@ -37,6 +37,7 @@ class DatabaseController extends AppController {
     function action_edit() {
         $this->database = DB::table('Database')->fetch($this->params['id'])
                                                ->takeValues($this->session['posts']);
+
     }
 
     function action_add() {

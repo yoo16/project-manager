@@ -23,7 +23,12 @@
           <td>
             <? if (!Model::$required_columns[$attribute['name']]): ?><?= FormHelper::linkButton('edit', LABEL_EDIT, $attribute['id']) ?><? endif ?>
           </td>
-          <td><?= $attribute['name'] ?></td>
+
+          <td>
+          <?= $attribute['name'] ?>
+          <? if ($attribute['old_name']): ?><div>(<?= $attribute['old_name'] ?>)</div><? endif ?>
+          </td>
+
           <td>
             <form method="post" action="<?= url_for('update_label', $attribute['id']) ?>">
               <div class="row">
@@ -56,11 +61,13 @@
             ]) ?>
           <? endif ?>
         </td>
+
         <td>
           <label class="badge badge-pill badge-info">
             <?= $attribute['type'] ?> <? if ($attribute['length'] > 0): ?> (<?= $attribute['length'] ?>) <? endif ?>
           </label>
         </td>
+        
         <td>
           <? if (!Model::$required_columns[$attribute['name']]): ?>
           <? if ($attribute['is_required']): ?>

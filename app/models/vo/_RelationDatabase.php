@@ -1,46 +1,48 @@
 <?php
 /**
- * Page 
+ * RelationDatabase 
  * 
- * @create  2017-08-21 13:46:26 
+ * @create  2017-09-04 15:05:48 
  */
 
 //namespace project_manager;
 
 require_once 'PgsqlEntity.php';
 
-class _Page extends PgsqlEntity {
+class _RelationDatabase extends PgsqlEntity {
 
     var $id_column = 'id';
-    var $name = 'pages';
-    var $entity_name = 'page';
+    var $name = 'relation_databases';
+    var $entity_name = 'relation_database';
 
     var $columns = array(
-        'class_name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
-        'entity_name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
-        'is_overwrite' => array('type' => 'bool'),
-        'label' => array('type' => 'varchar', 'length' => 256),
-        'model_id' => array('type' => 'int4'),
-        'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
+        'old_database_id' => array('type' => 'int4', 'is_required' => true),
         'project_id' => array('type' => 'int4', 'is_required' => true),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
     );
 
     var $column_labels = array (
-        'class_name' => '',
-        'created_at' => '',
-        'entity_name' => '',
-        'is_overwrite' => '',
-        'label' => '',
-        'model_id' => '',
-        'name' => '',
-        'project_id' => '',
-        'sort_order' => '',
-        'updated_at' => '',
+        'created_at' => '作成日',
+        'old_database_id' => '旧データベース',
+        'project_id' => 'プロジェクト',
+        'sort_order' => '並び順',
+        'updated_at' => '更新日',
     );
 
+    var $foreign = array(
+            'relation_databases_project_id_fkey' => [
+                                  'column' => 'project_id',
+                                  'foreign_table' => 'projects',
+                                  'foreign_column' => 'id',
+                                  ],
+            'relation_databases_old_database_id_fkey' => [
+                                  'column' => 'old_database_id',
+                                  'foreign_table' => 'databases',
+                                  'foreign_column' => 'id',
+                                  ],
+    );
 
 
     function __construct($params = null) {

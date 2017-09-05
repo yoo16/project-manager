@@ -40,4 +40,15 @@ var AttributeController = function() {
         }
     }
 
+    this.old_attribute_list = function(dom) {
+        var params = {};
+        params.attribute_id = $(dom).attr('attribute_id');
+        params.model_id = $(dom).attr('model_id');
+        pw_app.apiPost(dom, params, callback);
+
+        function callback(data) {
+            $('#old_attribute_list').html(data);
+        }
+    }
+
 }

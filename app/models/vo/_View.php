@@ -1,8 +1,11 @@
 <?php
 /**
- * _Model *
- * @package jp.co.telepath
- * @author   * @create  2013-01-10 12:52:21 */
+ * View 
+ * 
+ * @create  2017-08-21 13:46:27 
+ */
+
+//namespace project_manager;
 
 require_once 'PgsqlEntity.php';
 
@@ -13,17 +16,29 @@ class _View extends PgsqlEntity {
     var $entity_name = 'view';
 
     var $columns = array(
-        'created_at' => array('type' => 'timestamp', 'option' => 'NULL DEFAULT CURRENT_TIMESTAMP'),
-        'updated_at' => array('type' => 'timestamp'),
-        'sort_order' => array('type' => 'int4'),
-        'page_id' => array('type' => 'int4', 'is_required' => true),
-        'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
-        'label' => array('type' => 'varchar', 'length' => 256),
+        'created_at' => array('type' => 'timestamp'),
         'is_overwrite' => array('type' => 'bool'),
+        'label' => array('type' => 'varchar', 'length' => 256),
+        'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
+        'page_id' => array('type' => 'int4', 'is_required' => true),
+        'sort_order' => array('type' => 'int4'),
+        'updated_at' => array('type' => 'timestamp'),
     );
 
+    var $column_labels = array (
+        'created_at' => '',
+        'is_overwrite' => '',
+        'label' => '',
+        'name' => '',
+        'page_id' => '',
+        'sort_order' => '',
+        'updated_at' => '',
+    );
+
+
+
     function __construct($params = null) {
-        parent::__construct();        
+        parent::__construct($params);
     }
 
    /**
@@ -36,6 +51,21 @@ class _View extends PgsqlEntity {
         parent::validate();
     }
 
-}
+   /**
+    * update sort_order
+    *
+    * @param array $sort_orders
+    * @return void
+    */
+    function updateSortOrder($sort_orders) {
+        if (is_array($sort_orders)) {
+            foreach ($sort_orders as $id => $sort_order) {
+                if (is_numeric($id) && is_numeric($sort_order)) {
+                    $posts['sort_order'] = $sort_order;
+                    $this->update($posts, $id);
+                }
+            }
+        }
+    }
 
-?>
+}

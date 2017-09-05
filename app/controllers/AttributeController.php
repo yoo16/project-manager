@@ -241,7 +241,7 @@ class AttributeController extends ProjectController {
 
         $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
         if ($this->attribute->value['fk_attribute_id']) {
-            $this->fk_attribute = DB::table('Attribute')->fetch($this->attribute['fk_attribute_id']);
+            $this->fk_attribute = DB::table('Attribute')->fetch($this->attribute->value['fk_attribute_id']);
         }
     }
 
@@ -258,12 +258,18 @@ class AttributeController extends ProjectController {
             $database = DB::table('Database')->fetch($this->project->value['database_id']);
 
             $pgsql = $database->pgsql();  
-            $results = $pgsql->addPgForeignKey($model->value['name'], $attribute->value['name'],
-                                                      $fk_model->value['name'], $fk_attribute->value['name']);
+            $results = $pgsql->addPgForeignKey($model->value['name'],
+                                               $attribute->value['name'],
+                                               $fk_model->value['name'],
+                                               $fk_attribute->value['name']);
 
             if ($results) {
                 $posts['fk_attribute_id'] = $fk_attribute->value['id'];
                 $attribute->update($posts);
+            } else {
+                echo($pgsql->sql);
+                echo($pgsql->sql_error);
+                exit;
             }
         }
         $params['model_id'] = $attribute->value['model_id'];
@@ -335,6 +341,36 @@ class AttributeController extends ProjectController {
         $pgsql->addPgUnique($model['name'], $column_names);
 
         $this->redirect_to('list');
+    }
+
+    function action_old_attribute_list() {
+        $this->layout = null;
+
+        $this->model = DB::table('Model')->fetch($_REQUEST['model_id']);
+        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
+
+        $relation_database = DB::table('RelationDatabase')
+                                        ->join('Database', 'id', 'old_database_id')
+                                        ->join('Project', 'id', 'project_id')
+                                        ->all();
+        $pgsql = new PgsqlEntity();
+        foreach ($relation_database->values as $relation_database) {
+            $pgsql->setDBName($relation_database['database_name'])
+                  ->setDBHost($relation_database['database_hostname']);
+
+            if ($this->model->value['old_name']) {
+                $db_name = $relation_database['database_name'];
+                $model_name = $this->model->value['old_name'];
+                $this->pg_attributes[$db_name][$model_name] = $pgsql->pgAttributes($this->model->value['old_name']);
+            }
+        }
+    }
+
+    function action_update_old_name() {
+        $posts['old_name'] = $this->posts['old_name'];
+
+        DB::table('Attribute')->fetch($_REQUEST['attribute_id'])->update($posts);
+        $this->redirect_to('relation_database/diff_model');
     }
 
 }

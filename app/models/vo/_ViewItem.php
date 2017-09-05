@@ -2,8 +2,10 @@
 /**
  * ViewItem 
  * 
- * @create  2017-07-31 14:53:22 
+ * @create  2017-08-21 13:46:27 
  */
+
+//namespace project_manager;
 
 require_once 'PgsqlEntity.php';
 
@@ -14,17 +16,26 @@ class _ViewItem extends PgsqlEntity {
     var $entity_name = 'view_item';
 
     var $columns = array(
-        'created_at' => array('type' => 'timestamp', 'option' => 'NULL DEFAULT CURRENT_TIMESTAMP'),
-        'updated_at' => array('type' => 'timestamp'),
         'attribute_id' => array('type' => 'int4'),
-        'view_id' => array('type' => 'int4', 'is_required' => true),
-        'label' => array('type' => 'varchar', 'length' => 256),
-        'form_type' => array('type' => 'varchar', 'length' => 256),
+        'created_at' => array('type' => 'timestamp'),
         'css_class' => array('type' => 'bool'),
+        'form_type' => array('type' => 'varchar', 'length' => 256),
+        'label' => array('type' => 'varchar', 'length' => 256),
+        'updated_at' => array('type' => 'timestamp'),
+        'view_id' => array('type' => 'int4', 'is_required' => true),
     );
 
     var $column_labels = array (
+        'attribute_id' => '',
+        'created_at' => '',
+        'css_class' => '',
+        'form_type' => '',
+        'label' => '',
+        'updated_at' => '',
+        'view_id' => '',
     );
+
+
 
     function __construct($params = null) {
         parent::__construct($params);

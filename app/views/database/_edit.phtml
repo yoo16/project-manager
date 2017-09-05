@@ -11,14 +11,14 @@
         <?= $this->database->formSelect('hostname', ['csv' => DB_HOSTS_CSV]) ?>
       </td>
     </tr>
-                 
+
     <tr>
       <th><?= DATABASE_USER ?></th>
       <td>
         <?= $this->database->formSelect('user_name', ['csv' => DB_USERS_CSV]) ?>
       </td>
     </tr>
-                 
+
     <tr>
       <th><?= DATABASE_PORT ?></th>
       <td>
@@ -33,5 +33,18 @@
       </td>
     </tr>
 
+    <tr>
+      <th>Old database</th>
+      <td>
+      <?= $this->database->formSelect('old_database_id', 
+        [
+        'model' => 'Database',
+        'unselect' => true,
+        'label' => array('name', 'hostname'),
+        'label_separate' => ' : '
+        ])
+        ?>
+      </td>
+    </tr>
   </table>
 

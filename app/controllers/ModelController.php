@@ -227,4 +227,30 @@ class ModelController extends ProjectController {
         $this->redirect_to('list');
     }
 
+    function action_old_table_list() {
+        $this->layout = null;
+
+        $this->model = DB::table('Model')->fetch($_REQUEST['model_id']);
+
+        $pgsql = new PgsqlEntity();
+        $relation_database = DB::table('RelationDatabase')
+                                ->join('Database', 'id', 'old_database_id')
+                                ->join('Project', 'id', 'project_id')
+                                ->all();
+
+        foreach ($relation_database->values as $relation_database) {
+            $pgsql->setDBName($relation_database['database_name'])
+                  ->setDBHost($relation_database['database_hostname']);
+
+            $this->pg_classes[$relation_database['database_name']] = $pgsql->pgClasses();
+        }
+    }
+
+    function action_update_old_table() {
+        $posts['old_name'] = $this->posts['old_name'];
+
+        DB::table('Model')->fetch($_REQUEST['model_id'])->update($posts);
+        $this->redirect_to('relation_database/diff_model');
+    }
+
 }

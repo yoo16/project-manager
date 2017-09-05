@@ -47,7 +47,7 @@ class ProjectController extends AppController {
         $this->clearPosts();
     }
 
-    function index() {
+    function action_index() {
         $pgsql_entity = new PgsqlEntity();
         $this->pg_connection = $pgsql_entity->connection();
         if (!$this->pg_connection) {

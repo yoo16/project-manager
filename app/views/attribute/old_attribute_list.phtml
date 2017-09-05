@@ -1,0 +1,30 @@
+
+<? if ($this->pg_attributes): ?>
+<h3><?= $this->model->value['name'] ?> -> <?= $this->attribute->value['name'] ?></h3>
+<table class="table table-sm">
+  <? foreach ($this->pg_attributes as $database_name => $pg_models): ?>
+  <? foreach ($pg_models as $model_name => $pg_attributes): ?>
+  <? foreach ($pg_attributes as $pg_attribute): ?>
+  <? if (!Model::isNumberingName($pg_attribute['relname'])): ?>
+  <tr>
+    <td><?= $database_name ?></td>
+    <td><?= $model_name ?></td>
+    <td><?= $pg_attribute['attname'] ?></td>
+    <td>
+      <form action="<?= url_for('attribute/update_old_name') ?>" method="post">
+        <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
+        <input type="hidden" name="old_name" value="<?= $pg_attribute['attname'] ?>">
+        <?= FormHelper::submit(
+          LABEL_UPDATE,
+          [
+          'class' => 'btn btn-primary',
+          ]) ?>
+        </form>
+      </td>
+    </tr>
+  <? endif ?>
+<? endforeach ?>
+<? endforeach ?>
+<? endforeach ?>
+</table>
+<? endif ?>
