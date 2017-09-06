@@ -34,7 +34,6 @@ class Project extends _Project {
     function exportPHP() {
         $database = DB::table('Database')->fetch($this->value['database_id']);
         $pgsql = $database->pgsql();
-        //$pg_database = $pgsql->pgDatabase();
 
         //model
         $this->bindMany('Model');
@@ -56,6 +55,11 @@ class Project extends _Project {
 
                 $values['model'] = $model;
                 $values['attribute'] = $attributes;
+                // foreach ($attributes as $attribute) {
+                //     if ($attribute['old_name']) {
+                //         $values['old_attribute'][] =$attribute;
+                //     }
+                // }
                 foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
                     foreach ($pg_constraints as $pg_constraint) {
                         if ($type == 'unique') {

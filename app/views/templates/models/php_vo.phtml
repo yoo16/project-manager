@@ -24,11 +24,23 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
     var $name = '<?= $values['model']['name'] ?>';
     var $entity_name = '<?= $values['model']['entity_name']?>';
 
+<? if ($values['model']['old_name']): ?>
+    var $old_name = '<?= $values['model']['old_name'] ?>';
+<? endif ?>
+
 <? if ($values['attribute']): ?>
     var $columns = array(
 <? foreach ($values['attribute'] as $attribute): ?>
 <? if ($attribute['name'] != 'id'): ?>
         <?= Model::columnPropertyForTemplate($attribute) ?>,
+<? endif ?>
+<? endforeach ?>
+    );
+
+    var $old_columns = array(
+<? foreach ($values['attribute'] as $attribute): ?>
+<? if ($attribute['old_name']): ?>
+        '<?= $attribute['name'] ?>' => '<?= $attribute['old_name'] ?>',
 <? endif ?>
 <? endforeach ?>
     );

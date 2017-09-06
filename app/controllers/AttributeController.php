@@ -373,4 +373,10 @@ class AttributeController extends ProjectController {
         $this->redirect_to('relation_database/diff_model');
     }
 
+    function action_delete_old_name() {
+        $posts['old_name'] = '';
+        DB::table('Attribute')->fetch($_REQUEST['attribute_id'])->update($posts);
+        $this->redirect_to('list');
+    }
+
 }

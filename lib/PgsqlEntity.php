@@ -1179,11 +1179,24 @@ class PgsqlEntity extends Entity {
     /**
     * inserts
     * 
+    * @param  array $rows
+    * @return PgsqlEntity
+    */
+    public function copyFrom($rows) {
+        $model_columns = array_keys($this->columns);
+        pg_copy_from($this->connection(), $this->table_name, $rows);
+    }
+
+    /**
+    * inserts
+    * 
     * @param  array $posts
     * @return PgsqlEntity
     */
     public function inserts($posts) {
-        return $this;
+        $model_columns = array_keys($this->columns);
+
+        pg_insert($this->connection(), $this->table_name, $posts);
     }
 
     /**
@@ -1244,6 +1257,49 @@ class PgsqlEntity extends Entity {
             $message = "SQL Error: {$sql}";
             echo($message);
             exit;
+        }
+        return $this;
+    }
+
+    /**
+    * copy from old table
+    * 
+    * @param  PgsqlEntity $old_pgsql
+    * @return PgsqlEntity
+    */
+    public function copyFromOldTable($old_pgsql) {
+        if (!$old_pgsql) exit('Not found old_pgsql');
+
+        $results = $this->deletes();
+
+        $sql = $this->selectSqlFromOldTable();
+        $values = $old_pgsql->fetchRows($sql);
+
+        if ($old_pgsql->sql_error) {
+            echo($old_pgsql->sql_error).PHP_EOL;
+            exit;
+        }
+
+        $results = $this->copyFrom($values);
+    }
+
+    /**
+    * insertsFromOldTable
+    * 
+    * @param  PgsqlEntity $old_pgsql
+    * @return PgsqlEntity
+    */
+    public function insertsFromOldTable($old_pgsql) {
+        if (!$old_pgsql) exit('Not found old_pgsql');
+
+        $sql = $this->selectSqlFromOldTable();
+        $values = $old_pgsql->fetchRows($sql);
+
+        if ($result !== false) {
+            $this->_value = $this->value;
+        } else {
+            //TODO session
+            $this->addError('sql', 'error');
         }
         return $this;
     }
@@ -1564,6 +1620,38 @@ class PgsqlEntity extends Entity {
         $sql = "SELECT {$column} FROM {$this->table_name}";
 
         if ($this->joins) $sql.= $this->joinSql();
+
+        $sql.= $this->whereSql();
+        $sql.= $this->orderBySql();
+        $sql.= $this->limitSql();
+        $sql.= $this->offsetSql();
+        $sql.= ";";
+        return $sql;
+    }
+
+
+    /**
+    * select sql for old table
+    * 
+    * @return string
+    */
+    public function selectSqlFromOldTable() {
+        if (!$this->old_name) exit('Not found old_name');
+        if (!$this->old_columns) exit('Not found old_columns');
+
+        if ($this->old_columns) {
+            foreach ($this->old_columns as $column_name => $old_column_name) {
+                if ($old_column_name == $column_name) {
+                    $select_column = $column_name;
+                } else {
+                    $select_column = "{$old_column_name} AS {$column_name}";
+                }
+                $select_columns[] = $select_column;
+            }
+            $column = implode(", \n", $select_columns).PHP_EOL;
+        }
+
+        $sql = "SELECT {$column} FROM {$this->old_name}";
 
         $sql.= $this->whereSql();
         $sql.= $this->orderBySql();

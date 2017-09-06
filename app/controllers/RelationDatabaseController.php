@@ -150,10 +150,8 @@ class RelationDatabaseController extends ProjectController {
             if ($attributes) {
                 $this->values[$model['name']]['model'] = $model;
                 foreach ($attributes as $attribute) {
-                    if (!Model::$required_columns[$attribute['name']]) {
-                        if (!$attribute['old_name']) {
-                            $this->values[$model['name']]['attribute'][] = $attribute;
-                        }
+                    if (!$attribute['old_name']) {
+                        $this->values[$model['name']]['attribute'][] = $attribute;
                     }
                 }
             }
