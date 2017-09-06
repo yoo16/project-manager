@@ -15,6 +15,7 @@ class _View extends PgsqlEntity {
     var $name = 'views';
     var $entity_name = 'view';
 
+
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'is_overwrite' => array('type' => 'bool'),
@@ -23,6 +24,9 @@ class _View extends PgsqlEntity {
         'page_id' => array('type' => 'int4', 'is_required' => true),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
+    );
+
+    var $old_columns = array(
     );
 
     var $column_labels = array (

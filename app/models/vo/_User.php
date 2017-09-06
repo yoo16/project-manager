@@ -15,6 +15,8 @@ class _User extends PgsqlEntity {
     var $name = 'users';
     var $entity_name = 'user';
 
+    var $old_name = 'tb_user';
+
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'default_db_host' => array('type' => 'varchar', 'length' => 256),
@@ -28,6 +30,11 @@ class _User extends PgsqlEntity {
         'password' => array('type' => 'varchar', 'length' => 256),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
+    );
+
+    var $old_columns = array(
+        'login_name' => 'login_name',
+        'password' => 'password',
     );
 
     var $column_labels = array (

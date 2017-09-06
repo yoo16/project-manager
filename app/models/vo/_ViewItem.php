@@ -15,6 +15,7 @@ class _ViewItem extends PgsqlEntity {
     var $name = 'view_items';
     var $entity_name = 'view_item';
 
+
     var $columns = array(
         'attribute_id' => array('type' => 'int4'),
         'created_at' => array('type' => 'timestamp'),
@@ -23,6 +24,9 @@ class _ViewItem extends PgsqlEntity {
         'label' => array('type' => 'varchar', 'length' => 256),
         'updated_at' => array('type' => 'timestamp'),
         'view_id' => array('type' => 'int4', 'is_required' => true),
+    );
+
+    var $old_columns = array(
     );
 
     var $column_labels = array (

@@ -763,6 +763,24 @@ class FormHelper {
     }
 
     /**
+     * textarea
+     *
+     * @param array $attributes
+     * @param string $name
+     * @param object $value
+     * @return string
+     */
+    static function textarea($name, $value = null, $params = null) {
+        if (isset($name)) $params['name'] = $name;
+        if (!$params['class']) $params['class'] = 'col-12';
+        if (!$params['rows']) $params['rows'] = '10';
+        $params['class'].= " form-control";
+
+        $tag = self::tag('textarea', $value, $params);
+        return $tag;
+    }
+
+    /**
      * text
      *
      * @param string $name

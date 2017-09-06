@@ -15,6 +15,7 @@ class _Database extends PgsqlEntity {
     var $name = 'databases';
     var $entity_name = 'database';
 
+
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'current_version' => array('type' => 'int4'),
@@ -25,6 +26,9 @@ class _Database extends PgsqlEntity {
         'type' => array('type' => 'varchar'),
         'updated_at' => array('type' => 'timestamp'),
         'user_name' => array('type' => 'varchar', 'is_required' => true),
+    );
+
+    var $old_columns = array(
     );
 
     var $column_labels = array (

@@ -15,12 +15,16 @@ class _RelationDatabase extends PgsqlEntity {
     var $name = 'relation_databases';
     var $entity_name = 'relation_database';
 
+
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'old_database_id' => array('type' => 'int4', 'is_required' => true),
         'project_id' => array('type' => 'int4', 'is_required' => true),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
+    );
+
+    var $old_columns = array(
     );
 
     var $column_labels = array (

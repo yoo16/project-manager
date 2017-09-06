@@ -15,6 +15,7 @@ class _Model extends PgsqlEntity {
     var $name = 'models';
     var $entity_name = 'model';
 
+
     var $columns = array(
         'class_name' => array('type' => 'varchar', 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
@@ -26,6 +27,7 @@ class _Model extends PgsqlEntity {
         'is_unenable' => array('type' => 'bool'),
         'label' => array('type' => 'varchar'),
         'name' => array('type' => 'varchar', 'is_required' => true),
+        'note' => array('type' => 'text'),
         'old_name' => array('type' => 'varchar', 'length' => 256),
         'pg_class_id' => array('type' => 'int4', 'is_required' => true),
         'project_id' => array('type' => 'int4', 'is_required' => true),
@@ -33,6 +35,9 @@ class _Model extends PgsqlEntity {
         'sort_order' => array('type' => 'int4'),
         'sub_table_name' => array('type' => 'varchar'),
         'updated_at' => array('type' => 'timestamp'),
+    );
+
+    var $old_columns = array(
     );
 
     var $column_labels = array (
@@ -46,6 +51,7 @@ class _Model extends PgsqlEntity {
         'is_unenable' => '',
         'label' => '',
         'name' => '',
+        'note' => 'ノート',
         'old_name' => '旧テーブル名',
         'pg_class_id' => '',
         'project_id' => '',

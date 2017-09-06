@@ -15,6 +15,7 @@ class _Project extends PgsqlEntity {
     var $name = 'projects';
     var $entity_name = 'project';
 
+
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'database_id' => array('type' => 'int4', 'is_required' => true),
@@ -25,6 +26,9 @@ class _Project extends PgsqlEntity {
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
         'url' => array('type' => 'varchar', 'length' => 256),
+    );
+
+    var $old_columns = array(
     );
 
     var $column_labels = array (

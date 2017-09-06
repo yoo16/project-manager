@@ -86,26 +86,35 @@ class Database extends _Database {
         $row = 1;
         $this->sheet->setCellValueByColumnAndRow(0, $row, 'Table Name');
         $this->sheet->setCellValueByColumnAndRow(1, $row, 'Comment');
+        $this->sheet->setCellValueByColumnAndRow(2, $row, 'Note');
 
-        $this->drawBorders(1, 1);
-        $this->drawFillColor(1, 1, 'FFEEEEEE');
+        $this->drawBorders(1, 2);
+        $this->drawFillColor(1, 2, 'FFEEEEEE');
         $this->sheet->getRowDimension(1)->setRowHeight($this->cell_height);
 
-        foreach ($pg_classes as $pg_class) {
-            $row++;
-            $this->sheet->setCellValueByColumnAndRow(0, $row, $pg_class['relname']);
-            $this->sheet->setCellValueByColumnAndRow(1, $row, $pg_class['comment']);
+        foreach ($pg_classes as $index => $pg_class) {
+            $is_numbering = PgsqlEntity::isNumberingName($pg_class['relname']);
+            if (!$is_numbering) {
+                $model = DB::table('Model')->where("name = '{$pg_class['relname']}'")->one();
+                $pg_classes[$index]['model'] = $model;
 
-            $sheet_name = $this->excelSheetName($pg_class['relname']);
-            $url = "sheet://{$sheet_name}!A1";
-            $this->sheet->getCellByColumnAndRow(0, $row)->getHyperlink()->setUrl($url);
+                $row++;
+                $this->sheet->setCellValueByColumnAndRow(0, $row, $pg_class['relname']);
+                $this->sheet->setCellValueByColumnAndRow(1, $row, $pg_class['comment']);
+                $this->sheet->setCellValueByColumnAndRow(2, $row, $model->value['note']);
 
-            $this->drawBorders($row, 1);
-            $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
+                $sheet_name = $this->excelSheetName($pg_class['relname']);
+                $url = "sheet://{$sheet_name}!A1";
+                $this->sheet->getCellByColumnAndRow(0, $row)->getHyperlink()->setUrl($url);
+
+                $this->drawBorders($row, 2);
+                $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
+            }
         }
         //$this->autoSize(10);
         $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(0))->setWidth(40);
         $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(1))->setWidth(30);
+        $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(2))->setWidth(100);
 
         foreach ($pg_classes as $pg_class) {
             $is_numbering = PgsqlEntity::isNumberingName($pg_class['relname']);
@@ -126,17 +135,26 @@ class Database extends _Database {
                 //attribute
                 $row = 3;
                 $pg_attributes = $pgsql_entity->attributeArray($pg_class['relname']);
-                $row = $this->createExcelAttributes($row, $pg_attributes);
 
-                //TODO pg_attributes index is attnum
-                foreach ($pg_attributes as $pg_attribute) {
-                    if ($pg_attribute['attnum'] > 0) $attributes[$pg_attribute['attnum']] = $pg_attribute;
+                //TODO
+                $model = $pg_class['model'];
+                $_attributes = $model->hasMany('Attribute')->values;
+                if ($_attributes) {
+                    foreach ($_attributes as $attribute) {
+                        if ($attribute['attnum'] > 0) {
+                            if ($pg_attributes[$attribute['attnum']]) {
+                                $pg_attributes[$attribute['attnum']]['attribute'] = $attribute;
+                            }
+                        }
+                    }
                 }
+
+                $row = $this->createExcelAttributes($row, $pg_attributes);
 
                 //constraint 
                 if ($pg_class['pg_constraint']) {
                     $row+= 3;
-                    $row = $this->createExcelConstraints($row, $pg_class, $attributes);
+                    $row = $this->createExcelConstraints($row, $pg_class);
                 }
             }
 
@@ -146,6 +164,7 @@ class Database extends _Database {
             $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(2))->setWidth(20);
             $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(3))->setWidth(20);
             $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(4))->setWidth(10);
+            $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(5))->setWidth(100);
         }
 
         $book->setActiveSheetIndex(0);
@@ -218,16 +237,17 @@ class Database extends _Database {
         }
     }
 
-    function createExcelAttributes($row, $pg_attributes) {
+    function createExcelAttributes($row, $pg_attributes, $attributes) {
+        //TODO array setting
         $this->sheet->setCellValueByColumnAndRow(0, $row, 'attribute');
         $this->sheet->setCellValueByColumnAndRow(1, $row, 'comment');
         $this->sheet->setCellValueByColumnAndRow(2, $row, 'type');
         $this->sheet->setCellValueByColumnAndRow(3, $row, 'length');
-        //$this->sheet->setCellValueByColumnAndRow(4, $row, 'primary key');
         $this->sheet->setCellValueByColumnAndRow(4, $row, 'not null');
+        $this->sheet->setCellValueByColumnAndRow(5, $row, 'Note');
 
-        $this->drawBorders($row, 4);
-        $this->drawFillColor($row, 4, 'FFEEEEEE');
+        $this->drawBorders($row, 5);
+        $this->drawFillColor($row, 5, 'FFEEEEEE');
         $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
 
         foreach ($pg_attributes as $pg_attribute) {
@@ -236,18 +256,20 @@ class Database extends _Database {
             $this->sheet->setCellValueByColumnAndRow(1, $row, $pg_attribute['comment']);
             $this->sheet->setCellValueByColumnAndRow(2, $row, $pg_attribute['udt_name']);
             $this->sheet->setCellValueByColumnAndRow(3, $row, $pg_attribute['character_maximum_length']);
-            //$this->sheet->setCellValueByColumnAndRow(4, $row, $pg_attribute['is_primary_key']);
             if ($pg_attribute['attnotnull'] == 't') {
                 $this->sheet->setCellValueByColumnAndRow(4, $row, ($pg_attribute['attnotnull'] == 't'));
             }
+            if ($pg_attribute['attribute']['note']) {
+                $this->sheet->setCellValueByColumnAndRow(5, $row, $pg_attribute['attribute']['note']);
+            }
 
-            $this->drawBorders($row, 4);
+            $this->drawBorders($row, 5);
             $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
         }
         return $row;
     }
 
-    function createExcelConstraints($row, $pg_class, $attributes) {
+    function createExcelConstraints($row, $pg_class) {
         if ($pg_class['pg_constraint']) {
             $this->sheet->setCellValueByColumnAndRow(0, $row, 'constraint');
             $this->sheet->setCellValueByColumnAndRow(1, $row, 'type');

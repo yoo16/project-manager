@@ -15,6 +15,7 @@ class _Page extends PgsqlEntity {
     var $name = 'pages';
     var $entity_name = 'page';
 
+
     var $columns = array(
         'class_name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
@@ -26,6 +27,9 @@ class _Page extends PgsqlEntity {
         'project_id' => array('type' => 'int4', 'is_required' => true),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
+    );
+
+    var $old_columns = array(
     );
 
     var $column_labels = array (

@@ -15,6 +15,7 @@ class _Attribute extends PgsqlEntity {
     var $name = 'attributes';
     var $entity_name = 'attribute';
 
+
     var $columns = array(
         'attnum' => array('type' => 'int4', 'is_required' => true),
         'attrelid' => array('type' => 'int4', 'is_required' => true),
@@ -36,6 +37,9 @@ class _Attribute extends PgsqlEntity {
         'sort_order' => array('type' => 'int4'),
         'type' => array('type' => 'varchar', 'is_required' => true),
         'updated_at' => array('type' => 'timestamp'),
+    );
+
+    var $old_columns = array(
     );
 
     var $column_labels = array (

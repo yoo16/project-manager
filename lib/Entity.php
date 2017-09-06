@@ -527,6 +527,20 @@ class Entity {
     }
 
    /**
+    * formInput
+    *
+    * @param string $column
+    * @param array $params
+    * @return string
+    */
+    function formTextarea($column, $params = null) {
+        if (!$column) return;
+        $name = "{$this->entity_name}[{$column}]";
+        $tag = FormHelper::textarea($name, $this->value[$column], $params);
+        return $tag;
+    }
+
+   /**
     * formHidden
     *
     * @param string $column
