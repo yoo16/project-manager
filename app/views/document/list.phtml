@@ -1,0 +1,51 @@
+<? include('_header.phtml') ?>
+
+<? include('add_window.phtml'); ?>
+
+<div class="">
+
+  <table class="table">
+    <thead class="thead-default">
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Comment/Note</th>
+      </tr>
+    </thead>
+
+    <? if ($this->model->values): ?>
+    <? foreach ($this->model->values as $model): ?>
+    <tr>
+      <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $model['id']) ?></td>
+      <td>
+        <div><?= FormHelper::link('attribute_list', $model['name'], ['model_id' => $model['id']]) ?></div>
+        <? if ($model['old_name']): ?><div>(<?= $model['old_name'] ?>)</div><? endif ?>
+      </td>
+      <td>
+        <form method="post" action="<?= url_for('update_model', $model['id']) ?>">
+          <div class="row">
+           <div class="input-group">
+             <label for="" class="col-3 col-form-label">Comment</label>
+             <?= FormHelper::input(['class' => 'form-control form-control-sm'], 'model[label]', $model['label']) ?>
+             <?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?>
+           </div>
+         </div>
+         <div class="row">
+           <div class="input-group">
+             <label for="" class="col-3 col-form-label">Note</label>
+             <?= FormHelper::textarea('model[label]', $model['note'], ['class' => 'form-control', 'rows' => 5]) ?>
+           </div>
+         </div>
+         <div class="row">
+         </div>
+         <?= FormHelper::hidden('pg_class_id', $model['pg_attribute']['pg_class_id']) ?>
+         <?= FormHelper::hidden('database_id', $this->database->value['id']) ?>
+       </form>
+     </td>
+   </td>
+
+ </tr>
+<? endforeach ?>
+<? endif ?>
+</table>
+</div>

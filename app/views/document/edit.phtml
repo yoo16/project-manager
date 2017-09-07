@@ -1,0 +1,33 @@
+<div class="card">
+  <h3 class="card-header">Model</h3>
+  <div class="card-block">
+
+    <form id="" action="<?= url_for('update', $this->model->value['id']) ?>" method="post" autocomplete="off">
+
+      <div class="form-group row">
+        <label for="model-name" class="col-1 col-form-label">Name</label>
+        <?= $this->model->formInput('name') ?>
+      </div>
+
+      <div class="form-group row">
+        <label for="" class="col-1 col-form-label">Label</label>
+        <?= $this->model->formInput('label') ?>
+      </div>
+      
+      <div class="form-group row">
+        <label for="" class="col-1 col-form-label">Lock</label>
+        <?= $this->model->formCheckbox('is_lock') ?>
+      </div>
+     
+      <div class="form-group row">
+        <label for="" class="form-control-label col-2">Note</label>
+        <?= $this->model->formTextarea('note') ?>
+      </div> 
+      
+      <?= FormHelper::submit(LABEL_UPDATE) ?>
+      <?= FormHelper::linkButton('cancel', LABEL_BACK) ?>
+    </form>
+
+    <?= $this->model->formDelete() ?>
+</div>
+</div>

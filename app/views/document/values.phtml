@@ -1,0 +1,35 @@
+<? include('_header.phtml') ?>
+
+<? include('model_value_window.phtml'); ?>
+
+<div class="">
+  <div class="pt-3">
+    <?= FormHelper::linkModal('#model-value-window', LABEL_ADD) ?>
+    <a class="btn btn-outline-primary" href="<?= url_for('list'); ?>"><?= LABEL_BACK ?></a>
+  </div>
+
+  <div class="pt-3">
+    <h3><?= $this->model->value['name'] ?></h3>
+  </div>
+  <div>
+    <table class="table table-headerfixed">
+      <thead class="thead-default">
+        <tr>
+        <? foreach ($this->values[0] as $column_name => $value): ?>
+        <th><?= $column_name ?></th>
+        <? endforeach ?>
+        </tr>
+      </thead>
+
+      <? if ($this->values): ?>
+      <? foreach ($this->values as $values): ?>
+      <tr>
+        <? foreach ($values as $column_name => $value): ?>
+        <td><?= $value ?></td>
+        <? endforeach ?>
+      </tr>
+      <? endforeach ?>
+      <? endif ?>
+    </table>
+  </div>
+</div>

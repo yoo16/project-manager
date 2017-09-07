@@ -1,0 +1,60 @@
+<? include('_header.phtml') ?>
+
+<div class="card">
+  <h4 class="card-header">
+  <?= $this->model->value['name'] ?> <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label>
+  <a class="btn btn-outline-primary" href="<?= url_for('list') ?>"><?= LABEL_BACK ?></a>
+  </h4>
+
+  <div class="card-body">
+    <table class="table">
+      <thead class="thead-default">
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Comment/Note</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <? if ($this->attribute->values): ?>
+        <? foreach ($this->attribute->values as $attribute): ?>
+        <tr>
+          <td>
+            <? if (!Model::$required_columns[$attribute['name']]): ?><?= FormHelper::linkButton('edit', LABEL_EDIT, $attribute['id']) ?><? endif ?>
+          </td>
+
+          <td>
+            <?= $attribute['name'] ?>
+            <? if ($attribute['old_name']): ?>
+            <div>
+              (<?= $attribute['old_name'] ?>)
+            </div>
+          <? endif ?>
+        </td>
+
+        <td>
+          <form method="post" action="<?= url_for('update_attribute', $attribute['id']) ?>">
+            <div class="row">
+             <div class="input-group">
+               <?= FormHelper::text('attribute[label]', $attribute['label'], ['class' => 'form-control form-control-sm']) ?>
+               <span class="input-group-btn"><?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?></span>
+             </div>
+           </div>
+            <div class="row">
+             <div class="input-group">
+               <?= FormHelper::textarea('attribute[note]', $attribute['note'], ['class' => 'form-control', 'rows' => 3]) ?>
+             </div>
+           </div>
+           <?= FormHelper::hidden('pg_class_id', $attribute['pg_attribute']['pg_class_id']) ?>
+           <?= FormHelper::hidden('database_id', $this->database->value['id']) ?>
+         </form>
+       </td>
+
+     </tr>
+   <? endforeach ?>
+ <? endif ?>
+</tbody>
+</table>
+</div>
+</div>

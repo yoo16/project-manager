@@ -1,0 +1,31 @@
+
+<? if ($this->pg_classes): ?>
+<h3><?= $this->model->value['name'] ?></h3>
+<table class="table table-sm">
+  <? foreach ($this->pg_classes as $database_name => $pg_classes): ?>
+  <? foreach ($pg_classes as $pg_class): ?>
+  <? if (!Model::isNumberingName($pg_class['relname'])): ?>
+  <tr>
+    <td>
+      <?= $database_name ?>
+    </td>
+    <td>
+      <?= $pg_class['relname'] ?>
+    </td>
+    <td>
+      <form action="<?= url_for('model/update_old_table') ?>" method="post">
+        <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
+        <input type="hidden" name="old_name" value="<?= $pg_class['relname'] ?>">
+        <?= FormHelper::submit(
+          LABEL_UPDATE,
+          [
+          'class' => 'btn btn-primary',
+          ]) ?>
+        </form>
+      </td>
+    </tr>
+  <? endif ?>
+<? endforeach ?>
+<? endforeach ?>
+</table>
+<? endif ?>
