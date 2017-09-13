@@ -1549,11 +1549,9 @@ class PgsqlEntity extends Entity {
     * @param  Object $value
     * @return string
     */
-    private function sqlValue($value) {
+    private function sqlValue($value, $type) {
         if (is_null($value)) {
             return "NULL";
-        } elseif (is_numeric($value)) {
-            return (string) $value;
         } elseif (is_bool($value)) {
             return ($value) ? 'TRUE' : 'FALSE';
         } elseif (is_array($value)) {
