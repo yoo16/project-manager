@@ -25,7 +25,13 @@
       <? foreach ($this->values as $values): ?>
       <tr>
         <? foreach ($values as $column_name => $value): ?>
-        <td><?= $value ?></td>
+        <td>
+        <? if ($model = $this->fk_models[$column_name]): ?>
+        <a href="<?= url_for('values', $model['id']) ?>"><?= $value ?></a>
+        <? else: ?>
+        <?= $value ?>
+        <? endif ?>
+        </td>
         <? endforeach ?>
       </tr>
       <? endforeach ?>

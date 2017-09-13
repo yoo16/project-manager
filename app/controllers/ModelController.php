@@ -56,9 +56,24 @@ class ModelController extends ProjectController {
 
     function action_values() {
         $this->model = DB::table('model')->fetch($this->params['id']);
+        $this->attribute = $this->model->hasMany('Attribute');
+
+        foreach ($this->attribute->values as $attribute) {
+            if ($attribute['fk_attribute_id']) {
+                $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
+                if ($fk_attribute->value) {
+                    $model = DB::table('Model')->fetch($fk_attribute->value['model_id']);
+                    if ($model->value) {
+                        $this->fk_models[$attribute['name']] = $model->value;
+                    }
+                }
+            }
+        }
 
         $database = $this->project->belongsTo('Database');
+
         $this->pg_class = $database->pgsql()->pgClassArray($this->model->value['pg_class_id']);
+
         $this->values = $database->pgsql()
                                  ->table($this->model->value['name'])
                                  ->all()
@@ -251,6 +266,40 @@ class ModelController extends ProjectController {
 
         DB::table('Model')->fetch($_REQUEST['model_id'])->update($posts);
         $this->redirect_to('relation_database/diff_model');
+    }
+
+    function action_check_relation() {
+        $database = $this->project->belongsTo('Database');
+        $models = $this->project->relationMany('Model')
+                               ->all()
+                               ->values;
+
+        $pgsql = $this->database->pgsql();
+        foreach ($models as $model) {
+            $pg_foreign_constraints = $pgsql->pgForeignConstraints($model['pg_class_id']);
+            if ($pg_foreign_constraints) {
+                foreach ($pg_foreign_constraints as $pg_foreign_constraint) {
+                    $attribute = DB::table('Attribute')->where("model_id = {$model['id']}")
+                                                       ->where("name = '{$pg_foreign_constraint['attname']}'")
+                                                       ->where("fk_attribute_id IS NULL OR fk_attribute_id = 0")
+                                                       ->one();
+                    if ($attribute->id) {
+                        $fk_model = DB::table('Model')->where("name = '{$pg_foreign_constraint['foreign_relname']}'")
+                                                      ->one()
+                                                      ->value;
+
+                        $fk_attribute = DB::table('Attribute')->where("model_id = {$fk_model['id']}")
+                                                       ->where("name = 'id'")
+                                                       ->one()
+                                                       ->value;
+
+                        $posts['fk_attribute_id'] = $fk_attribute['id'];
+                        $attribute->update($posts);
+                    }
+                }
+            }
+        }
+        $this->redirect_to('list');
     }
 
 }

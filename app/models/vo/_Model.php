@@ -28,6 +28,7 @@ class _Model extends PgsqlEntity {
         'label' => array('type' => 'varchar'),
         'name' => array('type' => 'varchar', 'is_required' => true),
         'note' => array('type' => 'text'),
+        'old_database_id' => array('type' => 'int4'),
         'old_name' => array('type' => 'varchar', 'length' => 256),
         'pg_class_id' => array('type' => 'int4', 'is_required' => true),
         'project_id' => array('type' => 'int4', 'is_required' => true),
@@ -39,6 +40,7 @@ class _Model extends PgsqlEntity {
 
     var $old_columns = array(
     );
+
 
     var $column_labels = array (
         'class_name' => '',
@@ -52,6 +54,7 @@ class _Model extends PgsqlEntity {
         'label' => '',
         'name' => '',
         'note' => 'ノート',
+        'old_database_id' => '',
         'old_name' => '旧テーブル名',
         'pg_class_id' => '',
         'project_id' => '',

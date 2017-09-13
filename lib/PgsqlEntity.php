@@ -605,11 +605,16 @@ class PgsqlEntity extends Entity {
         if (!$column) return;
         if (!$options) return;
 
+        $sql = self::addColumnSql($table_name, $column, $options);
+        return $this->query($sql);
+    }
+
+    public function addColumnSql($table_name, $column, $options) {
         $type = $this->sqlColumnType($options['type'], $options['length']);
         $option = $option = self::columnOptionSql($options);
 
         $sql = "ALTER TABLE \"{$table_name}\" ADD COLUMN \"{$column}\" {$type}{$option};";
-        return $this->query($sql);
+        return $sql;
     }
 
     /**
@@ -760,6 +765,8 @@ class PgsqlEntity extends Entity {
     * @return Object
     */
     public function fetch($id, $params=null) {
+        $this->conditions = null;
+        $this->orders = null;
         $this->values = null;
         if (!$id) return $this;
 
@@ -1217,7 +1224,6 @@ class PgsqlEntity extends Entity {
         if ($this->errors) {
             return $this;
         }
-
         $sql = $this->updateSql();
         if (!$sql) {
             return $this;
@@ -1262,25 +1268,31 @@ class PgsqlEntity extends Entity {
     }
 
     /**
+    * values from old table
+    * 
+    * @param  PgsqlEntity $old_pgsql
+    * @return array
+    */
+    public function valuesFromOldTable($old_pgsql) {
+        if (!$old_pgsql) exit('Not found old_pgsql');
+
+        $sql = $this->selectSqlFromOldTable();
+        $values = $old_pgsql->fetchRows($sql);
+        return $values;
+    }
+
+    /**
     * copy from old table
     * 
     * @param  PgsqlEntity $old_pgsql
-    * @return PgsqlEntity
+    * @return bool
     */
     public function copyFromOldTable($old_pgsql) {
         if (!$old_pgsql) exit('Not found old_pgsql');
 
-        $results = $this->deletes();
-
-        $sql = $this->selectSqlFromOldTable();
-        $values = $old_pgsql->fetchRows($sql);
-
-        if ($old_pgsql->sql_error) {
-            echo($old_pgsql->sql_error).PHP_EOL;
-            exit;
-        }
-
+        $values = $this->valuesFromOldTable($old_pgsql);
         $results = $this->copyFrom($values);
+        return $results;
     }
 
     /**
@@ -1292,9 +1304,9 @@ class PgsqlEntity extends Entity {
     public function insertsFromOldTable($old_pgsql) {
         if (!$old_pgsql) exit('Not found old_pgsql');
 
-        $sql = $this->selectSqlFromOldTable();
-        $values = $old_pgsql->fetchRows($sql);
+        $values = $this->valuesFromOldTable($old_pgsql);
 
+        //TODO inserts
         if ($result !== false) {
             $this->_value = $this->value;
         } else {
@@ -1341,6 +1353,28 @@ class PgsqlEntity extends Entity {
             $this->addError($this->name, 'delete');
         } else {
             unset($this->id);
+        }
+        return $this;
+    }
+
+    /**
+    * truncate
+    * 
+    * $option
+    * RESTART IDENTITY
+    * CONTINUE IDENTITY
+    * 
+    * CASCADE
+    * RESTRICT
+    * 
+    * @return PgsqlEntity
+    */
+    public function truncate($option = null) {
+        $sql = $this->truncateSql($option);
+        $result = $this->query($sql);
+
+        if ($result === false) {
+            $this->addError($this->name, 'truncate');
         }
         return $this;
     }
@@ -1648,7 +1682,7 @@ class PgsqlEntity extends Entity {
                 }
                 $select_columns[] = $select_column;
             }
-            $column = implode(", \n", $select_columns).PHP_EOL;
+            $column = implode(", ", $select_columns).PHP_EOL;
         }
 
         $sql = "SELECT {$column} FROM {$this->old_name}";
@@ -1847,8 +1881,24 @@ class PgsqlEntity extends Entity {
         return $sql;
     }
 
-    //TODO GROUP BY
+    /**
+    * truncate Sql
+    * 
+    * RESTART IDENTITY
+    * CONTINUE IDENTITY
+    * 
+    * CASCADE
+    * RESTRICT
+    * 
+    * @param string $option
+    * @return string
+    */
+    private function truncateSql($option = null) {
+        $sql = "TRUNCATE {$this->table_name} {$option};";
+        return $sql;
+    }
 
+    //TODO GROUP BY
     /**
     * count
     * 
@@ -2144,6 +2194,7 @@ class PgsqlEntity extends Entity {
 
         $conditions[] = "relkind = '{$relkind}'";
         $conditions[] = "relfilenode > 0";
+        $conditions[] = "relallvisible = 0";
         $conditions[] = "nspname = '{$schema_name}'";
         $conditions[] = "pg_class.oid = {$pg_class_id}";
         $condition = implode(' AND ', $conditions);
@@ -2177,6 +2228,9 @@ class PgsqlEntity extends Entity {
 
         $conditions[] = "relkind = '{$relkind}'";
         $conditions[] = "relfilenode > 0";
+        //TODO research relallvisible
+        $conditions[] = "relallvisible = 0";
+        $conditions[] = "relhasindex = TRUE";
         $conditions[] = "nspname = '{$schema_name}'";
         if ($pg_class_ids) {
             $pg_class_id = implode(',', $pg_class_ids);

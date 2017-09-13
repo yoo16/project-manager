@@ -24,6 +24,11 @@
         <?= $this->model->formTextarea('note') ?>
       </div> 
       
+      <div class="form-group row">
+        <?= FormHelper::formLabel('Database', ['class' => 'col-2']) ?>
+        <?= $this->model->formSelect('old_database_id', ['model' => 'Old Database', 'label' => 'name']) ?>
+      </div
+
       <?= FormHelper::submit(LABEL_UPDATE) ?>
       <?= FormHelper::linkButton('cancel', LABEL_BACK) ?>
     </form>

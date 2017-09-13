@@ -31,6 +31,7 @@ class _Database extends PgsqlEntity {
     var $old_columns = array(
     );
 
+
     var $column_labels = array (
         'created_at' => '',
         'current_version' => '',

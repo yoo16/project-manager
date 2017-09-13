@@ -42,6 +42,7 @@ class _Attribute extends PgsqlEntity {
     var $old_columns = array(
     );
 
+
     var $column_labels = array (
         'attnum' => '',
         'attrelid' => '',

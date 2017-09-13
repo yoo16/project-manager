@@ -44,7 +44,7 @@ class FileManager {
         'fish'      =>  'fish',
         'sheep'     =>  'sheep',
         'swiss'     =>  'swiss',
-        'staff'       =>  'staffs',
+        'staff'     =>  'staffs',
     );
 
     static $singular_rules = array(

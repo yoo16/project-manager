@@ -29,6 +29,7 @@ class _ViewItem extends PgsqlEntity {
     var $old_columns = array(
     );
 
+
     var $column_labels = array (
         'attribute_id' => '',
         'created_at' => '',

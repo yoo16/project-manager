@@ -275,6 +275,7 @@ class AttributeController extends ProjectController {
         $params['model_id'] = $attribute->value['model_id'];
         $this->redirect_to('list', $params);
     }
+
     /**
      * drop foreign key
      *

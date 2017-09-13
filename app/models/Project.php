@@ -42,6 +42,9 @@ class Project extends _Project {
             foreach ($this->model->values as $model) {
                 $pg_class = $pgsql->pgClassArray($model['pg_class_id']);
 
+                //$old_pg_class = $old_pgsql->pgClassByRelname($model['old_name']);
+                //if ($old_pg_class) $old_pg_foreign = $old_pgsql->pgForeignConstraints($old_pg_class['pg_class_id']);
+
                 $unique = null;
                 $foreign = null;
                 $values = null;
@@ -55,11 +58,12 @@ class Project extends _Project {
 
                 $values['model'] = $model;
                 $values['attribute'] = $attributes;
-                // foreach ($attributes as $attribute) {
-                //     if ($attribute['old_name']) {
-                //         $values['old_attribute'][] =$attribute;
-                //     }
-                // }
+                $values['old_id_column'] = DB::table('Attribute')
+                                                ->where("model_id = '{$model['id']}'")
+                                                ->where("name = 'old_id'")
+                                                ->one()
+                                                ->value['old_name'];
+
                 foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
                     foreach ($pg_constraints as $pg_constraint) {
                         if ($type == 'unique') {

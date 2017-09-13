@@ -78,6 +78,46 @@ class RelationDatabaseController extends ProjectController {
         $this->redirect_to('list');
     }
 
+    function action_update_old_table() {
+        $relation_database = DB::table('RelationDatabase')
+                                        ->join('Database', 'id', 'old_database_id')
+                                        ->join('Project', 'id', 'project_id')
+                                        ->all();
+
+        $pm_pgsql = $this->database->pgsql();
+        $pgsql = new PgsqlEntity();
+
+        foreach ($relation_database->values as $relation_database) {
+            $pgsql->setDBName($relation_database['database_name'])
+                  ->setDBHost($relation_database['database_hostname']);
+
+            $old_pg_classes = $pgsql->pgClasses();
+
+            foreach ($old_pg_classes as $old_pg_class) {
+                $is_numbering = PgsqlEntity::isNumberingName($old_pg_class['relname']);
+                if (!$is_numbering) {
+                    $pgsql->table($old_pg_class['relname']);
+                    $table_name = str_replace($_REQUEST['prefix'], '', $old_pg_class['relname']);
+                    $table_name = FileManager::pluralToSingular($table_name);
+                    $table_name = FileManager::singularToPlural($table_name);
+
+                    $model = DB::table('Model')
+                                            ->where("project_id = '{$this->project->value['id']}'")
+                                            ->where("name = '{$table_name}'")
+                                            ->one();
+
+                    if ($model->value) {
+                        $posts = null;
+                        $posts['old_name'] = $old_pg_class['relname'];
+                        $posts['old_database_id'] = $relation_database['old_database_id'];
+                        $model->update($posts);
+                    }
+                }
+            }
+        }
+        $this->redirect_to('list');
+    }
+
     function update_old() {
         $relation_database = DB::table('RelationDatabase')
                                         ->join('Database', 'id', 'old_database_id')
@@ -157,6 +197,5 @@ class RelationDatabaseController extends ProjectController {
             }
         }
     }
-
 
 }

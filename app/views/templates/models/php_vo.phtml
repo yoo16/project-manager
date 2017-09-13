@@ -45,6 +45,10 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
 <? endforeach ?>
     );
 
+<? if ($values['old_id_column']): ?>
+    var $old_id_column = '<?= $values['old_id_column'] ?>';
+<? endif ?>
+
     var $column_labels = array (
 <? foreach ($values['attribute'] as $attribute): ?>
 <? if ($attribute['name'] != 'id'): ?>

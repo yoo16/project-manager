@@ -37,6 +37,7 @@ class _User extends PgsqlEntity {
         'password' => 'password',
     );
 
+
     var $column_labels = array (
         'created_at' => '',
         'default_db_host' => '',

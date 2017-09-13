@@ -30,6 +30,7 @@ class _UserProjectSetting extends PgsqlEntity {
     var $old_columns = array(
     );
 
+
     var $column_labels = array (
         'created_at' => '',
         'group_name' => '',

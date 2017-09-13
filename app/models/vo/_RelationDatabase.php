@@ -27,6 +27,7 @@ class _RelationDatabase extends PgsqlEntity {
     var $old_columns = array(
     );
 
+
     var $column_labels = array (
         'created_at' => '作成日',
         'old_database_id' => '旧データベース',

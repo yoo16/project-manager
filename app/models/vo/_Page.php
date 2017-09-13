@@ -32,6 +32,7 @@ class _Page extends PgsqlEntity {
     var $old_columns = array(
     );
 
+
     var $column_labels = array (
         'class_name' => '',
         'created_at' => '',
