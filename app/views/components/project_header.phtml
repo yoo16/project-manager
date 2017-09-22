@@ -45,6 +45,7 @@
       <li class="nav-item"><a class="nav-link <?= cssClass('view', $this->params['controller'], 'active'); ?>" href="<?= url_for('view/', array('page_id' => $this->page->value['id'])) ?>">View</a></li>
     <? endif ?>
     <li class="nav-item"><a class="nav-link <?= cssClass('layout', $this->params['controller'], 'active'); ?>" href="<?= url_for('layout/list', array('project_id' => $this->project->value['id'])) ?>">Layout</a></li>
+    <li class="nav-item"><a class="nav-link <?= cssClass('record', $this->params['controller'], 'active'); ?>" href="<?= url_for('record/list', array('project_id' => $this->project->value['id'])) ?>">Record</a></li>
   </ul>
 </nav>
 </div>

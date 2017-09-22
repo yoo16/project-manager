@@ -1,0 +1,6 @@
+value,label
+"a","NO ACTION"
+"c","CASCADE"
+"r","RESTRICT"
+"n","SET NULL"
+"d","SET DEFAULT"

@@ -16,6 +16,7 @@
         <label for="" class="form-control-label col-2">Name</label>
         <?= $this->attribute->formInput('name') ?>
       </div>
+
       <div class="form-group row">
         <label for="" class="col-2 col-form-label">Type</label>
         <?= $this->attribute->formSelect('type', ['csv' => 'pg_types']) ?>
@@ -35,6 +36,18 @@
         <label for="" class="form-control-label col-2">Label</label>
         <?= $this->attribute->formInput('label') ?>
       </div>
+
+<? if ($this->attribute->value['fk_attribute_id']): ?>
+      <div class="form-group row">
+        <label for="" class="col-2 col-form-label">Update Action</label>
+        <?= $this->attribute->formSelect('update_action', ['csv' => 'constraint_action', 'unselect' => true]) ?>
+      </div>
+
+      <div class="form-group row">
+        <label for="" class="col-2 col-form-label">Delete Action</label>
+        <?= $this->attribute->formSelect('delete_action', ['csv' => 'constraint_action', 'unselect' => true]) ?>
+      </div>
+<? endif ?>
 
       <div class="form-group row">
         <label for="" class="form-control-label col-2">Note</label>

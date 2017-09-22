@@ -12,6 +12,7 @@ require_once 'Entity.php';
 
 class PgsqlEntity extends Entity {
     var $pg_info = null;
+    var $pg_info_array = null;
     var $dbname = null;
     var $host = 'localhost';
     var $user = 'postgres';
@@ -31,6 +32,7 @@ class PgsqlEntity extends Entity {
     var $sql = null;
     var $sqls = null;
     var $is_bulk_select = false;
+    var $is_old_table = false;
 
     static $pg_info_columns = ['dbname', 'user', 'host', 'port', 'password'];
     static $constraint_keys = ['p' => 'Primary Key',
@@ -41,7 +43,13 @@ class PgsqlEntity extends Entity {
     static $constraint_actions = [
                                'a' => 'NOT ACTION',
                                'c' => 'CASCADE',
+                               'a' => 'NO ACTION',
+                               'c' => 'CASCADE',
+                               'r' => 'RESTRICT',
+                               'n' => 'SET NULL',
+                               'd' => 'SET DEFAULT'
                               ];
+
     /**
     * constructor
     * 
@@ -267,9 +275,12 @@ class PgsqlEntity extends Entity {
         foreach (self::$pg_info_columns as $column) {
             if (isset($this->$column)) {
                 $pg_infos[] = "{$column}={$this->$column}";
+                $this->pg_info_array[$column] = $this->$column;
             }
         }
-        if ($pg_infos) $this->pg_info = implode(' ', $pg_infos);
+        if ($pg_infos) {
+            $this->pg_info = implode(' ', $pg_infos);
+        }
         return $this;
     }
 
@@ -289,6 +300,17 @@ class PgsqlEntity extends Entity {
                 $this->$key = $value;
             }
         }
+    }
+
+    /**
+    * SELECT use old column
+    * 
+    * @param array $values
+    * @return string
+    */
+    function useOldTable() {
+        $this->is_old_table = true;
+        return $this;
     }
 
     /**
@@ -376,7 +398,8 @@ class PgsqlEntity extends Entity {
                 $sql.= "ALTER TABLE {$model->name}".PHP_EOL;
                 $sql.= "      ADD CONSTRAINT {$conname} FOREIGN KEY ({$foreign['column']})".PHP_EOL;
                 $sql.= "      REFERENCES {$foreign['foreign_table']}({$foreign['foreign_column']})".PHP_EOL;
-                $sql.= "      ON NO ACTION".PHP_EOL;
+                $sql.= "      ON DELETE CASCADE".PHP_EOL;
+                //$sql.= "      ON NO ACTION".PHP_EOL;
                 $sql.= "      ON UPDATE NO ACTION;".PHP_EOL;
                 $sql.= PHP_EOL;
             }
@@ -840,7 +863,6 @@ class PgsqlEntity extends Entity {
     * relation by model
     * 
     * @param  string $model_name
-    * @param  array $conditions
     * @param  string $foreign_key
     * @param  string $value_key
     * @return PgsqlEntity
@@ -1267,6 +1289,25 @@ class PgsqlEntity extends Entity {
         return $this;
     }
 
+
+   /**
+    * update sort_order
+    *
+    * @param array $sort_orders
+    * @return PgsqlEntity
+    */
+    function updateSortOrder($sort_orders) {
+        if (is_array($sort_orders)) {
+            foreach ($sort_orders as $id => $sort_order) {
+                if (is_numeric($id) && is_numeric($sort_order)) {
+                    $posts['sort_order'] = (int) $sort_order;
+                    $this->update($posts, $id);
+                }
+            }
+        }
+        return $this;
+    }
+
     /**
     * values from old table
     * 
@@ -1278,6 +1319,11 @@ class PgsqlEntity extends Entity {
 
         $sql = $this->selectSqlFromOldTable();
         $values = $old_pgsql->fetchRows($sql);
+
+        if ($old_pgsql->sql_error) {
+            echo($old_pgsql->sql).PHP_EOL;
+            echo($old_pgsql->sql_error).PHP_EOL;
+        }
         return $values;
     }
 
@@ -1398,7 +1444,9 @@ class PgsqlEntity extends Entity {
     * @return PgsqlEntity
     */
     public function from($name) {
-        $this->table_name = $name; 
+        if ($name) {
+            $this->table_name = $name; 
+        }
         return $this;
     }
 
@@ -1595,6 +1643,7 @@ class PgsqlEntity extends Entity {
     */
     private function orderBySql() {
         $sql = '';
+        if ($this->columns['sort_order']) $this->order(['column' => 'sort_order']); 
         if (!$this->orders) return;
         if ($order = $this->sqlOrders($this->orders)) $sql = " ORDER BY {$order}";
         return $sql;
@@ -1661,7 +1710,6 @@ class PgsqlEntity extends Entity {
         return $sql;
     }
 
-
     /**
     * select sql for old table
     * 
@@ -1669,19 +1717,8 @@ class PgsqlEntity extends Entity {
     */
     public function selectSqlFromOldTable() {
         if (!$this->old_name) exit('Not found old_name');
-        if (!$this->old_columns) exit('Not found old_columns');
 
-        if ($this->old_columns) {
-            foreach ($this->old_columns as $column_name => $old_column_name) {
-                if ($old_column_name == $column_name) {
-                    $select_column = $column_name;
-                } else {
-                    $select_column = "{$old_column_name} AS {$column_name}";
-                }
-                $select_columns[] = $select_column;
-            }
-            $column = implode(", ", $select_columns).PHP_EOL;
-        }
+        $column = $this->oldColumnForSelect();
 
         $sql = "SELECT {$column} FROM {$this->old_name}";
 
@@ -1691,6 +1728,23 @@ class PgsqlEntity extends Entity {
         $sql.= $this->offsetSql();
         $sql.= ";";
         return $sql;
+    }
+
+    public function oldColumnForSelect() {
+        if ($this->columns) {
+            foreach ($this->columns as $column_name => $column) {
+                if ($column['old_name']) {
+                    if ($column['old_name'] == $column_name) {
+                        $select_column = $column_name;
+                    } else {
+                        $select_column = "{$column['old_name']} AS {$column_name}";
+                    }
+                    $select_columns[] = $select_column;
+                }
+            }
+            $column = implode(", ", $select_columns).PHP_EOL;
+        }
+        return $column;
     }
 
     /**
@@ -2525,9 +2579,10 @@ class PgsqlEntity extends Entity {
      * 
      * @param  int $pg_class_id
      * @param  string $type
+     * @param  array $conditions
      * @return array
      */
-    function pgConstraints($pg_class_id, $type = null) {
+    function pgConstraints($pg_class_id, $type = null, $conditions = null) {
         if (!$pg_class_id) return;
 
         $sql = "SELECT * FROM pg_constraint";
@@ -2543,6 +2598,38 @@ class PgsqlEntity extends Entity {
 
         $sql.= ';';
         return $this->fetchRows($sql);
+    }
+
+    /**
+     * pg constraints
+     *
+     * c = check
+     * f = foreign key
+     * p = primary key
+     * u = unique
+     * 
+     * @param  int $pg_class_id
+     * @param  int $attnum
+     * @param  string $type
+     * @return array
+     */
+    function pgConstraintByAttnum($pg_class_id, $attnum, $type = null) {
+        if (!$pg_class_id) return;
+
+        $sql = "SELECT * FROM pg_constraint";
+        $sql.= " LEFT JOIN pg_attribute ON";
+        $sql.= " pg_constraint.conrelid = pg_attribute.attrelid";
+        $sql.= " AND pg_attribute.attnum = ANY(pg_constraint.conkey)";
+
+        $conditions[] = "pg_constraint.conrelid = '{$pg_class_id}'";
+        $conditions[] = "pg_attribute.attnum = '{$attnum}'";
+        if ($type) $conditions[] = "pg_constraint.contype = '{$type}'";
+
+        if ($conditions) $condition = implode(' AND ', $conditions);
+        if ($condition) $sql.= " WHERE {$condition}";
+
+        $sql.= ';';
+        return $this->fetchRow($sql);
     }
 
     /**
@@ -2566,18 +2653,12 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-     * pg constraints
+     * pg constraints (foreign)
      *
-     * c = check
-     * f = foreign key
-     * p = primary key
-     * u = unique
-     * 
      * @param  int $pg_class_id
-     * @param  string $type
      * @return array
      */
-    function pgForeignConstraints($pg_class_id, $type = null) {
+    function pgForeignConstraints($pg_class_id) {
         if (!$pg_class_id) return;
 
         $sql = "SELECT 
@@ -2598,6 +2679,8 @@ class PgsqlEntity extends Entity {
                         , pg_constraint.confrelid
                         , pg_constraint.confkey
                         , pg_constraint.contype
+                        , pg_constraint.confupdtype
+                        , pg_constraint.confdeltype
                         FROM  pg_constraint
                             LEFT JOIN pg_attribute ON pg_constraint.conrelid = pg_attribute.attrelid 
                                 AND pg_attribute.attnum = ANY(pg_constraint.conkey)
@@ -2711,12 +2794,18 @@ class PgsqlEntity extends Entity {
      * @return void
      */
     function addPgForeignKey($table_name, $foreign_column, $reference_table_name, $reference_column,
-                             $is_not_deferrable = true, $update = 'NO ACTION', $delete = 'NO ACTION') {
+                             $update = null, $delete = null, $is_not_deferrable = true) {
         $reference_column = "{$reference_table_name}({$reference_column})";
         $sql = "ALTER TABLE {$table_name} ADD FOREIGN KEY ({$foreign_column}) REFERENCES {$reference_column}";
 
-        if ($update) $sql.= " ON UPDATE {$update}";
-        if ($delete) $sql.= " ON DELETE {$delete}";
+        if ($update) {
+            $action = self::$constraint_actions[$update];
+            $sql.= " ON UPDATE {$action}";
+        }
+        if ($delete) {
+            $action = self::$constraint_actions[$delete];
+            $sql.= " ON DELETE {$action}";
+        }
         if ($is_not_deferrable) $sql.= " NOT DEFERRABLE";
 
         $sql.= ';';
@@ -2741,15 +2830,13 @@ class PgsqlEntity extends Entity {
      * @param  string $table_name
      * @return void
      */
-    function removePgConstraints($table_name) {
-        $constraints = $this->pgConstraints($table_name);
+    function removePgConstraints($table_name, $type = null) {
+        $pg_class = $this->pgClassByRelname($table_name);
+        $constraints = $this->pgConstraints($pg_class['pg_class_id'], $type);
         if (!$constraints) return;
 
         foreach ($constraints as $constraint) {
-            $constraint_groups[$constraint['constraint_name']][] = $constraint;
-        }
-        foreach ($constraint_groups as $constraint_name => $constraint) {
-            $sql = "ALTER TABLE {$table_name} DROP CONSTRAINT {$constraint_name};";
+            $sql = "ALTER TABLE {$table_name} DROP CONSTRAINT {$constraint['conname']};";
             $results = $this->query($sql);
         }
         return;

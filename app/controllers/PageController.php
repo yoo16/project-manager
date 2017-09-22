@@ -39,11 +39,16 @@ class PageController extends ProjectController {
     }
 
     function action_list() {
-        $this->models = $this->project->hasMany('Model')->values;
+        $this->models = $this->project->relationMany('Model')
+                                      ->idIndex()
+                                      ->all()
+                                      ->values;
+
         $this->pages = $this->project->relationMany('Page')
-                            ->order('name')
-                            ->all()
-                            ->values;
+                                     ->order('name')
+                                     ->all()
+                                     ->bindValuesArray($this->models, 'model', 'model_id')
+                                     ->values;
     }
 
     function action_new() {

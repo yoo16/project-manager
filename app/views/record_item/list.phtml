@@ -1,0 +1,22 @@
+<? include('_header.phtml') ?>
+<div class="pt-3">
+  <?= FormHelper::linkButton('new', LABEL_ADD) ?>
+  <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
+</div>
+
+<table class="table">
+  <thead class="thead-deffault">
+    <tr>
+      <th>&nbsp;</th>
+    </tr>
+  </thead>
+
+  <? if ($this->record_item->values): ?>
+  <? foreach ($this->record_item->values as $values): ?>
+  <tr>
+    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
+  </tr>
+  <? endforeach ?>
+  <? endif ?>
+
+</table>

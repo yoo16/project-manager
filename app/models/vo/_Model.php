@@ -15,7 +15,6 @@ class _Model extends PgsqlEntity {
     var $name = 'models';
     var $entity_name = 'model';
 
-
     var $columns = array(
         'class_name' => array('type' => 'varchar', 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
@@ -38,32 +37,18 @@ class _Model extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
-    var $old_columns = array(
+    var $foreign = array(
+            'models_database_id_fkey' => [
+                                  'column' => 'database_id',
+                                  'foreign_table' => 'databases',
+                                  'foreign_column' => 'id',
+                                  ],
+            'models_project_id_fkey' => [
+                                  'column' => 'project_id',
+                                  'foreign_table' => 'projects',
+                                  'foreign_column' => 'id',
+                                  ],
     );
-
-
-    var $column_labels = array (
-        'class_name' => '',
-        'created_at' => '',
-        'database_id' => '',
-        'entity_name' => '',
-        'id_column_name' => '',
-        'is_lock' => '',
-        'is_none_id_column' => '',
-        'is_unenable' => '',
-        'label' => '',
-        'name' => '',
-        'note' => 'ノート',
-        'old_database_id' => '',
-        'old_name' => '旧テーブル名',
-        'pg_class_id' => '',
-        'project_id' => '',
-        'relfilenode' => '',
-        'sort_order' => '',
-        'sub_table_name' => '',
-        'updated_at' => '',
-    );
-
 
     var $unique = array(
             'models_name_project_id_key' => [
@@ -71,6 +56,8 @@ class _Model extends PgsqlEntity {
                         'project_id',
                         ],
     );
+
+
 
     function __construct($params = null) {
         parent::__construct($params);

@@ -15,7 +15,6 @@ class _UserProjectSetting extends PgsqlEntity {
     var $name = 'user_project_settings';
     var $entity_name = 'user_project_setting';
 
-
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'group_name' => array('type' => 'varchar', 'length' => 256),
@@ -27,20 +26,7 @@ class _UserProjectSetting extends PgsqlEntity {
         'user_name' => array('type' => 'varchar', 'length' => 256),
     );
 
-    var $old_columns = array(
-    );
 
-
-    var $column_labels = array (
-        'created_at' => '',
-        'group_name' => '',
-        'project_id' => '',
-        'project_path' => '',
-        'sort_order' => '',
-        'updated_at' => '',
-        'user_id' => '',
-        'user_name' => '',
-    );
 
 
 

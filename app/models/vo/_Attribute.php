@@ -15,12 +15,12 @@ class _Attribute extends PgsqlEntity {
     var $name = 'attributes';
     var $entity_name = 'attribute';
 
-
     var $columns = array(
         'attnum' => array('type' => 'int4', 'is_required' => true),
         'attrelid' => array('type' => 'int4', 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
         'default_value' => array('type' => 'varchar'),
+        'delete_action' => array('type' => 'varchar', 'length' => 32),
         'fk_attribute_id' => array('type' => 'int4'),
         'is_array' => array('type' => 'bool'),
         'is_lock' => array('type' => 'bool'),
@@ -36,36 +36,17 @@ class _Attribute extends PgsqlEntity {
         'old_name' => array('type' => 'varchar', 'length' => 256),
         'sort_order' => array('type' => 'int4'),
         'type' => array('type' => 'varchar', 'is_required' => true),
+        'update_action' => array('type' => 'varchar', 'length' => 32),
         'updated_at' => array('type' => 'timestamp'),
     );
 
-    var $old_columns = array(
+    var $foreign = array(
+            'attributes_model_id_fkey' => [
+                                  'column' => 'model_id',
+                                  'foreign_table' => 'models',
+                                  'foreign_column' => 'id',
+                                  ],
     );
-
-
-    var $column_labels = array (
-        'attnum' => '',
-        'attrelid' => '',
-        'created_at' => '',
-        'default_value' => '',
-        'fk_attribute_id' => '',
-        'is_array' => '',
-        'is_lock' => '',
-        'is_primary_key' => '',
-        'is_required' => '',
-        'is_unique' => '',
-        'label' => '',
-        'length' => '',
-        'model_id' => '',
-        'name' => '',
-        'note' => '',
-        'old_attribute_id' => '',
-        'old_name' => '旧カラム名',
-        'sort_order' => '',
-        'type' => '',
-        'updated_at' => '',
-    );
-
 
     var $unique = array(
             'attributes_name_model_id_key' => [
@@ -73,6 +54,8 @@ class _Attribute extends PgsqlEntity {
                         'model_id',
                         ],
     );
+
+
 
     function __construct($params = null) {
         parent::__construct($params);

@@ -24,35 +24,11 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
     var $name = '<?= $values['model']['name'] ?>';
     var $entity_name = '<?= $values['model']['entity_name']?>';
 
-<? if ($values['model']['old_name']): ?>
-    var $old_name = '<?= $values['model']['old_name'] ?>';
-<? endif ?>
-
 <? if ($values['attribute']): ?>
     var $columns = array(
 <? foreach ($values['attribute'] as $attribute): ?>
 <? if ($attribute['name'] != 'id'): ?>
         <?= Model::columnPropertyForTemplate($attribute) ?>,
-<? endif ?>
-<? endforeach ?>
-    );
-
-    var $old_columns = array(
-<? foreach ($values['attribute'] as $attribute): ?>
-<? if ($attribute['old_name']): ?>
-        '<?= $attribute['name'] ?>' => '<?= $attribute['old_name'] ?>',
-<? endif ?>
-<? endforeach ?>
-    );
-
-<? if ($values['old_id_column']): ?>
-    var $old_id_column = '<?= $values['old_id_column'] ?>';
-<? endif ?>
-
-    var $column_labels = array (
-<? foreach ($values['attribute'] as $attribute): ?>
-<? if ($attribute['name'] != 'id'): ?>
-        '<?= $attribute['name'] ?>' => '<?= $attribute['label'] ?>',
 <? endif ?>
 <? endforeach ?>
     );
@@ -80,6 +56,14 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
                         ],
 <? endforeach ?>
     );
+<? endif ?>
+
+<? if ($values['model']['old_name']): ?>
+    var $old_name = '<?= $values['model']['old_name'] ?>';
+<? endif ?>
+
+<? if ($values['old_id_column']): ?>
+    var $old_id_column = '<?= $values['old_id_column'] ?>';
 <? endif ?>
 
     function __construct($params = null) {

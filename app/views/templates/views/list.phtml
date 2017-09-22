@@ -1,7 +1,7 @@
 <?= "<? include('_header.phtml') ?>" ?>
 
 <div class="pt-3">
-  <? Tag::init()->php('FormHelper::linkButton(\'new\', LABEL_ADD)') ?>
+  <? Tag::init()->php('FormHelper::linkButton(\'new\', LABEL_ADD, null, [\'class\' => \'btn btn-primary\'])') ?>
 
   <? Tag::init()->php('FormHelper::linkButton(\'sort_order\', LABEL_SORT_ORDER)') ?>
 
@@ -11,9 +11,9 @@
   <thead class="thead-deffault">
     <tr>
       <th>&nbsp;</th>
-<? foreach ($values['model']['attributes'] as $attribute): ?>
-<? if (!Model::$required_columns[$attribute['name']]): ?>
-      <th><?= $attribute['label'] ?></th>
+<? foreach ($values['view']['view_item'] as $view_item): ?>
+<? if (!Model::$required_columns[$view_item['name']]): ?>
+      <th><?= $values['attribute'][$view_item['attribute_id']]['label'] ?></th>
 <? endif ?>
 <? endforeach ?>
     </tr>
@@ -23,9 +23,19 @@
   <? Tag::init()->foreachs('$this->'.$values['model']['entity_name'].'->values as $values') ?>
   <tr>
     <td><? Tag::init()->php('FormHelper::linkButton(\'edit\', LABEL_EDIT, $values[\'id\'])') ?></td>
-<? foreach ($values['model']['attributes'] as $attribute): ?>
-<? if (!Model::$required_columns[$attribute['name']]): ?>
-    <td><? Tag::init()->tableItemForAttribute($attribute) ?></td>
+<? foreach ($values['view']['view_item'] as $view_item): ?>
+<? if (!Model::$required_columns[$view_item['name']]): ?>
+<? if ($view_item['page_id']): ?>
+    <td>
+      <? Tag::init()->tableItemUrlForAttribute(
+          $values['attribute'][$view_item['attribute_id']],
+          $values['pages'][$view_item['page_id']],
+          $values['model']
+      ) ?>
+    </td>
+<? else: ?>
+    <td><? Tag::init()->tableItemForAttribute($values['attribute'][$view_item['attribute_id']]) ?></td>
+<? endif ?>
 <? endif ?>
 <? endforeach ?>
   </tr>

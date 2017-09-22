@@ -4,21 +4,36 @@
  * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
-$(document).on('click', '.confirm-dialog', function() {
+ $(document).on('click', '.confirm-dialog', function() {
     $message = $(this).attr('message');
     return confirm($message);
 });
 
-$(document).on('click', '.action-close', function() {
+ $(document).on('click', '.action-close', function() {
     var window_id = '#' + $(this).attr('window-id');
     $(window_id).hide();
 });
 
-$(document).on('change', '.action-change-date', function() {
+ $(document).on('change', '.action-change-date', function() {
     checkDate(this);
 });
 
-function checkDate(target) {
+
+ $(function(){
+    $('.sortable tbody').sortable();
+    $('.sortable tbody').disableSelection();
+    $('.sortable tbody').sortable({
+        update: function(ev, ui) {
+            var sort_orders = $('.sortable tbody').sortable('toArray');
+            $.each (sort_orders, function(i, value) {
+                var jquery_id = '#sort_order_' + value;
+                $(jquery_id).val(i);
+            });
+        }
+    });
+});
+
+ function checkDate(target) {
     var date_name = $(target).attr('name');
 
     date_names = date_name.split('[');
@@ -129,52 +144,52 @@ function auto_item_name_input(from_id, to_id) {
 }
 
 function furiganaCheck(id) {
- var value = $(id).attr('value');
- if(value.match( /[^ぁ-んァ-ン　\s]+/ ) ) {
-  alert("ふりがなは、「ひらがな」・「カタカナ」のみで入力して下さい。");
-  return 1;
-}
-return 0;
+   var value = $(id).attr('value');
+   if(value.match( /[^ぁ-んァ-ン　\s]+/ ) ) {
+      alert("ふりがなは、「ひらがな」・「カタカナ」のみで入力して下さい。");
+      return 1;
+  }
+  return 0;
 }
 
 function alphabetCheck(id) {
- var value = $(id).attr('value');
- if(value.match( /[^A-Za-z\s.-]+/ ) ) {
-  alert("半角英文字のみで入力して下さい。");
-  return 1;
-}
-return 0;
+   var value = $(id).attr('value');
+   if(value.match( /[^A-Za-z\s.-]+/ ) ) {
+      alert("半角英文字のみで入力して下さい。");
+      return 1;
+  }
+  return 0;
 }
 
 function numberCheck(id) {
- var value = $(id).attr('value');
- if(value.match( /[^0-9]+/ ) ) {
-  alert("半角数字のみで入力して下さい。");
-  /* $(id).attr('value', ''); */
-  return 1;
-}
-return 0;
+   var value = $(id).attr('value');
+   if(value.match( /[^0-9]+/ ) ) {
+      alert("半角数字のみで入力して下さい。");
+      /* $(id).attr('value', ''); */
+      return 1;
+  }
+  return 0;
 }
 
 function numbersCheck(id) {
- var value = $(id).attr('value');
- if(value.match( /[^-0-9]+/ ) ) {
-  alert("半角数字のみで入力して下さい。");
-  /* $(id).attr('value', ''); */
-  return 1;
-}
-return 0;
+   var value = $(id).attr('value');
+   if(value.match( /[^-0-9]+/ ) ) {
+      alert("半角数字のみで入力して下さい。");
+      /* $(id).attr('value', ''); */
+      return 1;
+  }
+  return 0;
 }
 
 function AllCheck() {
- var check = 0;
- check += furiganaCheck();
- check += AlphabetCheck();
- check += numberCheck();
- if( check > 0 ) {
-  return false;
-}
-return check;
+   var check = 0;
+   check += furiganaCheck();
+   check += AlphabetCheck();
+   check += numberCheck();
+   if( check > 0 ) {
+      return false;
+  }
+  return check;
 }
 
 function form_action_confirm(){
@@ -224,16 +239,16 @@ $(function() {
  * PageScroll
  **/
  $(function() {
-   $('a.scroll').click(function() {
+     $('a.scroll').click(function() {
       if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-         var target = $(this.hash);
-         target = target.length && target;
-         var targetPosition = target.offset().top;
-         $('html,body').animate({ scrollTop: targetPosition }, 'slow');
-         return false;
-     }
- });
+       var target = $(this.hash);
+       target = target.length && target;
+       var targetPosition = target.offset().top;
+       $('html,body').animate({ scrollTop: targetPosition }, 'slow');
+       return false;
+   }
 });
+ });
 
 
  function onClickUrlLink(url) {

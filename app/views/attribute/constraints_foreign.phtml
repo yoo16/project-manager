@@ -1,7 +1,7 @@
 <? if ($this->pg_class['pg_constraint']['foreign']): ?>
 <? foreach ($this->pg_class['pg_constraint']['foreign'] as $pg_constraint): ?>
 <div class="row">
-  <div class="col-5">
+  <div class="col-4">
     <form class="" action="<?= url_for('rename_constraint') ?>" method="post">
       <div class="input-group">
         <?= FormHelper::input(['class' => 'form-control form-control'], 'new_constraint_name', $pg_constraint['conname']) ?>
@@ -17,8 +17,11 @@
 
   <div class="col-3"><?= $pg_constraint['foreign_relname'] ?> : <?= $pg_constraint['foreign_attname'] ?></div>
 
-  <div class="col-1">
-    <div><?= PgsqlEntity::$constraint_actions[$pg_constraint['confupdtype']] ?></div>
+  <div class="col-2">
+    <div>
+      update : <span class="badge badge-info"><?= PgsqlEntity::$constraint_actions[$pg_constraint['confupdtype']] ?></span>
+      delete : <span class="badge badge-info"><?= PgsqlEntity::$constraint_actions[$pg_constraint['confdeltype']] ?></span>
+    </div>
   </div>
 
   <div class="col-1">
@@ -28,6 +31,7 @@
       <?= FormHelper::hidden('model_id', $this->model->value['id']) ?></a>
       <?= FormHelper::hidden('database_id', $this->database->value['id']) ?></a>
     </form>
+
   </div>
 
 </div>

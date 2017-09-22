@@ -1,0 +1,27 @@
+<? include('_header.phtml') ?>
+<div class="pt-3">
+  <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
+  <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
+</div>
+
+<table class="table">
+  <thead class="thead-deffault">
+    <tr>
+      <th>&nbsp;</th>
+      <th>名称</th>
+      <th>ラベル</th>
+    </tr>
+  </thead>
+
+  <? if ($this->record->values): ?>
+  <? foreach ($this->record->values as $values): ?>
+  <tr>
+    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
+    <td>
+      <a href="<?= url_for('record_item/', ['record_id' => $values['id']]) ?>"><?= $values['name'] ?></a>    </td>
+    <td><?= $values['label'] ?></td>
+  </tr>
+  <? endforeach ?>
+  <? endif ?>
+
+</table>

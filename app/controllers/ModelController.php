@@ -36,7 +36,7 @@ class ModelController extends ProjectController {
     }
 
     function action_index() {
-
+        $this->redirect_to('list');
     }
 
     function action_cancel() {
@@ -52,6 +52,15 @@ class ModelController extends ProjectController {
                             ->order('name')
                             ->all()
                             ->bindValuesArray($this->pg_classes, 'pg_class', 'name');
+    }
+
+    function action_constraints() {
+        $database = $this->project->belongsTo('Database');
+        $pgsql = $database->pgsql();
+        $pg_classes = $pgsql->pgClasses();
+        foreach ($pg_classes as $pg_class) {
+            $this->pg_constraints[] = $pgsql->pgForeignConstraints($pg_class['pg_class_id']);
+        }
     }
 
     function action_values() {

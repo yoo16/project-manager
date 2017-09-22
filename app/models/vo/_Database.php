@@ -15,7 +15,6 @@ class _Database extends PgsqlEntity {
     var $name = 'databases';
     var $entity_name = 'database';
 
-
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'current_version' => array('type' => 'int4'),
@@ -28,22 +27,6 @@ class _Database extends PgsqlEntity {
         'user_name' => array('type' => 'varchar', 'is_required' => true),
     );
 
-    var $old_columns = array(
-    );
-
-
-    var $column_labels = array (
-        'created_at' => '',
-        'current_version' => '',
-        'hostname' => '',
-        'is_lock' => '',
-        'name' => '',
-        'port' => '',
-        'type' => '',
-        'updated_at' => '',
-        'user_name' => '',
-    );
-
 
     var $unique = array(
             'databases_name_hostname_key' => [
@@ -51,6 +34,8 @@ class _Database extends PgsqlEntity {
                         'hostname',
                         ],
     );
+
+
 
     function __construct($params = null) {
         parent::__construct($params);

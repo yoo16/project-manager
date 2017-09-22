@@ -9,7 +9,7 @@ class Attribute extends _Attribute {
     }
 
     function importByModel($model) {
-        if (!$model['id']) return;
+        if (!$model) return;
 
         $database = DB::table('Database')->fetch($model['database_id']);
         if (!$database->value) return;
@@ -23,6 +23,7 @@ class Attribute extends _Attribute {
                                 ->where("model_id = '{$model['id']}'")
                                 ->where("name = '{$pg_attribute['attname']}'")
                                 ->one();
+
 
             $value = null;
             $value['model_id'] = $model['id'];

@@ -128,6 +128,36 @@ class ProjectController extends AppController {
         $this->redirect_to('model/list', $params);
     }
 
+    function action_export_php_model() {
+        if (!isPost()) exit;
+        $this->project = DB::table('Project')->fetch($this->posts['project_id']);
+        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($this->posts['user_project_setting_id']);
+        $this->project->exportPHPModels();
+
+        $params['project_id'] = $this->project->value['id'];
+        $this->redirect_to('model/list', $params);
+    }
+
+    function action_export_php_controller() {
+        if (!isPost()) exit;
+        $this->project = DB::table('Project')->fetch($this->posts['project_id']);
+        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($this->posts['user_project_setting_id']);
+        $this->project->exportPHPControllers();
+
+        $params['project_id'] = $this->project->value['id'];
+        $this->redirect_to('model/list', $params);
+    }
+
+    function action_export_php_view() {
+        if (!isPost()) exit;
+        $this->project = DB::table('Project')->fetch($this->posts['project_id']);
+        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($this->posts['user_project_setting_id']);
+        $this->project->exportPHPViews();
+
+        $params['project_id'] = $this->project->value['id'];
+        $this->redirect_to('model/list', $params);
+    }
+
     function action_export_db() {
         $database = DB::table('Database')
                             ->fetch($_REQUEST['database_id'])
@@ -250,6 +280,7 @@ class ProjectController extends AppController {
         if (!$this->database->value['id']) {
             $this->redirect_to('project/');
         }
+
         $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
         $this->pg_classes = $pgsql_entity->tableArray();
 
@@ -272,7 +303,8 @@ class ProjectController extends AppController {
                 $model_values['class_name'] = FileManager::phpClassName($model_values['entity_name']);
 
                 $model = DB::table('Model')
-                                ->where("pg_class_id = '{$pg_class['pg_class_id']}'")
+                                //->where("pg_class_id = '{$pg_class['pg_class_id']}'")
+                                ->where("name = '{$pg_class['relname']}'")
                                 ->where("database_id = {$this->database->value['id']}")
                                 ->one();
 

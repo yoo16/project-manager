@@ -3,11 +3,11 @@
 <form action="<? Tag::init()->php('url_for(\'add\')') ?>" method="post">
 
   <table class="table">
-<? foreach ($values['model']['attributes'] as $attribute): ?>
-<? if (!Model::$required_columns[$attribute['name']]): ?>
+<? foreach ($values['view']['view_item'] as $view_item): ?>
+<? if (!Model::$required_columns[$view_item['attribute_id']]): ?>
     <tr>
-      <th><?= $attribute['label'] ?></th>
-      <td><? Tag::init()->php('$this->'.$values['model']['entity_name']."->formInput('{$attribute['name']}')") ?></td>
+      <th><?= $view_item['label'] ?></th>
+      <td><? Tag::init()->php('$this->'.$values['model']['entity_name']."->formInput('{$values['attribute'][$view_item['attribute_id']]['name']}')") ?></td>
     </tr>
 <? endif ?>
 <? endforeach ?>

@@ -39,11 +39,26 @@
   <td>
     <? if (file_exists($user_project_setting['project_path'])): ?>
     <? if (file_exists($user_project_setting['project_path']."app/")): ?>
-    <form action="<?=url_for('project/export_php') ?>" method="post">
-      <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?"><?= LABEL_EXPORT ?></button>
-      <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-      <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-    </form>
+
+      <div class="form-inline">
+        <form action="<?=url_for('project/export_php_model') ?>" method="post">
+          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">Model</button>
+          <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+          <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+        </form>
+        &nbsp;
+        <form action="<?=url_for('project/export_php_controller') ?>" method="post">
+          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">Controller</button>
+          <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+          <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+        </form>
+        &nbsp;
+        <form action="<?=url_for('project/export_php_view') ?>" method="post">
+          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">View</button>
+          <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+          <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+        </form>
+      </div>
   <? endif ?>
 <? endif ?>
 </td>

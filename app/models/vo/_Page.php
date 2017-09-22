@@ -15,7 +15,6 @@ class _Page extends PgsqlEntity {
     var $name = 'pages';
     var $entity_name = 'page';
 
-
     var $columns = array(
         'class_name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
@@ -24,27 +23,25 @@ class _Page extends PgsqlEntity {
         'label' => array('type' => 'varchar', 'length' => 256),
         'model_id' => array('type' => 'int4'),
         'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
+        'parent_page_id' => array('type' => 'int4'),
         'project_id' => array('type' => 'int4', 'is_required' => true),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
     );
 
-    var $old_columns = array(
+    var $foreign = array(
+            'pages_model_id_fkey' => [
+                                  'column' => 'model_id',
+                                  'foreign_table' => 'models',
+                                  'foreign_column' => 'id',
+                                  ],
+            'pages_project_id_fkey' => [
+                                  'column' => 'project_id',
+                                  'foreign_table' => 'projects',
+                                  'foreign_column' => 'id',
+                                  ],
     );
 
-
-    var $column_labels = array (
-        'class_name' => '',
-        'created_at' => '',
-        'entity_name' => '',
-        'is_overwrite' => '',
-        'label' => '',
-        'model_id' => '',
-        'name' => '',
-        'project_id' => '',
-        'sort_order' => '',
-        'updated_at' => '',
-    );
 
 
 

@@ -7,39 +7,70 @@
 
 class DataMigration {
     var $from_pgsql;
+    var $used_old_host = false;
 
     function __construct($params = null) {
         $this->pgsql($params);
     }
 
-    function pgsql($params) {
+    function pgsql($params = null) {
         $this->from_pgsql = new PgsqlEntity();
         if ($params) $this->from_pgsql->setDBInfo($params);
-        return $this->from_pgsql;
+    }
+
+    function searchReduplication($db_infos, $class_name) {
+        if (!$db_infos) return;
+        
+        $model = DB::table($class_name);
+
+        if (!$model->old_name) {
+            echo('Not found $old_name.').PHP_EOL;
+            exit;
+        }
+
+        foreach ($db_infos as $key => $db_info) {
+            $pgsql = new PgsqlEntity($db_info);
+            $from_model = $pgsql
+                        ->table($model->old_name)
+                        ->all();
+
+            foreach ($from_model->values as $value) {
+                $id = $value[$model->old_id_column];
+                if ($id > 0) {
+                    if (isset($values[$id])) {
+                        echo($db_info['host']).PHP_EOL;
+                        echo($db_info['dbname']).PHP_EOL;
+                        echo($db_info['port']).PHP_EOL;
+                        echo($db_info['user']).PHP_EOL;
+                        echo("{$class_name} reduplication : id = {$id}").PHP_EOL;
+                        var_dump($value);
+                        exit;
+                    } else {
+                        $values[$id] = $value;
+                    }
+                }
+            }
+        }
     }
 
     function truncates($model_names) {
         foreach ($model_names as $model_name) {
-            $model = DB::table($model_name)
-                               ->setDBHost($this->to_host)
-                               ->setDBName($this->to_dbname)
-                               ->truncate('RESTART IDENTITY CASCADE');
-
-            echo($model->sql).PHP_EOL;
-            if ($model->sql_error) {
-                echo($model_name).PHP_EOL;
-                echo($model->sql_error).PHP_EOL;
-                exit;
+            if (class_exists($model_name)) {
+                $model = DB::table($model_name)->truncate('RESTART IDENTITY CASCADE');
+                echo($model->sql).PHP_EOL;
+                if ($model->sql_error) {
+                    echo($model_name).PHP_EOL;
+                    echo($model->sql_error).PHP_EOL;
+                    exit;
+                }
+                $model->resetSequence($model->name);
             }
-            $model->resetSequence($model->name);
         }
     }
 
     function createMasterTable($model_names) {
         foreach ($model_names as $model_name) {
-            $pgsql = DB::table($model_name)->setDBHost($this->to_host)
-                                             ->setDBName($this->to_dbname)
-                                             ->insertsFromOldTable($this->from_pgsql);
+            $pgsql = DB::table($model_name)->insertsFromOldTable($this->from_pgsql);
 
             if ($pgsql->sql_error) {
                 echo($trancate_model).PHP_EOL;
@@ -50,7 +81,7 @@ class DataMigration {
         }
     }
 
-    function oldFkModels($class_name) {
+    function fromFkModels($class_name) {
         if (!class_exists($class_name)) {
             echo("Not found class : {$class_name}");
             exit;
@@ -62,21 +93,23 @@ class DataMigration {
             exit;
         }
 
-        $old_pg_class = $this->from_pgsql->pgClassByRelname($model->old_name);
-        if ($old_pg_class) $old_pg_foreign = $this->from_pgsql->pgForeignConstraints($old_pg_class['pg_class_id']);
+        foreach ($model->foreign as $foreign) {
+            $fk_table_name = $foreign['foreign_table'];
+            $fk_entity_name = FileManager::pluralToSingular($fk_table_name);
+            $fk_class_name = FileManager::phpClassName($fk_entity_name);
 
-        if ($old_pg_foreign) {
-            foreach ($old_pg_foreign as $old_foreign) {
-                $old_fk_model = $this->from_pgsql->table($old_foreign['foreign_relname'])->all();
+            $fk_model = DB::table($fk_class_name)->setDBInfo($this->from_pgsql->pg_info_array);
+            $fk_model->from($fk_model->old_name)->all();
 
-                foreach ($old_fk_model->values as $value) {
-                    //TODO rid or id
-                    $old_id_column = $old_foreign['foreign_attname'];
-                    if ($old_id = $value[$old_id_column]) {
-                        $results[$old_foreign['attname']][$old_id] = $value;
-                    }
+            $values = null;
+            foreach ($fk_model->values as $value) {
+                //TODO rid or id
+                if ($old_id = $value[$fk_model->old_id_column]) {
+                    $values[$old_id] = $value;
                 }
             }
+            $fk_model->values = $values;
+            $results[$foreign['column']] = $fk_model;
         }
         return $results;
     }
@@ -87,7 +120,8 @@ class DataMigration {
             exit;
         }
 
-        $old_fk_models = $this->oldFkModels($class_name);
+        $from_fk_models = $this->fromFkModels($class_name);
+        if (!$from_fk_models) return;
 
         $model = DB::table($class_name);
         foreach ($model->foreign as $foreign) {
@@ -95,18 +129,17 @@ class DataMigration {
             $class_name = FileManager::phpClassName($name);
             if (class_exists($class_name)) {
                 $fk_model = DB::table($class_name)->all();
+                foreach ($fk_model->values as $fk_value) {
+                    if ($fk_value['old_id']) {
+                        $from_fk_model = $from_fk_models[$foreign['column']];
+                        $old_fk_value = $from_fk_model->values[$fk_value['old_id']];
 
-                foreach ($fk_model->values as $fk_model_value) {
-                    if ($fk_model_value['old_id']) {
-                        $old_value = $old_fk_models[$foreign['column']][$fk_model_value['old_id']];
-                        //TODO rid or id
-                        if ($old_value['rid']) {
-                            $results[$foreign['column']][$old_value['rid']] = $fk_model_value['id'];
-                        } elseif ($old_value['id']) {
-                            $results[$foreign['column']][$old_value['id']] = $fk_model_value['id'];
+                        $fk_id = $old_fk_value[$from_fk_model->old_id_column];
+                        if ($fk_id && $old_fk_value[$from_fk_model->old_id_column]) {
+                            $results[$foreign['column']][$fk_id] = $fk_value['id'];
                         } else {
                             echo('fk id error.').PHP_EOL;
-                            var_dump($old_value);
+                            var_dump($old_fk_value);
                             exit;
                         }
                     }
@@ -144,26 +177,26 @@ class DataMigration {
             echo('Not found $old_name.').PHP_EOL;
             exit;
         }
-        if (!$model->old_columns) {
-            echo('Not found $old_columns.').PHP_EOL;
-            exit;
-        }
 
-        $old_columns = $model->old_columns;
+        $values = DB::table($class_name)->valuesFromOldTable($this->from_pgsql);
         $fk_ids = $this->fkIds($class_name);
-        $old_model = $this->oldPgsql()->table($model->old_name)->all();
-        foreach ($old_model->values as $value) {
-            $value = $this->bindByOldColumns($old_columns, $value);
+
+        foreach ($values as $value) {
             $value = $this->bindFkIdsByFkIds($fk_ids, $value);
 
-            $model = DB::table($class_name)
-                            ->where("old_id = {$value[$model->old_id_column]}")
-                            ->one();
+            if ($find_columns) {
+                $model = DB::table($class_name);
+                foreach ($find_columns as $find_column) {
+                    $model->where("{$find_column} = '{$value[$find_column]}'");
+                }
+                $model->one();
+            } else {
+                $model = DB::table($class_name)->where("old_id = {$value['old_id']}")->one();
+            }
 
             if ($model->value['id']) {
                 //UPDATE
                 $model->update($value);
-                echo($model->sql).PHP_EOL;
                 if ($model->errors) {
                     var_dump($model->errors);
                     exit;
@@ -171,7 +204,6 @@ class DataMigration {
             } else {
                 //INSERT
                 $model = DB::table($class_name)->insert($value);
-                echo($model->sql).PHP_EOL;
                 if ($model->errors) {
                     var_dump($model->errors);
                     exit;

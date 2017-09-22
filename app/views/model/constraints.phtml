@@ -1,0 +1,49 @@
+<? include('_header.phtml') ?>
+
+<div class="">
+  <table class="table">
+    <thead class="thead-default">
+      <tr>
+        <th>Name</th>
+        <th>Table</th>
+        <th></th>
+        <th></th>
+        <th>Update</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+
+    <? if ($this->pg_constraints): ?>
+      <? foreach ($this->pg_constraints as $pg_constraints): ?>
+        <? foreach ($pg_constraints as $pg_constraint): ?>
+          <tr>
+            <td><?= $pg_constraint['conname'] ?></td>
+            <td><?= $pg_constraint['relname'] ?></td>
+            <td>
+              <?= $pg_constraint['attname'] ?>
+            </td>
+            <td>
+              <?= $pg_constraint['foreign_relname'] ?>.<?= $pg_constraint['foreign_attname'] ?>
+            </td>
+            <td>
+              <? if ($pg_constraint['confupdtype'] == 'c'): ?>
+                <? $class = 'badge badge-danger' ?>
+              <? else: ?>
+                <? $class = 'badge badge-default' ?>
+              <? endif ?>
+              <span class="<?= $class ?>"><?= PgsqlEntity::$constraint_actions[$pg_constraint['confupdtype']] ?></span>
+            </td>
+            <td>
+              <? if ($pg_constraint['confdeltype'] == 'c'): ?>
+                <? $class = 'badge badge-danger' ?>
+              <? else: ?>
+                <? $class = 'badge badge-default' ?>
+              <? endif ?>
+              <span class="<?= $class ?>"><?= PgsqlEntity::$constraint_actions[$pg_constraint['confdeltype']] ?></span>
+            </td>
+          </tr>
+        <? endforeach ?>
+      <? endforeach ?>
+    <? endif ?>
+  </table>
+</div>

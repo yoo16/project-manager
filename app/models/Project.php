@@ -27,26 +27,42 @@ class Project extends _Project {
         return $project;
     }
 
+    function pgConstraints($pg_class) {
+        foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
+            foreach ($pg_constraints as $pg_constraint) {
+                if ($type == 'unique') {
+                    $unique[$pg_constraint['conname']][] = $pg_constraint;
+                } else if ($type == 'foreign') {
+                    $foreign[$pg_constraint['conname']] = $pg_constraint;
+                }
+            }
+        }
+        $values['unique'] = $unique;
+        $values['foreign'] = $foreign;
+        return $values;
+    }
+    
     /**
      * export php
      * @return bool
      */
-    function exportPHP() {
+    function exportPHPModels() {
         $database = DB::table('Database')->fetch($this->value['database_id']);
         $pgsql = $database->pgsql();
 
         //model
         $this->bindMany('Model');
 
+        $relation_database = $this->hasMany('RelationDatabase')->all();
+        foreach ($relation_database->values as $relation_database) {
+            $old_database = DB::table('Database')->fetch($relation_database['old_database_id']);
+            $old_pgsqls[$old_database->value['id']] = $old_database->pgsql();
+        }
+
         if ($this->model->values) {
             foreach ($this->model->values as $model) {
                 $pg_class = $pgsql->pgClassArray($model['pg_class_id']);
 
-                //$old_pg_class = $old_pgsql->pgClassByRelname($model['old_name']);
-                //if ($old_pg_class) $old_pg_foreign = $old_pgsql->pgForeignConstraints($old_pg_class['pg_class_id']);
-
-                $unique = null;
-                $foreign = null;
                 $values = null;
                 $values['project'] = $this->value;
                 
@@ -58,24 +74,19 @@ class Project extends _Project {
 
                 $values['model'] = $model;
                 $values['attribute'] = $attributes;
+                
                 $values['old_id_column'] = DB::table('Attribute')
                                                 ->where("model_id = '{$model['id']}'")
                                                 ->where("name = 'old_id'")
                                                 ->one()
                                                 ->value['old_name'];
 
-                foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
-                    foreach ($pg_constraints as $pg_constraint) {
-                        if ($type == 'unique') {
-                            $unique[$pg_constraint['conname']][] = $pg_constraint;
-                        } else if ($type == 'foreign') {
-                            $foreign[$pg_constraint['conname']] = $pg_constraint;
-                        }
-                    }
-                }
-                if ($unique) $values['unique'] = $unique;
-                if ($foreign) $values['foreign'] = $foreign;
+                $pg_constraints = $this->pgConstraints($pg_class);
+                $values['unique'] = $pg_constraints['unique'];
+                $values['foreign'] = $pg_constraints['foreign'];
+                $values['primary'] = $pg_constraints['primary'];
 
+                $model = $values['model'];
                 $model_path = Model::projectFilePath($this->user_project_setting->value, $model);
 
                 if (!file_exists($model_path)) {
@@ -90,8 +101,11 @@ class Project extends _Project {
                 file_put_contents($vo_model_path, $contents);
             }
         }
+    }
 
-        //controller view
+
+    //controller view
+    function exportPHPControllers() {
         $pages = $this->hasMany('Page')->values;
         if ($pages) {
             foreach ($pages as $page) {
@@ -109,14 +123,37 @@ class Project extends _Project {
                     $contents = FileManager::bufferFileContetns($page_template_path, $values);
                     file_put_contents($page_path, $contents);
                 }
+            }   
+        }
 
-                //view
+    }
+
+    function exportPHPViews($page, $values) {
+        $pages = $this->relationMany('Page')
+                      ->idIndex()
+                      ->all()
+                      ->values;
+        if ($pages) {
+            foreach ($pages as $page) {
+                $values = null;
+                $values['pages'] = $pages;
+                $values['page'] = $page;
+                if ($page['model_id']) {
+                    $model = DB::table('Model')->fetch($page['model_id']);
+                    $values['model'] = $model->value;
+                    $values['attribute'] = $model->relationMany('Attribute')->idIndex()->all()->values;
+                }
+
                 $views = DB::table('Page')->fetch($page['id'])->hasMany('View')->values;
                 if ($views) {
                     foreach ($views as $view) {
                         $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
                         if (!file_exists($view_path) || $view['is_overwrite']) {
+                            $view['view_item'] = DB::table('View')->fetch($view['id'])
+                                                                  ->hasMany('ViewItem')
+                                                                  ->values;
                             $values['view'] = $view;
+
                             $view_template_path = View::templateFilePath($view);
                             if (file_exists($view_template_path)) {
                                 $contents = FileManager::bufferFileContetns($view_template_path, $values);
@@ -124,12 +161,9 @@ class Project extends _Project {
                             }
                         } 
                     }
-                }
-
-            }   
+                }  
+            }
         }
-
-
     }
 
 }

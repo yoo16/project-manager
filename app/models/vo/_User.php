@@ -15,8 +15,6 @@ class _User extends PgsqlEntity {
     var $name = 'users';
     var $entity_name = 'user';
 
-    var $old_name = 'tb_user';
-
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'default_db_host' => array('type' => 'varchar', 'length' => 256),
@@ -26,33 +24,15 @@ class _User extends PgsqlEntity {
         'first_name' => array('type' => 'varchar', 'length' => 256),
         'htaccess_name' => array('type' => 'varchar', 'length' => 256),
         'last_name' => array('type' => 'varchar', 'length' => 256),
-        'login_name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
-        'password' => array('type' => 'varchar', 'length' => 256),
+        'login_name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true, 'old_name' => 'login_name'),
+        'password' => array('type' => 'varchar', 'length' => 256, 'old_name' => 'password'),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
     );
 
-    var $old_columns = array(
-        'login_name' => 'login_name',
-        'password' => 'password',
-    );
 
 
-    var $column_labels = array (
-        'created_at' => '',
-        'default_db_host' => '',
-        'default_dev_url' => '',
-        'default_project_path' => '',
-        'email' => '',
-        'first_name' => '',
-        'htaccess_name' => '',
-        'last_name' => '',
-        'login_name' => '',
-        'password' => '',
-        'sort_order' => '',
-        'updated_at' => '',
-    );
-
+    var $old_name = 'tb_user';
 
 
     function __construct($params = null) {

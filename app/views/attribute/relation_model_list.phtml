@@ -3,12 +3,15 @@
 
 <? if ($this->fk_attribute->value): ?>
 <form action="<?= url_for('remove_relation') ?>" method="post">
+  
   <?= $this->fk_model->value['name'] ?> -> <?= $this->fk_attribute->value['name'] ?>
+
   <input class="btn btn-sm btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
   <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
 </form>
 <? endif ?>
 
+<? if (!$this->attribute->value['fk_attribute_id']): ?>
 <table class="table table-sm">
   <? foreach ($this->project->model->values as $model): ?>
   <tr>
@@ -25,3 +28,4 @@
     </tr>
   <? endforeach ?>
 </table>
+<? endif ?>

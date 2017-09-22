@@ -39,9 +39,37 @@ class Tag {
         if ($method) $this->php($param);
     }
 
+    function phpTag($value = null) {
+        return '<?= '.$value.' ?>';
+    }
+
     function php($value = null) {
         if ($value) $this->value = $value;
-        $this->value = '<?= '.$this->value.' ?>';
+        $this->value = $this->phpTag($this->value);
+        $this->output();
+    }
+
+    function tableItemUrlForAttribute($attribute, $page, $model, $params = null) {
+        $entity = '$values'."['{$attribute['name']}']";
+        if ($attribute['type'] == 'bool') {
+            $tag = "FormHelper::activeLabelTag({$entity})";
+        } else {
+            $tag = $entity;
+        }
+
+        if ($model) {
+            $key_name = "{$model['entity_name']}_id";
+            $value_name = '$values[\'id\']';
+            $params[] = "'{$key_name}' => {$value_name}";
+
+            $param = implode('=>', $params);
+        }
+
+        $label = $this->phpTag($tag);
+        $href = "url_for('{$page['entity_name']}/', [{$param}])";
+        $href = $this->phpTag($href);
+        $this->value = "<a href=\"{$href}\">{$label}</a>";
+
         $this->output();
     }
 

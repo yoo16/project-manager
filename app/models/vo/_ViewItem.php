@@ -15,30 +15,37 @@ class _ViewItem extends PgsqlEntity {
     var $name = 'view_items';
     var $entity_name = 'view_item';
 
-
     var $columns = array(
         'attribute_id' => array('type' => 'int4'),
         'created_at' => array('type' => 'timestamp'),
         'css_class' => array('type' => 'bool'),
         'form_type' => array('type' => 'varchar', 'length' => 256),
         'label' => array('type' => 'varchar', 'length' => 256),
+        'link' => array('type' => 'varchar', 'length' => 256),
+        'page_id' => array('type' => 'int4'),
+        'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
         'view_id' => array('type' => 'int4', 'is_required' => true),
     );
 
-    var $old_columns = array(
+    var $foreign = array(
+            'view_items_attribute_id_fkey' => [
+                                  'column' => 'attribute_id',
+                                  'foreign_table' => 'attributes',
+                                  'foreign_column' => 'id',
+                                  ],
+            'view_items_page_id_fkey' => [
+                                  'column' => 'page_id',
+                                  'foreign_table' => 'pages',
+                                  'foreign_column' => 'id',
+                                  ],
+            'view_items_view_id_fkey' => [
+                                  'column' => 'view_id',
+                                  'foreign_table' => 'views',
+                                  'foreign_column' => 'id',
+                                  ],
     );
 
-
-    var $column_labels = array (
-        'attribute_id' => '',
-        'created_at' => '',
-        'css_class' => '',
-        'form_type' => '',
-        'label' => '',
-        'updated_at' => '',
-        'view_id' => '',
-    );
 
 
 

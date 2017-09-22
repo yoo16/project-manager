@@ -3,11 +3,11 @@
 <form action="<? Tag::init()->php('url_for(\'update\', $this->params[\'id\'])') ?>" method="post">
 
   <table class="table">
-<? foreach ($values['model']['attributes'] as $attribute): ?>
-<? if (!Model::$required_columns[$attribute['name']]): ?>
+<? foreach ($values['view']['view_item'] as $view_item): ?>
+<? if (!Model::$required_columns[$values['attribute'][$view_item['attribute_id']]['name']]): ?>
     <tr>
-      <th><?= $attribute['label'] ?></th>
-      <td><? Tag::init()->formEditForModel($values['model'], $attribute); ?></td>
+      <th><?= $view_item['label'] ?></th>
+      <td><? Tag::init()->formEditForModel($values['model'], $values['attribute'][$view_item['attribute_id']]); ?></td>
     </tr>
 <? endif ?>
 <? endforeach ?>
@@ -18,3 +18,5 @@
   <? Tag::init()->php('FormHelper::linkButton("cancel", LABEL_BACK)') ?>
   
 </form>
+
+  <? Tag::init()->php('$this->'."{$values['model']['entity_name']}".'->formDelete()') ?>

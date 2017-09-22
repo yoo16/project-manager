@@ -43,7 +43,7 @@
   <? endif ?>
 </td>
 <td><?= $page['entity_name'] ?></td>
-<td><? if ($page['model_id']): ?><?= $this->models[$page['model_id']]['name'] ?><? endif ?></td>
+<td><? if ($page['model_id']): ?><?= $page['model']['name'] ?><? endif ?></td>
 </tr>
 <? endforeach ?> 
 <? endif ?>

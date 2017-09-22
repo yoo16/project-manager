@@ -107,6 +107,8 @@ class AttributeController extends ProjectController {
         $pgsql = $this->database->pgsql();
         $pg_attribute = $pgsql->pgAttributeByAttnum($this->model->value['pg_class_id'], $attribute->value['attnum']);
 
+        $model = $pgsql->pgClassById($this->model->value['pg_class_id']);
+
         if ($pg_attribute) {
             //rename
             if ($pg_attribute['name'] != $posts['name']) {
@@ -123,6 +125,25 @@ class AttributeController extends ProjectController {
             //comment
             if ($attribute->value['label'] != $posts['label']) {
                 $results = $pgsql->updateColumnComment($this->model->value['name'], $posts['name'], $posts['label']);
+                if ($pgsql->sql_error) exit($pgsql->sql_error);
+            }
+
+            //delete action
+            if ($attribute->value['delete_action'] != $posts['delete_action']) {
+                $fk_attribute = DB::table('Attribute')->fetch($attribute->value['fk_attribute_id']);
+                $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']);
+
+                if ($fk_attribute->value && $fk_model->value) {
+                    $constraint = $pgsql->pgConstraintByAttnum($this->model->value['pg_class_id'], $attribute->value['attnum'] ,'f');
+                    $pgsql->removePgConstraint($this->model->value['name'], $constraint['conname']);
+                    $results = $pgsql->addPgForeignKey($this->model->value['name'],
+                                                       $attribute->value['name'],
+                                                       $fk_model->value['name'],
+                                                       $fk_attribute->value['name'],
+                                                       $posts['update_action'],
+                                                       $posts['delete_action']
+                                                   );
+                }
                 if ($pgsql->sql_error) exit($pgsql->sql_error);
             }
 
@@ -222,24 +243,28 @@ class AttributeController extends ProjectController {
     function action_relation_model_list() {
         $this->layout = null;
 
-        $this->project->bindMany('Model');
         $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
 
         if ($this->attribute->value['fk_attribute_id']) {
             $this->fk_attribute = DB::table('Attribute')->fetch($this->attribute->value['fk_attribute_id']);
+            var_dump($this->fk_attribute->value['model_id']);
             $this->fk_model = DB::table('Model')->fetch($this->fk_attribute->value['model_id']);
         }
+
+        $this->project->bindMany('Model');
     }
 
     function action_relation_attribute_list() {
         $this->layout = null;
 
+        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
         $this->fk_model = DB::table('Model')->fetch($_REQUEST['fk_model_id']);
+
+        
         if ($this->fk_model->value['id']) {
             $this->fk_model->bindMany('Attribute');
         }
 
-        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
         if ($this->attribute->value['fk_attribute_id']) {
             $this->fk_attribute = DB::table('Attribute')->fetch($this->attribute->value['fk_attribute_id']);
         }
@@ -258,10 +283,14 @@ class AttributeController extends ProjectController {
             $database = DB::table('Database')->fetch($this->project->value['database_id']);
 
             $pgsql = $database->pgsql();  
+
             $results = $pgsql->addPgForeignKey($model->value['name'],
                                                $attribute->value['name'],
                                                $fk_model->value['name'],
-                                               $fk_attribute->value['name']);
+                                               $fk_attribute->value['name'],
+                                               $attribute->value['update_action'],
+                                               $attribute->value['delete_action']
+                                           );
 
             if ($results) {
                 $posts['fk_attribute_id'] = $fk_attribute->value['id'];
@@ -302,7 +331,7 @@ class AttributeController extends ProjectController {
 
         $pgsql = $database->pgsql(); 
         $pg_class = $pgsql->pgClassByRelname($this->model->value['name']);
-        $pgsql->removePgConstraints($pg_class['relname']);
+        $pgsql->removePgConstraints($pg_class['relname'], 'p');
 
         $this->redirect_to('list');
     }
@@ -354,6 +383,7 @@ class AttributeController extends ProjectController {
                                         ->join('Database', 'id', 'old_database_id')
                                         ->join('Project', 'id', 'project_id')
                                         ->all();
+
         $pgsql = new PgsqlEntity();
         foreach ($relation_database->values as $relation_database) {
             $pgsql->setDBName($relation_database['database_name'])

@@ -6,14 +6,14 @@
  * @create  <?= $values['page']['created_at'] ?> 
  */
 
-<? if ($values['page']['extend_class_name']): ?>
-require_once '<?= $extend_file_name ?>.php';
+<? if ($values['page']['parent']): ?>
+require_once '<?= $values['page']['parent']['name'] ?>.php';
 <? else: ?>
 require_once 'AppController.php';
 <? endif ?>
 
-<? if ($values['page']['extend_class_name']): ?>
-class <?= $values['page']['name'] ?>Controller extends <?= $values['page']['extend_class_name'] ?> {
+<? if ($values['page']['parent']): ?>
+class <?= $values['page']['name'] ?>Controller extends <?= $values['page']['parent']['name'] ?> {
 <? else: ?>
 class <?= $values['page']['name'] ?>Controller extends AppController {
 <? endif ?>

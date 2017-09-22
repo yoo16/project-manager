@@ -1,37 +1,33 @@
 <?php
 /**
- * RelationDatabase 
+ * RecordItem 
  * 
- * @create  2017-09-04 15:05:48 
+ * @create  2017-09-20 17:27:00 
  */
 
 //namespace project_manager;
 
 require_once 'PgsqlEntity.php';
 
-class _RelationDatabase extends PgsqlEntity {
+class _RecordItem extends PgsqlEntity {
 
     var $id_column = 'id';
-    var $name = 'relation_databases';
-    var $entity_name = 'relation_database';
+    var $name = 'record_items';
+    var $entity_name = 'record_item';
 
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
-        'old_database_id' => array('type' => 'int4', 'is_required' => true),
-        'project_id' => array('type' => 'int4', 'is_required' => true),
+        'key' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
+        'record_id' => array('type' => 'int4', 'is_required' => true),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
+        'value' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
     );
 
     var $foreign = array(
-            'relation_databases_old_database_id_fkey' => [
-                                  'column' => 'old_database_id',
-                                  'foreign_table' => 'databases',
-                                  'foreign_column' => 'id',
-                                  ],
-            'relation_databases_project_id_fkey' => [
-                                  'column' => 'project_id',
-                                  'foreign_table' => 'projects',
+            'record_items_record_id_fkey' => [
+                                  'column' => 'record_id',
+                                  'foreign_table' => 'records',
                                   'foreign_column' => 'id',
                                   ],
     );

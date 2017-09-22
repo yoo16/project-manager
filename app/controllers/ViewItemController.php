@@ -5,9 +5,9 @@
  * @create  2017-07-31 15:26:54 
  */
 
-require_once 'AppController.php';
+require_once 'ProjectController.php';
 
-class ViewItemController extends AppController {
+class ViewItemController extends ProjectController {
 
     var $name = 'view_item';
 
@@ -20,7 +20,6 @@ class ViewItemController extends AppController {
     function before_action($action) {
         parent::before_action($action);
 
-        $this->project = DB::table('Project')->requestSession();
         $this->page = DB::table('Page')->requestSession();
         $this->view = DB::table('View')->requestSession();
 
@@ -59,9 +58,18 @@ class ViewItemController extends AppController {
     * @return void
     */
     function action_list() {
-        $this->view->bindMany('ViewItem');
         $this->page->bindBelongsTo('Model');
-        $this->page->model->bindMany('Attribute');
+        $this->page->model->attribute = $this->page
+                                              ->model
+                                              ->relationMany('Attribute')
+                                              ->idIndex()
+                                              ->all();
+        $this->view->bindMany('ViewItem');
+        $this->pages = $this->project
+                            ->relationMany('Page')
+                            ->idIndex()
+                            ->all()
+                            ->values;
     }
 
    /**
@@ -165,7 +173,8 @@ class ViewItemController extends AppController {
     */
     function action_update_sort() {
         if (!isPost()) exit;
-        DB::table('ViewItem')->updateSortOrder($_REQUEST['sort_order']);
+        $view_item = DB::table('ViewItem')->updateSortOrder($_REQUEST['sort_order']);
+        $this->redirect_to('list');
     }
 
 }

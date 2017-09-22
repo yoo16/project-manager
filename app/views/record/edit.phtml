@@ -1,0 +1,19 @@
+<? include('_header.phtml') ?>
+<form action="<?= url_for('update', $this->params['id']) ?>" method="post">
+
+  <table class="table">
+    <tr>
+      <th>名称</th>
+      <td><?= $this->record->formInput('name') ?></td>
+    </tr>
+    <tr>
+      <th>ラベル</th>
+      <td><?= $this->record->formInput('label') ?></td>
+    </tr>
+  </table>
+
+  <?= FormHelper::submit(LABEL_SAVE) ?>
+  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>  
+</form>
+
+  <?= $this->record->formDelete() ?>

@@ -1,6 +1,19 @@
 
 <div class="card">
-  <h4 class="card-header"><?= $this->model->value['name'] ?> <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label></h4>
+  <h4 class="card-header">
+    <?= $this->model->value['name'] ?>
+    <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label>
+  </h4>
+  
+  <? if ($this->pg_class['pg_class_id'] != $this->model->value['pg_class_id']): ?>
+  <div class="alert alert-danger">
+    pg_class is not match on PostgreSQL.
+    <ul>
+      <li>pg_class : <?= $this->pg_class['pg_class_id'] ?></li>
+      <li>model : <?= $this->model->value['pg_class_id'] ?></li>
+    </ul>
+  </div>
+  <? endif ?>
 
   <div class="card-body">
     <table class="table">
