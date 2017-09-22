@@ -1595,7 +1595,7 @@ class PgsqlEntity extends Entity {
     * @param  Object $value
     * @return string
     */
-    private function sqlValue($value, $type) {
+    private function sqlValue($value, $type = null) {
         if (is_null($value)) {
             return "NULL";
         } elseif (is_bool($value)) {
@@ -1641,7 +1641,7 @@ class PgsqlEntity extends Entity {
     */
     private function orderBySql() {
         $sql = '';
-        if ($this->columns['sort_order']) $this->order(['column' => 'sort_order']); 
+        if ($this->columns['sort_order']) $this->order('column', 'sort_order'); 
         if (!$this->orders) return;
         if ($order = $this->sqlOrders($this->orders)) $sql = " ORDER BY {$order}";
         return $sql;
@@ -1985,15 +1985,14 @@ class PgsqlEntity extends Entity {
     * @return string
     **/
     function sqlOrders($orders) {
-        if ($this->columns['sort_order']) $orders[] = array('column' => 'sort_order', 'option' => null);
         if (!$orders) return;
         foreach ($orders as $order) {
-            if (array_key_exists($order['column'], $this->columns)) {
+            if ($order['column'] && array_key_exists($order['column'], $this->columns)) {
                 $_orders[] = "{$this->table_name}.{$order['column']} {$order['option']}";
             }
         }
-        $order = implode(', ', $_orders);
-        return $order;
+        if ($_orders) $results = implode(', ', $_orders);
+        return $results;
     }
 
     /**

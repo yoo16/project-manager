@@ -16,6 +16,8 @@ class Entity {
     var $posts = null;
     var $session = null;
 
+    static $except_columns = ['id', 'created_at', 'updated_at'];
+
 
     function __construct($params = null) {
         $this->defaultValue();
@@ -268,8 +270,10 @@ class Entity {
         if (isset($this->_value)) {
             $changes = array();
             foreach ($this->columns as $key => $type) {
-                if ($this->value[$key] !== $this->_value[$key]) {
-                    $changes[$key] = ($changed) ? $this->value[$key] : $this->_value[$key];
+                if (!in_array($key, self::$except_columns)) {
+                    if ($this->value[$key] !== $this->_value[$key]) {
+                        $changes[$key] = ($changed) ? $this->value[$key] : $this->_value[$key];
+                    }
                 }
             }
             return $changes;

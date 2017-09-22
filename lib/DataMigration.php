@@ -39,6 +39,7 @@ class DataMigration {
                 if ($id > 0) {
                     if (isset($values[$id])) {
                         echo($db_info['host']).PHP_EOL;
+                        echo($db_info['host']).PHP_EOL;
                         echo($db_info['dbname']).PHP_EOL;
                         echo($db_info['port']).PHP_EOL;
                         echo($db_info['user']).PHP_EOL;
@@ -134,9 +135,9 @@ class DataMigration {
                         $from_fk_model = $from_fk_models[$foreign['column']];
                         $old_fk_value = $from_fk_model->values[$fk_value['old_id']];
 
-                        $fk_id = $old_fk_value[$from_fk_model->old_id_column];
-                        if ($fk_id && $old_fk_value[$from_fk_model->old_id_column]) {
-                            $results[$foreign['column']][$fk_id] = $fk_value['id'];
+                        $old_fk_id = $old_fk_value[$from_fk_model->old_id_column];
+                        if ($old_fk_id && $old_fk_value[$from_fk_model->old_id_column]) {
+                            $results[$foreign['column']][$old_fk_id] = $fk_value['id'];
                         } else {
                             echo('fk id error.').PHP_EOL;
                             var_dump($old_fk_value);
@@ -171,7 +172,7 @@ class DataMigration {
         return $value;
     }
 
-    function updateModelFromOldModel($class_name, $find_columns = null) {
+    function updateModelFromOldModel($class_name, $find_columns = null, $old_id_column = null) {
         $model = DB::table($class_name);
         if (!$model->old_name) {
             echo('Not found $old_name.').PHP_EOL;
@@ -183,6 +184,12 @@ class DataMigration {
 
         foreach ($values as $value) {
             $value = $this->bindFkIdsByFkIds($fk_ids, $value);
+
+            if ($old_id_column) {
+                $value[$old_id_column] = $fk_ids[$old_id_column][$value['old_id']];
+            }
+
+            if (!isset($value['old_id'])) $value['old_id'] = null;
 
             if ($find_columns) {
                 $model = DB::table($class_name);
@@ -197,17 +204,16 @@ class DataMigration {
             if ($model->value['id']) {
                 //UPDATE
                 $model->update($value);
-                if ($model->errors) {
-                    var_dump($model->errors);
-                    exit;
-                }
             } else {
                 //INSERT
                 $model = DB::table($class_name)->insert($value);
-                if ($model->errors) {
-                    var_dump($model->errors);
-                    exit;
-                }
+            }
+
+            if ($model->errors) {
+                echo($model->sql).PHP_EOL;
+                echo($model->sql_error).PHP_EOL;
+                var_dump($model->errors);
+                exit;
             }
         } 
     }
