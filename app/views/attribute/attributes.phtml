@@ -42,9 +42,8 @@
           <? if ($attribute['old_name']): ?>
           <div>
           (<?= $attribute['old_name'] ?>)
-          <a class="btn btn-danger btn-sm" href="<?= url_for('delete_old_name', ['attribute_id' => $attribute['id']]) ?>"><?= LABEL_DELETE ?></a>
           </div>
-        <? endif ?>
+          <? endif ?>
           </td>
 
           <td>

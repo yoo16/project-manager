@@ -406,8 +406,8 @@ class AttributeController extends ProjectController {
 
     function action_delete_old_name() {
         $posts['old_name'] = '';
-        DB::table('Attribute')->fetch($_REQUEST['attribute_id'])->update($posts);
-        $this->redirect_to('list');
+        DB::table('Attribute')->fetch($this->params['id'])->update($posts);
+        $this->redirect_to('edit', $this->params['id']);
     }
 
 }

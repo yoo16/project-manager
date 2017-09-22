@@ -285,40 +285,37 @@ class ProjectController extends AppController {
         $this->pg_classes = $pgsql_entity->tableArray();
 
         foreach ($this->pg_classes as $pg_class) {
-            $relnames = explode('_', $pg_class['relname']);
-            $last_relname = end($relnames);
+            $model_values = null;
+            if ($this->project->value['database_id']) $model_values['database_id'] = $this->project->value['database_id'];
+            if ($this->project->value['id']) $model_values['project_id'] = $this->project->value['id'];
+            if ($pg_class['relfilenode']) $model_values['relfilenode'] = $pg_class['relfilenode'];
+            if ($pg_class['pg_class_id']) $model_values['pg_class_id'] = $pg_class['pg_class_id'];
+            if ($pg_class['relname']) $model_values['name'] = $pg_class['relname'];
+            if ($pg_class['comment']) $model_values['label'] = $pg_class['comment'];
 
-            if (is_numeric($last_relname)) {
+            $model_values['entity_name'] = FileManager::pluralToSingular($pg_class['relname']);
+            $model_values['class_name'] = FileManager::phpClassName($model_values['entity_name']);
 
+            $model = DB::table('Model')
+                            //->where("pg_class_id = '{$pg_class['pg_class_id']}'")
+                            ->where("name = '{$pg_class['relname']}'")
+                            ->where("database_id = {$this->database->value['id']}")
+                            ->one();
+
+            if ($model->value['id']) {
+                $model = DB::table('Model')->update($model_values, $model->value['id']);
             } else {
-                $model_values = null;
-                if ($this->project->value['database_id']) $model_values['database_id'] = $this->project->value['database_id'];
-                if ($this->project->value['id']) $model_values['project_id'] = $this->project->value['id'];
-                if ($pg_class['relfilenode']) $model_values['relfilenode'] = $pg_class['relfilenode'];
-                if ($pg_class['pg_class_id']) $model_values['pg_class_id'] = $pg_class['pg_class_id'];
-                if ($pg_class['relname']) $model_values['name'] = $pg_class['relname'];
-                if ($pg_class['comment']) $model_values['label'] = $pg_class['comment'];
-
-                $model_values['entity_name'] = FileManager::pluralToSingular($pg_class['relname']);
-                $model_values['class_name'] = FileManager::phpClassName($model_values['entity_name']);
-
-                $model = DB::table('Model')
-                                //->where("pg_class_id = '{$pg_class['pg_class_id']}'")
-                                ->where("name = '{$pg_class['relname']}'")
-                                ->where("database_id = {$this->database->value['id']}")
-                                ->one();
-
-                if ($model->value['id']) {
-                    $model = DB::table('Model')->update($model_values, $model->value['id']);
-                } else {
-                    $model = DB::table('Model')->insert($model_values);
-                }
-
-                $attribute = new Attribute();
-                $attribute->importByModel($model->value);
+                $model = DB::table('Model')->insert($model_values);
             }
 
+            $attribute = new Attribute();
+            $attribute->importByModel($model->value);
+
         }
+
+        //update constraint : fi_attribute_id and action
+        Model::updateForeignKey($this->project);
+
         $params['project_id'] = $this->project->value['id'];
         $this->redirect_to('model/list', $params);
     }

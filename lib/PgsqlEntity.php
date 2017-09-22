@@ -41,8 +41,6 @@ class PgsqlEntity extends Entity {
                               'c' => 'Check'
                               ];
     static $constraint_actions = [
-                               'a' => 'NOT ACTION',
-                               'c' => 'CASCADE',
                                'a' => 'NO ACTION',
                                'c' => 'CASCADE',
                                'r' => 'RESTRICT',

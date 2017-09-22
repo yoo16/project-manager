@@ -72,21 +72,12 @@ class Model extends _Model {
 
                             if ($fk_attribute->value) {
                                 if ($fk_attribute->value['id'] && $attribute['id']) {
-
-                                    $on_update = null;
-
-                                    if ($attribute['delete_cascade']) {
-                                        $on_delete = $attribute['delete_cascade'];
-                                    } else {
-                                        $on_delete = null;
-                                    }
-
                                     $results = $pgsql->addPgForeignKey($model['name'],
                                                                        $attribute['name'],
                                                                        $fk_model->value['name'],
                                                                        $fk_attribute->value['name'],
-                                                                       $on_update,
-                                                                       $on_delete
+                                                                       $attribute['update_action'],
+                                                                       $attribute['delete_action']
                                                                    );
 
                                     if ($results) {
@@ -183,7 +174,7 @@ class Model extends _Model {
      * @param  Project $project
      * @return void
      */
-    static function updateForeignKeyId($project) {
+    static function updateForeignKey($project) {
         if (!$project->value) return;
 
         $database = DB::table('Database')->fetch($project->value['database_id']);
@@ -213,44 +204,10 @@ class Model extends _Model {
 
                         if ($fk_attribute->value['id']) {
                             $posts['fk_attribute_id'] = $fk_attribute->value['id'];
+                            $posts['update_action'] = $pg_constraint['confupdtype'];
+                            $posts['delete_action'] = $pg_constraint['confdeltype'];
                             DB::table('Attribute')->update($posts, $attribute->value['id']);
                         }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * check DB foreign key
-     * 
-     * @param  Project $project
-     * @return void
-     */
-    static function updateForeignKeyAction($project) {
-        if (!$project->value) return;
-
-        $database = DB::table('Database')->fetch($project->value['database_id']);
-
-        if (!$database->value) return;
-
-        $pgsql = $database->pgsql();
-        $model = $project->hasMany('Model');
-
-        if ($model->values) {
-            foreach ($model->values as $model) {
-                $pg_constraints = $pgsql->pgConstraints($model['pg_class_id'] ,'f');
-
-                foreach ($pg_constraints as $pg_constraint) {
-                    $attribute = DB::table('Attribute')
-                                                ->where("model_id = {$model['id']}")
-                                                ->where("name = '{$pg_constraint['attname']}'")
-                                                ->one();
-
-                    if ($attribute->value) {
-                        $posts['update_action'] = $pg_constraint['confupdtype'];
-                        $posts['delete_action'] = $pg_constraint['confdeltype'];
-                        DB::table('Attribute')->update($posts, $attribute->value['id']);
                     }
                 }
             }

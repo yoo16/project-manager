@@ -14,8 +14,7 @@ class Attribute extends _Attribute {
         $database = DB::table('Database')->fetch($model['database_id']);
         if (!$database->value) return;
 
-        $pgsql = new PgsqlEntity($database->pgInfo());
-        $pg_attributes = $pgsql->attributeArray($model['name']); 
+        $pg_attributes = $database->pgsql()->attributeArray($model['name']); 
 
         if (!$pg_attributes) return;
         foreach ($pg_attributes as $pg_attribute) {
@@ -23,7 +22,6 @@ class Attribute extends _Attribute {
                                 ->where("model_id = '{$model['id']}'")
                                 ->where("name = '{$pg_attribute['attname']}'")
                                 ->one();
-
 
             $value = null;
             $value['model_id'] = $model['id'];
