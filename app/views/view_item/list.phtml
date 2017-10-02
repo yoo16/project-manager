@@ -1,12 +1,13 @@
 <? include('_header.phtml') ?>
+
 <div class="pt-3">
   <?= FormHelper::linkButton('new', LABEL_ADD) ?>
   <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
   <?= FormHelper::linkButton('view/', LABEL_BACK) ?>
+  <a class="btn btn-primary" href="<?= url_for('add_all') ?>"><?= LABEL_ALL ?><?= LABEL_ADD ?></a>
 </div>
 
 <form action="<?= url_for('update_sort') ?>" method="post">
-  <h3><?= $this->view->value['name'] ?></h3>
 <table class="table sortable">
   <thead class="thead-deffault">
     <tr>
@@ -15,6 +16,8 @@
       <th>ラベル</th>
       <th>リンクページ</th>
       <th>class</th>
+      <th>form</th>
+      <th></th>
     </tr>
   </thead>
 
@@ -22,11 +25,16 @@
     <tbody>
   <? foreach ($this->view->view_item->values as $view_item): ?>
   <tr id="<?= $view_item['id'] ?>">
-    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $view_item['id']) ?></td>
+    <td>
+      <?= FormHelper::linkButton('edit', LABEL_EDIT, $view_item['id']) ?>
+      <input id="sort_order_<?= $view_item['id'] ?>" name="sort_order[<?= $view_item['id'] ?>]" type="hidden">
+    </td>
     <td><?= $this->page->model->attribute->values[$view_item['attribute_id']]['name'] ?></td>
     <td><?= $view_item['label'] ?></td>
     <td><?= $this->pages[$view_item['page_id']]['name'] ?></td>
     <td><?= FormHelper::activeLabelTag($view_item['css_class']) ?></td>
+    <td><?= $view_item['form_type'] ?></td>
+    <td><?= $view_item['sort_order'] ?></td>
   </tr>
   <? endforeach ?>
     </tbody>

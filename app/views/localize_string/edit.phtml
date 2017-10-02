@@ -1,0 +1,24 @@
+<? include('_header.phtml') ?>
+<form action="<?= url_for('update', $this->params['id']) ?>" method="post">
+
+  <table class="table">
+    <tr>
+      <th>名称</th>
+      <td><?= $this->localize_string->formInput('name') ?></td>
+    </tr>
+
+    <? foreach ($this->lang->values as $lang): ?>
+    <tr>
+      <th>言語(<?= $lang['name'] ?>)</th>
+      <td><input class="form-control" name="localize_string[label][<?= $lang['lang'] ?>]" value="<?= $this->localize_string->value['label'][$lang['lang']] ?>"></td>
+    </tr> 
+    <? endforeach ?>
+
+    </table>
+
+  <?= FormHelper::submit(LABEL_SAVE) ?>
+  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>  
+    
+</form>
+
+  <?= $this->localize_string->formDelete() ?>

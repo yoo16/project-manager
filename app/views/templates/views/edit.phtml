@@ -5,10 +5,20 @@
   <table class="table">
 <? foreach ($values['view']['view_item'] as $view_item): ?>
 <? if (!Model::$required_columns[$values['attribute'][$view_item['attribute_id']]['name']]): ?>
+  <? if ($view_item['form_type'] == 'hidden'): ?>
+  <? else: ?>
     <tr>
-      <th><?= $view_item['label'] ?></th>
-      <td><? Tag::init()->formEditForModel($values['model'], $values['attribute'][$view_item['attribute_id']]); ?></td>
+      <th><?= Attribute::labelName($values['model'], $values['attribute'][$view_item['attribute_id']]) ?></th>
+      <td>
+        <? if ($view_item['form_type'] == 'textarea'): ?>
+        <? Tag::init()->php('$this->'.$values['model']['entity_name']."->formTextarea('{$values['attribute'][$view_item['attribute_id']]['name']}')") ?>
+        <? else: ?>
+        <? Tag::init()->php('$this->'.$values['model']['entity_name']."->formInput('{$values['attribute'][$view_item['attribute_id']]['name']}')") ?>
+        <? endif ?>
+
+      </td>
     </tr>
+  <? endif ?>
 <? endif ?>
 <? endforeach ?>
   </table>
@@ -17,6 +27,12 @@
 
   <? Tag::init()->php('FormHelper::linkButton("cancel", LABEL_BACK)') ?>
   
+<? foreach ($values['view']['view_item'] as $view_item): ?>
+  <? if ($view_item['form_type'] == 'hidden'): ?>
+    <input type="hidden" name="<?= $values['attribute'][$view_item['attribute_id']]['name'] ?>" value="<?= ViewItem::hiddenValue($view_item) ?>">
+  <? endif ?>
+<? endforeach ?>
+
 </form>
 
   <? Tag::init()->php('$this->'."{$values['model']['entity_name']}".'->formDelete()') ?>

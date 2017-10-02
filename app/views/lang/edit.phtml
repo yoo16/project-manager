@@ -5,13 +5,13 @@
       <tr>
       <th>名称</th>
       <td>
-                <?= $this->record->formInput('name') ?>        
+                <?= $this->lang->formInput('name') ?>        
       </td>
     </tr>
         <tr>
-      <th>ラベル</th>
+      <th>言語</th>
       <td>
-                <?= $this->record->formInput('label') ?>        
+                <?= $this->lang->formInput('lang') ?>        
       </td>
     </tr>
     </table>
@@ -21,4 +21,4 @@
     
 </form>
 
-  <?= $this->record->formDelete() ?>
+  <?= $this->lang->formDelete() ?>

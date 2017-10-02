@@ -17,6 +17,7 @@ class Entity {
     var $session = null;
 
     static $except_columns = ['id', 'created_at', 'updated_at'];
+    static $app_columns = ['id', 'created_at', 'updated_at', 'sort_order', 'old_db', 'old_host'];
 
 
     function __construct($params = null) {

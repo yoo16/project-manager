@@ -1084,6 +1084,9 @@ class PgsqlEntity extends Entity {
         if ($this->is_bulk_select) {
             return $this->bulkAll($this->limit);
         } else {
+            if (!$this->orders && $this->columns['sort_order']) {
+                $this->order('sort_order');
+            }
             $sql = $this->selectSql();
             $this->values = $this->fetchRows($sql);
             return $this;
@@ -2104,7 +2107,8 @@ class PgsqlEntity extends Entity {
         }
         $pg_class['pg_attribute'] = $attributes;
         $pg_class['pg_constraint']['primary'] = $this->pgConstraints($pg_class['pg_class_id'], 'p');
-        $pg_class['pg_constraint']['unique'] = $this->pgConstraints($pg_class['pg_class_id'], 'u');
+        //$pg_class['pg_constraint']['unique'] = $this->pgConstraints($pg_class['pg_class_id'], 'u');
+        $pg_class['pg_constraint']['unique'] = $this->pgUniqueConstraints($pg_class['pg_class_id']);
         $pg_class['pg_constraint']['foreign'] = $this->pgForeignConstraints($pg_class['pg_class_id']);
 
         return $pg_class;
@@ -2243,7 +2247,6 @@ class PgsqlEntity extends Entity {
 
         $conditions[] = "relkind = '{$relkind}'";
         $conditions[] = "relfilenode > 0";
-        $conditions[] = "relallvisible = 0";
         $conditions[] = "nspname = '{$schema_name}'";
         $conditions[] = "pg_class.oid = {$pg_class_id}";
         $condition = implode(' AND ', $conditions);
@@ -2277,8 +2280,6 @@ class PgsqlEntity extends Entity {
 
         $conditions[] = "relkind = '{$relkind}'";
         $conditions[] = "relfilenode > 0";
-        //TODO research relallvisible
-        $conditions[] = "relallvisible = 0";
         $conditions[] = "relhasindex = TRUE";
         $conditions[] = "nspname = '{$schema_name}'";
         if ($pg_class_ids) {
@@ -2647,6 +2648,21 @@ class PgsqlEntity extends Entity {
         $condition = implode(' AND ', $conditions);
         $sql.= " WHERE {$condition};";
         return $this->fetchRows($sql);
+    }
+
+    /**
+     * pg constraints (unique)
+     *
+     * @param  int $pg_class_id
+     * @return array
+     */
+    function pgUniqueConstraints($pg_class_id) {
+        $constraints = $this->pgConstraints($pg_class_id, 'u');
+        if (!$constraints) return;
+        foreach ($constraints as $constraint) {
+            $results[$constraint['conname']][] = $constraint;
+        }
+        return $results;
     }
 
     /**

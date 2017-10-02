@@ -1,35 +1,32 @@
 <?php
 /**
- * Database 
+ * Lang 
  * 
- * @create  2017-08-21 13:46:26 
+ * @create  2017-10-03 03:28:17 
  */
 
 //namespace project_manager;
 
 require_once 'PgsqlEntity.php';
 
-class _Database extends PgsqlEntity {
+class _Lang extends PgsqlEntity {
 
     var $id_column = 'id';
-    var $name = 'databases';
-    var $entity_name = 'database';
+    var $name = 'langs';
+    var $entity_name = 'lang';
 
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
-        'current_version' => array('type' => 'int4'),
-        'hostname' => array('type' => 'varchar', 'is_required' => true),
-        'is_lock' => array('type' => 'bool'),
-        'name' => array('type' => 'varchar', 'is_required' => true),
-        'port' => array('type' => 'int4', 'is_required' => true),
-        'type' => array('type' => 'varchar'),
+        'lang' => array('type' => 'varchar', 'length' => 8, 'is_required' => true),
+        'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
+        'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
-        'user_name' => array('type' => 'varchar', 'is_required' => true),
     );
 
 
     var $unique = array(
             '' => [
+                        '',
                         '',
                         ],
     );

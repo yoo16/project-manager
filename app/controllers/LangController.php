@@ -1,15 +1,15 @@
 <?php
 /**
- * RecordItemController 
+ * LangController 
  *
- * @create  2017-09-20 18:09:09 
+ * @create  2017-10-03 03:52:33 
  */
 
-require_once 'RecordController.php';
+require_once 'AppController.php';
 
-class RecordItemController extends RecordController {
+class LangController extends AppController {
 
-    var $name = 'record_item';
+    var $name = 'lang';
 
 
    /**
@@ -51,7 +51,7 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_list() {
-        $this->record_item = DB::table('RecordItem')->all();
+        $this->lang = DB::table('Lang')->all();
     }
 
    /**
@@ -61,7 +61,7 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_new() {
-        $this->record_item = DB::table('RecordItem')->takeValues($this->session['posts']);
+        $this->lang = DB::table('Lang')->takeValues($this->session['posts']);
     }
 
    /**
@@ -71,7 +71,7 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_edit() {
-        $this->record_item = DB::table('RecordItem')
+        $this->lang = DB::table('Lang')
                     ->fetch($this->params['id'])
                     ->takeValues($this->session['posts']);
     }
@@ -84,10 +84,10 @@ class RecordItemController extends RecordController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["record_item"];
-        DB::table('RecordItem')->insert($posts);
+        $posts = $this->posts["lang"];
+        DB::table('Lang')->insert($posts);
 
-        if ($record_item->errors) {
+        if ($lang->errors) {
             $this->redirect_to('new');
         } else {
             $this->redirect_to('index');
@@ -102,10 +102,10 @@ class RecordItemController extends RecordController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["record_item"];
-        $record_item = DB::table('RecordItem')->update($posts, $this->params['id']);
+        $posts = $this->posts["lang"];
+        $lang = DB::table('Lang')->update($posts, $this->params['id']);
 
-        if ($record_item->errors) {
+        if ($lang->errors) {
             $this->redirect_to('edit', $this->params['id']);
         } else {
             $this->redirect_to('index');
@@ -120,7 +120,7 @@ class RecordItemController extends RecordController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('RecordItem')->delete($this->params['id']);
+        DB::table('Lang')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 
@@ -131,7 +131,7 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_sort_order() {
-        $this->record_item = DB::table('RecordItem')->all();
+        $this->lang = DB::table('Lang')->all();
     }
 
    /**
@@ -142,7 +142,7 @@ class RecordItemController extends RecordController {
     */
     function action_update_sort() {
         if (!isPost()) exit;
-        DB::table('RecordItem')->updateSortOrder($_REQUEST['sort_order']);
+        DB::table('Lang')->updateSortOrder($_REQUEST['sort_order']);
     }
 
 }

@@ -62,14 +62,18 @@ class ViewItemController extends ProjectController {
         $this->page->model->attribute = $this->page
                                               ->model
                                               ->relationMany('Attribute')
+                                              ->order('name')
                                               ->idIndex()
                                               ->all();
-        $this->view->bindMany('ViewItem');
+
+        $this->view->view_item = $this->view->relationMany('ViewItem')->all();
+
         $this->pages = $this->project
                             ->relationMany('Page')
                             ->idIndex()
                             ->all()
                             ->values;
+
     }
 
    /**
@@ -92,6 +96,10 @@ class ViewItemController extends ProjectController {
         $this->view_item = DB::table('ViewItem')
                     ->fetch($this->params['id'])
                     ->takeValues($this->session['posts']);
+
+        if ($this->view_item->value['attribute_id']) {
+            $this->attribute = DB::table('Attribute')->fetch($this->view_item->value['attribute_id']);
+        }
     }
 
     function action_add_for_attribute() {
@@ -123,6 +131,40 @@ class ViewItemController extends ProjectController {
         } else {
             $this->redirect_to('index');
         }
+    }
+
+   /**
+    * add
+    *
+    * @param
+    * @return void
+    */
+    function action_add_all() {
+        //if (!isPost()) exit;
+        //$view_item = $this->view->hasMany('ViewItem');
+        $this->page->bindBelongsTo('Model');
+        $attribute = $this->page->model
+                                ->relationMany('Attribute')
+                                ->idIndex()
+                                ->all();
+
+        foreach ($attribute->values as $attribute) {
+            if (!in_array($attribute['name'], Entity::$except_columns)) {
+                $view_item = DB::table('ViewItem')
+                            ->where("view_id = {$this->view->value['id']}")
+                            ->where("attribute_id = {$attribute['id']}")
+                            ->one();
+
+                if (!$view_item->value['id']) {
+                    $posts['view_id'] = $this->view->value['id'];
+                    $posts['attribute_id'] = $attribute['id'];
+                    $posts['label'] = $attribute['label'];
+
+                    DB::table('ViewItem')->insert($posts);
+                }
+            }
+        }
+        $this->redirect_to('list');
     }
 
    /**
@@ -173,6 +215,7 @@ class ViewItemController extends ProjectController {
     */
     function action_update_sort() {
         if (!isPost()) exit;
+
         $view_item = DB::table('ViewItem')->updateSortOrder($_REQUEST['sort_order']);
         $this->redirect_to('list');
     }

@@ -1,12 +1,13 @@
 
     <? if ($this->pg_class['pg_constraint']['unique']): ?>
-    <? foreach ($this->pg_class['pg_constraint']['unique'] as $index => $pg_constraint): ?>
+    <? foreach ($this->pg_class['pg_constraint']['unique'] as $conname => $pg_constraints): ?>
+    <? foreach ($pg_constraints as $index => $pg_constraint): ?>
     <div class="row">
       <div class="col-6">
       <? if ($index == 0): ?>
         <form action="<?= url_for('rename_constraint') ?>" method="post">
           <div class="input-group">
-            <?= FormHelper::input(['class' => 'form-control form-control'], 'new_constraint_name', $pg_constraint['conname']) ?>
+            <?= FormHelper::input(['class' => 'form-control form-control'], 'new_constraint_name', $conname) ?>
             <span class="input-group-btn"><?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm confirm-dialog', 'message' => 'Do you rename Constrain key?']) ?></span>
           </div>
           <?= FormHelper::hidden('constraint_name', $pg_constraint['conname']) ?></a>
@@ -28,6 +29,7 @@
       <? endif ?>
       </div>
     </div>
+  <? endforeach ?>
   <? endforeach ?>
 
 <? endif ?>

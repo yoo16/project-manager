@@ -310,7 +310,6 @@ class ProjectController extends AppController {
 
             $attribute = new Attribute();
             $attribute->importByModel($model->value);
-
         }
 
         //update constraint : fi_attribute_id and action

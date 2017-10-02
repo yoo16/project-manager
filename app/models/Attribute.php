@@ -8,6 +8,53 @@ class Attribute extends _Attribute {
         parent::validate();
     }
 
+    /**
+     * localize path
+     * 
+     * @param array $user_project_setting
+     * @param array $page
+     * @param array $view
+     * @return string
+     */
+    static function localizeDirPath($user_project_setting, $lang = 'ja') {
+        if (!$user_project_setting) return;
+        if (!file_exists($user_project_setting['project_path'])) return;
+
+        $dir = $user_project_setting['project_path']."app/localize/{$lang}/";
+        return $dir;
+    }
+
+    /**
+     * localize path
+     * 
+     * @param array $user_project_setting
+     * @param array $page
+     * @param array $view
+     * @return string
+     */
+    static function localizeFilePath($user_project_setting, $lang = 'ja') {
+        $dir = self::localizeDirPath($user_project_setting, $lang);
+        $path = "{$dir}_localize.php";
+        return $path;
+    }
+
+    static function labelName($model, $attribute = null) {
+        if (!$model) return;
+        $model_name = strtoupper($model['name']);
+        if ($attribute) {
+            $attribute_name = strtoupper($attribute['name']);
+            if (mb_substr($attribute['name'], -3) != '_id') {
+                $label = "LABEL_{$model_name}_{$attribute_name}";
+            }
+        } else {
+            $label = "LABEL_{$model['name']}";
+        }
+        if ($label) {
+            $label = '<?= '.$label.' ?>';
+            return $label;
+        }
+    }
+
     function importByModel($model) {
         if (!$model) return;
 

@@ -43,6 +43,34 @@ class Project extends _Project {
     }
     
     /**
+     * exportAttributeLabels
+     *
+     * @return Array void
+     */
+    function exportAttributeLabels() {
+        if (!$this->user_project_setting->value) {
+            echo('Not found user_project_setting').PHP_EOL;
+            exit;
+        }
+        $localize_strings = $this->hasMany('LocalizeString')->values;
+        foreach ($localize_strings as $localize_string) {
+            $lang = 'ja';
+            $path = Attribute::localizeFilePath($this->user_project_setting->value, $lang);
+            $file_name = "_localize.php";
+            $file = "{$localize_dir}{$file_name}";
+
+            $labels = json_decode($localize_string['label'], true);
+            $label = $labels['ja'];
+            $row.= "define('{$localize_string['name']}', '{$label}');\n";
+        }
+
+        $body = '<?php'.PHP_EOL.$row;
+        $results = file_put_contents($path, $body);
+        $cmd = "chmod 666 {$file}";
+        exec($cmd);
+    }
+
+    /**
      * export php
      * @return bool
      */
@@ -117,6 +145,10 @@ class Project extends _Project {
                     $values['model']['attributes'] = $model->hasMany('Attribute')->values;
                 }
 
+                if ($page['parent_page_id']) {
+                    $values['page']['parent'] = DB::table('Page')->fetch($page['parent_page_id'])->value;
+                }
+
                 $page_path = Page::projectFilePath($this->user_project_setting->value, $page);
                 if (!file_exists($page_path) || $page['is_overwrite']) {
                     $page_template_path = Page::templateFilePath($page);
@@ -145,12 +177,23 @@ class Project extends _Project {
                 }
 
                 $views = DB::table('Page')->fetch($page['id'])->hasMany('View')->values;
+
+
                 if ($views) {
+
+                    //TODO header contents
+                    $header_path = View::headerFilePath($this->user_project_setting->value, $page);
+                    if (!file_exists($header_path)) {
+                        file_put_contents($header_path, '');
+                    }
+
                     foreach ($views as $view) {
                         $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
                         if (!file_exists($view_path) || $view['is_overwrite']) {
                             $view['view_item'] = DB::table('View')->fetch($view['id'])
-                                                                  ->hasMany('ViewItem')
+                                                                  ->relationMany('ViewItem')
+                                                                  ->order('sort_order')
+                                                                  ->all()
                                                                   ->values;
                             $values['view'] = $view;
 

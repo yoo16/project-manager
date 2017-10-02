@@ -110,20 +110,16 @@ class Controller extends RuntimeException {
     /**
      * query string
      * 
+     * @param  string $query
      * @return string
      */
-    static function queryString() {
-        $params = self::urlParams(self::MVCParams());
-        return $params;
-    }
-
-    /**
-     * MVC params
-     * 
-     * @return array
-     */
-    static function MVCParams() {
-        $query_url = parse_url($_SERVER['QUERY_STRING']);
+    static function queryString($query = null) {
+        if (is_null($query)) {
+            $request = $_SERVER['REQUEST_URI'];
+            $query = $_SERVER['QUERY_STRING'];
+        }
+       
+        $query_url = parse_url($query);
         $values = explode('&', $query_url['path']);
         if ($values[0]) {
             $paths = explode('/', $values[0]);
@@ -133,36 +129,24 @@ class Controller extends RuntimeException {
             } else {
                 foreach ($paths as $key => $path) {
                     $column = self::$routes[$key];
-                    if (isset($column) && $path) $params[$column] = $path;
+                    if ($column && $path) $params[$column] = $path;
                 }
             }
         } 
-        return $params;
-    }
 
-    /**
-     * url params
-     * 
-     * @return array
-     */
-    static function urlParams($params) {
-        $request_url = parse_url($_SERVER['REQUEST_URI']);
+        $request_url = parse_url($request);
         if (isset($request_url['query'])) {
-            parse_str($request_url['query'], $values);
-            if ($values) $params = array_merge($params, $values);
+            $values = explode('&', $request_url['query']);
+            if ($values) {
+                foreach ($values as $value) {
+                    $param_array = explode('=', $value);
+                    if (isset($param_array[0]) && isset($param_array[1])) {
+                        $params[$param_array[0]] = $param_array[1];
+                    }
+                }
+            }
         }
-        if (is_numeric($params['id'])) $_REQUEST['id'] = $params['id'];
         return $params;
-    }
-
-    /**
-     * full url
-     * 
-     * @return array
-     */
-    static function fullURL() {
-        $url = (empty($_SERVER["HTTPS"]) ? "http://" : "https://") . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-        return $url;
     }
 
     /**
@@ -187,11 +171,9 @@ class Controller extends RuntimeException {
                 $errors = $this->throwErrors($t);
                 self::renderError($errors);
             } catch (Error $e) {
-                $errors = $this->throwErrors($e);
-                self::renderError($errors);
+                var_dump($e);
             } catch (Exception $e) {
-                $errors = $this->throwErrors($e);
-                self::renderError($errors);
+                var_dump($e);
             // } finally {
 
             }
@@ -547,24 +529,23 @@ class Controller extends RuntimeException {
             error_log("<USER_AGENT> {$_SERVER['HTTP_USER_AGENT']}");
         }
 
-        if (!isset($this->base)) {
-            $r = $_SERVER['REQUEST_URI'];
-            if (defined('BASE_URL') && is_string(BASE_URL)) {
-                $this->base = BASE_URL;
+        //TODO
+        if (defined('BASE_URL') && is_string(BASE_URL)) {
+            $this->base = BASE_URL;
+        } else {
+            if (isset($_SERVER['HTTPS'])) {
+                $this->base = 'https://' . preg_replace('/:443$/', '', $_SERVER['HTTP_HOST']);
             } else {
-                if (isset($_SERVER['HTTPS'])) {
-                    $this->base = 'https://' . preg_replace('/:443$/', '', $_SERVER['HTTP_HOST']);
-                } else {
-                    $this->base = 'http://' . preg_replace('/:80$/', '', $_SERVER['HTTP_HOST']);
-                }
-                $this->base .= substr($r, 0, strlen($r) - strlen($_SERVER['QUERY_STRING']));
+                $this->base = 'http://' . preg_replace('/:80$/', '', $_SERVER['HTTP_HOST']);
             }
+            $request = $_SERVER['REQUEST_URI'];
+            $query = $_SERVER['QUERY_STRING'];
+            $this->base .= substr($request, 0, strlen($request) - strlen($query));
 
-            if (!(defined('BASE_URL') && BASE_URL)) {
-                $count = substr_count($_SERVER['QUERY_STRING'], '/');
-                for ($i = 0; $i < $count; $i++) {
-                    $this->relative_base .= '../';
-                }
+            //TODO
+            $count = substr_count($query, '/');
+            for ($i = 0; $i < $count; $i++) {
+                $this->relative_base .= '../';
             }
         }
 

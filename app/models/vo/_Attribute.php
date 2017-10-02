@@ -49,9 +49,8 @@ class _Attribute extends PgsqlEntity {
     );
 
     var $unique = array(
-            'attributes_name_model_id_key' => [
-                        'name',
-                        'model_id',
+            '' => [
+                        '',
                         ],
     );
 

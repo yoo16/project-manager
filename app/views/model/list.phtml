@@ -61,20 +61,22 @@
         </form>
       </td>
       <td>
-        <? if ($model['pg_class']): ?>
+      <? if ($model['pg_class']): ?>
         <?= FormHelper::badgeTag($model['pg_class']['pg_class_id']) ?>
       <? else: ?>
-      <form action="<?= url_for('add_table') ?>" method="post">
-        <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-primary btn-sm']) ?>
-        <?= FormHelper::hidden('model_id', $model['id']) ?>
-      </form>
+        <a class="btn btn-sm btn-outline-primary" href="<?= url_for('sync_model', $model['id']) ?>">Sync</a>
     <? endif ?>
 
     <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
     <?= FormHelper::badgeTag('sync', null, 'success') ?>
-  <? else: ?>
-  <?= FormHelper::badgeTag('unsync', null, 'danger') ?>
-<? endif ?>
+    <? else: ?>
+    <?= FormHelper::badgeTag('unsync', null, 'danger') ?>
+    <span class="badge badge-default">
+      <?= $model['pg_class_id'] ?> = 
+      <?= $model['pg_class']['pg_class_id'] ?>
+    </span>
+    
+    <? endif ?>
 
 <? if ($model['label'] == $model['pg_class']['comment']): ?>
 <?= FormHelper::badgeTag('label', null, 'success') ?>

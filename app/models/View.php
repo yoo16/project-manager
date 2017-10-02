@@ -79,6 +79,27 @@ class View extends _View {
         return $path;
     }
 
+
+    /**
+     * project path
+     * 
+     * @param array $user_project_setting
+     * @param array $page
+     * @param array $view
+     * @return string
+     */
+    static function headerFilePath($user_project_setting, $page) {
+        if (!$user_project_setting) return;
+        if (!file_exists($user_project_setting['project_path'])) return;
+
+        $view_dir = $user_project_setting['project_path']."app/views/{$page['entity_name']}/";
+        if (!file_exists($view_dir)) {
+            FileManager::createDir($view_dir);
+        }
+        $path = "{$view_dir}_header.phtml";
+        return $path;
+    }
+
     /**
      * local path
      * 

@@ -5,9 +5,9 @@
  * @create  2017-09-20 18:09:01 
  */
 
-require_once 'AppController.php';
+require_once 'ProjectController.php';
 
-class RecordController extends AppController {
+class RecordController extends ProjectController {
 
     var $name = 'record';
 

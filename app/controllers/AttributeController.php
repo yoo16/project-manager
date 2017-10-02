@@ -11,7 +11,6 @@ class AttributeController extends ProjectController {
     var $name = 'attribute';
 
    /**
-    * ?ǰ?I??    *
     * @access public
     * @param String $action
     * @return void
@@ -170,9 +169,9 @@ class AttributeController extends ProjectController {
         if ($attribute->value['id'] && $attribute->value['attnum']) {
             $pgsql = $this->database->pgsql();
             $pgsql->dropColumn($this->model->value['name'], $attribute->value['name']);
-            $attribute->delete();
+            $attribute->delete($attribute->value['id']);
         }
-        if ($project->errors) {
+        if ($attribute->errors) {
             $this->flash['errors'] = $project->errors;
             $this->redirect_to('edit', $this->params['id']);
         } else {
@@ -247,7 +246,6 @@ class AttributeController extends ProjectController {
 
         if ($this->attribute->value['fk_attribute_id']) {
             $this->fk_attribute = DB::table('Attribute')->fetch($this->attribute->value['fk_attribute_id']);
-            var_dump($this->fk_attribute->value['model_id']);
             $this->fk_model = DB::table('Model')->fetch($this->fk_attribute->value['model_id']);
         }
 

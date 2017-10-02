@@ -38,22 +38,21 @@ class _Model extends PgsqlEntity {
     );
 
     var $foreign = array(
-            'models_database_id_fkey' => [
-                                  'column' => 'database_id',
-                                  'foreign_table' => 'databases',
-                                  'foreign_column' => 'id',
-                                  ],
             'models_project_id_fkey' => [
                                   'column' => 'project_id',
                                   'foreign_table' => 'projects',
                                   'foreign_column' => 'id',
                                   ],
+            'models_database_id_fkey' => [
+                                  'column' => 'database_id',
+                                  'foreign_table' => 'databases',
+                                  'foreign_column' => 'id',
+                                  ],
     );
 
     var $unique = array(
-            'models_name_project_id_key' => [
-                        'name',
-                        'project_id',
+            '' => [
+                        '',
                         ],
     );
 

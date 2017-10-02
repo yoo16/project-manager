@@ -1,0 +1,36 @@
+<? include('_header.phtml') ?>
+
+<div class="pt-3">
+  <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
+  <?= FormHelper::linkButton('import_from_model', LABEL_IMPORT) ?>
+  <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
+</div>
+
+<table class="table">
+  <thead class="thead-deffault">
+    <tr>
+      <th>&nbsp;</th>
+      <th>名称</th>
+      <th>言語</th>
+    </tr>
+  </thead>
+
+  <? if ($this->localize_string->values): ?>
+    <? foreach ($this->localize_string->values as $values): ?>
+      <tr>
+        <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
+        <td><?= $values['name'] ?></td>
+        <td>
+          <dl class="row">
+          <? foreach ($this->lang->values as $lang): ?>
+            <? $labels = json_decode($values['label'], true) ?>
+            <dt class="col-2"><?= $lang['name'] ?></dt>
+            <dd class="col-10"><?= $labels[$lang['lang']] ?></dd>
+          <? endforeach ?>
+          </dl>
+        </td>
+      </tr>
+    <? endforeach ?>
+  <? endif ?>
+
+</table>

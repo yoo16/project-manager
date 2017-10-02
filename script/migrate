@@ -5,7 +5,7 @@
  * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
-require_once dirname(__FILE__).'/../lib/setting.php';
+require_once dirname(__FILE__).'/../lib/Controller.php';
 require_once 'PgsqlEntity.php';
 
 $pgsq_entity = new PgsqlEntity();

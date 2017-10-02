@@ -7,13 +7,13 @@
  */
 
 <? if ($values['page']['parent']): ?>
-require_once '<?= $values['page']['parent']['name'] ?>.php';
+require_once '<?= $values['page']['parent']['name'] ?>Controller.php';
 <? else: ?>
 require_once 'AppController.php';
 <? endif ?>
 
 <? if ($values['page']['parent']): ?>
-class <?= $values['page']['name'] ?>Controller extends <?= $values['page']['parent']['name'] ?> {
+class <?= $values['page']['name'] ?>Controller extends <?= $values['page']['parent']['name'] ?>Controller {
 <? else: ?>
 class <?= $values['page']['name'] ?>Controller extends AppController {
 <? endif ?>

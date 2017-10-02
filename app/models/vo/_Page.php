@@ -35,6 +35,11 @@ class _Page extends PgsqlEntity {
                                   'foreign_table' => 'models',
                                   'foreign_column' => 'id',
                                   ],
+            'pages_parent_page_id_fkey' => [
+                                  'column' => 'parent_page_id',
+                                  'foreign_table' => 'pages',
+                                  'foreign_column' => 'id',
+                                  ],
             'pages_project_id_fkey' => [
                                   'column' => 'project_id',
                                   'foreign_table' => 'projects',

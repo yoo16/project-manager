@@ -46,7 +46,6 @@ class ModelController extends ProjectController {
 
     function action_list() {
         $this->pg_classes = $this->database->pgsql()->tableArray();
-
         $this->model = $this->project
                             ->relationMany('Model')
                             ->order('name')
@@ -308,6 +307,27 @@ class ModelController extends ProjectController {
                 }
             }
         }
+        $this->redirect_to('list');
+    }
+
+    function action_sync_model() {
+        $model = DB::table('Model')->fetch($this->params['id']);
+
+        if ($model->value['id']) {
+            $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+            $pg_class = $pgsql_entity->pgClassByRelname($model->value['name']);
+            //var_dump($pg_class['pg_class_id']);
+
+            if ($pg_class) {
+                $model_values['pg_class_id'] = $pg_class['pg_class_id'];
+            }
+            $model = DB::table('Model')->update($model_values, $model->value['id']);
+
+            //var_dump($model->sql);
+            //var_dump($model->errors);
+            //exit;
+        }
+
         $this->redirect_to('list');
     }
 

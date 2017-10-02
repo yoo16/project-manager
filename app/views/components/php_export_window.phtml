@@ -58,6 +58,12 @@
           <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
           <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
         </form>
+        &nbsp;
+        <form action="<?=url_for('localize_string/export') ?>" method="post">
+          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP Localize files?">Localize</button>
+          <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+          <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+        </form>
       </div>
   <? endif ?>
 <? endif ?>
