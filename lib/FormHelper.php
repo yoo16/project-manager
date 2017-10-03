@@ -6,6 +6,7 @@
  */
 
 class FormHelper {
+    static $except_columns = ['model', 'label', 'where', 'value', 'label_separate', 'unselect'];
 
     /**
      * selectタグ
@@ -262,7 +263,12 @@ class FormHelper {
      * @param array $attributes
      * @return string
      */
-    static function selectTag($tag, $attributes=null) {
+    static function selectTag($tag, $attributes = null) {
+       foreach (self::$except_columns as $except_column) {
+           if ($attributes[$except_column]) {
+                unset($attributes[$except_column]); 
+           }
+       }
        $tag = self::tag('select', $tag, $attributes);
        return $tag;
     }
@@ -507,11 +513,12 @@ class FormHelper {
     static function checkedTag($value, $selected) {
         if (is_bool($value) && (bool) $value == (bool) $selected) {
             $tag = 'checked';
-        } elseif ($value && $value == $selected) {
+        } elseif (isset($value) && $value == $selected) {
             $tag = 'checked';
         }
         return $tag;
     }
+
 
     /**
      * input(radio)タグ
@@ -525,7 +532,7 @@ class FormHelper {
             $values = CsvLite::options($params['csv']);
         }
         if ($values) $params['values'] = $values;
-        if ($selected) $params['selected'] = $selected;
+        if (isset($selected)) $params['selected'] = $selected;
         if ($value_key) $params['value'] = $value_key;
         if ($label_key) $params['label'] = $label_key;
         if (!$params['value']) $params['value'] = 'value';

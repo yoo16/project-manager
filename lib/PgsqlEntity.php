@@ -1207,29 +1207,6 @@ class PgsqlEntity extends Entity {
     }
 
     /**
-    * inserts
-    * 
-    * @param  array $rows
-    * @return PgsqlEntity
-    */
-    public function copyFrom($rows) {
-        $model_columns = array_keys($this->columns);
-        pg_copy_from($this->connection(), $this->table_name, $rows);
-    }
-
-    /**
-    * inserts
-    * 
-    * @param  array $posts
-    * @return PgsqlEntity
-    */
-    public function inserts($posts) {
-        $model_columns = array_keys($this->columns);
-
-        pg_insert($this->connection(), $this->table_name, $posts);
-    }
-
-    /**
     * update
     * 
     * TODO update
@@ -1288,6 +1265,29 @@ class PgsqlEntity extends Entity {
             exit;
         }
         return $this;
+    }
+
+    /**
+    * inserts
+    * 
+    * @param  array $rows
+    * @return PgsqlEntity
+    */
+    public function copyFrom($rows) {
+        $model_columns = array_keys($this->columns);
+        pg_copy_from($this->connection(), $this->table_name, $rows);
+    }
+
+    /**
+    * inserts
+    * 
+    * @param  array $posts
+    * @return PgsqlEntity
+    */
+    public function inserts($posts) {
+        $model_columns = array_keys($this->columns);
+
+        pg_insert($this->connection(), $this->table_name, $posts);
     }
 
 

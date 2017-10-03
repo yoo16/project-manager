@@ -149,6 +149,11 @@ class Project extends _Project {
                     $values['page']['parent'] = DB::table('Page')->fetch($page['parent_page_id'])->value;
                 }
 
+                $values['page_model'] = DB::table('PageModel')->where("page_id = {$page['id']}")
+                                                              ->join('Model', 'id', 'model_id')
+                                                              ->all()
+                                                              ->values;
+
                 $page_path = Page::projectFilePath($this->user_project_setting->value, $page);
                 if (!file_exists($page_path) || $page['is_overwrite']) {
                     $page_template_path = Page::templateFilePath($page);
@@ -165,6 +170,7 @@ class Project extends _Project {
                       ->idIndex()
                       ->all()
                       ->values;
+
         if ($pages) {
             foreach ($pages as $page) {
                 $values = null;
@@ -178,9 +184,7 @@ class Project extends _Project {
 
                 $views = DB::table('Page')->fetch($page['id'])->hasMany('View')->values;
 
-
                 if ($views) {
-
                     //TODO header contents
                     $header_path = View::headerFilePath($this->user_project_setting->value, $page);
                     if (!file_exists($header_path)) {
@@ -204,6 +208,30 @@ class Project extends _Project {
                             }
                         } 
                     }
+                }  
+            }
+        }
+    }
+
+    function exportRecord() {
+        $records = $this->relationMany('Record')->all()->values;
+        if ($records) {
+            foreach ($records as $record) {
+                $record_items = DB::table('RecordItem')
+                                                ->where("record_id = {$record['id']}")
+                                                ->all()
+                                                ->values;
+
+                $csv_path = Record::csvFilePath($this->user_project_setting->value, $record);
+
+                if ($record_items) {
+                    $csv = '';
+                    $csv.=  'value,label'.PHP_EOL;
+                    foreach ($record_items as $record_item) {
+                        //TODO CsvLite
+                        $csv.=  "\"{$record_item['key']}\",\"{$record_item['value']}\"".PHP_EOL;
+                    }
+                    file_put_contents($csv_path, $csv);
                 }  
             }
         }

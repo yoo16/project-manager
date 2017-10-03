@@ -1,0 +1,27 @@
+<? include('_header.phtml') ?>
+<form action="<?= url_for('update', $this->params['id']) ?>" method="post">
+
+  <table class="table">
+
+    <tr>
+      <th><?= LABEL_MODELS ?></th>
+      <td>
+                <?= $this->page_model->formSelect('model_id', [
+                            'unselect' => true,
+                            'label_separate' => '-',
+                            'label' => [name, label],
+                            'model' => 'Model',
+                            'where' => "project_id = {$this->project->value['id']}",
+                            ]) ?>        
+      </td>
+    </tr>
+
+
+  </table>
+
+  <?= FormHelper::submit(LABEL_SAVE) ?>
+  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>  
+
+</form>
+
+<?= $this->page_model->formDelete() ?>

@@ -44,7 +44,6 @@ class LocalizeStringController extends ProjectController {
         $this->redirect_to('list');
     }
 
-
    /**
     * export
     *

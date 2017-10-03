@@ -228,6 +228,7 @@ class Entity {
         if (isset($column) && isset($message)) {
             $this->errors[] = array('column' => $column, 'message' => $message);
         }
+        AppSession::setErrors($this->errors);
     }
 
     /**

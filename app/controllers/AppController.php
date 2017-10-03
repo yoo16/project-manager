@@ -27,6 +27,9 @@ class AppController extends Controller {
             exit;
         }
         $this->loadDefaultOptions();
+
+        $this->errors = AppSession::getErrors();
+        AppSession::flushErrors();
     }
 
     function loadDefaultOptions() {

@@ -32,5 +32,8 @@
 
   </div>
 
+<? if ($this->errors): ?>
+<? include('views/components/error_dialog.phtml') ?>
+<? endif ?>
 </body>
 </html>

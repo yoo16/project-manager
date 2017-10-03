@@ -49,6 +49,19 @@
                     ) ?>
       </div>
       
+      <div class="form-group row">
+        <label for="" class="col-2 col-form-label">where model</label>
+        <?= $this->page->formSelect('where_model_id', 
+                   [
+                    'unselect' => true,
+                    'label_separate' => '-',
+                    'label' => ['name'],
+                    'model' => 'Model',
+                    'where' => "project_id = {$this->project->value['id']}",
+                    ]
+                    ) ?>
+      </div>
+
       <button class="btn btn-primary" type="submit"><?= LABEL_UPDATE ?></button>
       <a class="btn btn-outline-primary" href="<?= url_for('list') ?>"><?= LABEL_CANCEL ?></a>
     </form>

@@ -1,15 +1,15 @@
 <?php
 /**
- * RecordItemController 
+ * PageModelController 
  *
- * @create  2017-09-20 18:09:09 
+ * @create  2017-10-03 19:23:45 
  */
 
-require_once 'RecordController.php';
+require_once 'ProjectController.php';
 
-class RecordItemController extends RecordController {
+class PageModelController extends ProjectController {
 
-    var $name = 'record_item';
+    var $name = 'page_model';
 
 
    /**
@@ -20,7 +20,7 @@ class RecordItemController extends RecordController {
     */
     function before_action($action) {
         parent::before_action($action);
-        $this->record = DB::table('Record')->requestSession();
+        $this->page = DB::table('Page')->requestSession();
 
     }
 
@@ -53,7 +53,7 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_list() {
-        $this->record_item = $this->record->relationMany('RecordItem')->all();
+        $this->page_model = $this->page->relationMany('PageModel')->all();
     }
 
    /**
@@ -63,7 +63,7 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_new() {
-        $this->record_item = DB::table('RecordItem')->takeValues($this->posts['record_item']);
+        $this->page_model = DB::table('PageModel')->takeValues($this->posts['page_model']);
     }
 
    /**
@@ -73,9 +73,9 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_edit() {
-        $this->record_item = DB::table('RecordItem')
+        $this->page_model = DB::table('PageModel')
                     ->fetch($this->params['id'])
-                    ->takeValues($this->posts['record_item']);
+                    ->takeValues($this->posts['page_model']);
     }
 
    /**
@@ -86,10 +86,10 @@ class RecordItemController extends RecordController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["record_item"];
-        $record_item = DB::table('RecordItem')->insert($posts);
+        $posts = $this->posts["page_model"];
+        $page_model = DB::table('PageModel')->insert($posts);
 
-        if ($record_item->errors) {
+        if ($page_model->errors) {
             $this->redirect_to('new');
         } else {
             $this->redirect_to('index');
@@ -104,10 +104,10 @@ class RecordItemController extends RecordController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["record_item"];
-        $record_item = $record_item = DB::table('RecordItem')->update($posts, $this->params['id']);
+        $posts = $this->posts["page_model"];
+        $page_model = $page_model = DB::table('PageModel')->update($posts, $this->params['id']);
 
-        if ($record_item->errors) {
+        if ($page_model->errors) {
             $this->redirect_to('edit', $this->params['id']);
         } else {
             $this->redirect_to('index');
@@ -122,7 +122,7 @@ class RecordItemController extends RecordController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('RecordItem')->delete($this->params['id']);
+        DB::table('PageModel')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 
@@ -133,7 +133,7 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_sort_order() {
-        $this->record_item = $this->record->relationMany('RecordItem')->all();
+        $this->page_model = $this->page->relationMany('PageModel')->all();
     }
 
    /**
@@ -144,7 +144,7 @@ class RecordItemController extends RecordController {
     */
     function action_update_sort() {
         if (!isPost()) exit;
-        DB::table('RecordItem')->updateSortOrder($_REQUEST['sort_order']);
+        DB::table('PageModel')->updateSortOrder($_REQUEST['sort_order']);
     }
 
 }

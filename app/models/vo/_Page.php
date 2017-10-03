@@ -27,14 +27,10 @@ class _Page extends PgsqlEntity {
         'project_id' => array('type' => 'int4', 'is_required' => true),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
+        'where_model_id' => array('type' => 'int4'),
     );
 
     var $foreign = array(
-            'pages_model_id_fkey' => [
-                                  'column' => 'model_id',
-                                  'foreign_table' => 'models',
-                                  'foreign_column' => 'id',
-                                  ],
             'pages_parent_page_id_fkey' => [
                                   'column' => 'parent_page_id',
                                   'foreign_table' => 'pages',
@@ -43,6 +39,16 @@ class _Page extends PgsqlEntity {
             'pages_project_id_fkey' => [
                                   'column' => 'project_id',
                                   'foreign_table' => 'projects',
+                                  'foreign_column' => 'id',
+                                  ],
+            'pages_where_model_id_fkey' => [
+                                  'column' => 'where_model_id',
+                                  'foreign_table' => 'models',
+                                  'foreign_column' => 'id',
+                                  ],
+            'pages_model_id_fkey' => [
+                                  'column' => 'model_id',
+                                  'foreign_table' => 'models',
                                   'foreign_column' => 'id',
                                   ],
     );

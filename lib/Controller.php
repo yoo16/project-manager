@@ -601,9 +601,9 @@ class Controller extends RuntimeException {
 
     function loadPosts() {
         if ($_POST) {
-            $this->setSessions('posts', $_POST);
+            AppSession::set('posts', $_POST);
         }
-        $this->posts = $this->getSessions('posts');
+        $this->posts = AppSession::get('posts');
     }
 
     function clearPosts() {
@@ -623,26 +623,6 @@ class Controller extends RuntimeException {
     function clearSessions($key) {
         if (!$this->session_name) return;
         AppSession::clearWithKey($this->session_name, $key); 
-    }
-
-    function loadErrors() {
-        if (!$this->session_name) return;
-        $this->errors = $this->getSessions('errors');
-    }
-
-    function getErrors() {
-        if (!$this->session_name) return;
-        return AppSession::getWithKey('errors', $this->session_name); 
-    }
-
-    function setErrors($errors) {
-        if (!$this->session_name) return;
-        AppSession::setWithKey('errors', $this->session_name, $errors); 
-    }
-
-    function flushErrors() {
-        if (!$this->session_name) return;
-        AppSession::clearWithKey('errors', $this->session_name); 
     }
 
     /**

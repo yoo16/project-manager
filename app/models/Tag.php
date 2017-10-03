@@ -129,4 +129,60 @@ class Tag {
         echo($this->value);
     }
 
+    function formSelect($view_item, $model, $attribute) {
+        if ($attribute['fk_attribute_id']) {
+            $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
+            $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']); 
+
+            if ($view_item['where_model_id']) {
+                $where_model = DB::table('Model')->fetch($view_item['where_model_id']); 
+                $where_column = "{$where_model->value["entity_name"]}_id";
+                $where_value = '{$this->'.$where_model->value["entity_name"]."->value['id']}";
+                $where = "{$where_column} = {$where_value}";
+
+                $params = "[
+                            'unselect' => true,
+                            'label_separate' => '-',
+                            'label' => [{$view_item['select_label']}],
+                            'model' => '{$fk_model->value["class_name"]}',
+                            'where' => \"{$where}\",
+                            ]";
+            }
+        }
+        $tag = '$this->'.$model['entity_name']."->formSelect('{$attribute['name']}', $params)";
+        $tag = $this->phpTag($tag);
+        echo($tag);
+    }
+
+    function formRadio($view_item, $model, $attribute) {
+        $params = "['csv' => '{$view_item['csv']}']";
+        $tag = '$this->'.$model['entity_name']."->formRadio('{$attribute['name']}', $params)";
+        $tag = $this->phpTag($tag);
+        echo($tag);
+    }
+
+
+    function requestInstance($page_models) {
+        if ($page_models) {
+            foreach ($page_models as $page_model) {
+                $instance = '$this->'.$page_model['model_entity_name'];
+                $tag = "{$instance} = DB::table('{$page_model['model_class_name']}')->requestSession();";
+                echo($tag).PHP_EOL;
+            }
+        }
+    }
+
+    function listValues($model, $page) {
+        $instance = '$this->'.$model['entity_name'];
+        if ($page['where_model_id']) {
+            $parent_model = DB::table('Model')->fetch($page['where_model_id']);
+
+            $parent_instance = '$this->'.$parent_model->value['entity_name'];
+            $relation_many = "{$parent_instance}->relationMany";
+            $tag = "{$instance} = {$relation_many}('{$model['class_name']}')->all();";
+        } else {
+            $tag = "{$instance} = DB::table('{$model['class_name']}')->all();";
+        }
+        echo($tag).PHP_EOL;
+    }
 }

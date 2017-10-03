@@ -12,6 +12,10 @@
       <td><?= $this->view_item->formInput('form_type') ?></td>
     </tr>
     <tr>
+      <th>csv</th>
+      <td><?= $this->view_item->formInput('csv') ?></td>
+    </tr>
+    <tr>
       <th>link page</th>
       <td>
         <?= $this->view_item->formSelect('page_id',
@@ -24,6 +28,24 @@
         ]
          ) ?>
        </td>
+    </tr>
+    <tr>
+      <th>where model</th>
+      <td>
+        <?= $this->view_item->formSelect('where_model_id',
+        [
+          'unselect' => true,
+          'label' => ['name', 'label'],
+          'label_separate' => '-',
+          'model' => 'Model',
+          'where' => "project_id = {$this->project->value['id']}"
+        ]
+         ) ?>
+       </td>
+    </tr>
+    <tr>
+      <th>select label</th>
+      <td><?= $this->view_item->formInput('select_label') ?></td>
     </tr>
     <tr>
       <th>link</th>

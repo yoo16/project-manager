@@ -19,16 +19,25 @@ class _ViewItem extends PgsqlEntity {
         'attribute_id' => array('type' => 'int4'),
         'created_at' => array('type' => 'timestamp'),
         'css_class' => array('type' => 'bool'),
+        'csv' => array('type' => 'varchar', 'length' => 256),
         'form_type' => array('type' => 'varchar', 'length' => 256),
         'label' => array('type' => 'varchar', 'length' => 256),
         'link' => array('type' => 'varchar', 'length' => 256),
         'page_id' => array('type' => 'int4'),
+        'select_label' => array('type' => 'text'),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
         'view_id' => array('type' => 'int4', 'is_required' => true),
+        'where_model_id' => array('type' => 'int4'),
+        'where_string' => array('type' => 'text'),
     );
 
     var $foreign = array(
+            'view_items_page_id_fkey' => [
+                                  'column' => 'page_id',
+                                  'foreign_table' => 'pages',
+                                  'foreign_column' => 'id',
+                                  ],
             'view_items_view_id_fkey' => [
                                   'column' => 'view_id',
                                   'foreign_table' => 'views',
@@ -39,9 +48,9 @@ class _ViewItem extends PgsqlEntity {
                                   'foreign_table' => 'attributes',
                                   'foreign_column' => 'id',
                                   ],
-            'view_items_page_id_fkey' => [
-                                  'column' => 'page_id',
-                                  'foreign_table' => 'pages',
+            'view_items_where_model_id_fkey' => [
+                                  'column' => 'where_model_id',
+                                  'foreign_table' => 'models',
                                   'foreign_column' => 'id',
                                   ],
     );

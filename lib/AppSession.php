@@ -118,4 +118,31 @@ class AppSession {
         unset($_SESSION[APP_NAME][$sid][$session_key]);
     }
 
+   /**
+    * get errors
+    *
+    * @return void
+    */
+    static function getErrors() {
+        return self::get('errors'); 
+    }
+
+   /**
+    * set errors
+    *
+    * @param array $errors
+    * @return void
+    */
+    static function setErrors($errors) {
+        self::set('errors', $errors); 
+    }
+
+   /**
+    * flush errors
+    *
+    * @return void
+    */
+    static function flushErrors() {
+        self::clear('errors'); 
+    }
 }

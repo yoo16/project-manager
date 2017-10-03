@@ -2,24 +2,28 @@
 <form action="<?= url_for('add') ?>" method="post">
 
   <table class="table">
-    
+
     <tr>
-      <th>名称</th>
+      <th><?= LABEL_RECORDS_NAME ?></th>
       <td>
                 <?= $this->record->formInput('name') ?>        
       </td>
     </tr>
 
-        
+
     <tr>
-      <th>ラベル</th>
+      <th><?= LABEL_RECORDS_LABEL ?></th>
       <td>
                 <?= $this->record->formInput('label') ?>        
       </td>
     </tr>
 
-    
+
   </table>
 
-    
-  <?= FormHelper::submit(LABEL_SAVE) ?>  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?></form>
+  <?= FormHelper::submit(LABEL_SAVE) ?>  
+  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>
+  <input type="hidden" name="record[project_id]" value="<?= $this->project->value['id'] ?>">
+
+
+</form>

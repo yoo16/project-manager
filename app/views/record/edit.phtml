@@ -2,23 +2,28 @@
 <form action="<?= url_for('update', $this->params['id']) ?>" method="post">
 
   <table class="table">
-      <tr>
-      <th>名称</th>
+
+    <tr>
+      <th><?= LABEL_RECORDS_NAME ?></th>
       <td>
                 <?= $this->record->formInput('name') ?>        
       </td>
     </tr>
-        <tr>
-      <th>ラベル</th>
+
+
+    <tr>
+      <th><?= LABEL_RECORDS_LABEL ?></th>
       <td>
                 <?= $this->record->formInput('label') ?>        
       </td>
     </tr>
-    </table>
+
+
+  </table>
 
   <?= FormHelper::submit(LABEL_SAVE) ?>
   <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>  
-    
+
 </form>
 
-  <?= $this->record->formDelete() ?>
+<?= $this->record->formDelete() ?>

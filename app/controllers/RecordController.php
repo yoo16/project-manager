@@ -20,6 +20,7 @@ class RecordController extends ProjectController {
     */
     function before_action($action) {
         parent::before_action($action);
+        
     }
 
    /**
@@ -29,7 +30,7 @@ class RecordController extends ProjectController {
     * @return void
     */
     function index() {
-        unset($this->session['posts']);
+        AppSession::clear('posts');
         $this->redirect_to('list');
     }
 
@@ -40,7 +41,7 @@ class RecordController extends ProjectController {
     * @return void
     */
     function action_cancel() {
-        unset($this->session['posts']);
+        AppSession::clear('posts');
         $this->redirect_to('list');
     }
 
@@ -51,7 +52,7 @@ class RecordController extends ProjectController {
     * @return void
     */
     function action_list() {
-        $this->record = DB::table('Record')->all();
+        $this->record = $this->project->relationMany('Record')->all();
     }
 
    /**
@@ -61,7 +62,7 @@ class RecordController extends ProjectController {
     * @return void
     */
     function action_new() {
-        $this->record = DB::table('Record')->takeValues($this->session['posts']);
+        $this->record = DB::table('Record')->takeValues($this->posts['record']);
     }
 
    /**
@@ -73,7 +74,7 @@ class RecordController extends ProjectController {
     function action_edit() {
         $this->record = DB::table('Record')
                     ->fetch($this->params['id'])
-                    ->takeValues($this->session['posts']);
+                    ->takeValues($this->posts['record']);
     }
 
    /**
@@ -85,7 +86,7 @@ class RecordController extends ProjectController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["record"];
-        DB::table('Record')->insert($posts);
+        $record = DB::table('Record')->insert($posts);
 
         if ($record->errors) {
             $this->redirect_to('new');
@@ -103,7 +104,7 @@ class RecordController extends ProjectController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["record"];
-        $record = DB::table('Record')->update($posts, $this->params['id']);
+        $record = $record = DB::table('Record')->update($posts, $this->params['id']);
 
         if ($record->errors) {
             $this->redirect_to('edit', $this->params['id']);
@@ -131,7 +132,7 @@ class RecordController extends ProjectController {
     * @return void
     */
     function action_sort_order() {
-        $this->record = DB::table('Record')->all();
+        $this->record = $this->project->relationMany('Record')->all();
     }
 
    /**
@@ -143,6 +144,19 @@ class RecordController extends ProjectController {
     function action_update_sort() {
         if (!isPost()) exit;
         DB::table('Record')->updateSortOrder($_REQUEST['sort_order']);
+    }
+
+
+   /**
+    * export
+    *
+    * @param
+    * @return void
+    */
+    function action_export() {
+        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+        $this->project->exportRecord();
+        $this->redirect_to('record/list');
     }
 
 }

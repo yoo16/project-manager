@@ -32,6 +32,8 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     */
     function before_action($action) {
         parent::before_action($action);
+        <?= Tag::init()->requestInstance($values['page_model']) ?>
+
     }
 
    /**
@@ -41,7 +43,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     * @return void
     */
     function index() {
-        unset($this->session['posts']);
+        AppSession::clear('posts');
         $this->redirect_to('list');
     }
 
@@ -52,7 +54,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_cancel() {
-        unset($this->session['posts']);
+        AppSession::clear('posts');
         $this->redirect_to('list');
     }
 
@@ -63,9 +65,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_list() {
-<? if ($values['model']): ?>
-        $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->all();
-<? endif ?>
+        <?= Tag::init()->listValues($values['model'], $values['page']) ?>
     }
 
    /**
@@ -75,7 +75,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_new() {
-        $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->takeValues($this->session['posts']);
+        $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->takeValues($this->posts['<?= $values['model']['entity_name'] ?>']);
     }
 
    /**
@@ -88,7 +88,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
 <? if ($values['model']): ?>
         $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')
                     ->fetch($this->params['id'])
-                    ->takeValues($this->session['posts']);
+                    ->takeValues($this->posts['<?= $values['model']['entity_name'] ?>']);
 <? endif ?>
     }
 
@@ -102,7 +102,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
         if (!isPost()) exit;
 <? if ($values['model']): ?>
         $posts = $this->posts["<?= $values['model']['entity_name'] ?>"];
-        DB::table('<?= $values['model']['class_name'] ?>')->insert($posts);
+        $<?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->insert($posts);
 
         if ($<?= $values['model']['entity_name'] ?>->errors) {
             $this->redirect_to('new');
@@ -122,7 +122,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
         if (!isPost()) exit;
 <? if ($values['model']): ?>
         $posts = $this->posts["<?= $values['model']['entity_name'] ?>"];
-        $<?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->update($posts, $this->params['id']);
+        $<?= $values['model']['entity_name'] ?> = $<?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->update($posts, $this->params['id']);
 
         if ($<?= $values['model']['entity_name'] ?>->errors) {
             $this->redirect_to('edit', $this->params['id']);
@@ -153,9 +153,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_sort_order() {
-<? if ($values['model']): ?>
-        $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->all();
-<? endif ?>
+        <?= Tag::init()->listValues($values['model'], $values['page']) ?>
     }
 
    /**

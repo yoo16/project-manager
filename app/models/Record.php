@@ -22,4 +22,21 @@ class Record extends _Record {
         parent::validate();
     }
 
+    /**
+     * project path
+     * 
+     * @param array $user_project_setting
+     * @param array $record
+     * @return string
+     */
+    static function csvFilePath($user_project_setting, $record) {
+        if (!$user_project_setting) return;
+        if (!$record['name']) return;
+        if (!file_exists($user_project_setting['project_path'])) return;
+
+        $file_name = "{$record['name']}.csv";
+        $path = $user_project_setting['project_path']."db/records/{$file_name}";
+        return $path;
+    }
+
 }

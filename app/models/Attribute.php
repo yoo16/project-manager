@@ -42,12 +42,18 @@ class Attribute extends _Attribute {
         if (!$model) return;
         $model_name = strtoupper($model['name']);
         if ($attribute) {
-            $attribute_name = strtoupper($attribute['name']);
-            if (mb_substr($attribute['name'], -3) != '_id') {
+            if (mb_substr($attribute['name'], -3) == '_id') {
+                $length = mb_strlen($attribute['name']);
+                $attribute_name = mb_substr($attribute['name'], 0, $length - 3);
+                $attribute_name = FileManager::singularToPlural($attribute_name);
+                $attribute_name = strtoupper($attribute_name);
+                $label = "LABEL_{$attribute_name}";
+            } else {
+                $attribute_name = strtoupper($attribute['name']);
                 $label = "LABEL_{$model_name}_{$attribute_name}";
             }
         } else {
-            $label = "LABEL_{$model['name']}";
+            $label = "LABEL_{$model_name}";
         }
         if ($label) {
             $label = '<?= '.$label.' ?>';

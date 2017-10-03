@@ -16,6 +16,7 @@
       <th></th>
       <th>Name</th>
       <th>Class Name</th>
+      <th></th>
       <th>Overwrite</th>
       <th>Entity Name</th>
       <th>Model</th>
@@ -35,6 +36,7 @@
       </div>
     </td>
     <td><a class="" href="<?= url_for('view/', array('page_id' => $page['id'])) ?>"><?= Page::className($page) ?></a></td>
+    <td><a class="" href="<?= url_for('page_model/', array('page_id' => $page['id'])) ?>">models</a></td>
     <td>
       <? if ($page['is_overwrite']): ?>
       <?= FormHelper::link('change_overwrite', 'overwrite', $page['id'], ['class' => 'badge badge-danger']) ?>
