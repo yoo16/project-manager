@@ -17,11 +17,10 @@ class Entity {
     var $session = null;
 
     static $except_columns = ['id', 'created_at', 'updated_at'];
-    static $app_columns = ['id', 'created_at', 'updated_at', 'sort_order', 'old_db', 'old_host'];
-
+    static $app_columns = ['id', 'created_at', 'updated_at', 'sort_order', 'old_db', 'old_host', 'old_id'];
 
     function __construct($params = null) {
-        $this->defaultValue();
+
     }
 
     function results() { trigger_error('results is not implemented', E_USER_ERROR); }
@@ -35,6 +34,22 @@ class Entity {
     function before_insert() {}
     function before_update() {}
 
+    /**
+     * init
+     * 
+     * @return Entity
+     */
+    public function init() {
+        $this->conditions = null;
+        $this->errors = null;
+        $this->values = null;
+        $this->value = null;
+        $this->id = null;
+        $this->posts = null;
+        $this->session = null;
+        $this->defaultValue();
+        return $this;
+    }
 
     /**
      * loadSession

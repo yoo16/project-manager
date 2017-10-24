@@ -29,8 +29,9 @@ class _Database extends PgsqlEntity {
 
 
     var $unique = array(
-            '' => [
-                        '',
+            'databases_name_hostname_key' => [
+                        'name',
+                        'hostname',
                         ],
     );
 

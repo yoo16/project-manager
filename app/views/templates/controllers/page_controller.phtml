@@ -1,0 +1,39 @@
+<?= '<?php'?>
+
+/**
+ * <?= Page::className($values['page']) ?> 
+ *
+ * @create  <?= $values['page']['created_at'] ?> 
+ */
+
+<? if ($values['page']['parent']): ?>
+require_once '<?= $values['page']['parent']['name'] ?>Controller.php';
+<? else: ?>
+require_once 'AppController.php';
+<? endif ?>
+
+<? if ($values['page']['parent']): ?>
+class <?= $values['page']['name'] ?>Controller extends <?= $values['page']['parent']['name'] ?>Controller {
+<? else: ?>
+class <?= $values['page']['name'] ?>Controller extends AppController {
+<? endif ?>
+
+    var $name = '<?= $values['page']['entity_name'] ?>';
+
+<? if ($values['page']['layout_name']): ?>
+    var $layout = '<?= $values['page']['layout_name'] ?>';
+<? endif ?>
+
+   /**
+    * before_action
+    *
+    * @param string $action
+    * @return void
+    */
+    function before_action($action) {
+        parent::before_action($action);
+        <?= Tag::init()->requestInstance($values['page_model']) ?>
+
+    }
+
+}

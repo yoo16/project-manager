@@ -11,18 +11,23 @@
         </div>
         <div class="modal-body">
           <div class="form-group row">
-            <label for="" class="col-2 col-form-label">Name</label>
-            <input class="form-control col-5" type="text" name="model[name]" value="">
+            <label for="" class="col-3 col-form-label">Name</label>
+            <input class="form-control col-5" type="text" name="page[name]" value="">
           </div>
           <div class="form-group row">
-            <label for="" class="col-2 col-form-label">Label</label>
-            <input class="form-control col-5" type="text" name="model[label]" value="">
+            <label for="" class="col-3 col-form-label">Entity Name</label>
+            <input class="form-control col-5" type="text" name="page[entity_name]" value="">
+          </div>
+          <div class="form-group row">
+            <label for="" class="col-3 col-form-label">Label</label>
+            <input class="form-control col-5" type="text" name="page[label]" value="">
           </div>
         </div>
         <div class="modal-footer">
           <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">
           <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
-          <input type="hidden" name="model[database_id]" value="<?= $this->database->value['id'] ?>">
+          <input type="hidden" name="page[project_id]" value="<?= $this->project->value['id'] ?>">
+          <input type="hidden" name="page[database_id]" value="<?= $this->database->value['id'] ?>">
           <input type="hidden" name="database_id" value="<?= $this->database->value['id'] ?>">
         </div>
       </form>

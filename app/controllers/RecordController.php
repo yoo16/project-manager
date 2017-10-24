@@ -52,7 +52,10 @@ class RecordController extends ProjectController {
     * @return void
     */
     function action_list() {
+        if (!$this->project->value) $this->redirect_to('/');
         $this->record = $this->project->relationMany('Record')->all();
+
+                
     }
 
    /**
@@ -62,7 +65,7 @@ class RecordController extends ProjectController {
     * @return void
     */
     function action_new() {
-        $this->record = DB::table('Record')->takeValues($this->posts['record']);
+        $this->record = DB::table('Record')->init()->takeValues($this->posts['record']);
     }
 
    /**
@@ -72,6 +75,8 @@ class RecordController extends ProjectController {
     * @return void
     */
     function action_edit() {
+        $this->checkEdit();
+
         $this->record = DB::table('Record')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['record']);
@@ -132,6 +137,7 @@ class RecordController extends ProjectController {
     * @return void
     */
     function action_sort_order() {
+        if (!$this->project->value) $this->redirect_to('/');
         $this->record = $this->project->relationMany('Record')->all();
     }
 
@@ -144,19 +150,6 @@ class RecordController extends ProjectController {
     function action_update_sort() {
         if (!isPost()) exit;
         DB::table('Record')->updateSortOrder($_REQUEST['sort_order']);
-    }
-
-
-   /**
-    * export
-    *
-    * @param
-    * @return void
-    */
-    function action_export() {
-        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
-        $this->project->exportRecord();
-        $this->redirect_to('record/list');
     }
 
 }

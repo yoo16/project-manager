@@ -53,7 +53,10 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_list() {
+        if (!$this->record->value) $this->redirect_to('/');
         $this->record_item = $this->record->relationMany('RecordItem')->all();
+
+                
     }
 
    /**
@@ -63,7 +66,7 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_new() {
-        $this->record_item = DB::table('RecordItem')->takeValues($this->posts['record_item']);
+        $this->record_item = DB::table('RecordItem')->init()->takeValues($this->posts['record_item']);
     }
 
    /**
@@ -73,6 +76,8 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_edit() {
+        $this->checkEdit();
+
         $this->record_item = DB::table('RecordItem')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['record_item']);
@@ -133,6 +138,7 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_sort_order() {
+        if (!$this->record->value) $this->redirect_to('/');
         $this->record_item = $this->record->relationMany('RecordItem')->all();
     }
 

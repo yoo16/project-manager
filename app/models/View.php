@@ -4,18 +4,8 @@ require_once 'vo/_View.php';
 class View extends _View {
 
     static $default_actions = array(
-                    'new' => array(
-                        'name' => 'new',
-                        'label' => LABEL_NEW,
-                        ),
-                    'edit' => array(
-                        'name' => 'edit',
-                        'label' => LABEL_EDIT,
-                        ),
-                    'list' => array(
-                        'name' => 'list',
-                        'label' => LABEL_LIST,
-                        ),
+                    'edit' => array('name' => 'edit', 'label' => LABEL_EDIT),
+                    'list' => array('name' => 'list', 'label' => LABEL_LIST),
                    );
 
     function validate() {
@@ -42,9 +32,22 @@ class View extends _View {
                 $posts['page_id'] = $page['id'];
                 $posts['name'] = $action['name'];
                 $posts['label'] = $action['label'];
+                $posts['is_overwrite'] = true;
                 $view->insert($posts);
             }
         }
+    }
+
+    /**
+     * Form Label Class
+     * 
+     * @param array $view
+     * @return string
+     */
+    static function formLabelClass($view) {
+        $labe_width = ($view['label_width'])? $view['label_width'] : 2;
+        $value = "form-control-label col-{$labe_width}";
+        return $value;
     }
 
     /**
@@ -79,6 +82,25 @@ class View extends _View {
         return $path;
     }
 
+    /**
+     * project path
+     * 
+     * @param array $user_project_setting
+     * @param array $page
+     * @param string $name
+     * @return string
+     */
+    static function projectNameFilePath($user_project_setting, $page, $name) {
+        if (!$user_project_setting) return;
+        if (!file_exists($user_project_setting['project_path'])) return;
+
+        $view_dir = $user_project_setting['project_path']."app/views/{$page['entity_name']}/";
+        if (!file_exists($view_dir)) {
+            FileManager::createDir($view_dir);
+        }
+        $path = "{$view_dir}{$name}.phtml";
+        return $path;
+    }
 
     /**
      * project path
@@ -111,5 +133,16 @@ class View extends _View {
         return $path;
     }
 
+
+    /**
+     * local name path
+     * 
+     * @param string $name
+     * @return string
+     */
+    static function templateNameFilePath($name) {
+        $path = TEMPLATE_DIR."views/{$name}.phtml";
+        return $path;
+    }
 
 }

@@ -2,45 +2,7 @@
 
 <form action="<? Tag::init()->php('url_for(\'update\', $this->params[\'id\'])') ?>" method="post">
 
-  <table class="table">
-<? foreach ($values['view']['view_item'] as $view_item): ?>
-<? if (!Model::$required_columns[$values['attribute'][$view_item['attribute_id']]['name']]): ?>
-<? if ($view_item['form_type'] == 'hidden'): ?>
-<? else: ?>
-
-    <tr>
-      <th><?= Attribute::labelName($values['model'], $values['attribute'][$view_item['attribute_id']]) ?></th>
-      <td>
-        <? if ($view_item['form_type'] == 'textarea'): ?>
-        <? Tag::init()->php('$this->'.$values['model']['entity_name']."->formTextarea('{$values['attribute'][$view_item['attribute_id']]['name']}')") ?>
-        <? elseif ($view_item['form_type'] == 'select'): ?>
-        <? Tag::init()->formSelect($view_item, $values['model'], $values['attribute'][$view_item['attribute_id']]); ?>
-        <? elseif ($view_item['form_type'] == 'checkbox'): ?>
-        <? Tag::init()->php('$this->'.$values['model']['entity_name']."->formCheckbox('{$values['attribute'][$view_item['attribute_id']]['name']}')") ?>
-        <? elseif ($view_item['form_type'] == 'radio'): ?>
-        <? Tag::init()->formRadio($view_item, $values['model'], $values['attribute'][$view_item['attribute_id']]); ?>
-        <? else: ?>
-        <? Tag::init()->php('$this->'.$values['model']['entity_name']."->formInput('{$values['attribute'][$view_item['attribute_id']]['name']}')") ?>
-        <? endif ?>
-
-      </td>
-    </tr>
-
-<? endif ?>
-<? endif ?>
-<? endforeach ?>
-
-  </table>
-
-  <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
-
-  <? Tag::init()->php('FormHelper::linkButton("cancel", LABEL_BACK)') ?>
-  
-<? foreach ($values['view']['view_item'] as $view_item): ?>
-<? if ($view_item['form_type'] == 'hidden'): ?>
-  <input type="hidden" name="<?= $values['model']['entity_name'] ?>[<?= $values['attribute'][$view_item['attribute_id']]['name'] ?>]" value="<?= ViewItem::hiddenValue($view_item) ?>">
-<? endif ?>
-<? endforeach ?>
+<?= "<? include('form.phtml') ?>" ?>
 
 </form>
 

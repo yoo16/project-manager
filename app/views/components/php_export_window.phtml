@@ -47,14 +47,8 @@
           <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
         </form>
         &nbsp;
-        <form action="<?=url_for('project/export_php_controller') ?>" method="post">
-          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">Controller</button>
-          <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-          <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-        </form>
-        &nbsp;
-        <form action="<?=url_for('project/export_php_view') ?>" method="post">
-          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">View</button>
+        <form action="<?=url_for('project/export_php_controller_view') ?>" method="post">
+          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">Controller/View</button>
           <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
           <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
         </form>
@@ -65,7 +59,7 @@
           <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
         </form>
         &nbsp;
-        <form action="<?=url_for('record/export') ?>" method="post">
+        <form action="<?=url_for('project/csv_export') ?>" method="post">
           <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export CSV files?">CSV</button>
           <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
           <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">

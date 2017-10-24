@@ -138,6 +138,17 @@ class ProjectController extends AppController {
         $this->redirect_to('model/list', $params);
     }
 
+    function action_export_php_controller_view() {
+        if (!isPost()) exit;
+        $this->project = DB::table('Project')->fetch($this->posts['project_id']);
+        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($this->posts['user_project_setting_id']);
+        $this->project->exportPHPControllers();
+        $this->project->exportPHPViews();
+
+        $params['project_id'] = $this->project->value['id'];
+        $this->redirect_to('page/list', $params);
+    }
+
     function action_export_php_controller() {
         if (!isPost()) exit;
         $this->project = DB::table('Project')->fetch($this->posts['project_id']);
@@ -145,7 +156,7 @@ class ProjectController extends AppController {
         $this->project->exportPHPControllers();
 
         $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('model/list', $params);
+        $this->redirect_to('page/list', $params);
     }
 
     function action_export_php_view() {
@@ -155,7 +166,7 @@ class ProjectController extends AppController {
         $this->project->exportPHPViews();
 
         $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('model/list', $params);
+        $this->redirect_to('page/list', $params);
     }
 
     function action_export_db() {
@@ -369,6 +380,13 @@ var_dump($sql);
             $this->results['output'] = $output;
             $this->results['return'] = $return;
         }
+    }
+
+    function csv_export() {
+        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+        $this->project->exportRecord();
+
+        $this->redirect_to('record/list');
     }
 
 }

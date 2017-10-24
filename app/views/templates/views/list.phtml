@@ -1,5 +1,10 @@
 <?= "<? include('_header.phtml') ?>" ?>
 
+<? if ($values['view']['note']): ?>
+  <div class="text-danger">
+    <?= nl2br($values['view']['note']) ?>
+  </div>
+<? endif ?>
 
 <div class="pt-3">
   <? Tag::init()->php('FormHelper::linkButton(\'new\', LABEL_ADD, null, [\'class\' => \'btn btn-primary\'])') ?>
@@ -12,11 +17,15 @@
   <thead class="thead-deffault">
     <tr>
       <th>&nbsp;</th>
-<? foreach ($values['view']['view_item'] as $view_item): ?>
-<? if (!Model::$required_columns[$view_item['name']]): ?>
-      <th><?= Attribute::labelName($values['model'], $values['attribute'][$view_item['attribute_id']]) ?></th>
-<? endif ?>
-<? endforeach ?>
+      <? foreach ($values['view']['view_item'] as $view_item): ?>
+        <? if (!Model::$required_columns[$view_item['name']]): ?>
+          <? if ($view_item['attribute_id']): ?>
+            <th><?= Attribute::labelName($values['model'], $values['attribute'][$view_item['attribute_id']]) ?></th>
+          <? else: ?>
+            <th></th>
+          <? endif ?>
+        <? endif ?>
+      <? endforeach ?>
     </tr>
   </thead>
 
@@ -24,23 +33,24 @@
   <? Tag::init()->foreachs('$this->'.$values['model']['entity_name'].'->values as $values') ?>
   <tr>
     <td><? Tag::init()->php('FormHelper::linkButton(\'edit\', LABEL_EDIT, $values[\'id\'])') ?></td>
-<? foreach ($values['view']['view_item'] as $view_item): ?>
-<? if (!Model::$required_columns[$view_item['name']]): ?>
-<? if ($view_item['page_id']): ?>
-    <td>
-      <? Tag::init()->tableItemUrlForAttribute(
-          $values['attribute'][$view_item['attribute_id']],
-          $values['pages'][$view_item['page_id']],
-          $values['model']
-      ) ?>
-    </td>
-<? else: ?>
-    <td><? Tag::init()->tableItemForAttribute($values['attribute'][$view_item['attribute_id']]) ?></td>
-<? endif ?>
-<? endif ?>
-<? endforeach ?>
-  </tr>
-  <? Tag::init()->foreache() ?>
-  <? Tag::init()->ife() ?>
+    <? foreach ($values['view']['view_item'] as $view_item): ?>
+      <? if (!Model::$required_columns[$view_item['name']]): ?>
+        <? if ($view_item['page_id']): ?>
+          <td>
+            <? Tag::init()->tableItemUrlForAttribute(
+              $values['attribute'][$view_item['attribute_id']],
+              $values['pages'][$view_item['page_id']],
+              $values['model'],
+              $view_item
+              ) ?>
+            </td>
+          <? else: ?>
+            <td><? Tag::init()->tableItemForAttribute($values['attribute'][$view_item['attribute_id']], $view_item) ?></td>
+          <? endif ?>
+        <? endif ?>
+      <? endforeach ?>
+    </tr>
+    <? Tag::init()->foreache() ?>
+    <? Tag::init()->ife() ?>
 
-</table>
+  </table>

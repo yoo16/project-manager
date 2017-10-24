@@ -13,12 +13,11 @@
     <tr>
       <th>&nbsp;</th>
       <th>カラム</th>
-      <th>ラベル</th>
+      <th>&nbsp;</th>
       <th>リンクページ</th>
       <th>class</th>
       <th>form</th>
-      <th>selectラベル</th>
-      <th>where model</th>
+      <th>where / csv</th>
     </tr>
   </thead>
 
@@ -31,15 +30,45 @@
       <input id="sort_order_<?= $view_item['id'] ?>" name="sort_order[<?= $view_item['id'] ?>]" type="hidden">
     </td>
     <td><?= $this->page->model->attribute->values[$view_item['attribute_id']]['name'] ?></td>
-    <td><?= $view_item['label'] ?></td>
+    <td>
+<? if ($view_item['attribute_id']): ?>
+      <?= $this->page->model->attribute->values[$view_item['attribute_id']]['label'] ?>
+<? elseif ($view_item['localize_string_id']): ?>
+      <?= $this->localize_string->values[$view_item['localize_string_id']]['name'] ?>  
+<? endif ?>
+    </td>
     <td><?= $this->pages[$view_item['page_id']]['name'] ?></td>
     <td><?= FormHelper::activeLabelTag($view_item['css_class']) ?></td>
     <td>
-      <div><?= $view_item['form_type'] ?></div>
-      <div><?= $view_item['csv'] ?></div>
+      <div>
+        <? if (in_array($this->view->value['name'], ['new' ,'edit'])): ?>
+        <? if ($view_item['form_type'] == 'select'): ?>
+          <select class="form-control">
+            <option><?= $view_item['label_column'] ?></option>
+          </select>
+        <? elseif ($view_item['form_type'] == 'hidden'): ?>
+          hidden
+        <? elseif ($view_item['form_type'] == 'radio'): ?>
+          <input class="form-control" type="radio" name=""><?= $view_item['label_column'] ?>
+        <? elseif ($view_item['form_type'] == 'checkbox'): ?>
+          <input class="form-control" type="checkbox" name=""><?= $view_item['label_column'] ?>
+        <? elseif ($view_item['form_type'] == 'textarea'): ?>
+          <textarea></textarea>
+        <? elseif ($view_item['form_type'] == 'password'): ?>
+          <input class="form-control" type="password" name="">
+        <? else: ?>
+          <input class="form-control" type="text" name="">
+        <? endif ?>
+        <? endif ?>
+      </div>
     </td>
-    <td><?= $view_item['select_label'] ?></td>
-    <td><?= DB::table('Model')->fetch($view_item['where_model_id'])->value['name'] ?></td>
+    <td>
+        <? if ($view_item['where_model_id']): ?>
+          where : <?= DB::table('Model')->fetch($view_item['where_model_id'])->value['name'] ?> -> id
+        <? endif ?>
+
+        <? if ($view_item['csv']): ?>csv : <?= $view_item['csv'] ?><? endif ?>
+    </td>
   </tr>
   <? endforeach ?>
     </tbody>

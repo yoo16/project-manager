@@ -5,52 +5,58 @@
 
   <form action="<?= url_for('update', $this->page->value['id']) ?>" method="post">
     
+      <div class="form-group row">
+        <label for="" class="col-3 col-form-label">Overwrite</label>
+        <?= FormHelper::checkbox($this->forms['is_overwrite'], (bool) $this->page->value['is_overwrite']) ?>
+      </div>
+
       <? if ($this->model->value): ?>
       <div class="form-group row">
-        <label for="" class="col-2 col-form-label">Model</label>
+        <label for="" class="col-3 col-form-label">Model</label>
         <?= $this->model->value['name'] ?>
       </div>
       <? endif ?>
       
       <div class="form-group row">
-        <label for="page-name" class="col-2 col-form-label">Name</label>
+        <label for="" class="col-3 col-form-label">Class Name</label>
+        <?= $this->model->value['class_name'] ?>
+      </div>
+
+      <div class="form-group row">
+        <label for="page-name" class="col-3 col-form-label">Name</label>
         <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'name') ?>" type="text" name="page[name]" value="<?= $this->page->value['name'] ?>" required autocomplete="off">
       </div>
 
       <div class="form-group row">
-        <label for="" class="col-2 col-form-label">Label</label>
+        <label for="" class="col-3 col-form-label">Label</label>
         <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'label') ?>" type="text" name="page[label]" value="<?= $this->page->value['label'] ?>" required autocomplete="off">
       </div>
 
       <div class="form-group row">
-        <label for="" class="col-2 col-form-label">Entity Name</label>
+        <label for="" class="col-3 col-form-label">Entity Name</label>
         <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'entity_name') ?>" type="text" name="page[entity_name]" value="<?= $this->page->value['entity_name'] ?>" required autocomplete="off">
       </div>
       
       <div class="form-group row">
-        <label for="" class="col-2 col-form-label">Layout</label>
+        <label for="" class="col-3 col-form-label">Layout</label>
         <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'layout_name') ?>" type="text" name="page[layout_name]" value="<?= $this->page->value['layout_name'] ?>" autocomplete="off">
       </div>
       
       <div class="form-group row">
-        <label for="" class="col-2 col-form-label">Overwrite</label>
-        <?= FormHelper::checkbox($this->forms['is_overwrite'], (bool) $this->page->value['is_overwrite']) ?>
-      </div>
-
-      <div class="form-group row">
-        <label for="" class="col-2 col-form-label">Parent Page</label>
+        <label for="" class="col-3 col-form-label">Parent Page</label>
         <?= $this->page->formSelect('parent_page_id', 
                    [
                     'unselect' => true,
                     'label' => ['name'],
                     'model' => 'Page',
                     'where' => "project_id = {$this->project->value['id']}",
+                    'order' => 'name',
                     ]
                     ) ?>
       </div>
       
       <div class="form-group row">
-        <label for="" class="col-2 col-form-label">where model</label>
+        <label for="" class="col-3 col-form-label">Relation model for list values</label>
         <?= $this->page->formSelect('where_model_id', 
                    [
                     'unselect' => true,
@@ -58,12 +64,29 @@
                     'label' => ['name'],
                     'model' => 'Model',
                     'where' => "project_id = {$this->project->value['id']}",
+                    'order' => 'name',
                     ]
                     ) ?>
+        .id
+        <? if ($this->page->value['where_model_id']): ?>
+        =
+        <?= $this->model->value['name'] ?>.<?= DB::table('Model')->fetch($this->page->value['where_model_id'])->value['entity_name'] ?>_id
+        <? endif ?>
+      </div>
+
+      <div class="form-group row">
+        <label for="" class="col-3 col-form-label">sort_order for list</label>
+        <input class="form-control col-5" type="text" name="page[list_sort_order_columns]" value="<?= $this->page->value['list_sort_order_columns'] ?>" autocomplete="off">
+      </div>
+
+      <div class="form-group row">
+        <label for="page-name" class="col-3 col-form-label">Note</label>
+        <textarea class="form-control" name="page[note]" rows="5"><?= $this->page->value['note'] ?></textarea>
       </div>
 
       <button class="btn btn-primary" type="submit"><?= LABEL_UPDATE ?></button>
       <a class="btn btn-outline-primary" href="<?= url_for('list') ?>"><?= LABEL_CANCEL ?></a>
+
     </form>
 
     <?= $this->page->formDelete() ?>

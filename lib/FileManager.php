@@ -622,11 +622,14 @@ class FileManager {
         $last_value = end($values);
         $last_index = key($values);
 
-        $last_value = preg_replace("/(s|sh|ch|o|x)$/", "$1es" ,$last_value);
-        $last_value = preg_replace("/(f|fe)$/","ves", $last_value);
-        $last_value = preg_replace("/(a|i|u|e|o)y$/", "$1ys" ,$last_value);
-        $last_value = preg_replace("/y$/","ies", $last_value);
-        if (!preg_match("/s$/", $last_value)) {
+        if (strlen($last_value) == 1) {
+
+        } else if (!preg_match("/s$/", $last_value)) {
+            $last_value = preg_replace("/(s|sh|ch|o|x)$/", "$1es" ,$last_value);
+            $last_value = preg_replace("/(f|fe)$/","ves", $last_value);
+            $last_value = preg_replace("/(a|i|u|e|o)y$/", "$1ys" ,$last_value);
+            $last_value = preg_replace("/y$/","ies", $last_value);
+
             $last_value = $last_value."s";
         }
 

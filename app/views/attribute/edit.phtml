@@ -37,6 +37,16 @@
         <?= $this->attribute->formInput('label') ?>
       </div>
 
+      <div class="form-group row">
+        <label for="" class="form-control-label col-2">Default value</label>
+        <?= $this->attribute->formInput('default_value') ?>
+      </div>
+
+      <div class="form-group row">
+        <label for="" class="form-control-label col-2">Relation CSV</label>
+        <?= $this->attribute->formInput('csv') ?>
+      </div>
+
       <? if ($this->attribute->value['fk_attribute_id']): ?>
         <div class="form-group row">
           <label for="" class="col-2 col-form-label">Update Action</label>

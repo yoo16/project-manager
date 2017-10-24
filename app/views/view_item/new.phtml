@@ -1,27 +1,92 @@
 <? include('_header.phtml') ?>
 <form action="<?= url_for('add') ?>" method="post">
 
+<h4>Page public</h4>
   <table class="table">
     <tr>
-      <th>カラム</th>
-      <td><?= $this->view_item->formInput('attribute_id') ?></td>
+      <th>PHP label</th>
+      <td>
+        <?= $this->view_item->formSelect('localize_string_id',
+        [
+          'unselect' => true,
+          'label' => ['name'],
+          'label_separate' => ' - ',
+          'model' => 'LocalizeString',
+          'where' => "project_id = {$this->project->value['id']}",
+          'order' => 'name'
+        ]
+         ) ?>
+      </td>
     </tr>
+
     <tr>
-      <th>ビュー</th>
-      <td><?= $this->view_item->formInput('view_id') ?></td>
+      <th>csv</th>
+      <td><?= $this->view_item->formInput('csv') ?></td>
     </tr>
+
     <tr>
-      <th>ラベル</th>
-      <td><?= $this->view_item->formInput('label') ?></td>
+      <th>display column name</th>
+      <td><?= $this->view_item->formInput('label_column') ?></td>
     </tr>
+
     <tr>
-      <th>Formタイプ</th>
-      <td><?= $this->view_item->formInput('form_type') ?></td>
-    </tr>
-    <tr>
-      <th>css_class</th>
-      <td><?= $this->view_item->formInput('CSSクラス') ?></td>
+      <th>css class</th>
+      <td><?= $this->view_item->formInput('css_class') ?></td>
     </tr>
   </table>
 
-  <?= FormHelper::submit(LABEL_SAVE) ?>  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?></form>
+<h4>Page list</h4>
+  <table class="table">
+    <tr>
+      <th>link page</th>
+      <td>
+        <?= $this->view_item->formSelect('page_id',
+        [
+          'unselect' => true,
+          'label' => ['name'],
+          'label_separate' => ' - ',
+          'model' => 'Page',
+          'where' => "project_id = {$this->project->value['id']}"
+        ]
+         ) ?>
+       </td>
+    </tr>
+  </table>
+
+<h4>Page edit form</h4>
+  <table class="table">
+    <tr>
+      <th>form type</th>
+      <td>
+        <?= $this->view_item->formRadio('form_type', ['unselect' => true, 'csv' => 'form']) ?>
+      </td>
+    </tr>
+
+    <tr>
+      <th>relation model</th>
+      <td>
+        <?= $this->view_item->formSelect('where_model_id',
+        [
+          'unselect' => true,
+          'label' => ['name', 'label'],
+          'label_separate' => '-',
+          'model' => 'Model',
+          'where' => "project_id = {$this->project->value['id']}"
+        ]
+         ) ?>
+       </td>
+    </tr>
+
+    <tr>
+      <th>order column</th>
+      <td><?= $this->view_item->formInput('where_order') ?></td>
+    </tr>
+
+  </table>
+
+  <input type="hidden" name="view_item[view_id]" value="<?= $this->view->value['id'] ?>">
+
+  <?= FormHelper::submit(LABEL_SAVE) ?>
+  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>  
+</form>
+

@@ -1,37 +1,32 @@
 <?php
 /**
- * Lang 
+ * ViewItemModel 
  * 
- * @create  2017-10-03 03:28:17 
+ * @create  2017-10-17 17:01:59 
  */
 
 //namespace project_manager;
 
 require_once 'PgsqlEntity.php';
 
-class _Lang extends PgsqlEntity {
+class _ViewItemModel extends PgsqlEntity {
 
     var $id_column = 'id';
-    var $name = 'langs';
-    var $entity_name = 'lang';
+    var $name = 'view_item_models';
+    var $entity_name = 'view_item_model';
 
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
-        'lang' => array('type' => 'varchar', 'length' => 8, 'is_required' => true),
-        'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
+        'is_id_index' => array('type' => 'bool'),
+        'page_id' => array('type' => 'int4'),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
+        'value_model_id' => array('type' => 'int4'),
+        'view_item_id' => array('type' => 'int4'),
+        'where_model_id' => array('type' => 'int4'),
     );
 
 
-    var $unique = array(
-            'langs_lang_key' => [
-                        'lang',
-                        ],
-            'langs_name_key' => [
-                        'name',
-                        ],
-    );
 
 
 

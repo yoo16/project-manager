@@ -33,8 +33,9 @@ class _LocalizeString extends PgsqlEntity {
     );
 
     var $unique = array(
-            '' => [
-                        '',
+            'localize_strings_name_project_id_key' => [
+                        'project_id',
+                        'name',
                         ],
     );
 

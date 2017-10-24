@@ -100,16 +100,17 @@ class ViewController extends ProjectController {
     * @return void
     */
     function action_add() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['posts'] = $_REQUEST["view"];
-            DB::table('views')->insert($posts);
+        if (!isPost()) exit;
+        $posts = $this->posts['view'];
 
-            if ($view->errors) {
-                $this->redirect_to('new');
-            } else {
-                $this->redirect_to('index');
-            }
+        $view = DB::table('View')->insert($posts);
+
+
+        if ($view->errors) {
+            var_dump($view->errors);
+            exit;      
         }
+        $this->redirect_to('list');
     }
 
    /**

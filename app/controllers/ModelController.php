@@ -193,7 +193,7 @@ class ModelController extends ProjectController {
         } else {
             unset($this->session['posts']);
         }
-        $this->redirect_to('list');
+        $this->redirect_to('edit', $this->params['id']);
     }
 
     function action_delete() {
@@ -207,6 +207,7 @@ class ModelController extends ProjectController {
                 $pgsql = $database->pgsql();
                 $results = $pgsql->dropTable($model->value['name']);
             }
+
             $model = DB::table('Model')->delete($model->value['id']);
             
             if ($model->errors) {

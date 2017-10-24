@@ -18,12 +18,22 @@ class Tag {
         return $instance;
     }
 
-    function tableItemForAttribute($attribute) {
+    function tableItemForAttribute($attribute, $view_item) {
         $entity = '$values'."['{$attribute['name']}']";
-        if ($attribute['type'] == 'bool') {
-            $tag = "FormHelper::activeLabelTag({$entity})";
+
+        if ($attribute['fk_attribute_id']) {
+            $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
+            $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']); 
+
+            $tag = '$this->'.$fk_model->value["entity_name"]."->values[{$entity}]['{$view_item['label_column']}']";
+        } else if ($view_item['csv']) {
+            $tag = '$this->csv_options'."['{$view_item['csv']}'][{$entity}]";
         } else {
-            $tag = $entity;
+            if ($attribute['type'] == 'bool') {
+                $tag = "FormHelper::activeLabelTag({$entity})";
+            } else {
+                $tag = $entity;
+            }
         }
         if ($tag) $this->php($tag);
     }
@@ -49,12 +59,17 @@ class Tag {
         $this->output();
     }
 
-    function tableItemUrlForAttribute($attribute, $page, $model, $params = null) {
+    //TODO function param
+    function tableItemUrlForAttribute($attribute, $page, $model, $view_item, $params = null) {
         $entity = '$values'."['{$attribute['name']}']";
         if ($attribute['type'] == 'bool') {
-            $tag = "FormHelper::activeLabelTag({$entity})";
+            $label = "FormHelper::activeLabelTag({$entity})";
+        } else if ($view_item['localize_string_id']) {
+            //TODO
+            $localize_string = DB::table('LocalizeString')->fetch($view_item['localize_string_id']);
+            $label = $localize_string->value['name'];
         } else {
-            $tag = $entity;
+            $label = $entity;
         }
 
         if ($model) {
@@ -65,7 +80,7 @@ class Tag {
             $param = implode('=>', $params);
         }
 
-        $label = $this->phpTag($tag);
+        $label = $this->phpTag($label);
         $href = "url_for('{$page['entity_name']}/', [{$param}])";
         $href = $this->phpTag($href);
         $this->value = "<a href=\"{$href}\">{$label}</a>";
@@ -130,7 +145,9 @@ class Tag {
     }
 
     function formSelect($view_item, $model, $attribute) {
-        if ($attribute['fk_attribute_id']) {
+        if ($view_item['csv']) {
+            $params = "['csv' => '{$view_item['csv']}', 'unselect' => true]";
+        } else if ($attribute['fk_attribute_id']) {
             $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
             $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']); 
 
@@ -138,25 +155,48 @@ class Tag {
                 $where_model = DB::table('Model')->fetch($view_item['where_model_id']); 
                 $where_column = "{$where_model->value["entity_name"]}_id";
                 $where_value = '{$this->'.$where_model->value["entity_name"]."->value['id']}";
-                $where = "{$where_column} = {$where_value}";
+                $where = "'where' => \"{$where_column} = {$where_value}\",";
+            }
+            if ($view_item['where_order']) {
+                $order = "'order' => '{$view_item['where_order']}',";
+            }
 
+            if ($view_item['label_column']) {
+                $label_columns = explode(',', $view_item['label_column']);
+                foreach ($label_columns as $label_column) {
+                    $labels[] = "'{$label_column}'";
+                }
+
+                $label = implode(',', $labels);
                 $params = "[
                             'unselect' => true,
                             'label_separate' => '-',
-                            'label' => [{$view_item['select_label']}],
+                            'label' => [{$label}],
                             'model' => '{$fk_model->value["class_name"]}',
-                            'where' => \"{$where}\",
+                            {$where}
+                            {$order}
                             ]";
             }
         }
-        $tag = '$this->'.$model['entity_name']."->formSelect('{$attribute['name']}', $params)";
+        if ($params) {
+            $tag = '$this->'.$model['entity_name']."->formSelect('{$attribute['name']}', $params)";
+        } else {
+            $tag = '$this->'.$model['entity_name']."->formSelect('{$attribute['name']}')";
+        }
         $tag = $this->phpTag($tag);
         echo($tag);
     }
 
     function formRadio($view_item, $model, $attribute) {
-        $params = "['csv' => '{$view_item['csv']}']";
-        $tag = '$this->'.$model['entity_name']."->formRadio('{$attribute['name']}', $params)";
+        if ($view_item['csv']) {
+            $params = "['csv' => '{$view_item['csv']}', 'unselect' => true]";
+        }
+
+        if ($params) {
+            $tag = '$this->'.$model['entity_name']."->formRadio('{$attribute['name']}', $params)";
+        } else {
+            $tag = '$this->'.$model['entity_name']."->formRadio('{$attribute['name']}')";
+        }
         $tag = $this->phpTag($tag);
         echo($tag);
     }
@@ -165,24 +205,53 @@ class Tag {
     function requestInstance($page_models) {
         if ($page_models) {
             foreach ($page_models as $page_model) {
-                $instance = '$this->'.$page_model['model_entity_name'];
-                $tag = "{$instance} = DB::table('{$page_model['model_class_name']}')->requestSession();";
-                echo($tag).PHP_EOL;
+                if ($page_model['is_request_session']) {
+                    $instance = '$this->'.$page_model['model_entity_name'];
+                    $tag = "{$instance} = DB::table('{$page_model['model_class_name']}')->requestSession();";
+                    echo($tag).PHP_EOL;
+                }
             }
         }
     }
 
+    //TODO page_models ?
     function listValues($model, $page) {
         $instance = '$this->'.$model['entity_name'];
+
+        if ($page['list_sort_order_columns']) {
+            $sort_order_columns = explode(',', $page['list_sort_order_columns']);
+            //TODO asc desc
+            foreach ($sort_order_columns as $sort_order_column) {
+                $sort_order_column = trim($sort_order_column);
+                $order.= "->order('{$sort_order_column}')";
+            }
+        }
         if ($page['where_model_id']) {
             $parent_model = DB::table('Model')->fetch($page['where_model_id']);
 
             $parent_instance = '$this->'.$parent_model->value['entity_name'];
             $relation_many = "{$parent_instance}->relationMany";
-            $tag = "{$instance} = {$relation_many}('{$model['class_name']}')->all();";
+            $redirect = '$this->redirect_to(\'/\')';
+
+            $tag = "if (!{$parent_instance}->value) {$redirect};".PHP_EOL;
+            $tag.= "        {$instance} = {$relation_many}('{$model['class_name']}')";
         } else {
-            $tag = "{$instance} = DB::table('{$model['class_name']}')->all();";
+            $tag = "{$instance} = DB::table('{$model['class_name']}')";
         }
+        $tag.= $order;
+        $tag.= "->all();";
         echo($tag).PHP_EOL;
+    }
+
+    function modelValues($page_models) {
+        if ($page_models) {
+            foreach ($page_models as $page_model) {
+                if ($page_model['is_fetch_list_values']) {
+                    $instance = '$this->'.$page_model['model_entity_name'];
+                    $tag = "{$instance} = DB::table('{$page_model['model_class_name']}')->idIndex()->all();";
+                    echo($tag).PHP_EOL;
+                }
+            }
+        }
     }
 }

@@ -1,29 +1,7 @@
 <? include('_header.phtml') ?>
 <form action="<?= url_for('update', $this->params['id']) ?>" method="post">
 
-  <table class="table">
-
-    <tr>
-      <th><?= LABEL_RECORDS_NAME ?></th>
-      <td>
-                <?= $this->record->formInput('name') ?>        
-      </td>
-    </tr>
-
-
-    <tr>
-      <th><?= LABEL_RECORDS_LABEL ?></th>
-      <td>
-                <?= $this->record->formInput('label') ?>        
-      </td>
-    </tr>
-
-
-  </table>
-
-  <?= FormHelper::submit(LABEL_SAVE) ?>
-  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>  
-
+<? include('form.phtml') ?>
 </form>
 
 <?= $this->record->formDelete() ?>

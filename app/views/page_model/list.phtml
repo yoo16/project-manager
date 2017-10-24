@@ -1,5 +1,4 @@
 <? include('_header.phtml') ?>
-
 <div class="pt-3">
   <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
   <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
@@ -10,7 +9,8 @@
     <tr>
       <th>&nbsp;</th>
       <th><?= LABEL_MODELS ?></th>
-      <th><?= LABEL_PAGES ?></th>
+      <th><?= LABEL_PAGE_MODELS_IS_FETCH_LIST_VALUES ?></th>
+      <th><?= LABEL_PAGE_MODELS_IS_REQUEST_SESSION ?></th>
     </tr>
   </thead>
 
@@ -18,8 +18,9 @@
   <? foreach ($this->page_model->values as $values): ?>
   <tr>
     <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-    <td><?= $values['model_id'] ?></td>
-    <td><?= $values['page_id'] ?></td>
+    <td><?= $this->model->values[$values['model_id']]['name'] ?></td>
+    <td><?= FormHelper::activeLabelTag($values['is_fetch_list_values']) ?></td>
+    <td><?= FormHelper::activeLabelTag($values['is_request_session']) ?></td>
   </tr>
   <? endforeach ?>
   <? endif ?>

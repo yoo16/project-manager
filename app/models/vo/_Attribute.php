@@ -19,6 +19,7 @@ class _Attribute extends PgsqlEntity {
         'attnum' => array('type' => 'int4', 'is_required' => true),
         'attrelid' => array('type' => 'int4', 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
+        'csv' => array('type' => 'varchar', 'length' => 256),
         'default_value' => array('type' => 'varchar'),
         'delete_action' => array('type' => 'varchar', 'length' => 32),
         'fk_attribute_id' => array('type' => 'int4'),
@@ -49,8 +50,9 @@ class _Attribute extends PgsqlEntity {
     );
 
     var $unique = array(
-            '' => [
-                        '',
+            'attributes_name_model_id_key' => [
+                        'name',
+                        'model_id',
                         ],
     );
 

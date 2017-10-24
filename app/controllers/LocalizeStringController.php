@@ -63,7 +63,11 @@ class LocalizeStringController extends ProjectController {
     * @return void
     */
     function action_import_from_model() {
-        $models = $this->project->hasMany('Model')->values;
+        if ($_REQUEST['model_id']) {
+            $models[] = DB::table('Model')->fetch($_REQUEST['model_id'])->value;
+        } else {
+            $models = $this->project->hasMany('Model')->values;
+        }
         foreach ($models as $model) {
             $attributes = DB::table('Attribute')
                                     ->where("model_id = {$model['id']}")

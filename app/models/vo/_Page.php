@@ -21,8 +21,10 @@ class _Page extends PgsqlEntity {
         'entity_name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
         'is_overwrite' => array('type' => 'bool'),
         'label' => array('type' => 'varchar', 'length' => 256),
+        'list_sort_order_columns' => array('type' => 'text'),
         'model_id' => array('type' => 'int4'),
         'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
+        'note' => array('type' => 'text'),
         'parent_page_id' => array('type' => 'int4'),
         'project_id' => array('type' => 'int4', 'is_required' => true),
         'sort_order' => array('type' => 'int4'),
@@ -31,6 +33,11 @@ class _Page extends PgsqlEntity {
     );
 
     var $foreign = array(
+            'pages_model_id_fkey' => [
+                                  'column' => 'model_id',
+                                  'foreign_table' => 'models',
+                                  'foreign_column' => 'id',
+                                  ],
             'pages_parent_page_id_fkey' => [
                                   'column' => 'parent_page_id',
                                   'foreign_table' => 'pages',
@@ -43,11 +50,6 @@ class _Page extends PgsqlEntity {
                                   ],
             'pages_where_model_id_fkey' => [
                                   'column' => 'where_model_id',
-                                  'foreign_table' => 'models',
-                                  'foreign_column' => 'id',
-                                  ],
-            'pages_model_id_fkey' => [
-                                  'column' => 'model_id',
                                   'foreign_table' => 'models',
                                   'foreign_column' => 'id',
                                   ],

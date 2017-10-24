@@ -76,3 +76,5 @@ define('LABEL_LANGS', '言語');
 define('LABEL_VIEW_ITEMS_CSV', '');
 define('LABEL_PAGE_MODELS', 'ページモデル');
 define('LABEL_MODELS', 'モデル');
+define('LABEL_PAGE_MODELS_IS_FETCH_LIST_VALUES', 'Fetch on List');
+define('LABEL_PAGE_MODELS_IS_REQUEST_SESSION', 'Request session');

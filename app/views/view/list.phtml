@@ -14,6 +14,7 @@
     <th>Name</th>
     <th>Overwrite</th>
     <th>URI</th>
+    <th>Label Width</th>
   </tr>
   <? foreach ($this->page->view->values as $view): ?>
   <tr>
@@ -30,9 +31,7 @@
       <? endif ?>
     </td>
     <td><?= $this->page->value['entity_name'] ?>/<?= $view['name'] ?></td>
-    <td>
-      <? if ($view['model_id']): ?><?= $this->models[$view['model_id']]['name'] ?><? endif ?>
-    </td>
+    <td><?= $view['label_width'] ?></td>
   </tr>
 <? endforeach ?> 
 </table>

@@ -66,6 +66,9 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     */
     function action_list() {
         <?= Tag::init()->listValues($values['model'], $values['page']) ?>
+
+        <?= Tag::init()->modelValues($values['page_model']) ?>
+        
     }
 
    /**
@@ -75,7 +78,9 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_new() {
-        $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->takeValues($this->posts['<?= $values['model']['entity_name'] ?>']);
+<? if ($values['model']): ?>
+        $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->init()->takeValues($this->posts['<?= $values['model']['entity_name'] ?>']);
+<? endif ?>
     }
 
    /**
@@ -86,6 +91,8 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     */
     function action_edit() {
 <? if ($values['model']): ?>
+        $this->checkEdit();
+
         $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['<?= $values['model']['entity_name'] ?>']);

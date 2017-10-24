@@ -48,6 +48,8 @@ class PgsqlEntity extends Entity {
                                'd' => 'SET DEFAULT'
                               ];
 
+    static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'double', 'real'];
+
     /**
     * constructor
     * 
@@ -1490,6 +1492,24 @@ class PgsqlEntity extends Entity {
         $value['option'] = $option;
         $this->orders[] = $value; 
         $this->orders = array_unique($this->orders);
+        return $this;
+    }
+
+    /**
+    * orders
+    * 
+    * @param  array $sort_orders
+    * @return PgsqlEntity
+    */
+    public function orders($sort_orders) {
+        $this->orders = null;
+        foreach ($sort_orders as $sort_order) {
+            if ($sort_order[1]) {
+                $this->order($sort_order[0], $sort_order[1]);
+            } else {
+                $this->order($sort_order[0]);
+            }
+        }
         return $this;
     }
 

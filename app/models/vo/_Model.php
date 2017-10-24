@@ -18,6 +18,7 @@ class _Model extends PgsqlEntity {
     var $columns = array(
         'class_name' => array('type' => 'varchar', 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
+        'csv' => array('type' => 'varchar', 'length' => 256),
         'database_id' => array('type' => 'int4', 'is_required' => true),
         'entity_name' => array('type' => 'varchar', 'is_required' => true),
         'id_column_name' => array('type' => 'varchar'),
@@ -38,21 +39,22 @@ class _Model extends PgsqlEntity {
     );
 
     var $foreign = array(
-            'models_project_id_fkey' => [
-                                  'column' => 'project_id',
-                                  'foreign_table' => 'projects',
-                                  'foreign_column' => 'id',
-                                  ],
             'models_database_id_fkey' => [
                                   'column' => 'database_id',
                                   'foreign_table' => 'databases',
                                   'foreign_column' => 'id',
                                   ],
+            'models_project_id_fkey' => [
+                                  'column' => 'project_id',
+                                  'foreign_table' => 'projects',
+                                  'foreign_column' => 'id',
+                                  ],
     );
 
     var $unique = array(
-            '' => [
-                        '',
+            'models_name_project_id_key' => [
+                        'name',
+                        'project_id',
                         ],
     );
 

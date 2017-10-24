@@ -344,6 +344,21 @@ class Model extends _Model {
         if ($attribute['old_name']) {
             $propaties[] = "'old_name' => '{$attribute['old_name']}'";
         }
+        if (isset($attribute['default_value'])) {
+            if (in_array($attribute['type'], PgsqlEntity::$number_types)) {
+                if (is_numeric($attribute['default_value'])) {
+                    $propaties[] = "'default' => {$attribute['default_value']}";
+                }
+            } else if ($attribute['type'] == 'bool') {
+                if ($attribute['default_value'] == 't') {
+                    $propaties[] = "'default' => true";
+                } else if ($attribute['default_value'] == 'f') {
+                    $propaties[] = "'default' => false";
+                }
+            } else {
+                $propaties[] = "'default' => '{$attribute['default_value']}'";
+            }
+        }
 
         $propaty = implode(', ', $propaties);
 

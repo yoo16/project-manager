@@ -72,34 +72,33 @@ class PageController extends ProjectController {
     }
 
     function action_add() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['posts'] = $_POST['project'];
-            $project = DB::table('Project')
-                            ->takeValues($posts)
-                            ->insert();
+        if (!isPost()) exit;
+        $posts = $this->posts['page'];
+        $posts['class_name'] = $posts['name'];
 
-            if ($project->errors) {
-                $this->flash['errors'] = $project->errors;
-                $this->redirect_to('new');
-            } else {
-                unset($this->session['posts']);
-                $this->redirect_to('list');
-            }
+        $page = DB::table('Page')->insert($posts);
+
+
+        if ($page->errors) {
+            var_dump($page->errors);
+            exit;      
         }
+        $this->redirect_to('list');
     }
 
     function action_update() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $posts = $this->session['posts'] = $_REQUEST['page'];
-            $project = DB::table('Page')->update($posts, $this->params['id']);
+        if (!isPost()) exit;
+        $page = DB::table('Page')->update($this->posts['page'], $this->params['id']);
 
-            if ($project->errors) {
-                $this->flash['errors'] = $project->errors;
-            } else {
-                unset($this->session['posts']);
-            }
-            $this->redirect_to('edit', $this->params['id']);
+        if ($page->errors) {
+            $this->flash['errors'] = $page->errors;
+            var_dump($this->posts['page']);
+            var_dump($page->errors);
+            exit;
+        } else {
+            unset($this->session['posts']);
         }
+        $this->redirect_to('edit', $this->params['id']);
     }
 
     function action_delete() {
@@ -154,6 +153,7 @@ class PageController extends ProjectController {
             $posts['class_name'] = $model['class_name'];
             $posts['entity_name'] = $model['entity_name'];
             $posts['extends_class_name'] = '';
+            $posts['is_overwrite'] = true;
 
             $page = DB::table('Page')
                 ->where("project_id = {$this->project->value['id']}")

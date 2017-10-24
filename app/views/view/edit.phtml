@@ -19,6 +19,16 @@
         <?= $this->view->formCheckbox('is_overwrite') ?>
       </div>
 
+      <div class="form-group row">
+        <?= FormHelper::formLabel('Label Width') ?>
+        <?= $this->view->formSelect('label_width', ['csv' => 'bootstrap_width', 'unselect' => true]) ?>
+      </div>
+
+      <div class="form-group row">
+        <?= FormHelper::formLabel('Note') ?>
+        <?= $this->view->formTextarea('note') ?>
+      </div>
+
       <?= FormHelper::submit(LABEL_UPDATE) ?>
       <?= FormHelper::linkButton('list', LABEL_CANCEL) ?>
     </form>

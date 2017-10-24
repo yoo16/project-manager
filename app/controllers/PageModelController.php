@@ -53,7 +53,11 @@ class PageModelController extends ProjectController {
     * @return void
     */
     function action_list() {
+        if (!$this->page->value) $this->redirect_to('/');
         $this->page_model = $this->page->relationMany('PageModel')->all();
+
+        $this->model = DB::table('Model')->idIndex()->all();
+        
     }
 
    /**
@@ -63,7 +67,7 @@ class PageModelController extends ProjectController {
     * @return void
     */
     function action_new() {
-        $this->page_model = DB::table('PageModel')->takeValues($this->posts['page_model']);
+        $this->page_model = DB::table('PageModel')->init()->takeValues($this->posts['page_model']);
     }
 
    /**
@@ -73,6 +77,8 @@ class PageModelController extends ProjectController {
     * @return void
     */
     function action_edit() {
+        $this->checkEdit();
+
         $this->page_model = DB::table('PageModel')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['page_model']);
@@ -133,6 +139,7 @@ class PageModelController extends ProjectController {
     * @return void
     */
     function action_sort_order() {
+        if (!$this->page->value) $this->redirect_to('/');
         $this->page_model = $this->page->relationMany('PageModel')->all();
     }
 

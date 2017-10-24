@@ -1,5 +1,12 @@
 <? include('views/components/project_header.phtml') ?>
 
 <div class="pt-3">
-<h4><?= Page::className($this->page->value) ?> -> <?= $this->view->value['name'] ?></h4>
+<h4>
+  <?= Page::className($this->page->value) ?> -> <?= $this->view->value['name'] ?>
+
+<? if ($this->attribute->value['name']): ?>
+  ->
+  <?= $this->attribute->value['name'] ?>
+<? endif ?>
+</h4>
 </div>

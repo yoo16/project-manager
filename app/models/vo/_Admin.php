@@ -1,41 +1,40 @@
 <?php
 /**
- * User 
+ * Admin 
  * 
- * @create  2017-10-18 12:58:58 
+ * @create  2017-10-18 12:58:52 
  */
 
 //namespace project_manager;
 
 require_once 'PgsqlEntity.php';
 
-class _User extends PgsqlEntity {
+class _Admin extends PgsqlEntity {
 
     var $id_column = 'id';
-    var $name = 'users';
-    var $entity_name = 'user';
+    var $name = 'admins';
+    var $entity_name = 'admin';
 
     var $columns = array(
-        'birthday_at' => array('type' => 'timestamp'),
         'created_at' => array('type' => 'timestamp'),
         'email' => array('type' => 'varchar', 'length' => 256),
         'first_name' => array('type' => 'varchar', 'length' => 64),
-        'first_name_kana' => array('type' => 'varchar', 'length' => 64),
-        'gender' => array('type' => 'varchar', 'length' => 8),
         'last_name' => array('type' => 'varchar', 'length' => 64),
-        'last_name_kana' => array('type' => 'varchar', 'length' => 64),
+        'login_name' => array('type' => 'varchar', 'length' => 256),
         'memo' => array('type' => 'text'),
         'password' => array('type' => 'varchar', 'length' => 256),
         'sort_order' => array('type' => 'int2'),
-        'tel' => array('type' => 'float8'),
         'tmp_password' => array('type' => 'varchar', 'length' => 256),
         'updated_at' => array('type' => 'timestamp'),
     );
 
 
     var $unique = array(
-            'users_email_key' => [
+            'admins_email_key' => [
                         'email',
+                        ],
+            'admins_login_name_key' => [
+                        'login_name',
                         ],
     );
 

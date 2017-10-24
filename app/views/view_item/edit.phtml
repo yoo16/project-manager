@@ -1,36 +1,71 @@
 <? include('_header.phtml') ?>
-<h3><?= $this->attribute->value['name'] ?></h3>
+
 <form action="<?= url_for('update', $this->params['id']) ?>" method="post">
 
+<h4>Page public</h4>
   <table class="table">
     <tr>
-      <th>ラベル</th>
-      <td><?= $this->view_item->formInput('label') ?></td>
+      <th>PHP label</th>
+      <td>
+        <?= $this->view_item->formSelect('localize_string_id',
+        [
+          'unselect' => true,
+          'label' => ['name'],
+          'label_separate' => ' - ',
+          'model' => 'LocalizeString',
+          'where' => "project_id = {$this->project->value['id']}",
+          'order' => 'name'
+        ]
+         ) ?>
+      </td>
     </tr>
-    <tr>
-      <th>Formタイプ</th>
-      <td><?= $this->view_item->formInput('form_type') ?></td>
-    </tr>
+
     <tr>
       <th>csv</th>
       <td><?= $this->view_item->formInput('csv') ?></td>
     </tr>
+
+    <tr>
+      <th>display column name</th>
+      <td><?= $this->view_item->formInput('label_column') ?></td>
+    </tr>
+
+    <tr>
+      <th>css class</th>
+      <td><?= $this->view_item->formInput('css_class') ?></td>
+    </tr>
+  </table>
+
+<h4>Page list</h4>
+  <table class="table">
     <tr>
       <th>link page</th>
       <td>
         <?= $this->view_item->formSelect('page_id',
         [
           'unselect' => true,
-          'label' => ['name', 'label'],
-          'label_separate' => '-',
+          'label' => ['name'],
+          'label_separate' => ' - ',
           'model' => 'Page',
-          'where' => "project_id = {$this->project->value['id']}"
+          'where' => "project_id = {$this->project->value['id']}",
+          'order' => 'name'
         ]
          ) ?>
        </td>
     </tr>
+  </table>
+
+<h4>Page edit form</h4>
+  <table class="table">
     <tr>
-      <th>where model</th>
+      <th>form type</th>
+      <td>
+        <?= $this->view_item->formRadio('form_type', ['unselect' => true, 'csv' => 'form']) ?>
+      </td>
+    </tr>
+
+    <tr>
+      <th>where condition</th>
       <td>
         <?= $this->view_item->formSelect('where_model_id',
         [
@@ -38,23 +73,23 @@
           'label' => ['name', 'label'],
           'label_separate' => '-',
           'model' => 'Model',
-          'where' => "project_id = {$this->project->value['id']}"
+          'where' => "project_id = {$this->project->value['id']}",
+          'order' => 'name'
         ]
          ) ?>
        </td>
     </tr>
+
     <tr>
-      <th>select label</th>
-      <td><?= $this->view_item->formInput('select_label') ?></td>
+      <th>order column</th>
+      <td><?= $this->view_item->formInput('where_order') ?></td>
     </tr>
+
     <tr>
-      <th>link</th>
-      <td><?= $this->view_item->formInput('link') ?></td>
+      <th>Note</th>
+      <td><?= $this->view_item->formInput('note') ?></td>
     </tr>
-    <tr>
-      <th>css_class</th>
-      <td><?= $this->view_item->formCheckbox('css_class') ?></td>
-    </tr>
+
   </table>
 
   <?= FormHelper::submit(LABEL_SAVE) ?>

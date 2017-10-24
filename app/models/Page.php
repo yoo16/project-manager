@@ -67,8 +67,12 @@ class Page extends _Page {
      * @param array $page
      * @return string
      */
-    static function templateFilePath() {
-        $path = TEMPLATE_DIR.'controllers/php.phtml';
+    static function templateFilePath($page) {
+        if ($page['model_id']) {
+            $path = TEMPLATE_DIR.'controllers/model_controller.phtml';
+        } else {
+            $path = TEMPLATE_DIR.'controllers/page_controller.phtml';
+        }
         return $path;
     }
 

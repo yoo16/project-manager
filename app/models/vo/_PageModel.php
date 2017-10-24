@@ -17,10 +17,13 @@ class _PageModel extends PgsqlEntity {
 
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
+        'is_fetch_list_values' => array('type' => 'bool'),
+        'is_request_session' => array('type' => 'bool'),
         'model_id' => array('type' => 'int4', 'is_required' => true),
         'page_id' => array('type' => 'int4', 'is_required' => true),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
+        'where_model_id' => array('type' => 'int4'),
     );
 
     var $foreign = array(
@@ -37,8 +40,9 @@ class _PageModel extends PgsqlEntity {
     );
 
     var $unique = array(
-            '' => [
-                        '',
+            'page_models_model_id_page_id_key' => [
+                        'model_id',
+                        'page_id',
                         ],
     );
 

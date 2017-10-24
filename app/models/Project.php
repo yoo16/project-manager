@@ -31,14 +31,16 @@ class Project extends _Project {
         foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
             foreach ($pg_constraints as $pg_constraint) {
                 if ($type == 'unique') {
-                    $unique[$pg_constraint['conname']][] = $pg_constraint;
+                    foreach ($pg_constraint as $pg_constraint_unique) {
+                        $unique[$pg_constraint_unique['conname']][] = $pg_constraint_unique;
+                    }
                 } else if ($type == 'foreign') {
                     $foreign[$pg_constraint['conname']] = $pg_constraint;
                 }
             }
         }
-        $values['unique'] = $unique;
-        $values['foreign'] = $foreign;
+        if ($unique) $values['unique'] = $unique;
+        if ($foreign) $values['foreign'] = $foreign;
         return $values;
     }
     
@@ -205,6 +207,22 @@ class Project extends _Project {
                             if (file_exists($view_template_path)) {
                                 $contents = FileManager::bufferFileContetns($view_template_path, $values);
                                 file_put_contents($view_path, $contents);
+                            }
+
+                            if ($view['name'] == 'edit') {
+                                //new
+                                $form_template_path = View::templateNameFilePath('new');
+                                $contents = FileManager::bufferFileContetns($form_template_path, $values);
+
+                                $form_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'new');
+                                file_put_contents($form_path, $contents);
+
+                                //form
+                                $new_template_path = View::templateNameFilePath('form');
+                                $contents = FileManager::bufferFileContetns($new_template_path, $values);
+
+                                $new_file_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'form');
+                                file_put_contents($new_file_path, $contents);
                             }
                         } 
                     }

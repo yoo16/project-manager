@@ -72,14 +72,14 @@ class CsvLite {
     }
 
     /**
-     * optionValues
+     * key value
      *
      * @param String $file_path
      * @param String $id_column
      * @param String $label_column
      * @return Array
      **/
-     static function optionValues($file_path, $id_column='value', $label_column='label') {
+     static function keyValues($file_path, $id_column='value', $label_column='label') {
         $results = array();
         $file_path = CsvLite::csvPath($file_path);
         if (!$file_path || !file_exists($file_path)) return;

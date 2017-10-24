@@ -23,8 +23,8 @@
     <td><?= $this->database->value['user_name'] ?></td>
     <td><?= $this->database->value['port'] ?></td>
     <td>
-      <?= FormHelper::linkButton('project/export_db', 'Excel', ['database_id' => $this->database->value['id']], ['class' => 'btn btn-sm btn-success confirm-dialog', 'message' => 'Do you download Excel?']) ?>
-      <?= FormHelper::linkButton('database/export_html', 'HTML', ['database_id' => $this->database->value['id']], ['class' => 'btn btn-sm btn-success', 'target' => '_blank']) ?>
+      <?= FormHelper::linkButton('project/export_db', 'Excel', ['database_id' => $this->database->value['id']], ['class' => 'btn btn-sm btn-outline-primary confirm-dialog', 'message' => 'Do you download Excel?']) ?>
+      <?= FormHelper::linkButton('database/export_html', 'HTML', ['database_id' => $this->database->value['id']], ['class' => 'btn btn-sm btn-outline-primary', 'target' => '_blank']) ?>
     </td>
   </tr>
 <? endif ?>

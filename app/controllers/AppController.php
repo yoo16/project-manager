@@ -26,18 +26,50 @@ class AppController extends Controller {
             $this->redirect_to('setting/');
             exit;
         }
-        $this->loadDefaultOptions();
+        $this->loadDefaultCsvOptions();
 
         $this->errors = AppSession::getErrors();
         AppSession::flushErrors();
     }
 
-    function loadDefaultOptions() {
-        if (is_array($this->csv_options)) {
-            foreach ($this->csv_options as $key => $value) {
-                $this->options[$value] = CsvLite::optionValues($value);
-            }
+    /**
+     * check action
+     * 
+     * @return void
+     */
+    function checkEdit($redirect_action = 'new') {
+        if (!$this->params['id']) {
+            $this->redirect_to($redirect_action);
+            exit;
         }
+    }
+
+    /**
+     * reload csv_options
+     * 
+     * @return void
+     */
+    function action_reload_csv_options() {
+        AppSession::clearWithKey('app', 'csv_options');
+        $this->loadDefaultCsvOptions();
+    }
+
+    /**
+     * loadDefaultOptions
+     * 
+     * @return void
+     */
+    function loadDefaultCsvOptions() {
+        $this->csv_options = AppSession::getWithKey('app', 'csv_options');
+
+        if ($this->csv_options) return;
+
+        $path = DB_DIR."records/*.csv";
+        foreach (glob($path) as $file_path) {
+            $path_info = pathinfo($file_path);
+            $this->csv_options[$path_info['filename']] = CsvLite::keyValues($file_path);
+        }
+        AppSession::setWithKey('app', 'csv_options', $this->csv_options);
     }
 
     function isRequestPost() {

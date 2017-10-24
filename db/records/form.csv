@@ -1,0 +1,8 @@
+value,label
+"input","input"
+"radio","radio"
+"password","password"
+"select","select"
+"textarea","textarea"
+"checkbox","checkbox"
+"hidden","hidden"

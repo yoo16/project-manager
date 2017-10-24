@@ -22,17 +22,30 @@ class _ViewItem extends PgsqlEntity {
         'csv' => array('type' => 'varchar', 'length' => 256),
         'form_type' => array('type' => 'varchar', 'length' => 256),
         'label' => array('type' => 'varchar', 'length' => 256),
+        'label_column' => array('type' => 'text'),
         'link' => array('type' => 'varchar', 'length' => 256),
+        'localize_string_id' => array('type' => 'int4'),
+        'note' => array('type' => 'text'),
         'page_id' => array('type' => 'int4'),
-        'select_label' => array('type' => 'text'),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
         'view_id' => array('type' => 'int4', 'is_required' => true),
         'where_model_id' => array('type' => 'int4'),
+        'where_order' => array('type' => 'text'),
         'where_string' => array('type' => 'text'),
     );
 
     var $foreign = array(
+            'view_items_attribute_id_fkey' => [
+                                  'column' => 'attribute_id',
+                                  'foreign_table' => 'attributes',
+                                  'foreign_column' => 'id',
+                                  ],
+            'view_items_localize_string_id_fkey' => [
+                                  'column' => 'localize_string_id',
+                                  'foreign_table' => 'localize_strings',
+                                  'foreign_column' => 'id',
+                                  ],
             'view_items_page_id_fkey' => [
                                   'column' => 'page_id',
                                   'foreign_table' => 'pages',
@@ -41,11 +54,6 @@ class _ViewItem extends PgsqlEntity {
             'view_items_view_id_fkey' => [
                                   'column' => 'view_id',
                                   'foreign_table' => 'views',
-                                  'foreign_column' => 'id',
-                                  ],
-            'view_items_attribute_id_fkey' => [
-                                  'column' => 'attribute_id',
-                                  'foreign_table' => 'attributes',
                                   'foreign_column' => 'id',
                                   ],
             'view_items_where_model_id_fkey' => [

@@ -66,6 +66,10 @@ class ViewItemController extends ProjectController {
                                               ->idIndex()
                                               ->all();
 
+        $this->localize_string = $this->project->relationMany('LocalizeString')
+                                              ->idIndex()
+                                              ->all();
+
         $this->view->view_item = $this->view->relationMany('ViewItem')->all();
 
         $this->pages = $this->project
@@ -110,7 +114,22 @@ class ViewItemController extends ProjectController {
         $attribute = DB::table('Attribute')->fetch($posts['attribute_id']);
         $posts['label'] = $attribute->value['label'];
 
+        if ($attribute->value['csv']) {
+            $posts['csv'] = $attribute->value['csv'];
+        }
+        if ($attribute->value['type'] == 'bool') {
+            $posts['csv'] = 'active';
+            $posts['form_type'] = 'radio';
+        }
+   
         $view_item = DB::table('ViewItem')->insert($posts);
+
+        if ($view_item->errors) {
+            var_dump($view_item->sql);
+            var_dump($view_item->sql_error);
+            var_dump($view_item->errors);
+            exit;
+        }
 
         $this->redirect_to('list');
     }
@@ -149,20 +168,45 @@ class ViewItemController extends ProjectController {
                                 ->all();
 
         foreach ($attribute->values as $attribute) {
-            if (!in_array($attribute['name'], Entity::$except_columns)) {
+            if (!in_array($attribute['name'], Entity::$app_columns)) {
                 $view_item = DB::table('ViewItem')
                             ->where("view_id = {$this->view->value['id']}")
                             ->where("attribute_id = {$attribute['id']}")
                             ->one();
 
+                $posts = null;
                 if (!$view_item->value['id']) {
                     $posts['view_id'] = $this->view->value['id'];
                     $posts['attribute_id'] = $attribute['id'];
-                    $posts['label'] = $attribute['label'];
+
+                    if ($this->view->value['name'] == 'edit') {
+                        if ($attribute['type'] == 'bool') {
+                            $posts['csv'] = 'active';
+                            $posts['form_type'] = 'radio';
+                        }
+                    }
+                    //TODO define label
+                    //$posts['label'] = $attribute['label'];
 
                     DB::table('ViewItem')->insert($posts);
                 }
             }
+        }
+        $this->redirect_to('list');
+    }
+
+   /**
+    * add
+    *
+    * @param
+    * @return void
+    */
+    function action_remove_all() {
+        //if (!isPost()) exit;
+        $view_item = $this->view->relationMany('ViewItem')->all();
+
+        foreach ($view_item->values as $view_item) {
+            DB::table('ViewItem')->delete($view_item['id']);
         }
         $this->redirect_to('list');
     }

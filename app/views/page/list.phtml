@@ -14,12 +14,10 @@
   <thead class="thead-default">
     <tr>
       <th></th>
-      <th>Name</th>
-      <th>Class Name</th>
+      <th>Page Controller</th>
       <th></th>
       <th>Overwrite</th>
-      <th>Entity Name</th>
-      <th>Model</th>
+      <th>Model / Entity Name</th>
     </tr>
   </thead>
 
@@ -29,14 +27,13 @@
     <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $page['id']) ?></td>
     <td>
       <div>
-        <?= $page['name'] ?>
+        <a class="" href="<?= url_for('view/', array('page_id' => $page['id'])) ?>"><?= Page::className($page) ?></a>
       </div>
       <div>
         <?= $page['label'] ?>
       </div>
     </td>
-    <td><a class="" href="<?= url_for('view/', array('page_id' => $page['id'])) ?>"><?= Page::className($page) ?></a></td>
-    <td><a class="" href="<?= url_for('page_model/', array('page_id' => $page['id'])) ?>">models</a></td>
+    <td><a class="btn btn-outline-primary" href="<?= url_for('page_model/', array('page_id' => $page['id'])) ?>">Page Values</a></td>
     <td>
       <? if ($page['is_overwrite']): ?>
       <?= FormHelper::link('change_overwrite', 'overwrite', $page['id'], ['class' => 'badge badge-danger']) ?>
@@ -44,8 +41,10 @@
     <?= FormHelper::link('change_overwrite', 'off', $page['id'], ['class' => 'badge badge-default']) ?>
   <? endif ?>
 </td>
-<td><?= $page['entity_name'] ?></td>
-<td><? if ($page['model_id']): ?><?= $page['model']['name'] ?><? endif ?></td>
+<td>
+  <div><?= $page['entity_name'] ?></div>
+  <div><? if ($page['model_id']): ?><?= $page['model']['name'] ?><? endif ?></div>
+</td>
 </tr>
 <? endforeach ?> 
 <? endif ?>
