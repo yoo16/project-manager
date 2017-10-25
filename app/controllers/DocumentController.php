@@ -99,4 +99,25 @@ class DocumentController extends ProjectController {
         $this->redirect_to('attribute_list', $params);
     }
 
+    function action_page() {
+        $this->page = $this->project->relationMany('Page')->all();
+
+        foreach ($this->page->values as $page_index => $page) {
+            $this->view = DB::table('View')->where("page_id = {$page['id']}")->all();
+            foreach ($this->view->values as $view_index => $view) {
+                $view['view_item'] = DB::table('ViewItem')->where("view_id = {$view['id']}")->all()->values;
+                $page['view'][] = $view;
+            }
+            $this->pages[] = $page;
+        }
+
+        $this->attributes = DB::table('Attribute')
+                                ->join('Model', 'id', 'model_id')
+                                ->where("models.project_id = {$this->project->value['id']}")
+                                ->idIndex()
+                                ->all()
+                                ->values;
+
+    }
+
 }

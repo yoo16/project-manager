@@ -1,0 +1,45 @@
+<? include('_header.phtml') ?>
+
+<? include('add_window.phtml'); ?>
+
+<div class="">
+
+
+  <? if ($this->pages): ?>
+    <? foreach ($this->pages as $page): ?>
+      <h3><?= $page['name'] ?>(<?= $page['label'] ?>)</h3>
+
+      <table class="table">
+        <thead class="thead-default">
+        </thead>
+        <? foreach ($page['view'] as $view): ?>
+          <tr>
+            <th class="w-25">
+              <?= $view['label'] ?>(<?= $view['name'] ?>)
+            </th>
+
+            <td class="">
+                <div><?= nl2br($view['note']) ?></div>
+
+              <dl>
+                <? foreach ($view['view_item'] as $view_item): ?>
+                  <? if ($view_item['note']): ?>
+                    <dt>
+                      <?= $this->attributes[$view_item['attribute_id']]['label'] ?>
+                      (<?= $this->attributes[$view_item['attribute_id']]['name'] ?>)
+                    </dt>
+                    <dd><?= nl2br($view_item['note']) ?></dd>
+                  <? endif ?>
+                <? endforeach ?>
+              </dl>
+            </td>
+
+          </tr>
+        <? endforeach ?>
+      </td>
+
+    </tr>
+  </table>
+<? endforeach ?>
+<? endif ?>
+</div>
