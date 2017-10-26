@@ -20,6 +20,7 @@ class _ViewItem extends PgsqlEntity {
         'created_at' => array('type' => 'timestamp'),
         'css_class' => array('type' => 'bool'),
         'csv' => array('type' => 'varchar', 'length' => 256),
+        'form_model_id' => array('type' => 'int4'),
         'form_type' => array('type' => 'varchar', 'length' => 256),
         'label' => array('type' => 'varchar', 'length' => 256),
         'label_column' => array('type' => 'text'),

@@ -45,10 +45,7 @@ class DocumentController extends ProjectController {
     }
 
     function action_list() {
-        $this->model = $this->project
-                            ->relationMany('Model')
-                            ->order('name')
-                            ->all();
+        $this->redirect_to('model');
     }
 
     function action_attribute_list() {
@@ -97,6 +94,13 @@ class DocumentController extends ProjectController {
 
         $params['model_id'] = $attribute->value['model_id'];
         $this->redirect_to('attribute_list', $params);
+    }
+
+    function action_model() {
+        $this->model = $this->project
+                            ->relationMany('Model')
+                            ->order('name')
+                            ->all();
     }
 
     function action_page() {

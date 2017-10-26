@@ -554,6 +554,20 @@ class Entity {
     * @param array $params
     * @return string
     */
+    function formPassword($column, $params = null) {
+        if (!$column) return;
+        $name = "{$this->entity_name}[{$column}]";
+        $tag = FormHelper::password($name, $this->value[$column], $params);
+        return $tag;
+    }
+
+   /**
+    * formInput
+    *
+    * @param string $column
+    * @param array $params
+    * @return string
+    */
     function formTextarea($column, $params = null) {
         if (!$column) return;
         $name = "{$this->entity_name}[{$column}]";

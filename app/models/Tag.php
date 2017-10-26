@@ -147,37 +147,42 @@ class Tag {
     function formSelect($view_item, $model, $attribute) {
         if ($view_item['csv']) {
             $params = "['csv' => '{$view_item['csv']}', 'unselect' => true]";
+        } else if ($view_item['form_model_id']) {
+            $fk_model = DB::table('Model')->fetch($view_item['form_model_id']); 
         } else if ($attribute['fk_attribute_id']) {
             $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
             $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']); 
-
-            if ($view_item['where_model_id']) {
-                $where_model = DB::table('Model')->fetch($view_item['where_model_id']); 
-                $where_column = "{$where_model->value["entity_name"]}_id";
-                $where_value = '{$this->'.$where_model->value["entity_name"]."->value['id']}";
-                $where = "'where' => \"{$where_column} = {$where_value}\",";
-            }
-            if ($view_item['where_order']) {
-                $order = "'order' => '{$view_item['where_order']}',";
-            }
-
-            if ($view_item['label_column']) {
-                $label_columns = explode(',', $view_item['label_column']);
-                foreach ($label_columns as $label_column) {
-                    $labels[] = "'{$label_column}'";
-                }
-
-                $label = implode(',', $labels);
-                $params = "[
-                            'unselect' => true,
-                            'label_separate' => '-',
-                            'label' => [{$label}],
-                            'model' => '{$fk_model->value["class_name"]}',
-                            {$where}
-                            {$order}
-                            ]";
-            }
         }
+
+        if ($view_item['where_model_id']) {
+            $where_model = DB::table('Model')->fetch($view_item['where_model_id']); 
+            $where_column = "{$where_model->value["entity_name"]}_id";
+            $where_value = '{$this->'.$where_model->value["entity_name"]."->value['id']}";
+            $where = "'where' => \"{$where_column} = {$where_value}\",";
+        }
+        if ($view_item['where_order']) {
+            $order = "'order' => '{$view_item['where_order']}',";
+        }
+
+        if ($view_item['label_column']) {
+            $label_columns = explode(',', $view_item['label_column']);
+            foreach ($label_columns as $label_column) {
+                $labels[] = "'{$label_column}'";
+            }
+            $label = implode(',', $labels);
+        }
+
+        if ($fk_model->value) {
+            $params = "[
+                        'unselect' => true,
+                        'label_separate' => '-',
+                        'label' => [{$label}],
+                        'model' => '{$fk_model->value["class_name"]}',
+                        {$where}
+                        {$order}
+                        ]";
+        }
+
         if ($params) {
             $tag = '$this->'.$model['entity_name']."->formSelect('{$attribute['name']}', $params)";
         } else {

@@ -65,7 +65,23 @@
     </tr>
 
     <tr>
-      <th>where condition</th>
+      <th>form condition</th>
+      <td>
+        <?= $this->view_item->formSelect('form_model_id',
+        [
+          'unselect' => true,
+          'label' => ['name', 'label'],
+          'label_separate' => '-',
+          'model' => 'Model',
+          'where' => "project_id = {$this->project->value['id']}",
+          'order' => 'name'
+        ]
+         ) ?>
+       </td>
+    </tr>
+
+    <tr>
+      <th>form where condition</th>
       <td>
         <?= $this->view_item->formSelect('where_model_id',
         [
@@ -81,7 +97,7 @@
     </tr>
 
     <tr>
-      <th>order column</th>
+      <th>form order column</th>
       <td><?= $this->view_item->formInput('where_order') ?></td>
     </tr>
 

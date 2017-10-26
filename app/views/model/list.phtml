@@ -21,7 +21,6 @@
       <?= FormHelper::submit('Import from DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you import from DB?']) ?>
       <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
       <?= FormHelper::linkButton('lock', 'Lock', null ,['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you lock models?']) ?>
-      <?= FormHelper::link('document/list', 'Document', null ,['class' => 'btn btn-outline-primary']) ?>
     </form>
   </div>
 

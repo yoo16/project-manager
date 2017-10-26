@@ -13,6 +13,8 @@
         <? Tag::init()->php('$this->'.$values['model']['entity_name']."->formCheckbox('{$values['attribute'][$view_item['attribute_id']]['name']}')") ?>
 <? elseif ($view_item['form_type'] == 'radio'): ?>
         <? Tag::init()->formRadio($view_item, $values['model'], $values['attribute'][$view_item['attribute_id']]); ?>
+<? elseif ($view_item['form_type'] == 'password'): ?>
+        <? Tag::init()->php('$this->'.$values['model']['entity_name']."->formPassword('{$values['attribute'][$view_item['attribute_id']]['name']}')") ?>
 <? else: ?>
         <? Tag::init()->php('$this->'.$values['model']['entity_name']."->formInput('{$values['attribute'][$view_item['attribute_id']]['name']}')") ?>
 <? endif ?>
