@@ -30,6 +30,7 @@ class _ViewItem extends PgsqlEntity {
         'page_id' => array('type' => 'int4'),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
+        'value_column' => array('type' => 'varchar', 'length' => 256),
         'view_id' => array('type' => 'int4', 'is_required' => true),
         'where_model_id' => array('type' => 'int4'),
         'where_order' => array('type' => 'text'),

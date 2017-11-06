@@ -41,7 +41,7 @@ class ApplicationLocalize {
      * @param
      * @return string 
      */
-    static function defaultLocale($lang) {
+    static function defaultLocale($lang = null) {
         if (defined('DEFAULT_LOCALE') && DEFAULT_LOCALE) {
             $lang = DEFAULT_LOCALE;
         } else {

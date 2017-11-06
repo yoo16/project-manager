@@ -542,6 +542,25 @@ class FileManager {
         if ($values) file_put_contents($path, $values);
     }
 
+    /**
+     * contents download
+     *
+     * @param String $url
+     * @param String $path
+     * @return void
+     **/
+    function downloadContents($file_name, $contents) {
+        if (preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT']) || strpos($_SERVER['HTTP_USER_AGENT'], 'Trident')) {
+            $file_name = mb_convert_encoding($file_name, 'SJIS', 'UTF-8');
+        }
+        header('Cache-Control: public');
+        header('Pragma: public');
+        header("Content-Disposition: Attachment; filename=\"{$file_name}\""); 
+        header("Content-type: application/octet-stream; name=\"{$file_name}\"");
+        echo($contents);
+        exit;
+    }
+
    /**
     * file list
     *

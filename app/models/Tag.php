@@ -171,6 +171,9 @@ class Tag {
             }
             $label = implode(',', $labels);
         }
+        if ($view_item['value_column']) {
+            $value_column = "'value_column' => '{$view_item['value_column']}',";
+        }
 
         if ($fk_model->value) {
             $params = "[
@@ -180,6 +183,7 @@ class Tag {
                         'model' => '{$fk_model->value["class_name"]}',
                         {$where}
                         {$order}
+                        {$value_column}
                         ]";
         }
 

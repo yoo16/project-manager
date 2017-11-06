@@ -30,6 +30,13 @@
                     </dt>
                     <dd><?= nl2br($view_item['note']) ?></dd>
                   <? endif ?>
+                  <? if ($view_item['csv'] && $view_item['csv'] != 'active'): ?>
+                    <dt>
+                      <?= $this->attributes[$view_item['attribute_id']]['label'] ?>
+                      (<?= $this->attributes[$view_item['attribute_id']]['name'] ?>)
+                    </dt>
+                    <dd>設定ファイル：<?= nl2br($view_item['csv']) ?>.csv</dd>
+                  <? endif ?>
                 <? endforeach ?>
               </dl>
             </td>

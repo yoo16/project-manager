@@ -152,4 +152,16 @@ class RecordController extends ProjectController {
         DB::table('Record')->updateSortOrder($_REQUEST['sort_order']);
     }
 
+    function action_export_csv() {
+        if (!$this->project->value) $this->redirect_to('/');
+        $this->record = $this->project->relationMany('Record')->all();
+
+        $columns['label'] = '';
+        $columns['name'] = 'CSV';
+        $csv = CsvLite::arrayToCsvForColumns($this->record->values, $columns);
+        $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
+        FileManager::downloadContents('record.csv', $csv);
+        exit;
+    }
+
 }
