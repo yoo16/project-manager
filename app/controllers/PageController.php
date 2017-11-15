@@ -94,6 +94,8 @@ class PageController extends ProjectController {
             $this->flash['errors'] = $page->errors;
             var_dump($this->posts['page']);
             var_dump($page->errors);
+            var_dump($page->sql_error);
+            var_dump($page->sql);
             exit;
         } else {
             unset($this->session['posts']);

@@ -2,13 +2,14 @@
 
       <label class="form-control-label col-2" for="model_id"><?= LABEL_MODELS ?></label>
         <?= $this->page_model->formSelect('model_id', [
-                            'unselect' => true,
-                            'label_separate' => '-',
-                            'label' => ['name',' label'],
-                            'model' => 'Model',
-                            'where' => "project_id = {$this->project->value['id']}",
-                            'order' => 'name',
-                            ]) ?>
+                        'unselect' => true,
+                        'label_separate' => '-',
+                        'label' => ['name',' label'],
+                        'model' => 'Model',
+                        'where' => "project_id = {$this->project->value['id']}",
+                        'order' => 'name',
+                        
+                        ]) ?>
 </div>
 <div class="form-group row">
 </div>

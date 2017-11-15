@@ -1,96 +1,50 @@
 
 <h2 id="table-list">Table</h2>
-<?= count($this->pg_classes) ?> tables
+<a href="#" class="change-show-all-table">show all</a>
+<a href="#" class="change-hide-all-table">hide all</a>
+
 <table class="table">
   <? foreach ($this->pg_classes as $pg_class): ?>
-  <tr>
-    <td><a href="#<?= $pg_class['pg_class_id'] ?>"><?= $pg_class['tablename'] ?></a></td>
-    <td><?= $pg_class['comment'] ?></td>
-  </tr>
-<? endforeach ?>
+    <tr>
+      <td><input type="checkbox" name="check_<?= $pg_class['pg_class_id'] ?>" class="change-show-table" checked rel="<?= $pg_class['pg_class_id'] ?>"></td>
+      <td><a href="#<?= $pg_class['pg_class_id'] ?>"><?= $pg_class['tablename'] ?></a></td>
+      <td><?= $pg_class['comment'] ?></td>
+    </tr>
+  <? endforeach ?>
 </table>
-
-<a class="change-list-col" target-class=".db-table" data="1" href="#"><i class="fa fa-list"></i></a>
-<a class="change-list-col" target-class=".db-table" data="2" href="#"><i class="fa fa-th"></i></a>
 
 <? if ($this->pg_classes): ?>
-<div class="row">
-  <? foreach ($this->pg_classes as $pg_class): ?>
-  <div id="<?= $pg_class['pg_class_id'] ?>" class="db-table col-12 mb-3">
-    <a class="btn btn-outline-primary" href="#table-list">TOP</a>
-    <div class="card">
+  <div class="row">
+    <? foreach ($this->pg_classes as $pg_class): ?>
+      <div id="<?= $pg_class['pg_class_id'] ?>" class="db-table col-3 mb-3">
+        <div class="card">
 
-      <div class="card-header">
-        <div><?= $pg_class['tablename'] ?></div>
-        <div><?= $pg_class['comment'] ?></div>
+          <div class="card-header">
+            <div><?= $pg_class['tablename'] ?></div>
+            <div><?= $pg_class['comment'] ?></div>
+          </div>
+
+          <div>
+            <table class="table">
+              <? foreach ($pg_class['pg_attribute'] as $attnum => $pg_attribute): ?>
+                <tr>
+                  <td>
+                    <? if ($confrelid = checkForeign($pg_class['pg_constraint']['foreign'], $pg_attribute['attname'])): ?>
+                      <div id="<?= $pg_class['pg_class_id'] ?>-<?= $attnum ?>"><a href="#<?= $confrelid ?>"><?= $pg_attribute['attname'] ?></a></div>
+                      <script type="text/javascript">
+                        drawRelation(<?= $pg_class['pg_class_id'] ?>, <?= $attnum ?>, <?= $confrelid ?>)
+                      </script>
+                    <? else: ?>
+                      <div id="<?= $pg_class['pg_class_id'] ?>-<?= $attnum ?>"><?= $pg_attribute['attname'] ?></div>
+                    <? endif ?>
+                  </td>
+                </tr>
+              <? endforeach ?>
+            </table>
+          </div>
+
+        </div>
       </div>
-
-      <div>
-        <table class="table">
-          <? foreach ($pg_class['pg_attribute'] as $attnum => $pg_attribute): ?>
-          <tr>
-            <td>
-              <div id="<?= $pg_class['pg_class_id'] ?>-<?= $attnum ?>"><?= $pg_attribute['attname'] ?></div>
-            </td>
-            <td>
-              <? if ($pg_attribute['comment']): ?><?= $pg_attribute['comment'] ?><? else: ?><span class="badge badge-danger">undefined</span><? endif ?>
-            </td>
-            <td><?= $pg_attribute['udt_name'] ?></td>
-          </tr>
-        <? endforeach ?>
-      </table>
-    </div>
-
-    <div class="">
-      <table class="table">
-        <tr>
-          <th colspan="3">constraint</th>
-        </tr>
-
-        <? if ($pg_class['pg_constraint']['foreign']): ?>
-        <? foreach ($pg_class['pg_constraint']['foreign'] as $pg_constraint): ?>
-
-        <tr>
-          <td>
-            <?= $pg_constraint['conname'] ?>
-          </td>
-          <td>
-            <?= $pg_constraint['attname'] ?> => 
-            <a href="#<?= $pg_constraint['confrelid'] ?>"><?= $pg_constraint['foreign_relname'] ?></a>
-            :
-            <?= $pg_constraint['foreign_attname'] ?>
-          </td>
-        </tr>
-
-      <? endforeach ?>
-    <? endif ?>
-
-    <? if ($pg_class['pg_constraint']['primary']): ?>
-    <? foreach ($pg_class['pg_constraint']['primary'] as $pg_constraint): ?>
-
-    <tr>
-      <td><?= $pg_constraint['conname'] ?></td>
-      <td><?= $pg_constraint['attname'] ?></td>
-    </tr>
-
-  <? endforeach ?>
-<? endif ?>
-
-<? if ($pg_class['pg_constraint']['unique']): ?>
-<? foreach ($pg_class['pg_constraint']['unique'] as $index => $pg_constraint): ?>
-
-<tr>
-  <td><? if ($index == 0): ?><?= $pg_constraint['conname'] ?><? endif ?></td>
-  <td><?= $pg_constraint['attname'] ?></td>
-</tr>
-
-<? endforeach ?>
-<? endif ?>
-</table>
-
-</div>
-</div>
-</div>
-<? endforeach ?>
-</div>
+    <? endforeach ?>
+  </div>
 <? endif ?>

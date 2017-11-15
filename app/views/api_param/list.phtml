@@ -1,0 +1,29 @@
+<? include('_header.phtml') ?>
+
+<div class="pt-3">
+  <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
+  <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
+</div>
+
+<table class="table">
+  <thead class="thead-deffault">
+    <tr>
+      <th>&nbsp;</th>
+                                    <th><?= LABEL_API_PARAMS_NAME ?></th>
+                                                      <th><?= LABEL_API_PARAMS_TYPE ?></th>
+                                                      <th><?= LABEL_API_PARAMS_NOTE ?></th>
+                            </tr>
+  </thead>
+
+  <? if ($this->api_param->values): ?>
+  <? foreach ($this->api_param->values as $values): ?>
+  <tr>
+    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
+                              <td><?= $values['name'] ?></td>
+                                                  <td><?= $values['type'] ?></td>
+                                                  <td><?= $values['note'] ?></td>
+                            </tr>
+    <? endforeach ?>
+    <? endif ?>
+
+  </table>

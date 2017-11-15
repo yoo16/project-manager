@@ -4,6 +4,26 @@
  * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
+ $(document).on('click', '.change-show-table', function() {
+    var target = '#' + $(this).attr('rel');
+    if ($(this).prop('checked')) {
+        $(target).show();
+    } else {
+        $(target).hide();
+    }
+});
+
+
+$(document).on('click', '.change-show-all-table', function() {
+    $('.db-table').show();
+    $('.change-show-table').prop('checked', true);
+});
+
+$(document).on('click', '.change-hide-all-table', function() {
+    $('.db-table').hide();
+    $('.change-show-table').prop('checked', false);
+});
+
  $(document).on('click', '.confirm-dialog', function() {
     $message = $(this).attr('message');
     return confirm($message);
@@ -396,3 +416,85 @@ function searchAddress(zip1, zip2, prefecture, city, address) {
         }
     });
 }
+
+
+// function drawRelation(from_pg_class_id, from_attnum, to_pg_class_id, to_attnum) {
+//     var from_jquery_id = '#' + from_pg_class_id + '-' + from_attnum
+//     var to_jquery_id = '#' + to_pg_class_id + '-' + to_attnum
+
+//     var from = new Object();
+//     var to = new Object();
+//     var position1 = new Object();
+//     var position2 = new Object();
+//     var offset_x = 5;
+//     var offset_y = 15;
+
+//     var from_position = $(from_jquery_id).offset();
+//     var to_position = $(to_jquery_id).offset();
+
+//     from.x = from_position.left + offset_x;
+//     from.y = from_position.top + offset_y;
+//     to.x = to_position.left + offset_x;
+//     to.y = to_position.top + offset_y;
+
+//     var offset_x = - 10 + line_offset_x;
+//     var offset_y = 0;
+//     if ((from.y >= to.y) && (from.x >= to.x)) {
+//        arrow_direction = 'r';
+//        offset_y = -2;
+//        position1.x = to.x + offset_x;
+//        position1.y = from.y;
+//        position2.x = position1.x;
+//        position2.y = to.y; 
+//     } else if ((from.y >= to.y) && (from.x < to.x)) {
+//        arrow_direction = 'l';
+//        offset_y = 2;
+//        position1.x = to.x + offset_x;
+//        position1.y = from.y;
+//        position2.x = to.x + offset_x;
+//        position2.y = to.y;
+//     } else if ((from.y < to.y) && (from.x >= to.x)) {
+//        arrow_direction = 'r';
+//        offset_y = 4;
+//        position1.x = to.x + offset_x;
+//        position1.y = from.y;
+//        position2.x = to.x + offset_x;
+//        position2.y = to.y;
+//     } else if ((from.y < to.y) && (from.x < to.x)) {
+//        arrow_direction = 'r';
+//        offset_y = -4;
+//        from.y+= offset_y;
+//        position1.x = from.x + offset_x;
+//        position1.y = from.y;
+//        position2.x = from.x + offset_x;
+//        position2.y = to.y;
+//     }
+
+//     console.log(from_jquery_id);
+//     console.log(from_position.left);
+//     var canvas = document.getElementById("db_canvas");
+//     var context = canvas.getContext("2d");
+//     context.beginPath();
+
+//     context.moveTo(from.x, from.y);
+//     context.lineTo(position1.x, position1.y);
+
+//     context.moveTo(position1.x, position1.y);
+//     context.lineTo(position2.x, position2.y);
+
+//     context.moveTo(position2.x, position2.y);
+//     context.lineTo(to.x, to.y);
+
+//     lineJoin = "bevel";
+//     context.lineWidth = 1;
+//     context.strokeStyle = "#dc143c";
+//     context.globalAlpha = 0.4;
+//     context.stroke(); 
+
+//     //drawMark(from.x, from.y, 3);
+//     drawArrow(from.x, from.y);
+
+//     line_offset_x-= 2;
+//     if (line_offset_x < -20) {
+//     line_offset_x = 0;
+// }

@@ -37,20 +37,22 @@
       <? if (!Model::$required_columns[$view_item['name']]): ?>
         <? if ($view_item['page_id']): ?>
           <td>
-            <? Tag::init()->tableItemUrlForAttribute(
+            <? 
+            Tag::init()->tableItemUrlForAttribute
+            (
               $values['attribute'][$view_item['attribute_id']],
               $values['pages'][$view_item['page_id']],
-              $values['model'],
-              $view_item
-              ) ?>
-            </td>
-          <? else: ?>
-            <td><? Tag::init()->tableItemForAttribute($values['attribute'][$view_item['attribute_id']], $view_item) ?></td>
-          <? endif ?>
+              $values['model'], $view_item
+            ) 
+            ?>
+          </td>
+        <? else: ?>
+          <td><? Tag::init()->tableItemForAttribute($values['attribute'][$view_item['attribute_id']], $view_item) ?></td>
         <? endif ?>
-      <? endforeach ?>
-    </tr>
-    <? Tag::init()->foreache() ?>
-    <? Tag::init()->ife() ?>
+      <? endif ?>
+    <? endforeach ?>
+  </tr>
+  <? Tag::init()->foreache() ?>
+  <? Tag::init()->ife() ?>
 
-  </table>
+</table>

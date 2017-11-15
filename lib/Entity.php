@@ -149,34 +149,22 @@ class Entity {
      * save
      * 
      * @param
-     * @return bool
+     * @return Entity
      */
     public function save() {
-        $this->validate();
-        if (empty($this->errors)) {
-            if ($this->before_save() !== false) {
-                if ($this->isNew()) {
-                    if ($this->before_insert() !== false) {
-                        $is_success = $this->insert();
-                    }
+        if ($this->before_save() !== false) {
+            if ($this->isNew()) {
+                return $this->insert();
+            } else {
+                $changes = $this->changes();
+                if (count($changes) > 0) {
+                    return $this->update();
                 } else {
-                    if ($this->before_update() !== false) {
-                        $changes = $this->changes();
-                        if (count($changes) > 0) {
-                            $is_success = $this->update();
-                        } else {
-                            if (defined('DEBUG') && DEBUG) error_log("<UPDATE> {$this->name}:{$this->id} has no changes");
-                            $is_success = true;
-                        }
-                    }
+                    if (defined('DEBUG') && DEBUG) error_log("<UPDATE> {$this->name}:{$this->id} has no changes");
                 }
             }
-            if (defined('DEBUG') && DEBUG) error_log("<SAVE> Canceled");
-        } else {
-            if (defined('DEBUG') && DEBUG) error_log("<ERROR> " . print_r($this->errors, true));
         }
-        if (!$is_success) $this->addError('db', 'error');
-        return $is_success;
+        return $this;
     }
 
     /**
@@ -197,17 +185,15 @@ class Entity {
      */
     public function validate() {
         if (empty($this->columns)) exit('Not found $columns in Model File');
-        if ($this->columns) {
-            if ($this->id) $this->value[$this->id_column] = $this->id;
-            foreach ($this->columns as $column_name => $column) {
-                $value = isset($this->value[$column_name]) ? $this->value[$column_name] : null;
-                if ($column_name === $this->id_column) continue;
-                if ($column_name === 'created_at') continue;
-                if (isset($column['is_required']) && $column['is_required'] && (is_null($value) || $value === '')) {
-                    $this->addError($column_name, 'required');
-                } else {
-                    $type = $column['type'];
-                    $this->value[$column_name] = $this->cast($type, $value);
+        if ($this->value) {
+            foreach ($this->value as $column_name => $value) {
+                $column = $this->columns[$column_name];
+                if ($column) {
+                    if ($column_name === $this->id_column) continue;
+                    if ($column_name === 'created_at') continue;
+                    if (isset($column['is_required']) && $column['is_required'] && (is_null($value) || $value === '')) {
+                        $this->addError($column_name, 'required');
+                    }
                 }
             }
         }
@@ -222,13 +208,7 @@ class Entity {
      */
     public function takeValues($values) {
         if (!$values) return $this;
-        foreach ($values as $key => $value) {
-            if ($key == $this->id_column) {
-                if ($value > 0) $this->id = (int) $value;
-            }
-            $this->value[$key] = $value;
-        }
-        $this->castRow($this->value);
+        $this->value = $this->castRow($values);
         return $this;
     }
 
@@ -269,7 +249,7 @@ class Entity {
      * @return bool
      */
     public function hasChanges() {
-        if (isset($this->_value)) {
+        if (isset($this->after_value)) {
             $changes = $this->changes();
             return count($changes) > 0;
         } else {
@@ -280,22 +260,21 @@ class Entity {
     /**
      * changes
      * 
-     * @param bool changed
-     * @return bool
+     * @return array
      */
-    public function changes($changed = false) {
-        if (isset($this->_value)) {
+    public function changes() {
+        if (isset($this->after_value)) {
             $changes = array();
-            foreach ($this->columns as $key => $type) {
-                if (!in_array($key, self::$except_columns)) {
-                    if ($this->value[$key] !== $this->_value[$key]) {
-                        $changes[$key] = ($changed) ? $this->value[$key] : $this->_value[$key];
+            foreach ($this->after_value as $column_name => $after_value) {
+                if (!in_array($column_name, self::$except_columns)) {
+                    if ($after_value !== $this->before_value[$column_name]) {
+                        $changes[$column_name] = $this->after_value[$column_name];
                     }
                 }
             }
             return $changes;
         } else {
-            return false;
+            return;
         }
     }
 
@@ -430,16 +409,18 @@ class Entity {
      * @param  array $row
      * @return array
      */
-    function castRow(&$row) {
+    function castRow($row) {
         if (is_array($row)) {
             foreach ($row as $column_name => $value) {
                 if ($column_name === $this->id_column) {
-                    $row[$this->id_column] = (int) $value;
+                    if ($value > 0) $this->id = $row[$this->id_column] = (int) $value;
                 } else {
                     if (isset($this->columns[$column_name])) {
                         $column = $this->columns[$column_name];
                         $type = $column['type'];
                         $row[$column_name] = $this->cast($type, $value);
+                    } else {
+                        unset($row[$column_name]);
                     }
                 }
             }

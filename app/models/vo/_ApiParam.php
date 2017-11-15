@@ -1,34 +1,34 @@
 <?php
 /**
- * Record 
+ * ApiParam 
  * 
- * @create  2017-09-20 17:10:43 
+ * @create  2017-11-07 18:03:16 
  */
 
 //namespace project_manager;
 
 require_once 'PgsqlEntity.php';
 
-class _Record extends PgsqlEntity {
+class _ApiParam extends PgsqlEntity {
 
     var $id_column = 'id';
-    var $name = 'records';
-    var $entity_name = 'record';
+    var $name = 'api_params';
+    var $entity_name = 'api_param';
 
     var $columns = array(
+        'api_id' => array('type' => 'int4', 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
-        'label' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
         'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
-        'note' => array('type' => 'text'),
-        'project_id' => array('type' => 'int4', 'is_required' => true),
+        'note' => array('type' => 'text', 'default' => ''),
         'sort_order' => array('type' => 'int4'),
+        'type' => array('type' => 'varchar', 'length' => 16),
         'updated_at' => array('type' => 'timestamp'),
     );
 
     var $foreign = array(
-            'records_project_id_fkey' => [
-                                  'column' => 'project_id',
-                                  'foreign_table' => 'projects',
+            'api_params_api_id_fkey' => [
+                                  'column' => 'api_id',
+                                  'foreign_table' => 'apis',
                                   'foreign_column' => 'id',
                                   ],
     );

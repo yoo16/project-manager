@@ -25,6 +25,7 @@ class _ViewItem extends PgsqlEntity {
         'label' => array('type' => 'varchar', 'length' => 256),
         'label_column' => array('type' => 'text'),
         'link' => array('type' => 'varchar', 'length' => 256),
+        'link_param_id_attribute_id' => array('type' => 'int4'),
         'localize_string_id' => array('type' => 'int4'),
         'note' => array('type' => 'text'),
         'page_id' => array('type' => 'int4'),
@@ -32,20 +33,26 @@ class _ViewItem extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
         'value_column' => array('type' => 'varchar', 'length' => 256),
         'view_id' => array('type' => 'int4', 'is_required' => true),
+        'where_attribute_id' => array('type' => 'int4'),
         'where_model_id' => array('type' => 'int4'),
         'where_order' => array('type' => 'text'),
         'where_string' => array('type' => 'text'),
     );
 
     var $foreign = array(
-            'view_items_attribute_id_fkey' => [
-                                  'column' => 'attribute_id',
+            'view_items_where_attribute_id_fkey' => [
+                                  'column' => 'where_attribute_id',
                                   'foreign_table' => 'attributes',
                                   'foreign_column' => 'id',
                                   ],
-            'view_items_localize_string_id_fkey' => [
-                                  'column' => 'localize_string_id',
-                                  'foreign_table' => 'localize_strings',
+            'view_items_link_param_id_attribute_id_fkey' => [
+                                  'column' => 'link_param_id_attribute_id',
+                                  'foreign_table' => 'attributes',
+                                  'foreign_column' => 'id',
+                                  ],
+            'view_items_attribute_id_fkey' => [
+                                  'column' => 'attribute_id',
+                                  'foreign_table' => 'attributes',
                                   'foreign_column' => 'id',
                                   ],
             'view_items_page_id_fkey' => [
@@ -53,14 +60,19 @@ class _ViewItem extends PgsqlEntity {
                                   'foreign_table' => 'pages',
                                   'foreign_column' => 'id',
                                   ],
+            'view_items_where_model_id_fkey' => [
+                                  'column' => 'where_model_id',
+                                  'foreign_table' => 'models',
+                                  'foreign_column' => 'id',
+                                  ],
             'view_items_view_id_fkey' => [
                                   'column' => 'view_id',
                                   'foreign_table' => 'views',
                                   'foreign_column' => 'id',
                                   ],
-            'view_items_where_model_id_fkey' => [
-                                  'column' => 'where_model_id',
-                                  'foreign_table' => 'models',
+            'view_items_localize_string_id_fkey' => [
+                                  'column' => 'localize_string_id',
+                                  'foreign_table' => 'localize_strings',
                                   'foreign_column' => 'id',
                                   ],
     );

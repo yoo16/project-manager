@@ -21,9 +21,6 @@ class FormHelper {
 
         $tag = self::selectOptions($params, $selected);
 
-        //$attribues['id'] = $params['id'];
-        //$attribues['class'] = $params['class'];
-        //$attribues['name'] = $params['name'];
         $tag = self::selectTag($tag, $params);
         return $tag;
     }
@@ -872,7 +869,7 @@ class FormHelper {
      */
     static function password($name, $value = null, $params = null) {
         $params['type'] = "password";
-        $tag = self::input($params, $name, $value);
+        $tag = self::input($params, $name);
         return $tag;
     }
 
@@ -907,4 +904,33 @@ class FormHelper {
         }
     }
 
+    /**
+     * nav active
+     *
+     * @param string $key
+     * @param string $selected
+     * @return string
+     */
+    static function navActive($key, $selected) {
+        $tag = "nav-link";
+        if ($key == $selected) {
+            $tag.=' active';
+        }
+        return $tag;
+    }
+
+    /**
+     * label badge tag
+     *
+     * @param string $key
+     * @param string $selected
+     * @return string
+     */
+    static function linkActive($key, $selected) {
+        if ($key == $selected) {
+            $tag.=' active';
+        }
+        return $tag;
+    }
+    
 }

@@ -1,15 +1,15 @@
 <?php
 /**
- * RecordController 
+ * ApiController 
  *
- * @create  2017-09-20 18:09:01 
+ * @create  2017-11-07 18:10:43 
  */
 
 require_once 'ProjectController.php';
 
-class RecordController extends ProjectController {
+class ApiController extends ProjectController {
 
-    var $name = 'record';
+    var $name = 'api';
 
 
    /**
@@ -20,7 +20,8 @@ class RecordController extends ProjectController {
     */
     function before_action($action) {
         parent::before_action($action);
-        
+        $this->project = DB::table('Project')->requestSession();
+
     }
 
    /**
@@ -53,7 +54,7 @@ class RecordController extends ProjectController {
     */
     function action_list() {
         if (!$this->project->value) $this->redirect_to('/');
-        $this->record = $this->project->relationMany('Record')->all();
+        $this->api = $this->project->relationMany('Api')->all();
 
                 
     }
@@ -65,7 +66,7 @@ class RecordController extends ProjectController {
     * @return void
     */
     function action_new() {
-        $this->record = DB::table('Record')->init()->takeValues($this->posts['record']);
+        $this->api = DB::table('Api')->init()->takeValues($this->posts['api']);
     }
 
    /**
@@ -77,9 +78,9 @@ class RecordController extends ProjectController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->record = DB::table('Record')
+        $this->api = DB::table('Api')
                     ->fetch($this->params['id'])
-                    ->takeValues($this->posts['record']);
+                    ->takeValues($this->posts['api']);
     }
 
    /**
@@ -90,10 +91,10 @@ class RecordController extends ProjectController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["record"];
-        $record = DB::table('Record')->insert($posts);
+        $posts = $this->posts["api"];
+        $api = DB::table('Api')->insert($posts);
 
-        if ($record->errors) {
+        if ($api->errors) {
             $this->redirect_to('new');
         } else {
             $this->redirect_to('index');
@@ -108,10 +109,10 @@ class RecordController extends ProjectController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["record"];
-        $record = $record = DB::table('Record')->update($posts, $this->params['id']);
+        $posts = $this->posts["api"];
+        $api = $api = DB::table('Api')->update($posts, $this->params['id']);
 
-        if ($record->errors) {
+        if ($api->errors) {
             $this->redirect_to('edit', $this->params['id']);
         } else {
             $this->redirect_to('index');
@@ -126,7 +127,7 @@ class RecordController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('Record')->delete($this->params['id']);
+        DB::table('Api')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 
@@ -138,7 +139,7 @@ class RecordController extends ProjectController {
     */
     function action_sort_order() {
         if (!$this->project->value) $this->redirect_to('/');
-        $this->record = $this->project->relationMany('Record')->all();
+        $this->api = $this->project->relationMany('Api')->all();
     }
 
    /**
@@ -149,7 +150,7 @@ class RecordController extends ProjectController {
     */
     function action_update_sort() {
         if (!isPost()) exit;
-        DB::table('Record')->updateSortOrder($_REQUEST['sort_order']);
+        DB::table('Api')->updateSortOrder($_REQUEST['sort_order']);
     }
 
 }

@@ -46,7 +46,8 @@
           'label' => ['name'],
           'label_separate' => ' - ',
           'model' => 'Page',
-          'where' => "project_id = {$this->project->value['id']}"
+          'where' => "project_id = {$this->project->value['id']}",
+          'order' => 'name'
         ]
          ) ?>
        </td>
@@ -71,7 +72,8 @@
           'label' => ['name', 'label'],
           'label_separate' => '-',
           'model' => 'Model',
-          'where' => "project_id = {$this->project->value['id']}"
+          'where' => "project_id = {$this->project->value['id']}",
+          'order' => 'name'
         ]
          ) ?>
        </td>

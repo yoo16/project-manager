@@ -794,7 +794,7 @@ class PgsqlEntity extends Entity {
         if (!$id) return $this;
 
         $this->where("{$this->id_column} = {$id}")->one($params);
-        $this->_value = $this->value;
+        $this->before_value = $this->value;
         return $this;
     }
 
@@ -1059,10 +1059,6 @@ class PgsqlEntity extends Entity {
         $value = $this->fetchRow($sql);
 
         $this->value = $this->castRow($value);
-        if (is_array($this->value) && isset($this->value[$this->id_column])) {
-            $this->id = (int) $this->value[$this->id_column];
-        }
-        $this->_value = $this->value;
         return $this;
     }
 
@@ -1220,7 +1216,11 @@ class PgsqlEntity extends Entity {
     */
     public function update($posts = null, $id = null) {
         if ($id) $this->fetch($id);
+        if (!$this->id) return $this;
+
         if ($posts) $this->takeValues($posts);
+
+        $this->after_value = $this->value;
 
         $this->validate();
         if ($this->errors) {
@@ -2433,8 +2433,6 @@ class PgsqlEntity extends Entity {
     **/
     function diffPgAttributes($orign_pgsql, $orign_table_name) {
         $orign_pg_attributes = $orign_pgsql->pgAttributes($orign_table_name);
-        var_dump(array_keys($orign_pg_attributes));
-        exit;
         foreach ($orign_pg_attributes as $orign_pg_attribute) {
 
         }

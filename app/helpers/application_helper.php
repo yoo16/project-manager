@@ -24,3 +24,13 @@ function undefineLabelTag($key, $value) {
 function cssClass($key, $selected, $class_name) {
     if ($key == $selected) return $class_name;
 }
+
+function checkForeign($foreign, $attname) {
+    if ($foreign) {
+        foreach ($foreign as $pg_constraint) {
+            if ($pg_constraint['attname'] == $attname) {
+                return $pg_constraint['confrelid'];
+            }
+        }
+    }
+}

@@ -1,4 +1,5 @@
 <? include('_header.phtml') ?>
+
 <div class="pt-3">
   <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
   <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
@@ -15,14 +16,16 @@
   </thead>
 
   <? if ($this->page_model->values): ?>
-  <? foreach ($this->page_model->values as $values): ?>
-  <tr>
-    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-    <td><?= $this->model->values[$values['model_id']]['name'] ?></td>
-    <td><?= FormHelper::activeLabelTag($values['is_fetch_list_values']) ?></td>
-    <td><?= FormHelper::activeLabelTag($values['is_request_session']) ?></td>
-  </tr>
-  <? endforeach ?>
+    <? foreach ($this->page_model->values as $values): ?>
+      <tr>
+        <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
+        <td><?= $this->model->values[$values['model_id']]['name'] ?></td>
+        <td><?= FormHelper::activeLabelTag($values['is_fetch_list_values']) ?></td>
+        <td><?= FormHelper::activeLabelTag($values['is_request_session']) ?></td>
+      </tr>
+    <? endforeach ?>
   <? endif ?>
 
 </table>
+
+<a class="btn btn-outline-primary" href="<?= url_for('page/list'); ?>"><?= LABEL_BACK ?></a>

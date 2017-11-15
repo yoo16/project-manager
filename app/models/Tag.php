@@ -72,12 +72,22 @@ class Tag {
             $label = $entity;
         }
 
+        if ($view_item['link_param_id_attribute_id']) {
+            $link_param_id_attribute = DB::table('Attribute')->fetch($view_item['link_param_id_attribute_id']);
+
+            $key_name = 'id';
+            $value_name = "\$values['{$link_param_id_attribute->value['name']}']";
+
+            $params[] = "'{$key_name}' => {$value_name}";
+        }
         if ($model) {
             $key_name = "{$model['entity_name']}_id";
             $value_name = '$values[\'id\']';
             $params[] = "'{$key_name}' => {$value_name}";
+        }
 
-            $param = implode('=>', $params);
+        if (is_array($params) && $params) {
+            $param = implode(',', $params);
         }
 
         $label = $this->phpTag($label);
@@ -144,11 +154,26 @@ class Tag {
         echo($this->value);
     }
 
+    function formPassword($view_item, $model, $attribute) {
+        if ($params) {
+            $tag = '$this->'.$model['entity_name']."->formPassword('{$attribute['name']}', $params)";
+        } else {
+            $tag = '$this->'.$model['entity_name']."->formPassword('{$attribute['name']}')";
+        }
+        return $tag;
+    }
+
     function formSelect($view_item, $model, $attribute) {
         if ($view_item['csv']) {
             $params = "['csv' => '{$view_item['csv']}', 'unselect' => true]";
         } else if ($view_item['form_model_id']) {
             $fk_model = DB::table('Model')->fetch($view_item['form_model_id']); 
+            if ($fk_model->value && $view_item['where_attribute_id']) {
+                $where_attribute = DB::table('Attribute')->fetch($view_item['where_attribute_id']); 
+                $where_column = $where_attribute->value["name"];
+                $where_value = '{$this->'.$model["entity_name"]."->value['{$where_attribute->value['name']}']}";
+                $where = "'where' => \"{$where_column} = {$where_value}\",";
+            }
         } else if ($attribute['fk_attribute_id']) {
             $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
             $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']); 

@@ -9,18 +9,19 @@
   <thead class="thead-deffault">
     <tr>
       <th>&nbsp;</th>
-                                    <th><?= LABEL_RECORDS_NAME ?></th>
-                                                      <th><?= LABEL_RECORDS_LABEL ?></th>
+                                    <th><?= LABEL_APIS_NAME ?></th>
+                                                      <th><?= LABEL_APIS_LABEL ?></th>
+                                                      <th><?= LABEL_APIS_NOTE ?></th>
                             </tr>
   </thead>
 
-  <? if ($this->record->values): ?>
-  <? foreach ($this->record->values as $values): ?>
+  <? if ($this->api->values): ?>
+  <? foreach ($this->api->values as $values): ?>
   <tr>
     <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-                            <td>
-            <a href="<?= url_for('record_item/', ['record_id' => $values['id']]) ?>"><?= $values['name'] ?></a>            </td>
+                              <td><?= $values['name'] ?></td>
                                                   <td><?= $values['label'] ?></td>
+                                                  <td><?= $values['note'] ?></td>
                             </tr>
     <? endforeach ?>
     <? endif ?>

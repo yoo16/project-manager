@@ -1,4 +1,5 @@
 <? include('_header.phtml') ?>
+
 <div class="pt-3">
   <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
   <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
@@ -8,19 +9,19 @@
   <thead class="thead-deffault">
     <tr>
       <th>&nbsp;</th>
-      <th><?= LABEL_RECORD_ITEMS_KEY ?></th>
-      <th><?= LABEL_RECORD_ITEMS_VALUE ?></th>
-    </tr>
+                                    <th><?= LABEL_RECORD_ITEMS_KEY ?></th>
+                                                      <th><?= LABEL_RECORD_ITEMS_VALUE ?></th>
+                            </tr>
   </thead>
 
   <? if ($this->record_item->values): ?>
   <? foreach ($this->record_item->values as $values): ?>
   <tr>
     <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-    <td><?= $values['key'] ?></td>
-    <td><?= $values['value'] ?></td>
-  </tr>
-  <? endforeach ?>
-  <? endif ?>
+                              <td><?= $values['key'] ?></td>
+                                                  <td><?= $values['value'] ?></td>
+                            </tr>
+    <? endforeach ?>
+    <? endif ?>
 
-</table>
+  </table>

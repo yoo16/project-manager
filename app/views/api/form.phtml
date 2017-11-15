@@ -1,0 +1,21 @@
+<div class="form-group row">
+
+      <label class="form-control-label col-2" for="name"><?= LABEL_APIS_NAME ?></label>
+        <?= $this->api->formInput('name') ?>
+</div>
+<div class="form-group row">
+
+      <label class="form-control-label col-2" for="label"><?= LABEL_APIS_LABEL ?></label>
+        <?= $this->api->formInput('label') ?>
+</div>
+<div class="form-group row">
+</div>
+<div class="form-group row">
+
+      <label class="form-control-label col-2" for="note"><?= LABEL_APIS_NOTE ?></label>
+        <?= $this->api->formTextarea('note') ?>
+</div>
+
+  <?= FormHelper::submit(LABEL_SAVE) ?>
+  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>  
+  <input type="hidden" name="api[project_id]" value="<?= $this->project->value['id'] ?>">

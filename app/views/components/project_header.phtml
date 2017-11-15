@@ -44,10 +44,11 @@
       <? if ($this->page->value): ?>
       <li class="nav-item"><a class="nav-link <?= cssClass('view', $this->params['controller'], 'active'); ?>" href="<?= url_for('view/', array('page_id' => $this->page->value['id'])) ?>">View</a></li>
     <? endif ?>
-    <li class="nav-item"><a class="nav-link <?= cssClass('layout', $this->params['controller'], 'active'); ?>" href="<?= url_for('layout/list', array('project_id' => $this->project->value['id'])) ?>">Layout</a></li>
+    <li class="nav-item"><a class="nav-link <?= cssClass('api', $this->params['controller'], 'active'); ?>" href="<?= url_for('api/list', array('project_id' => $this->project->value['id'])) ?>">Api</a></li>
     <li class="nav-item"><a class="nav-link <?= cssClass('record', $this->params['controller'], 'active'); ?>" href="<?= url_for('record/list', array('project_id' => $this->project->value['id'])) ?>">Record</a></li>
     <li class="nav-item"><a class="nav-link <?= cssClass('localize_string', $this->params['controller'], 'active'); ?>" href="<?= url_for('localize_string/list', array('project_id' => $this->project->value['id'])) ?>">Localize</a></li>
     <li class="nav-item"><a class="nav-link <?= cssClass('document', $this->params['controller'], 'active'); ?>" href="<?= url_for('document/list', array('project_id' => $this->project->value['id'])) ?>">Document</a></li>
+    <li class="nav-item"><a class="nav-link <?= cssClass('layout', $this->params['controller'], 'active'); ?>" href="<?= url_for('layout/list', array('project_id' => $this->project->value['id'])) ?>">Layout</a></li>
   </ul>
 </nav>
 </div>

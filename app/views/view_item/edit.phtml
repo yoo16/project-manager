@@ -53,6 +53,23 @@
          ) ?>
        </td>
     </tr>
+
+    <tr>
+      <th>link id attribute</th>
+      <td>
+        <?= $this->view_item->formSelect('link_param_id_attribute_id',
+        [
+          'unselect' => true,
+          'label' => ['name', 'label'],
+          'label_separate' => ' : ',
+          'model' => 'Attribute',
+          'where' => "model_id = {$this->page->value['model_id']}",
+          'order' => 'name'
+        ]
+         ) ?>
+       </td>
+    </tr>
+
   </table>
 
 <h4>Page edit form</h4>
@@ -72,7 +89,7 @@
     </tr>
 
     <tr>
-      <th>form condition</th>
+      <th>form Model</th>
       <td>
         <?= $this->view_item->formSelect('form_model_id',
         [
@@ -88,7 +105,7 @@
     </tr>
 
     <tr>
-      <th>form where condition</th>
+      <th>form Model condition</th>
       <td>
         <?= $this->view_item->formSelect('where_model_id',
         [
@@ -97,6 +114,22 @@
           'label_separate' => '-',
           'model' => 'Model',
           'where' => "project_id = {$this->project->value['id']}",
+          'order' => 'name'
+        ]
+         ) ?>
+       </td>
+    </tr>
+
+    <tr>
+      <th>form Attribute condition</th>
+      <td>
+        <?= $this->view_item->formSelect('where_attribute_id',
+        [
+          'unselect' => true,
+          'label' => ['name', 'label'],
+          'label_separate' => '-',
+          'model' => 'Attribute',
+          'where' => "model_id = {$this->page->value['model_id']}",
           'order' => 'name'
         ]
          ) ?>

@@ -8,73 +8,91 @@
 </div>
 
 <form action="<?= url_for('update_sort') ?>" method="post">
-<table class="table sortable">
-  <thead class="thead-deffault">
-    <tr>
-      <th>&nbsp;</th>
-      <th>カラム</th>
-      <th>&nbsp;</th>
-      <th>リンクページ</th>
-      <th>class</th>
-      <th>form</th>
-      <th>where / csv</th>
-    </tr>
-  </thead>
+  <table class="table sortable">
+    <thead class="thead-deffault">
+      <tr>
+        <th>&nbsp;</th>
+        <th>カラム</th>
+        <th>&nbsp;</th>
+        <th>リンクページ</th>
+        <th>class</th>
+        <th>form</th>
+        <th>where / csv</th>
+      </tr>
+    </thead>
 
-  <? if ($this->view->view_item->values): ?>
-    <tbody>
-  <? foreach ($this->view->view_item->values as $view_item): ?>
-  <tr id="<?= $view_item['id'] ?>">
-    <td>
-      <?= FormHelper::linkButton('edit', LABEL_EDIT, $view_item['id']) ?>
-      <input id="sort_order_<?= $view_item['id'] ?>" name="sort_order[<?= $view_item['id'] ?>]" type="hidden">
-    </td>
-    <td><?= $this->page->model->attribute->values[$view_item['attribute_id']]['name'] ?></td>
-    <td>
-<? if ($view_item['attribute_id']): ?>
-      <?= $this->page->model->attribute->values[$view_item['attribute_id']]['label'] ?>
-<? elseif ($view_item['localize_string_id']): ?>
-      <?= $this->localize_string->values[$view_item['localize_string_id']]['name'] ?>  
-<? endif ?>
-    </td>
-    <td><?= $this->pages[$view_item['page_id']]['name'] ?></td>
-    <td><?= FormHelper::activeLabelTag($view_item['css_class']) ?></td>
-    <td>
-      <div>
-        <? if (in_array($this->view->value['name'], ['new' ,'edit'])): ?>
-        <? if ($view_item['form_type'] == 'select'): ?>
-          <select class="form-control">
-            <option><?= $view_item['label_column'] ?></option>
-          </select>
-        <? elseif ($view_item['form_type'] == 'hidden'): ?>
-          hidden
-        <? elseif ($view_item['form_type'] == 'radio'): ?>
-          <input class="form-control" type="radio" name=""><?= $view_item['label_column'] ?>
-        <? elseif ($view_item['form_type'] == 'checkbox'): ?>
-          <input class="form-control" type="checkbox" name=""><?= $view_item['label_column'] ?>
-        <? elseif ($view_item['form_type'] == 'textarea'): ?>
-          <textarea></textarea>
-        <? elseif ($view_item['form_type'] == 'password'): ?>
-          <input class="form-control" type="password" name="">
-        <? else: ?>
-          <input class="form-control" type="text" name="">
-        <? endif ?>
-        <? endif ?>
-      </div>
-    </td>
-    <td>
-        <? if ($view_item['where_model_id']): ?>
-          where : <?= DB::table('Model')->fetch($view_item['where_model_id'])->value['name'] ?> -> id
-        <? endif ?>
+    <? if ($this->view->view_item->values): ?>
+      <tbody>
+        <? foreach ($this->view->view_item->values as $view_item): ?>
+          <tr id="<?= $view_item['id'] ?>">
+            <td>
+              <?= FormHelper::linkButton('edit', LABEL_EDIT, $view_item['id']) ?>
+              <input id="sort_order_<?= $view_item['id'] ?>" name="sort_order[<?= $view_item['id'] ?>]" type="hidden">
+            </td>
+            <td>
+              <?= $this->page->model->attribute->values[$view_item['attribute_id']]['name'] ?>
+              <div>
+                <small class="text-danger"><?= $view_item['note'] ?></small>
+              </div>
+            </td>
+            <td>
+              <? if ($view_item['attribute_id']): ?>
+                <?= $this->page->model->attribute->values[$view_item['attribute_id']]['label'] ?>
+              <? elseif ($view_item['localize_string_id']): ?>
+                <?= $this->localize_string->values[$view_item['localize_string_id']]['name'] ?>  
+              <? endif ?>
+            </td>
+            <td>
+              <?= $this->pages[$view_item['page_id']]['name'] ?>
+              <div>
+                <? if ($view_item['link_param_id_attribute_id']): ?>
+                  id = <?= DB::table('Attribute')->fetch($view_item['link_param_id_attribute_id'])->value['name'] ?>
+                <? endif ?>
+              </div>
+            </td>
+            <td><?= FormHelper::activeLabelTag($view_item['css_class']) ?></td>
+            <td>
+              <div>
+                <? if (in_array($this->view->value['name'], ['new' ,'edit'])): ?>
+                  <? if ($view_item['form_type'] == 'select'): ?>
+                    <select class="form-control">
+                      <option><?= $view_item['label_column'] ?></option>
+                    </select>
+                  <? elseif ($view_item['form_type'] == 'hidden'): ?>
+                    hidden
+                  <? elseif ($view_item['form_type'] == 'radio'): ?>
+                    <input class="form-control" type="radio" name=""><?= $view_item['label_column'] ?>
+                  <? elseif ($view_item['form_type'] == 'checkbox'): ?>
+                    <input class="form-control" type="checkbox" name=""><?= $view_item['label_column'] ?>
+                  <? elseif ($view_item['form_type'] == 'textarea'): ?>
+                    <textarea></textarea>
+                  <? elseif ($view_item['form_type'] == 'password'): ?>
+                    <input class="form-control" type="password" name="">
+                  <? else: ?>
+                    <input class="form-control" type="text" name="">
+                  <? endif ?>
+                <? endif ?>
+              </div>
+            </td>
+            <td>
+              <? if ($view_item['where_model_id']): ?>
+                where : <?= DB::table('Model')->fetch($view_item['where_model_id'])->value['name'] ?> -> id
+              <? endif ?>
 
-        <? if ($view_item['csv']): ?>csv : <?= $view_item['csv'] ?><? endif ?>
-    </td>
-  </tr>
-  <? endforeach ?>
-    </tbody>
-  <? endif ?>
-</table>
-<input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
+              <? if ($view_item['form_model_id']): ?>
+                = where :
+                <?= DB::table('Model')->fetch($view_item['form_model_id'])->value['class_name'] ?>
+                <? if ($view_item['where_attribute_id']): ?>.<?= DB::table('Attribute')->fetch($view_item['where_attribute_id'])->value['name'] ?><? endif ?>
+              <? endif ?>
+
+              <? if ($view_item['csv']): ?>csv : <?= $view_item['csv'] ?><? endif ?>
+            </td>
+          </tr>
+        <? endforeach ?>
+      </tbody>
+    <? endif ?>
+  </table>
+  <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
 </form>
 
 <table class="table table-sm">
@@ -87,18 +105,18 @@
   </thead>
 
   <? if ($this->page->model->attribute->values): ?>
-  <? foreach ($this->page->model->attribute->values as $view_item): ?>
-  <tr>
-    <td>
-    <form action="<?= url_for('add_for_attribute') ?>" method="post">
-    <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-sm btn-primary']) ?>
-    <?= FormHelper::hidden('view_item[attribute_id]', $view_item['id']) ?>
-    </form>
-    </td>
-    <td><?= $view_item['name'] ?></td>
-    <td><?= $view_item['label'] ?></td>
-  </tr>
-  <? endforeach ?>
+    <? foreach ($this->page->model->attribute->values as $view_item): ?>
+      <tr>
+        <td>
+          <form action="<?= url_for('add_for_attribute') ?>" method="post">
+            <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-sm btn-primary']) ?>
+            <?= FormHelper::hidden('view_item[attribute_id]', $view_item['id']) ?>
+          </form>
+        </td>
+        <td><?= $view_item['name'] ?></td>
+        <td><?= $view_item['label'] ?></td>
+      </tr>
+    <? endforeach ?>
   <? endif ?>
 
 </table>

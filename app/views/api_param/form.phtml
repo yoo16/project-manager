@@ -1,0 +1,21 @@
+<div class="form-group row">
+
+      <label class="form-control-label col-2" for="name"><?= LABEL_API_PARAMS_NAME ?></label>
+        <?= $this->api_param->formInput('name') ?>
+</div>
+<div class="form-group row">
+
+      <label class="form-control-label col-2" for="type"><?= LABEL_API_PARAMS_TYPE ?></label>
+        <?= $this->api_param->formInput('type') ?>
+</div>
+<div class="form-group row">
+
+      <label class="form-control-label col-2" for="note"><?= LABEL_API_PARAMS_NOTE ?></label>
+        <?= $this->api_param->formTextarea('note') ?>
+</div>
+<div class="form-group row">
+</div>
+
+  <?= FormHelper::submit(LABEL_SAVE) ?>
+  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>  
+  <input type="hidden" name="api_param[api_id]" value="<?= $this->api->value['id'] ?>">
