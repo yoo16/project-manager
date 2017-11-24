@@ -2,26 +2,28 @@
 
 <div class="pt-3">
   <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
-  <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
+  <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table"><?= LABEL_SORT_ORDER ?></a>
+
+  <a href="#" class="btn btn-primary update-sortable" controller="record_item">更新</a>
 </div>
 
-<table class="table">
+<table id="list-table" class="table">
   <thead class="thead-deffault">
     <tr>
       <th>&nbsp;</th>
-                                    <th><?= LABEL_RECORD_ITEMS_KEY ?></th>
-                                                      <th><?= LABEL_RECORD_ITEMS_VALUE ?></th>
-                            </tr>
+      <th><?= LABEL_RECORD_ITEMS_KEY ?></th>
+            <th><?= LABEL_RECORD_ITEMS_VALUE ?></th>
+          </tr>
   </thead>
 
   <? if ($this->record_item->values): ?>
   <? foreach ($this->record_item->values as $values): ?>
-  <tr>
+  <tr id="<?= $values['id'] ?>">
     <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-                              <td><?= $values['key'] ?></td>
-                                                  <td><?= $values['value'] ?></td>
-                            </tr>
-    <? endforeach ?>
-    <? endif ?>
+    <td><?= $values['key'] ?></td>
+    <td><?= $values['value'] ?></td>
+  </tr>
+  <? endforeach ?>
+  <? endif ?>
 
-  </table>
+</table>

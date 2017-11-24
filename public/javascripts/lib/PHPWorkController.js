@@ -9,6 +9,7 @@ var pw_app;
 
 $(document).ready(function(){
     pw_app = new PHPWorkController();
+    console.log(pw_app);
 });
 
 var PHPWorkController = function() {

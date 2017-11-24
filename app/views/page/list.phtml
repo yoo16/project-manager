@@ -16,37 +16,41 @@
       <th></th>
       <th>Page Controller</th>
       <th></th>
+      <th></th>
+      <th></th>
       <th>Overwrite</th>
       <th>Model / Entity Name</th>
     </tr>
   </thead>
 
   <? if ($this->pages): ?>
-  <? foreach ($this->pages as $page): ?>
-  <tr>
-    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $page['id']) ?></td>
-    <td>
-      <div>
-        <a class="" href="<?= url_for('view/', array('page_id' => $page['id'])) ?>"><?= Page::className($page) ?></a>
-      </div>
-      <div>
-        <?= $page['label'] ?>
-      </div>
-    </td>
-    <td><a class="btn btn-outline-primary" href="<?= url_for('page_model/', array('page_id' => $page['id'])) ?>">Page Values</a></td>
-    <td>
-      <? if ($page['is_overwrite']): ?>
-      <?= FormHelper::link('change_overwrite', 'overwrite', $page['id'], ['class' => 'badge badge-danger']) ?>
-    <? else: ?>
-    <?= FormHelper::link('change_overwrite', 'off', $page['id'], ['class' => 'badge badge-default']) ?>
+    <? foreach ($this->pages as $page): ?>
+      <tr>
+        <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $page['id']) ?></td>
+        <td>
+          <div>
+            <a class="" href="<?= url_for('view/', array('page_id' => $page['id'])) ?>"><?= Page::className($page) ?></a>
+          </div>
+          <div>
+            <?= $page['label'] ?>
+          </div>
+        </td>
+        <td><a class="btn btn-outline-primary" href="<?= url_for('attribute/', array('model_id' => $page['model_id'])) ?>">Model</a></td>
+        <td><a class="btn btn-outline-primary" href="<?= url_for('page_filter/', array('page_id' => $page['id'])) ?>">Filters</a></td>
+        <td><a class="btn btn-outline-primary" href="<?= url_for('page_model/', array('page_id' => $page['id'])) ?>">Requests</a></td>
+        <td>
+          <? if ($page['is_overwrite']): ?>
+            <?= FormHelper::link('change_overwrite', 'overwrite', $page['id'], ['class' => 'badge badge-danger']) ?>
+          <? else: ?>
+            <?= FormHelper::link('change_overwrite', 'off', $page['id'], ['class' => 'badge badge-default']) ?>
+          <? endif ?>
+        </td>
+        <td>
+          <div><?= $page['entity_name'] ?></div>
+          <div><? if ($page['model_id']): ?><?= $page['model']['name'] ?><? endif ?></div>
+        </td>
+      </tr>
+    <? endforeach ?> 
   <? endif ?>
-</td>
-<td>
-  <div><?= $page['entity_name'] ?></div>
-  <div><? if ($page['model_id']): ?><?= $page['model']['name'] ?><? endif ?></div>
-</td>
-</tr>
-<? endforeach ?> 
-<? endif ?>
 
 </table>

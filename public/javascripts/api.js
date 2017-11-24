@@ -171,6 +171,45 @@ function parallelRequest(requests, callback) {
     });
 }
 
+
+/**
+* URL生成    
+*
+* @param 
+* @return String
+**/
+function http_base() {
+    var domain = location.hostname;
+    var url;
+    if (base_url) {
+        url = base_url;
+    } else {
+        url = '//' + domain + '/';
+    }
+    return url;
+}
+
+/**
+* プロジェクトURL生成    
+*
+* @param 
+* @return String
+**/
+function projectUrl() {
+  var base_url = http_base();
+  var url = base_url;
+  if (project_name) {
+      url+= project_name + '/';
+  }
+  return url;
+}
+
+
+function apiUrl(controller, action) {
+    url = projectUrl() + controller + '/' + action;
+    return url;
+}
+
 /**
 * HTML API（POSTアクセス、HTML表示）    
 *
@@ -198,6 +237,33 @@ function htmlApi(url, params, html_id, callback) {
         }
     });
 }
+
+/**
+* APIアクセス（POSTアクセス、HTML表示）    
+*
+* @param String html_id
+* @param String url
+* @param Object params
+* @return void
+**/
+function postApi(url, params, callback) {
+    showIndicator();
+    $.ajax({
+        type: 'POST',
+        cache: false,
+        url: url,
+        data: params,
+        dataType: 'html',
+        success: function(data) {
+            hideIndicator();
+            if (callback) callback(data);
+        },
+        error:function() {
+            hideIndicator();
+        }
+    });
+}
+
 
 var formParseJson = function(form_id) {
     var form = $(form_id);

@@ -1,26 +1,38 @@
 <? include('_header.phtml') ?>
 
 <div class="alert alert-success">
-<h3>Attributes</h3>
-<ul>
-  <li>if you 'Import from DB', will automatically add model's information for O/R mapping from PostgreSQL.</li>
-  <li>if you 'Add', create attribute's information  on 'project-manager' and add attribute on PostgreSQL.</li>
-  <li>The columns (id, created_at, updated_at, sort_order) is required.</li>
-  <li>You can add and delete constraint on PostgreSQL.</li>
-</ul>
+  <h3>Attributes</h3>
+  <ul>
+    <li>if you 'Import from DB', will automatically add model's information for O/R mapping from PostgreSQL.</li>
+    <li>if you 'Add', create attribute's information  on 'project-manager' and add attribute on PostgreSQL.</li>
+    <li>The columns (id, created_at, updated_at, sort_order) is required.</li>
+    <li>You can add and delete constraint on PostgreSQL.</li>
+  </ul>
 </div>
 
-<div class="pt-3">
+<div class="container row">
   <form action="<?= url_for('sync_db') ?>" method="post">
     <?= FormHelper::linkModal('#add-attribute', LABEL_ADD) ?>
     <?= FormHelper::linkButton('model/list', LABEL_BACK) ?>
     <?= FormHelper::submit('Import from DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you import from DB?']) ?>
     <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
     <?= FormHelper::link('localize_string/import_from_model',
-                         'Localize', ['model_id' => $this->model->value['id']],
-                         ['class' => 'btn btn-outline-primary'])
-                         ?>
-  </form>
+     'Localize', ['model_id' => $this->model->value['id']],
+     ['class' => 'btn btn-outline-primary'])
+     ?>
+   </form>
+   &nbsp;
+   <form action="<?= url_for('page/create_page_from_model') ?>" method="post" class="form-inline">
+    <? if ($this->page->value): ?>
+    <?= FormHelper::link('view/',
+     'View', ['page_id' => $this->page->value['id']],
+     ['class' => 'btn btn-outline-primary'])
+     ?>
+   <? else: ?>
+    <?= FormHelper::button('Create Page', ['class' => 'btn btn-sm btn-outline-primary confirm-dialog', 'message' => "Create page?"]) ?>
+    <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
+  <? endif ?>
+</form>
 </div>
 
 <? include('add_window.phtml') ?>

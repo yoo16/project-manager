@@ -38,20 +38,37 @@ $(document).on('click', '.change-hide-all-table', function() {
     checkDate(this);
 });
 
-
  $(function(){
-    $('.sortable tbody').sortable();
-    $('.sortable tbody').disableSelection();
-    $('.sortable tbody').sortable({
+    $('.update-sortable').hide();
+});
+
+$(document).on('click', '.change-sortable', function() {
+    var id = '#' + $(this).attr('rel') + ' tbody';
+    var sort_orders;
+    $('.update-sortable').show();
+
+    $(id).sortable();
+    $(id).disableSelection();
+    $(id).sortable({
         update: function(ev, ui) {
-            var sort_orders = $('.sortable tbody').sortable('toArray');
-            $.each (sort_orders, function(i, value) {
-                var jquery_id = '#sort_order_' + value;
-                $(jquery_id).val(i);
-            });
+            sort_orders = $(id).sortable('toArray');
         }
     });
+
+    $(document).on('click', '.update-sortable', function() {
+        var controller = $(this).attr('controller');
+        var url = projectUrl() + controller + '/update_sort';
+        var params = {sort_order: sort_orders};
+        postApi(url, params, callback);
+
+
+        function callback(data) {
+            $(id).sortable('disable');
+            $('.update-sortable').hide();
+        } 
+    });
 });
+
 
  function checkDate(target) {
     var date_name = $(target).attr('name');

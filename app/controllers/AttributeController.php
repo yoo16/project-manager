@@ -22,7 +22,10 @@ class AttributeController extends ProjectController {
             $this->redirect_to('project/list');
         }
         $this->model = DB::table('Model')->requestSession();
-        if (!$this->model->value) {
+
+        if ($this->model->value) {
+            $this->page = $this->model->relationMany('Page')->one();
+        } else {
             $this->redirect_to('model/list');
         }
     }

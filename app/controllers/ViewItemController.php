@@ -222,11 +222,7 @@ class ViewItemController extends ProjectController {
         $posts = $this->session['posts'] = $_REQUEST["view_item"];
         $view_item = DB::table('ViewItem')->update($posts, $this->params['id']);
 
-        if ($view_item->errors) {
-            $this->redirect_to('edit', $this->params['id']);
-        } else {
-            $this->redirect_to('index');
-        }
+        $this->redirect_to('edit', $this->params['id']);
     }
 
    /**
@@ -261,6 +257,23 @@ class ViewItemController extends ProjectController {
         if (!isPost()) exit;
 
         $view_item = DB::table('ViewItem')->updateSortOrder($_REQUEST['sort_order']);
+        $this->redirect_to('list');
+    }
+
+
+   /**
+    * update sort order
+    *
+    * @param
+    * @return void
+    */
+    function action_update_labels() {
+        $view_item = $this->view->relationMany('ViewItem')->all();
+        foreach ($view_item->values as $value) {
+            $attribute = DB::table('ViewItem')->fetch($value['attribute_id']);
+            $posts['label'] = $attribute->value['label'];
+            DB::table('ViewItem')->update($posts, $value['id']);
+        }
         $this->redirect_to('list');
     }
 

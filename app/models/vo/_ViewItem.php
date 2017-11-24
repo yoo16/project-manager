@@ -102,7 +102,7 @@ class _ViewItem extends PgsqlEntity {
     */
     function updateSortOrder($sort_orders) {
         if (is_array($sort_orders)) {
-            foreach ($sort_orders as $id => $sort_order) {
+            foreach ($sort_orders as $sort_order => $id) {
                 if (is_numeric($id) && is_numeric($sort_order)) {
                     $posts['sort_order'] = $sort_order;
                     $this->update($posts, $id);

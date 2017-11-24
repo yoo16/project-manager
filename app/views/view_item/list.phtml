@@ -2,13 +2,16 @@
 
 <div class="pt-3">
   <?= FormHelper::linkButton('new', LABEL_ADD) ?>
-  <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
+
+  <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table"><?= LABEL_SORT_ORDER ?></a>
+  <a href="#" class="btn btn-primary update-sortable" controller="view_item">更新</a>
+
   <?= FormHelper::linkButton('view/', LABEL_BACK) ?>
   <a class="btn btn-primary" href="<?= url_for('add_all') ?>"><?= LABEL_ALL ?><?= LABEL_ADD ?></a>
 </div>
 
 <form action="<?= url_for('update_sort') ?>" method="post">
-  <table class="table sortable">
+  <table id="list-table" class="table sortable">
     <thead class="thead-deffault">
       <tr>
         <th>&nbsp;</th>
@@ -27,7 +30,6 @@
           <tr id="<?= $view_item['id'] ?>">
             <td>
               <?= FormHelper::linkButton('edit', LABEL_EDIT, $view_item['id']) ?>
-              <input id="sort_order_<?= $view_item['id'] ?>" name="sort_order[<?= $view_item['id'] ?>]" type="hidden">
             </td>
             <td>
               <?= $this->page->model->attribute->values[$view_item['attribute_id']]['name'] ?>
@@ -76,12 +78,12 @@
             </td>
             <td>
               <? if ($view_item['where_model_id']): ?>
-                where : <?= DB::table('Model')->fetch($view_item['where_model_id'])->value['name'] ?> -> id
+                <?= DB::table('Model')->fetch($view_item['where_model_id'])->value['name'] ?> -> id
               <? endif ?>
 
               <? if ($view_item['form_model_id']): ?>
-                = where :
-                <?= DB::table('Model')->fetch($view_item['form_model_id'])->value['class_name'] ?>
+                = 
+                <?= DB::table('Model')->fetch($view_item['form_model_id'])->value['entity_name'] ?>
                 <? if ($view_item['where_attribute_id']): ?>.<?= DB::table('Attribute')->fetch($view_item['where_attribute_id'])->value['name'] ?><? endif ?>
               <? endif ?>
 

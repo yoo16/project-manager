@@ -82,14 +82,7 @@
     </tr>
 
     <tr>
-      <th>value column</th>
-      <td>
-        <?= $this->view_item->formInput('value_column') ?>
-      </td>
-    </tr>
-
-    <tr>
-      <th>form Model</th>
+      <th>Model</th>
       <td>
         <?= $this->view_item->formSelect('form_model_id',
         [
@@ -105,7 +98,7 @@
     </tr>
 
     <tr>
-      <th>form Model condition</th>
+      <th>condition Model</th>
       <td>
         <?= $this->view_item->formSelect('where_model_id',
         [
@@ -121,7 +114,7 @@
     </tr>
 
     <tr>
-      <th>form Attribute condition</th>
+      <th>condition value column</th>
       <td>
         <?= $this->view_item->formSelect('where_attribute_id',
         [
@@ -134,6 +127,13 @@
         ]
          ) ?>
        </td>
+    </tr>
+
+    <tr>
+      <th>value column</th>
+      <td>
+        <?= $this->view_item->formInput('value_column') ?>
+      </td>
     </tr>
 
     <tr>

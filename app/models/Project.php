@@ -96,14 +96,13 @@ class Project extends _Project {
                 $values = null;
                 $values['project'] = $this->value;
                 
-                $_model = DB::table('Model')->takeValues($model);
-                $attributes = $_model->relationMany('Attribute')
+                $_model = DB::table('Model')->fetch($model['id']);
+                $attribute = $_model->relationMany('Attribute')
                                      ->order('name')
-                                     ->all()
-                                     ->values;
+                                     ->all();
 
                 $values['model'] = $model;
-                $values['attribute'] = $attributes;
+                $values['attribute'] = $attribute->values;
                 
                 $values['old_id_column'] = DB::table('Attribute')
                                                 ->where("model_id = '{$model['id']}'")
@@ -151,10 +150,13 @@ class Project extends _Project {
                     $values['page']['parent'] = DB::table('Page')->fetch($page['parent_page_id'])->value;
                 }
 
-                $values['page_model'] = DB::table('PageModel')->where("page_id = {$page['id']}")
+                $page_model = DB::table('PageModel')->where("page_id = {$page['id']}")
                                                               ->join('Model', 'id', 'model_id')
-                                                              ->all()
-                                                              ->values;
+                                                              ->all();
+                $values['page_model'] = $page_model->values;
+
+                $page_filter = DB::table('PageFilter')->where("page_id = {$page['id']}")->all();
+                $values['page_filter'] = $page_filter->values;
 
                 $page_path = Page::projectFilePath($this->user_project_setting->value, $page);
                 if (!file_exists($page_path) || $page['is_overwrite']) {
@@ -164,7 +166,6 @@ class Project extends _Project {
                 }
             }   
         }
-
     }
 
     function exportPHPViews($page, $values) {

@@ -1,0 +1,31 @@
+<? include('_header.phtml') ?>
+
+<div class="pt-3">
+  <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
+  <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table"><?= LABEL_SORT_ORDER ?></a>
+
+  <a href="#" class="btn btn-primary update-sortable" controller="page_filter">更新</a>
+</div>
+
+<table id="list-table" class="table">
+  <thead class="thead-deffault">
+    <tr>
+      <th>&nbsp;</th>
+      <th><?= LABEL_PAGE_FILTERS_VALUE ?></th>
+            <th><?= LABEL_PAGE_FILTERS_EQUAL_SIGN ?></th>
+            <th><?= LABEL_ATTRIBUTES ?></th>
+          </tr>
+  </thead>
+
+  <? if ($this->page_filter->values): ?>
+  <? foreach ($this->page_filter->values as $values): ?>
+  <tr id="<?= $values['id'] ?>">
+    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
+    <td><?= $values['value'] ?></td>
+    <td><?= $values['equal_sign'] ?></td>
+    <td><?= $this->attribute->values[$values['attribute_id']]['name'] ?></td>
+  </tr>
+  <? endforeach ?>
+  <? endif ?>
+
+</table>

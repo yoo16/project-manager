@@ -151,6 +151,11 @@ class ApiController extends ProjectController {
     function action_update_sort() {
         if (!isPost()) exit;
         DB::table('Api')->updateSortOrder($_REQUEST['sort_order']);
+
+        $results['is_success'] = true;
+        $results = json_encode($results);
+        echo($results);
+        exit;
     }
 
 }

@@ -152,6 +152,11 @@ class PageModelController extends ProjectController {
     function action_update_sort() {
         if (!isPost()) exit;
         DB::table('PageModel')->updateSortOrder($_REQUEST['sort_order']);
+
+        $results['is_success'] = true;
+        $results = json_encode($results);
+        echo($results);
+        exit;
     }
 
 }

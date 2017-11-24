@@ -2,27 +2,28 @@
 
 <div class="pt-3">
   <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
-  <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
+  <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table"><?= LABEL_SORT_ORDER ?></a>
+
+  <a href="#" class="btn btn-primary update-sortable" controller="record">更新</a>
 </div>
 
-<table class="table">
+<table id="list-table" class="table">
   <thead class="thead-deffault">
     <tr>
       <th>&nbsp;</th>
-                                    <th><?= LABEL_RECORDS_NAME ?></th>
-                                                      <th><?= LABEL_RECORDS_LABEL ?></th>
-                            </tr>
+      <th><?= LABEL_RECORDS_NAME ?></th>
+            <th><?= LABEL_RECORDS_LABEL ?></th>
+          </tr>
   </thead>
 
   <? if ($this->record->values): ?>
   <? foreach ($this->record->values as $values): ?>
-  <tr>
+  <tr id="<?= $values['id'] ?>">
     <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-                            <td>
-            <a href="<?= url_for('record_item/', ['record_id' => $values['id']]) ?>"><?= $values['name'] ?></a>            </td>
-                                                  <td><?= $values['label'] ?></td>
-                            </tr>
-    <? endforeach ?>
-    <? endif ?>
+    <td><a href="<?= url_for('record_item/', ['record_id' => $values['id']]) ?>"><?= $values['name'] ?></a></td>
+    <td><?= $values['label'] ?></td>
+  </tr>
+  <? endforeach ?>
+  <? endif ?>
 
-  </table>
+</table>

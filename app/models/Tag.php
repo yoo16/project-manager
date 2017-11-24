@@ -164,31 +164,35 @@ class Tag {
     }
 
     function formSelect($view_item, $model, $attribute) {
+        //model
         if ($view_item['csv']) {
             $params = "['csv' => '{$view_item['csv']}', 'unselect' => true]";
         } else if ($view_item['form_model_id']) {
             $fk_model = DB::table('Model')->fetch($view_item['form_model_id']); 
-            if ($fk_model->value && $view_item['where_attribute_id']) {
-                $where_attribute = DB::table('Attribute')->fetch($view_item['where_attribute_id']); 
-                $where_column = $where_attribute->value["name"];
-                $where_value = '{$this->'.$model["entity_name"]."->value['{$where_attribute->value['name']}']}";
-                $where = "'where' => \"{$where_column} = {$where_value}\",";
-            }
         } else if ($attribute['fk_attribute_id']) {
             $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
             $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']); 
         }
 
+        //where
         if ($view_item['where_model_id']) {
             $where_model = DB::table('Model')->fetch($view_item['where_model_id']); 
             $where_column = "{$where_model->value["entity_name"]}_id";
             $where_value = '{$this->'.$where_model->value["entity_name"]."->value['id']}";
             $where = "'where' => \"{$where_column} = {$where_value}\",";
+        } else if ($view_item['where_attribute_id']) {
+            $where_attribute = DB::table('Attribute')->fetch($view_item['where_attribute_id']); 
+            $where_column = $where_attribute->value["name"];
+            $where_value = '{$this->'.$model["entity_name"]."->value['{$where_attribute->value['name']}']}";
+            $where = "'where' => \"{$where_column} = {$where_value}\",";
         }
+
+        //order
         if ($view_item['where_order']) {
             $order = "'order' => '{$view_item['where_order']}',";
         }
 
+        //label
         if ($view_item['label_column']) {
             $label_columns = explode(',', $view_item['label_column']);
             foreach ($label_columns as $label_column) {
@@ -196,10 +200,13 @@ class Tag {
             }
             $label = implode(',', $labels);
         }
+
+        //value
         if ($view_item['value_column']) {
             $value_column = "'value_column' => '{$view_item['value_column']}',";
         }
 
+        //params
         if ($fk_model->value) {
             $params = "[
                         'unselect' => true,
@@ -248,9 +255,31 @@ class Tag {
         }
     }
 
+    function pageFilters($page_filters) {
+        if ($page_filters) {
+            foreach ($page_filters as $value) {
+                $attribute = DB::table('Attribute')->fetch($value['attribute_id']);
+                $eq = '=';
+                if ($value['eq']) $eq = $value['eq'];
+                if ($attribute->value) $filters[] = "\"{$attribute->value['name']} {$eq} '{$value['value']}'\"";
+            }
+            $filter = implode(', ', $filters);
+            $name = '$filters';
+            $tag = "var {$name} = [{$filter}];";
+
+            echo($tag).PHP_EOL;
+        }
+
+    }
+
     //TODO page_models ?
     function listValues($model, $page) {
         $instance = '$this->'.$model['entity_name'];
+
+        $return_space = PHP_EOL.'                                ';
+
+        $filter_entity = '$this->filters';
+        $where = "->wheres({$filter_entity})";
 
         if ($page['list_sort_order_columns']) {
             $sort_order_columns = explode(',', $page['list_sort_order_columns']);
@@ -272,7 +301,9 @@ class Tag {
         } else {
             $tag = "{$instance} = DB::table('{$model['class_name']}')";
         }
-        $tag.= $order;
+
+        $tag.= "{$return_space}{$where}";
+        $tag.= "{$return_space}{$order}";
         $tag.= "->all();";
         echo($tag).PHP_EOL;
     }
@@ -288,4 +319,15 @@ class Tag {
             }
         }
     }
+
+    function sortbleLink() {
+        $tag = '<a href="#" class="btn btn-outline-primary change-sortable" rel="list-table"><?= LABEL_SORT_ORDER ?></a>';
+        echo($tag).PHP_EOL;
+    }
+
+    function valuesId() {
+        $tag = '<?= $values[\'id\'] ?>';
+        return $tag;
+    }
+
 }
