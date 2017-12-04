@@ -131,7 +131,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
         if (!isPost()) exit;
 <? if ($values['model']): ?>
         $posts = $this->posts["<?= $values['model']['entity_name'] ?>"];
-        $<?= $values['model']['entity_name'] ?> = $<?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->update($posts, $this->params['id']);
+        $<?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->update($posts, $this->params['id']);
 
         if ($<?= $values['model']['entity_name'] ?>->errors) {
             $this->redirect_to('edit', $this->params['id']);
