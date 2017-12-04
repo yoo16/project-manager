@@ -1,36 +1,47 @@
 <?php
 /**
- * ViewItemGroup 
+ * ViewItemGroupMember 
  * 
- * @create  2017-11-21 14:18:14 
+ * @create  2017-11-29 13:05:37 
  */
 
 //namespace project_manager;
 
 require_once 'PgsqlEntity.php';
 
-class _ViewItemGroup extends PgsqlEntity {
+class _ViewItemGroupMember extends PgsqlEntity {
 
     var $id_column = 'id';
-    var $name = 'view_item_groups';
-    var $entity_name = 'view_item_group';
+    var $name = 'view_item_group_members';
+    var $entity_name = 'view_item_group_member';
 
     var $columns = array(
         'created_at' => array('type' => 'timestamp'),
-        'name' => array('type' => 'varchar', 'length' => 256),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
-        'view_id' => array('type' => 'int4', 'is_required' => true),
+        'view_item_group_id' => array('type' => 'int4', 'is_required' => true),
+        'view_item_id' => array('type' => 'int4', 'is_required' => true),
     );
 
     var $foreign = array(
-            'view_item_groups_view_id_fkey' => [
-                                  'column' => 'view_id',
-                                  'foreign_table' => 'views',
+            'view_item_group_members_view_item_group_id_fkey' => [
+                                  'column' => 'view_item_group_id',
+                                  'foreign_table' => 'view_item_groups',
+                                  'foreign_column' => 'id',
+                                  ],
+            'view_item_group_members_view_item_id_fkey1' => [
+                                  'column' => 'view_item_id',
+                                  'foreign_table' => 'view_items',
                                   'foreign_column' => 'id',
                                   ],
     );
 
+    var $unique = array(
+            'view_item_group_members_view_item_group_id_view_item_id_key' => [
+                        'view_item_group_id',
+                        'view_item_id',
+                        ],
+    );
 
 
 

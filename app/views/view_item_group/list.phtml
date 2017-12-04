@@ -12,18 +12,16 @@
     <tr>
       <th>&nbsp;</th>
       <th><?= LABEL_VIEW_ITEM_GROUPS_NAME ?></th>
-            <th><?= LABEL_VIEW_ITEMS ?></th>
-          </tr>
+    </tr>
   </thead>
 
   <? if ($this->view_item_group->values): ?>
-  <? foreach ($this->view_item_group->values as $values): ?>
-  <tr id="<?= $values['id'] ?>">
-    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-    <td><?= $values['name'] ?></td>
-    <td><?= $this->view_item->values[$values['view_item_id']][''] ?></td>
-  </tr>
-  <? endforeach ?>
+    <? foreach ($this->view_item_group->values as $values): ?>
+      <tr id="<?= $values['id'] ?>">
+        <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
+        <td><a href="<?= url_for('view_item_group_member/', ['view_item_group_id' => $values['id']]) ?>"><?= $values['name'] ?></a></td>
+      </tr>
+    <? endforeach ?>
   <? endif ?>
 
 </table>

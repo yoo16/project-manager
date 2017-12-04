@@ -1,1 +1,12 @@
 <? include('views/components/project_header.phtml') ?>
+<? if ($this->page->value): ?>
+  <h3><?= $this->page->value['label'] ?> : <?= $this->page->value['name'] ?></h3>
+
+  <div>
+    <? if ($this->page->value['model_id']): ?>
+    <a class="btn btn-outline-primary" href="<?= url_for('attribute/', array('model_id' => $this->page->value['model_id'])) ?>">Model</a>
+    <? endif ?>
+    <a class="btn btn-outline-primary" href="<?= url_for('page_filter/', array('page_id' => $this->page->value['id'])) ?>">Filters</a>
+    <a class="btn btn-outline-primary" href="<?= url_for('page_model/', array('page_id' => $this->page->value['id'])) ?>">Requests</a>
+  </div>
+<? endif ?>

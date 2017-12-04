@@ -20,6 +20,7 @@
       <th></th>
       <th>Overwrite</th>
       <th>Model / Entity Name</th>
+      <th></th>
     </tr>
   </thead>
 
@@ -29,7 +30,10 @@
         <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $page['id']) ?></td>
         <td>
           <div>
-            <a class="" href="<?= url_for('view/', array('page_id' => $page['id'])) ?>"><?= Page::className($page) ?></a>
+            <a class="" href="<?= url_for('view/', array('page_id' => $page['id'])) ?>"><?= $page['name'] ?></a>
+            <div>
+              <?= Page::className($page) ?>
+            </div>
           </div>
           <div>
             <?= $page['label'] ?>
@@ -49,6 +53,8 @@
           <div><?= $page['entity_name'] ?></div>
           <div><? if ($page['model_id']): ?><?= $page['model']['name'] ?><? endif ?></div>
         </td>
+
+        <td><a class="btn btn-outline-primary" href="<?= url_for('duplicate', $page['id']) ?>"><?= LABEL_DUPLICATE ?></a></td>
       </tr>
     <? endforeach ?> 
   <? endif ?>

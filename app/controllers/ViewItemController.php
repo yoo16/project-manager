@@ -78,6 +78,17 @@ class ViewItemController extends ProjectController {
                             ->all()
                             ->values;
 
+        $this->view_item_group = $this->view
+                                        ->relationMany('ViewItemGroup')
+                                        ->idIndex()
+                                        ->all();
+
+        $this->form['view_item_group']['name'] = 'view_item_group_member[view_item_group_id]';
+        $this->form['view_item_group']['values'] = $this->view_item_group->values;
+        $this->form['view_item_group']['value'] = 'id';
+        $this->form['view_item_group']['label'] = 'name';
+        $this->form['view_item_group']['class'] = 'form-control col-12';
+        $this->form['view_item_group']['unselect'] = true;
     }
 
    /**
@@ -276,5 +287,25 @@ class ViewItemController extends ProjectController {
         }
         $this->redirect_to('list');
     }
+
+   /**
+    * update
+    *
+    * @param
+    * @return void
+    */
+    function action_update_view_item_group() {
+        if (!isPost()) exit;
+        $posts = $_REQUEST["view_item_group_member"];
+        $view_item_group_member = DB::table('ViewItemGroupMember')
+                            ->where("view_item_group_id = {$posts['view_item_group_id']}")
+                            ->where("view_item_id = {$posts['view_item_id']}")
+                            ->one();
+        if (!$view_item_group_member->value) {
+            $view_item_group_member = DB::table('ViewItemGroupMember')->insert($posts);
+        }
+        $this->redirect_to('list');
+    }
+
 
 }

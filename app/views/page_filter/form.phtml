@@ -1,11 +1,16 @@
 
 <div class="form-group row">
-  <label class="form-control-label col-2" for="value"><?= LABEL_PAGE_FILTERS_VALUE ?></label>
-    <?= $this->page_filter->formInput('value') ?>    
+  <label class="form-control-label col-2" for="attribute_id"><?= LABEL_ATTRIBUTES ?></label>
+    <?= $this->page_filter->formSelect('attribute_id', [
+                        'unselect' => true,
+                        'label_separate' => '-',
+                        'label' => ['name'],
+                        'model' => 'Attribute',
+                        'where' => "model_id = {$this->model->value['id']}",
+                        'order' => 'name',
+                        
+                        ]) ?>    
 </div>
-
-
-
 
 
 
@@ -17,17 +22,12 @@
 
 
 <div class="form-group row">
-  <label class="form-control-label col-2" for="attribute_id"><?= LABEL_ATTRIBUTES ?></label>
-    <?= $this->page_filter->formSelect('attribute_id', [
-                        'unselect' => true,
-                        'label_separate' => ' - ',
-                        'label' => ['name', 'label'],
-                        'model' => 'Attribute',
-                        'where' => "model_id = {$this->model->value['id']}",
-                        'order' => "name",
-                        
-                        ]) ?>    
+  <label class="form-control-label col-2" for="value"><?= LABEL_PAGE_FILTERS_VALUE ?></label>
+    <?= $this->page_filter->formInput('value') ?>    
 </div>
+
+
+
 
 
 

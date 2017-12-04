@@ -1,0 +1,50 @@
+
+<h2 id="table-list">Table</h2>
+<a href="#" class="change-show-all-table">show all</a>
+<a href="#" class="change-hide-all-table">hide all</a>
+
+<table class="table">
+  <? foreach ($this->pg_classes as $pg_class): ?>
+    <tr>
+      <td><input type="checkbox" name="check_<?= $pg_class['pg_class_id'] ?>" class="change-show-table" checked rel="<?= $pg_class['pg_class_id'] ?>"></td>
+      <td><a href="#<?= $pg_class['pg_class_id'] ?>"><?= $pg_class['tablename'] ?></a></td>
+      <td><?= $pg_class['comment'] ?></td>
+    </tr>
+  <? endforeach ?>
+</table>
+
+<? if ($this->pg_classes): ?>
+  <div class="row">
+    <? foreach ($this->pg_classes as $pg_class): ?>
+      <div id="<?= $pg_class['pg_class_id'] ?>" class="db-table col-3 mb-3">
+        <div class="card">
+
+          <div class="card-header">
+            <div><?= $pg_class['tablename'] ?></div>
+            <div><?= $pg_class['comment'] ?></div>
+          </div>
+
+          <div>
+            <table class="table">
+              <? foreach ($pg_class['pg_attribute'] as $attnum => $pg_attribute): ?>
+                <tr>
+                  <td>
+                    <? if ($confrelid = checkForeign($pg_class['pg_constraint']['foreign'], $pg_attribute['attname'])): ?>
+                      <div id="<?= $pg_class['pg_class_id'] ?>-<?= $attnum ?>"><a href="#<?= $confrelid ?>"><?= $pg_attribute['attname'] ?></a></div>
+                      <script type="text/javascript">
+                        drawRelation(<?= $pg_class['pg_class_id'] ?>, <?= $attnum ?>, <?= $confrelid ?>)
+                      </script>
+                    <? else: ?>
+                      <div id="<?= $pg_class['pg_class_id'] ?>-<?= $attnum ?>"><?= $pg_attribute['attname'] ?></div>
+                    <? endif ?>
+                  </td>
+                </tr>
+              <? endforeach ?>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    <? endforeach ?>
+  </div>
+<? endif ?>

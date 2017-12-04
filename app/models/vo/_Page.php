@@ -29,6 +29,7 @@ class _Page extends PgsqlEntity {
         'project_id' => array('type' => 'int4', 'is_required' => true),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
+        'view_name' => array('type' => 'varchar', 'length' => 256),
         'where_model_id' => array('type' => 'int4'),
     );
 

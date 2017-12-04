@@ -11,7 +11,6 @@ class ApiController extends ProjectController {
 
     var $name = 'api';
 
-
    /**
     * before_action
     *
@@ -54,7 +53,9 @@ class ApiController extends ProjectController {
     */
     function action_list() {
         if (!$this->project->value) $this->redirect_to('/');
-        $this->api = $this->project->relationMany('Api')->all();
+        $this->api = $this->project->relationMany('Api')
+                                ->wheres($this->filters)
+                                ->all();
 
                 
     }
@@ -139,7 +140,9 @@ class ApiController extends ProjectController {
     */
     function action_sort_order() {
         if (!$this->project->value) $this->redirect_to('/');
-        $this->api = $this->project->relationMany('Api')->all();
+        $this->api = $this->project->relationMany('Api')
+                                ->wheres($this->filters)
+                                ->all();
     }
 
    /**

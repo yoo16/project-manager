@@ -56,7 +56,6 @@ class ViewItemGroupController extends ViewController {
         if (!$this->view->value) $this->redirect_to('/');
         $this->view_item_group = $this->view->relationMany('ViewItemGroup')->all();
 
-                
     }
 
    /**

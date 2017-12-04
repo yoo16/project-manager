@@ -11,7 +11,6 @@ class RecordItemController extends RecordController {
 
     var $name = 'record_item';
 
-
    /**
     * before_action
     *
@@ -54,7 +53,9 @@ class RecordItemController extends RecordController {
     */
     function action_list() {
         if (!$this->record->value) $this->redirect_to('/');
-        $this->record_item = $this->record->relationMany('RecordItem')->all();
+        $this->record_item = $this->record->relationMany('RecordItem')
+                                ->wheres($this->filters)
+                                ->all();
 
                 
     }
@@ -139,7 +140,9 @@ class RecordItemController extends RecordController {
     */
     function action_sort_order() {
         if (!$this->record->value) $this->redirect_to('/');
-        $this->record_item = $this->record->relationMany('RecordItem')->all();
+        $this->record_item = $this->record->relationMany('RecordItem')
+                                ->wheres($this->filters)
+                                ->all();
     }
 
    /**

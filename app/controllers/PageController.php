@@ -103,6 +103,26 @@ class PageController extends ProjectController {
         $this->redirect_to('edit', $this->params['id']);
     }
 
+    function action_duplicate() {
+        //TODO Entity function?
+        $page = DB::table('Page')->fetch($this->params['id']);
+        $posts = $page->value;
+        $posts['name'] = "{$page->value['name']}_copy";
+        unset($posts['id']);
+
+        $page = DB::table('Page')->insert($posts);
+
+        if ($page->errors) {
+            $this->flash['errors'] = $page->errors;
+            var_dump($this->posts['page']);
+            var_dump($page->errors);
+            var_dump($page->sql_error);
+            var_dump($page->sql);
+            exit;
+        }
+        $this->redirect_to('list');
+    }
+
     function action_delete() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $page = DB::table('Page')->delete($this->params['id']);

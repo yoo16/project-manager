@@ -11,7 +11,6 @@ class PageModelController extends ProjectController {
 
     var $name = 'page_model';
 
-
    /**
     * before_action
     *
@@ -54,7 +53,9 @@ class PageModelController extends ProjectController {
     */
     function action_list() {
         if (!$this->page->value) $this->redirect_to('/');
-        $this->page_model = $this->page->relationMany('PageModel')->all();
+        $this->page_model = $this->page->relationMany('PageModel')
+                                ->wheres($this->filters)
+                                ->all();
 
         $this->model = DB::table('Model')->idIndex()->all();
         
@@ -140,7 +141,9 @@ class PageModelController extends ProjectController {
     */
     function action_sort_order() {
         if (!$this->page->value) $this->redirect_to('/');
-        $this->page_model = $this->page->relationMany('PageModel')->all();
+        $this->page_model = $this->page->relationMany('PageModel')
+                                ->wheres($this->filters)
+                                ->all();
     }
 
    /**

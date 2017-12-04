@@ -319,6 +319,11 @@ class AttributeController extends ProjectController {
             $attribute->update($posts);
         }
         $params['model_id'] = $attribute->value['model_id'];
+
+        if ($attribute->errors) {
+            var_dump($attribute->errors);
+            exit;
+        }
         $this->redirect_to('list', $params);
     }
 

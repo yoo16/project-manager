@@ -38,7 +38,7 @@ $(document).on('click', '.change-hide-all-table', function() {
     checkDate(this);
 });
 
- $(function(){
+$(function(){
     $('.update-sortable').hide();
 });
 
@@ -48,6 +48,7 @@ $(document).on('click', '.change-sortable', function() {
     $('.update-sortable').show();
 
     $(id).sortable();
+    $(id).sortable('enable');
     $(id).disableSelection();
     $(id).sortable({
         update: function(ev, ui) {
@@ -68,7 +69,6 @@ $(document).on('click', '.change-sortable', function() {
         } 
     });
 });
-
 
  function checkDate(target) {
     var date_name = $(target).attr('name');

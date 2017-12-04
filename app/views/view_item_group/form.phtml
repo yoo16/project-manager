@@ -5,25 +5,6 @@
 </div>
 
 
-
-<div class="form-group row">
-  <label class="form-control-label col-2" for="view_item_id"><?= LABEL_VIEW_ITEMS ?></label>
-    <?= $this->view_item_group->formSelect('view_item_id', [
-                        'unselect' => true,
-                        'label_separate' => '-',
-                        'label' => ['label'],
-                        'model' => 'ViewItem',
-                        'where' => "view_id = {$this->view->value['id']}",
-                        
-                        'value_column' => 'label',
-                        ]) ?>    
-</div>
-
-
-
-
-
-
 <?= FormHelper::submit(LABEL_SAVE) ?>
 <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>
 <input type="hidden" name="view_item_group[view_id]" value="<?= $this->view->value['id'] ?>">

@@ -6,7 +6,7 @@
  */
 
 class FormHelper {
-    static $except_columns = ['model', 'label', 'where', 'value', 'label_separate', 'unselect'];
+    static $except_columns = ['model', 'label', 'where', 'value', 'values', 'label_separate', 'unselect'];
 
     /**
      * selectタグ

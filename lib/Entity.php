@@ -209,7 +209,7 @@ class Entity {
     public function takeValues($values) {
         if (!$values) return $this;
         foreach ($this->columns as $column_name => $value) {
-            if (isset($values[$column_name])) {
+            if (array_key_exists($column_name, $values)) {
                 $column = $this->columns[$column_name];
                 $type = $column['type'];
                 $this->value[$column_name] = $this->cast($type, $values[$column_name]);

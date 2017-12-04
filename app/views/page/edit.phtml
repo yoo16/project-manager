@@ -36,6 +36,11 @@
         <label for="" class="col-3 col-form-label">Entity Name</label>
         <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'entity_name') ?>" type="text" name="page[entity_name]" value="<?= $this->page->value['entity_name'] ?>" required autocomplete="off">
       </div>
+
+      <div class="form-group row">
+        <label for="" class="col-3 col-form-label">View Name</label>
+        <input class="form-control col-5" type="text" name="page[view_name]" value="<?= $this->page->value['view_name'] ?>" autocomplete="off">
+      </div>
       
       <div class="form-group row">
         <label for="" class="col-3 col-form-label">Layout</label>

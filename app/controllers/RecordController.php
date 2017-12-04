@@ -11,7 +11,6 @@ class RecordController extends ProjectController {
 
     var $name = 'record';
 
-
    /**
     * before_action
     *
@@ -53,7 +52,9 @@ class RecordController extends ProjectController {
     */
     function action_list() {
         if (!$this->project->value) $this->redirect_to('/');
-        $this->record = $this->project->relationMany('Record')->all();
+        $this->record = $this->project->relationMany('Record')
+                                ->wheres($this->filters)
+                                ->all();
 
                 
     }
@@ -138,7 +139,9 @@ class RecordController extends ProjectController {
     */
     function action_sort_order() {
         if (!$this->project->value) $this->redirect_to('/');
-        $this->record = $this->project->relationMany('Record')->all();
+        $this->record = $this->project->relationMany('Record')
+                                ->wheres($this->filters)
+                                ->all();
     }
 
    /**

@@ -1,15 +1,15 @@
 <?php
 /**
- * ApiParamController 
+ * ViewItemGroupMemberController 
  *
- * @create  2017-11-07 18:10:51 
+ * @create  2017-11-29 18:21:35 
  */
 
-require_once 'ApiController.php';
+require_once 'ViewItemGroupController.php';
 
-class ApiParamController extends ApiController {
+class ViewItemGroupMemberController extends ViewItemGroupController {
 
-    var $name = 'api_param';
+    var $name = 'view_item_group_member';
 
    /**
     * before_action
@@ -19,7 +19,7 @@ class ApiParamController extends ApiController {
     */
     function before_action($action) {
         parent::before_action($action);
-        $this->api = DB::table('Api')->requestSession();
+        $this->view_item_group = DB::table('ViewItemGroup')->requestSession();
 
     }
 
@@ -52,8 +52,8 @@ class ApiParamController extends ApiController {
     * @return void
     */
     function action_list() {
-        if (!$this->api->value) $this->redirect_to('/');
-        $this->api_param = $this->api->relationMany('ApiParam')
+        if (!$this->view_item_group->value) $this->redirect_to('/');
+        $this->view_item_group_member = $this->view_item_group->relationMany('ViewItemGroupMember')
                                 ->wheres($this->filters)
                                 ->all();
 
@@ -67,7 +67,7 @@ class ApiParamController extends ApiController {
     * @return void
     */
     function action_new() {
-        $this->api_param = DB::table('ApiParam')->init()->takeValues($this->posts['api_param']);
+        $this->view_item_group_member = DB::table('ViewItemGroupMember')->init()->takeValues($this->posts['view_item_group_member']);
     }
 
    /**
@@ -79,9 +79,9 @@ class ApiParamController extends ApiController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->api_param = DB::table('ApiParam')
+        $this->view_item_group_member = DB::table('ViewItemGroupMember')
                     ->fetch($this->params['id'])
-                    ->takeValues($this->posts['api_param']);
+                    ->takeValues($this->posts['view_item_group_member']);
     }
 
    /**
@@ -92,10 +92,10 @@ class ApiParamController extends ApiController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["api_param"];
-        $api_param = DB::table('ApiParam')->insert($posts);
+        $posts = $this->posts["view_item_group_member"];
+        $view_item_group_member = DB::table('ViewItemGroupMember')->insert($posts);
 
-        if ($api_param->errors) {
+        if ($view_item_group_member->errors) {
             $this->redirect_to('new');
         } else {
             $this->redirect_to('index');
@@ -110,10 +110,10 @@ class ApiParamController extends ApiController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["api_param"];
-        $api_param = $api_param = DB::table('ApiParam')->update($posts, $this->params['id']);
+        $posts = $this->posts["view_item_group_member"];
+        $view_item_group_member = $view_item_group_member = DB::table('ViewItemGroupMember')->update($posts, $this->params['id']);
 
-        if ($api_param->errors) {
+        if ($view_item_group_member->errors) {
             $this->redirect_to('edit', $this->params['id']);
         } else {
             $this->redirect_to('index');
@@ -128,7 +128,7 @@ class ApiParamController extends ApiController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('ApiParam')->delete($this->params['id']);
+        DB::table('ViewItemGroupMember')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 
@@ -139,8 +139,8 @@ class ApiParamController extends ApiController {
     * @return void
     */
     function action_sort_order() {
-        if (!$this->api->value) $this->redirect_to('/');
-        $this->api_param = $this->api->relationMany('ApiParam')
+        if (!$this->view_item_group->value) $this->redirect_to('/');
+        $this->view_item_group_member = $this->view_item_group->relationMany('ViewItemGroupMember')
                                 ->wheres($this->filters)
                                 ->all();
     }
@@ -153,7 +153,7 @@ class ApiParamController extends ApiController {
     */
     function action_update_sort() {
         if (!isPost()) exit;
-        DB::table('ApiParam')->updateSortOrder($_REQUEST['sort_order']);
+        DB::table('ViewItemGroupMember')->updateSortOrder($_REQUEST['sort_order']);
 
         $results['is_success'] = true;
         $results = json_encode($results);

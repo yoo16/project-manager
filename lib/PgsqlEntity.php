@@ -200,6 +200,7 @@ class PgsqlEntity extends Entity {
         return $this;
     }
 
+
     /**
     * database name
     * 
@@ -207,8 +208,10 @@ class PgsqlEntity extends Entity {
     * @return PgsqlEntity
     */
     function setDBName($name) {
-        $this->dbname = $name;
-        $this->loadDBInfo();
+        if ($name) {
+            $this->dbname = $name;
+            $this->loadDBInfo();
+        }
         return $this;
     }
 
@@ -219,8 +222,10 @@ class PgsqlEntity extends Entity {
     * @return PgsqlEntity
     */
     function setDBHost($host) {
-        $this->host = $host;
-        $this->loadDBInfo();
+        if ($host) {
+            $this->host = $host;
+            $this->loadDBInfo();
+        }
         return $this;
     }
 
@@ -231,8 +236,10 @@ class PgsqlEntity extends Entity {
     * @return PgsqlEntity
     */
     function setDBUser($user) {
-        $this->user = $user;
-        $this->loadDBInfo();
+        if ($user) {
+            $this->user = $user;
+            $this->loadDBInfo();
+        }
         return $this;
     }
 
@@ -243,8 +250,10 @@ class PgsqlEntity extends Entity {
     * @return PgsqlEntity
     */
     function setDBPort($port) {
-        $this->port = $port;
-        $this->loadDBInfo();
+        if ($port) {
+            $this->port = $port;
+            $this->loadDBInfo();
+        }
         return $this;
     }
 
@@ -2935,8 +2944,6 @@ class PgsqlEntity extends Entity {
      * @return array
      */
     public function changeNotNull($table_name, $column_name, $is_required = true) {
-        var_dump($table_name);
-        var_dump($column_name);
         if ($is_required) {
             return $this->setNotNull($table_name, $column_name);
         } else {

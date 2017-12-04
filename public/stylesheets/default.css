@@ -81,3 +81,24 @@ h3,h4,h5 {
 	top: 5rem !important;
 	z-index: 100000;
 }
+
+.db-list {
+	font-size: 0.7rem !important;
+}
+
+.db-list.card-header {
+	padding: 0.1rem 0.5rem;
+}
+
+.db-list td,
+.db-list th
+ {
+	font-size: 0.7rem !important;
+	padding: 0.2rem 0.5rem;
+}
+
+@media print {
+.database-index {
+	display: none;
+	}
+}
