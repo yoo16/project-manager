@@ -111,7 +111,7 @@ class RecordItemController extends RecordController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["record_item"];
-        $record_item = $record_item = DB::table('RecordItem')->update($posts, $this->params['id']);
+        $record_item = DB::table('RecordItem')->update($posts, $this->params['id']);
 
         if ($record_item->errors) {
             $this->redirect_to('edit', $this->params['id']);

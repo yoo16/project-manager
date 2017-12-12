@@ -186,7 +186,7 @@ class AttributeController extends ProjectController {
         if (!isPost()) exit;
         $model = DB::table('Model')->fetch($_REQUEST['model_id']);
 
-        $database = DB::table('Database')->fetch($model->value['database_id']);
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
         $table_name = $_REQUEST['table_name'];
 
         if ($database && $table_name) {
@@ -414,6 +414,28 @@ class AttributeController extends ProjectController {
         $posts['old_name'] = '';
         DB::table('Attribute')->fetch($this->params['id'])->update($posts);
         $this->redirect_to('edit', $this->params['id']);
+    }
+
+    function action_sync_attribute() {
+        if (!$this->database->value['id']) {
+            $this->redirect_to('project/');
+        }
+
+        $model = DB::table('Model')->fetch($this->params['id']);
+
+        if ($model->value['id']) {
+            $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+            $pg_class = $pgsql_entity->pgClassByRelname($model->value['name']);
+
+            if ($pg_class) {
+                $model_values['pg_class_id'] = $pg_class['pg_class_id'];
+                $model = DB::table('Model')->update($model_values, $model->value['id']);
+            } else {
+                $this->syncDB($model);
+            }
+        }
+
+        $this->redirect_to('list');
     }
 
 }

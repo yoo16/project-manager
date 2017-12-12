@@ -18,7 +18,7 @@
   <? if ($this->database->value['id']): ?>
   <tr>
     <th>Database</th>
-    <td><?= $this->database->value['name'] ?></td>
+    <td><a href="<?= url_for('database/edit', $this->database->value['id']) ?>"><?= $this->database->value['name'] ?></a></td>
     <td><?= $this->database->value['hostname'] ?></td>
     <td><?= $this->database->value['user_name'] ?></td>
     <td><?= $this->database->value['port'] ?></td>

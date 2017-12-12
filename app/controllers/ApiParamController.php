@@ -111,7 +111,7 @@ class ApiParamController extends ApiController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["api_param"];
-        $api_param = $api_param = DB::table('ApiParam')->update($posts, $this->params['id']);
+        $api_param = DB::table('ApiParam')->update($posts, $this->params['id']);
 
         if ($api_param->errors) {
             $this->redirect_to('edit', $this->params['id']);

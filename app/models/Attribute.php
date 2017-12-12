@@ -61,10 +61,9 @@ class Attribute extends _Attribute {
         }
     }
 
-    function importByModel($model) {
+    function importByModel($model, $database) {
         if (!$model) return;
 
-        $database = DB::table('Database')->fetch($model['database_id']);
         if (!$database->value) return;
 
         $pg_attributes = $database->pgsql()->attributeArray($model['name']); 
@@ -80,7 +79,7 @@ class Attribute extends _Attribute {
             $value['model_id'] = $model['id'];
             $value['name'] = $pg_attribute['attname'];
             $value['type'] = $pg_attribute['udt_name'];
-            $value['label'] = $pg_attribute['comment'];
+            if ($pg_attribute['comment']) $value['label'] = $pg_attribute['comment'];
             $value['length'] = $pg_attribute['character_maximum_length'];
             $value['attrelid'] = $pg_attribute['pg_class_id'];
             $value['attnum'] = $pg_attribute['attnum'];
@@ -89,13 +88,14 @@ class Attribute extends _Attribute {
 
             if ($pg_attribute['attnum'] > 0) {
                 if ($attribute->value['id']) {
-                        $attribute = DB::table('Attribute')->update($value, $attribute->value['id']);
+                    $attribute = DB::table('Attribute')->update($value, $attribute->value['id']);
                 } else {
                     $attribute = DB::table('Attribute')->insert($value);
                 }
             }
         }
     }
+
 
     /**
      * delete Unrelated
@@ -131,8 +131,7 @@ class Attribute extends _Attribute {
 
         $results = $pgsql->addColumn($pg_class['relname'], $column['name'], $column);
         if (!$results) {
-            echo($pgsql->sql_error);
-            return;
+            echo($pgsql->sql_error).PHP_EOL;
         }
         $pg_attribute = $pgsql->pgAttributeByColumn($pg_class['relname'], $column['name']);
 

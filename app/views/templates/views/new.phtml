@@ -1,7 +1,21 @@
 <?= "<? include('_header.phtml') ?>" ?>
 
-<form action="<? Tag::init()->php('url_for(\'add\')') ?>" method="post">
+<div class="card">
 
-<?= "<? include('form.phtml') ?>" ?>
+  <form action="<? Tag::init()->php('url_for(\'add\')') ?>" method="post">
 
-</form>
+    <div class="card-header">
+      <h4></h4>
+      <div class="text-left">
+        <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
+        <? Tag::init()->php('FormHelper::linkButton("cancel", LABEL_BACK)') ?>
+      </div>
+    </div>
+
+    <div class="card-block">
+      <?= "<? include('form.phtml') ?>" ?>
+    </div>
+
+  </form>
+
+</div>

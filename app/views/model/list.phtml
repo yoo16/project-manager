@@ -36,60 +36,68 @@
         </th>
         <th>Controller</th>
         <th>DB info</th>
+        <th></th>
+        <th></th>
       </tr>
     </thead>
 
     <? if ($this->model->values): ?>
-    <? foreach ($this->model->values as $model): ?>
-    <tr>
-      <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $model['id']) ?></td>
-      <td>
-        <div><?= FormHelper::link('attribute/', $model['name'], ['model_id' => $model['id']]) ?></div>
-        <div><?= $model['label'] ?></div>
-        <? if ($model['old_name']): ?><div>(<?= $model['old_name'] ?> : <?= $model['old_database_id'] ?>)</div><? endif ?>
-      </td>
-      <td><a class="btn btn-outline-primary" href="<?= url_for('values', $model['id']) ?>">Data</a></td>
-      <td>
-        <div><?= $model['entity_name'] ?></div>
-        <div><?= $model['class_name'] ?></div>
-      </td>
-      <td>
-        <form action="<?= url_for('page/create_page_from_model') ?>" method="post">
-          <?= FormHelper::button(LABEL_CREATE, ['class' => 'btn btn-sm btn-primary confirm-dialog', 'message' => "Create page?"]) ?>
-          <?= FormHelper::hidden('model_id', $model['id']) ?>
-        </form>
-      </td>
-      <td>
-      <? if ($model['pg_class']): ?>
-        <?= FormHelper::badgeTag($model['pg_class']['pg_class_id']) ?>
-      <? else: ?>
-        <a class="btn btn-sm btn-outline-primary" href="<?= url_for('sync_model', $model['id']) ?>">Sync</a>
+      <? foreach ($this->model->values as $model): ?>
+        <tr>
+          <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $model['id']) ?></td>
+          <td>
+            <div><?= FormHelper::link('attribute/', $model['name'], ['model_id' => $model['id']]) ?></div>
+            <div><?= $model['label'] ?></div>
+            <? if ($model['old_name']): ?><div>(<?= $model['old_name'] ?> : <?= $model['old_database_id'] ?>)</div><? endif ?>
+          </td>
+          <td><a class="btn btn-outline-primary" href="<?= url_for('values', $model['id']) ?>">Data</a></td>
+          <td>
+            <div><?= $model['entity_name'] ?></div>
+            <div><?= $model['class_name'] ?></div>
+          </td>
+          <td>
+            <form action="<?= url_for('page/create_page_from_model') ?>" method="post">
+              <?= FormHelper::button(LABEL_CREATE, ['class' => 'btn btn-sm btn-primary confirm-dialog', 'message' => "Create page?"]) ?>
+              <?= FormHelper::hidden('model_id', $model['id']) ?>
+            </form>
+          </td>
+          <td>
+            <? if ($model['pg_class']): ?>
+              <?= FormHelper::badgeTag($model['pg_class']['pg_class_id']) ?>
+            <? else: ?>
+            <? endif ?>
+
+            <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
+              <?= FormHelper::badgeTag('sync', null, 'success') ?>
+            <? else: ?>
+              <?= FormHelper::badgeTag('unsync', null, 'danger') ?>
+              <span class="badge badge-default">
+                <?= $model['pg_class_id'] ?> = 
+                <?= $model['pg_class']['pg_class_id'] ?>
+              </span>
+            <? endif ?>
+
+            <? if ($model['label'] == $model['pg_class']['comment']): ?>
+              <?= FormHelper::badgeTag('label', null, 'success') ?>
+            <? else: ?>
+              <?= FormHelper::badgeTag('different label', null, 'danger') ?>
+              <?= FormHelper::badgeTag($model['pg_class']['comment'], null, 'default') ?>
+            <? endif ?>
+            <? if ($model['is_lock']): ?>
+              <?= FormHelper::badgeTag('Delete Lock', null, 'danger') ?>
+            <? endif ?>
+
+            <?= $model['database_id'] ?>
+          </td>
+          <td>
+            <a class="btn btn-sm btn-outline-primary" href="<?= url_for('sync_model', $model['id']) ?>">Sync</a>
+          </td>
+          <td>
+            <a class="btn btn-outline-primary" href="<?= url_for('duplicate', $model['id']) ?>"><?= LABEL_DUPLICATE ?></a>
+          </td>
+
+        </tr>
+      <? endforeach ?>
     <? endif ?>
-
-    <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
-    <?= FormHelper::badgeTag('sync', null, 'success') ?>
-    <? else: ?>
-    <?= FormHelper::badgeTag('unsync', null, 'danger') ?>
-    <span class="badge badge-default">
-      <?= $model['pg_class_id'] ?> = 
-      <?= $model['pg_class']['pg_class_id'] ?>
-    </span>
-    
-    <? endif ?>
-
-<? if ($model['label'] == $model['pg_class']['comment']): ?>
-<?= FormHelper::badgeTag('label', null, 'success') ?>
-<? else: ?>
-<?= FormHelper::badgeTag('different label', null, 'danger') ?>
-<?= FormHelper::badgeTag($model['pg_class']['comment'], null, 'default') ?>
-<? endif ?>
-<? if ($model['is_lock']): ?>
-<?= FormHelper::badgeTag('Delete Lock', null, 'danger') ?>
-<? endif ?>
-</td>
-
-</tr>
-<? endforeach ?>
-<? endif ?>
-</table>
+  </table>
 </div>

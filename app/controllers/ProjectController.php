@@ -28,7 +28,7 @@ class ProjectController extends AppController {
 
         $this->project = DB::table('Project')->requestSession();
         if ($this->project->value) {
-            $this->database = $this->project->belongsTo('Database');
+            $this->database = DB::table('Database')->fetch($this->project->value['database_id']);
             $this->user_project_setting = $this->project->hasMany('UserProjectSetting');
         }
     }
@@ -61,7 +61,7 @@ class ProjectController extends AppController {
 
     function action_cancel() {
         $this->clearSession();
-        $this->index();
+        $this->redirect_to('index');
     }
 
     function action_list() {
@@ -96,13 +96,11 @@ class ProjectController extends AppController {
     }
 
     function action_update() {
-        $project = DB::table('Project')
-                        ->fetch($this->params['id'])
-                        ->post()
-                        ->update();
+        $project = DB::table('Project')->update($_REQUEST['project'], $this->params['id']);
 
-        if (!$project->errors) {
-            $this->clearPosts();
+        if ($project->errors) {
+            var_dump($project->errors);
+            exit;
         }
         $this->redirect_to('edit', $this->params['id']);
     }
@@ -309,7 +307,6 @@ class ProjectController extends AppController {
             $model_values['class_name'] = FileManager::phpClassName($model_values['entity_name']);
 
             $model = DB::table('Model')
-                            //->where("pg_class_id = '{$pg_class['pg_class_id']}'")
                             ->where("name = '{$pg_class['relname']}'")
                             ->where("database_id = {$this->database->value['id']}")
                             ->one();
@@ -321,7 +318,7 @@ class ProjectController extends AppController {
             }
 
             $attribute = new Attribute();
-            $attribute->importByModel($model->value);
+            $attribute->importByModel($model->value, $this->database);
         }
 
         //update constraint : fi_attribute_id and action

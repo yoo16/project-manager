@@ -159,7 +159,7 @@ class ModelController extends ProjectController {
             $model = DB::table('Model')->insert($posts);
 
             $attribute = new Attribute();
-            $attribute->importByModel($model->value);
+            $attribute->importByModel($model->value, $this->database);
         }
 
         unset($this->session['posts']);
@@ -190,10 +190,50 @@ class ModelController extends ProjectController {
         }
         if ($model->errors) {
             $this->flash['errors'] = $model->errors;
+            var_dump($model->errors);
+            exit;
         } else {
             unset($this->session['posts']);
         }
         $this->redirect_to('edit', $this->params['id']);
+    }
+
+    function action_duplicate() {
+        $model = DB::table('Model')->fetch($this->params['id']);
+        if ($model->value['id']) {
+            $attribute = $model->relationMany('Attribute')->all();
+
+            $posts = $model->value;
+            $posts['name'] = "{$posts['name']}_1";
+            unset($posts['id']);
+            unset($posts['pg_class_id']);
+
+            $new_model = DB::table('Model')->insert($posts);
+
+            foreach ($attribute->values as $value) {
+                $value['name'] = "{$value['name']}";
+                $value['model_id'] = $new_model->value['id'];
+                unset($value['id']);
+                unset($value['attrelid']);
+                unset($value['attnum']);
+                $new_attribute = DB::table('Attribute')->insert($value);
+
+                if ($new_attribute->sql_error) {
+                    var_dump($new_attribute->sql_error);
+                    $new_model->delete($new_model->value['id']);
+                    exit;
+                }
+                if ($new_attribute->errors) {
+                    var_dump($new_attribute->errors);
+                    $new_model->delete($new_model->value['id']);
+                    exit;
+                }
+            }
+
+            if ($new_model->value['id']) $this->syncDB($new_model);
+        }
+
+        $this->redirect_to('list');
     }
 
     function action_delete() {
@@ -234,7 +274,7 @@ class ModelController extends ProjectController {
 
         $model = DB::table('Model')->fetch($_REQUEST['model_id']);
 
-        $database = DB::table('Database')->fetch($model->value['database_id']);
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
         $table_name = $model['name'];
 
         if ($database && $table_name) {
@@ -312,24 +352,197 @@ class ModelController extends ProjectController {
     }
 
     function action_sync_model() {
+        if (!$this->database->value['id']) {
+            $this->redirect_to('project/');
+        }
+
         $model = DB::table('Model')->fetch($this->params['id']);
 
         if ($model->value['id']) {
             $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
             $pg_class = $pgsql_entity->pgClassByRelname($model->value['name']);
-            //var_dump($pg_class['pg_class_id']);
 
             if ($pg_class) {
                 $model_values['pg_class_id'] = $pg_class['pg_class_id'];
+                $model = DB::table('Model')->update($model_values, $model->value['id']);
+            } else {
+                $this->syncDB($model);
             }
-            $model = DB::table('Model')->update($model_values, $model->value['id']);
-
-            //var_dump($model->sql);
-            //var_dump($model->errors);
-            //exit;
+            
+            $attribute = new Attribute();
+            $attribute->importByModel($model->value, $this->database);
         }
 
         $this->redirect_to('list');
+    }
+
+
+    function action_sync_models() {
+        if (!$this->database->value['id']) $this->redirect_to('project/');
+
+        $model = $this->project->relationMany('Model')->all();
+
+        if ($model->values) {
+            foreach ($model->values as $model_values) {
+                $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+                $pg_class = $pgsql_entity->pgClassByRelname($model_values['name']);
+
+                if ($pg_class) {
+                    $model_values['pg_class_id'] = $pg_class['pg_class_id'];
+                    $model = DB::table('Model')->update($model_values, $model_values['id']);
+
+                    $attribute = new Attribute();
+                    $attribute->importByModel($model_values, $this->database);
+                }
+            }
+        }
+
+        $this->redirect_to('list');
+    }
+
+    //TODO Model
+    function syncDB($model) {
+        $model = DB::table('Model')->fetch($this->params['id']);
+        if ($model->value['id']) {
+            $attribute = $model->relationMany('Attribute')->all();
+
+            $columns = Model::$required_columns;
+
+            $required_columns = array_keys(Model::$required_columns);
+            //TODO Entity?
+            foreach ($attribute->values as $value) {
+                if (!in_array($value['name'], $required_columns)) {
+                    $column['name'] = $value['name'];
+                    $column['type'] = $value['type'];
+                    $column['length'] = $value['length'];
+                    $column['comment'] = $value['label'];
+                    $columns[$value['name']] = $column;
+                }
+            }
+        }
+        $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+        $create_sql = $pgsql_entity->createTableSqlByName($model->value['name'], $columns);
+
+        $pgsql_entity->query($create_sql);
+    }
+
+
+    function action_delete_require_columns() {
+        $model = $this->project->hasMany('Model');
+
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $columns = array_keys(Model::$required_columns);
+
+        $pgsql = $database->pgsql();
+        if ($model->values) {
+            foreach ($model->values as $model_value) {
+                $model = DB::table('Model')->fetch($model_value['id']);
+                $attribute = $model->hasMany('Attribute');
+
+                foreach ($attribute->values as $attribute_value) {
+                    if (in_array($attribute_value['name'], $columns)) {
+                        DB::table('Attribute')->delete($attribute_value['id']);
+                    }
+                }
+            }
+            foreach ($columns as $column) {
+                $pgsql->dropColumn($model_value['name'], $column);
+            }
+        }
+        $this->redirect_to('model/list');
+    }
+
+    function action_add_require_columns() {
+        $model = $this->project->hasMany('Model');
+
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $add_columns = array_keys(Model::$required_columns);
+        if ($model->values) {
+            foreach ($model->values as $model_value) {
+                $model = DB::table('Model')->fetch($model_value['id']);
+                $attribute = $model->hasMany('Attribute');
+
+                foreach ($attribute->values as $attribute_value) {
+                    $attribute_names[$attribute_value['name']] = $attribute_value['name'];
+                }
+                foreach ($add_columns as $add_column) {
+                    if (!$attribute_names[$add_column]) {
+                        Attribute::insertForModelRequire($add_column, $database, $model_value);
+                    }
+                }
+            }
+        }
+        $this->redirect_to('model/list');
+    }
+
+    /**
+     * update table comment from model label
+     *
+     * @return
+     */
+    function action_update_comments() {
+        $model = $this->project->hasMany('Model');
+
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $pgsql = $database->pgsql();
+
+        if ($model->values) {
+            foreach ($model->values as $model_value) {
+                if ($model_value['label']) {
+                    $pgsql->updateTableComment($model_value['name'], $model_value['label']);
+                }
+            }
+        }
+        $this->redirect_to('model/list');
+    }
+
+    /**
+     * restore column comment from another database
+     *
+     * @return
+     */
+    function action_restore_comments_from_another_db() {
+        $model = $this->project->hasMany('Model');
+
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $pgsql = $database->pgsql();
+
+        if (!$_REQUEST['from_database_id']) {
+            echo('Not found from_database_id').PHP_EOL;
+            exit;
+        }
+        $from_database = DB::table('Database')->fetch($_REQUEST['from_database_id']);
+        if (!$from_database->value) {
+            echo('Not found from_database').PHP_EOL;
+            exit;
+        }
+        $from_pgsql = $from_database->pgsql();
+
+        $table_comments = $pgsql->tableCommentsArray();
+
+        if ($model->values) {
+            foreach ($model->values as $model_value) {
+                $table_comment = $table_comments[$model_value['name']];
+                if ($table_comment) {
+                    $pgsql->updateTableComment($model_value['name'], $table_comment);
+                }
+
+                $column_comments = $from_pgsql->columnCommentArray($model_value['name']);
+
+                $model = DB::table('Model')->fetch($model_value['id']);
+                $attribute = $model->hasMany('Attribute');
+
+                foreach ($attribute->values as $attribute_value) {
+                $column_comment = $column_comments[$attribute_value['name']];
+                if ($column_comment)
+                    $pgsql->updateColumnComment($model_value['name'], $attribute_value['name'], $column_comment);
+
+                    $posts['label'] = $column_comment;
+                    $result = DB::table('Attribute')->update($posts, $attribute_value['id']);
+                }
+            }
+        }
+        $this->redirect_to('model/list');
     }
 
 }

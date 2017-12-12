@@ -2,6 +2,7 @@
 
 
 
+
 <div class="form-group row">
   <label class="form-control-label col-2" for="view_item_id"><?= LABEL_VIEW_ITEMS ?></label>
     <?= $this->view_item_group_member->formSelect('view_item_id', [
@@ -17,6 +18,5 @@
 
 
 
-<?= FormHelper::submit(LABEL_SAVE) ?>
-<?= FormHelper::linkButton("cancel", LABEL_BACK) ?>
+
 <input type="hidden" name="view_item_group_member[view_item_group_id]" value="<?= $this->view_item_group->value['id'] ?>">

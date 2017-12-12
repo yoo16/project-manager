@@ -40,21 +40,6 @@ class _ViewItem extends PgsqlEntity {
     );
 
     var $foreign = array(
-            'view_items_where_model_id_fkey' => [
-                                  'column' => 'where_model_id',
-                                  'foreign_table' => 'models',
-                                  'foreign_column' => 'id',
-                                  ],
-            'view_items_view_id_fkey' => [
-                                  'column' => 'view_id',
-                                  'foreign_table' => 'views',
-                                  'foreign_column' => 'id',
-                                  ],
-            'view_items_localize_string_id_fkey' => [
-                                  'column' => 'localize_string_id',
-                                  'foreign_table' => 'localize_strings',
-                                  'foreign_column' => 'id',
-                                  ],
             'view_items_page_id_fkey' => [
                                   'column' => 'page_id',
                                   'foreign_table' => 'pages',
@@ -73,6 +58,21 @@ class _ViewItem extends PgsqlEntity {
             'view_items_attribute_id_fkey' => [
                                   'column' => 'attribute_id',
                                   'foreign_table' => 'attributes',
+                                  'foreign_column' => 'id',
+                                  ],
+            'view_items_where_model_id_fkey' => [
+                                  'column' => 'where_model_id',
+                                  'foreign_table' => 'models',
+                                  'foreign_column' => 'id',
+                                  ],
+            'view_items_view_id_fkey' => [
+                                  'column' => 'view_id',
+                                  'foreign_table' => 'views',
+                                  'foreign_column' => 'id',
+                                  ],
+            'view_items_localize_string_id_fkey' => [
+                                  'column' => 'localize_string_id',
+                                  'foreign_table' => 'localize_strings',
                                   'foreign_column' => 'id',
                                   ],
     );

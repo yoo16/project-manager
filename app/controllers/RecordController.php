@@ -110,7 +110,7 @@ class RecordController extends ProjectController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["record"];
-        $record = $record = DB::table('Record')->update($posts, $this->params['id']);
+        $record = DB::table('Record')->update($posts, $this->params['id']);
 
         if ($record->errors) {
             $this->redirect_to('edit', $this->params['id']);

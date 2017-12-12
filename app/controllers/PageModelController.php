@@ -112,7 +112,7 @@ class PageModelController extends ProjectController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["page_model"];
-        $page_model = $page_model = DB::table('PageModel')->update($posts, $this->params['id']);
+        $page_model = DB::table('PageModel')->update($posts, $this->params['id']);
 
         if ($page_model->errors) {
             $this->redirect_to('edit', $this->params['id']);

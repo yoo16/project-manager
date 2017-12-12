@@ -1,4 +1,5 @@
 
+
 <div class="form-group row">
   <label class="form-control-label col-2" for="model_id"><?= LABEL_MODELS ?></label>
     <?= $this->page_model->formSelect('model_id', [
@@ -31,6 +32,5 @@
 
 
 
-<?= FormHelper::submit(LABEL_SAVE) ?>
-<?= FormHelper::linkButton("cancel", LABEL_BACK) ?>
+
 <input type="hidden" name="page_model[page_id]" value="<?= $this->page->value['id'] ?>">

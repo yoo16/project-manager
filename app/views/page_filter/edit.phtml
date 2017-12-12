@@ -1,7 +1,24 @@
 <? include('_header.phtml') ?>
-<form action="<?= url_for('update', $this->params['id']) ?>" method="post">
+<div class="card">
 
-<? include('form.phtml') ?>
-</form>
+  <form action="<?= url_for('update', $this->params['id']) ?>" method="post">
 
-<?= $this->page_filter->formDelete() ?>
+    <div class="card-header">
+      <h4></h4>
+      <div class="text-left">
+        <?= FormHelper::submit(LABEL_SAVE) ?>        <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>      </div>
+    </div>
+
+    <div class="card-block">
+
+      <? include('form.phtml') ?>
+    </div>
+
+  </form>
+
+  <div class="card-footer">
+    <div class="text-left">
+      <?= $this->page_filter->formDelete() ?>    </div>
+  </div>
+
+</div>

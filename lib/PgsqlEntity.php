@@ -1222,12 +1222,11 @@ class PgsqlEntity extends Entity {
     public function insert($posts = null) {
         $this->id = null;
         $this->values = null;
+        if ($this->value['id']) unset($this->value['id']);
         if ($posts) $this->takeValues($posts);
 
         $this->validate();
-        if ($this->errors) {
-            return $this;
-        }
+        if ($this->errors) return $this;
 
         $sql = $this->insertSql();
         if (!$sql) {
@@ -1259,23 +1258,20 @@ class PgsqlEntity extends Entity {
         if ($id > 0) $this->fetch($id);
         if (!$this->id) return $this;
 
+        $this->before_value = $this->value;
+
         if ($posts) $this->takeValues($posts);
 
         $this->after_value = $this->value;
 
         $this->validate();
-        if ($this->errors) {
-            return $this;
-        }
+        if ($this->errors) return $this;
+
         $sql = $this->updateSql();
-        if (!$sql) {
-            return $this;
-        }
+        if (!$sql) return $this;
 
         $result = $this->query($sql);
-        if ($result === false) {
-            $this->addError('sql', 'error');
-        }
+        if ($result === false) $this->addError('sql', 'error');
         return $this;
     }
 
@@ -1421,6 +1417,7 @@ class PgsqlEntity extends Entity {
             $this->addError($this->name, 'delete');
         } else {
             unset($this->id);
+            $this->value = null;
         }
         return $this;
     }

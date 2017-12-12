@@ -111,7 +111,7 @@ class ApiController extends ProjectController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["api"];
-        $api = $api = DB::table('Api')->update($posts, $this->params['id']);
+        $api = DB::table('Api')->update($posts, $this->params['id']);
 
         if ($api->errors) {
             $this->redirect_to('edit', $this->params['id']);

@@ -111,7 +111,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["view_item_group_member"];
-        $view_item_group_member = $view_item_group_member = DB::table('ViewItemGroupMember')->update($posts, $this->params['id']);
+        $view_item_group_member = DB::table('ViewItemGroupMember')->update($posts, $this->params['id']);
 
         if ($view_item_group_member->errors) {
             $this->redirect_to('edit', $this->params['id']);
