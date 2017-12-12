@@ -545,4 +545,23 @@ class ModelController extends ProjectController {
         $this->redirect_to('model/list');
     }
 
+    function rename_primary_keys() {
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $pgsql = $database->pgsql();
+
+        $model = $this->project->relationMany('Model')->all();
+
+        foreach ($model->values as $model_value) {
+            $primary_keys = $pgsql->pgConstraints($model_value['pg_class_id'], 'p');
+
+            $primary_key_name = $pgsql->sequenceName($model_value['name']);
+
+            //$primary_keys = $pgsql->pgPrimaryKeys($database->value['name'], $model->value['name']);
+            var_dump($primary_key_name);
+            var_dump($model_value['pg_class_id']);
+            var_dump($primary_keys);
+            exit;
+        }
+    }
+
 }

@@ -196,6 +196,34 @@ class AttributeController extends ProjectController {
         $this->redirect_to('list');
     }
 
+    function add_column() {
+        if (!isPost()) exit;
+        $attribute = DB::table('Attribute')->fetch($this->params['id']);
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+
+        if ($database->value && $attribute->value) {
+            $model = DB::table('Model')->fetch($attribute->value['model_id']);
+            $pgsql = $database->pgsql(); 
+
+            $options['type'] = $attribute->value['type'];
+            $options['length'] = $attribute->value['length'];
+            $result = $pgsql->addColumn($model->value['name'], $attribute->value['name'], $options);
+
+            $pg_attribute = $pgsql->pgAttributeByColumn($model->value['name'], $attribute->value['name']);
+            if ($pg_attribute) {
+                $posts = null;
+                $posts['pg_class_id'] = $pg_class['pg_class_id'];
+                $posts['attrelid'] = $pg_attribute['attrelid'];
+                $posts['attnum'] = $pg_attribute['attnum'];
+                $posts['type'] = $pg_attribute['udt_name'];
+
+                DB::table('Attribute')->update($posts, $attribute->value['id']);
+            }
+        }
+        $this->redirect_to('list');
+    }
+
+
     function action_update_label() {
         if (!isPost()) exit;
         $posts = $this->posts['attribute'];
