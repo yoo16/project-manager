@@ -40,8 +40,8 @@
           </div>
         </td>
         <td><a class="btn btn-outline-primary" href="<?= url_for('attribute/', array('model_id' => $page['model_id'])) ?>">Model</a></td>
-        <td><a class="btn btn-outline-primary" href="<?= url_for('page_filter/', array('page_id' => $page['id'])) ?>">Filters</a></td>
-        <td><a class="btn btn-outline-primary" href="<?= url_for('page_model/', array('page_id' => $page['id'])) ?>">Requests</a></td>
+        <td><a class="btn btn-outline-primary" href="<?= url_for('page_filter/', array('page_id' => $page['id'])) ?>">Filter</a></td>
+        <td><a class="btn btn-outline-primary" href="<?= url_for('page_model/', array('page_id' => $page['id'])) ?>">Request</a></td>
         <td>
           <? if ($page['is_overwrite']): ?>
             <?= FormHelper::link('change_overwrite', 'overwrite', $page['id'], ['class' => 'badge badge-danger']) ?>

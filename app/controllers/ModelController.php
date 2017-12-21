@@ -545,23 +545,48 @@ class ModelController extends ProjectController {
         $this->redirect_to('model/list');
     }
 
-    function rename_primary_keys() {
+    function rebuild_fk_attributes() {
         $database = DB::table('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();
 
         $model = $this->project->relationMany('Model')->all();
 
         foreach ($model->values as $model_value) {
-            $primary_keys = $pgsql->pgConstraints($model_value['pg_class_id'], 'p');
+            $foreigns = $pgsql->pgForeignConstraints($model_value['pg_class_id']);
 
-            $primary_key_name = $pgsql->sequenceName($model_value['name']);
+            foreach ($foreigns as $foreign) {
+                $attribute = DB::table('Attribute')
+                                    ->where("model_id = {$model_value['id']}")
+                                    ->where("name = '{$foreign['attname']}'")
+                                    ->one();
 
-            //$primary_keys = $pgsql->pgPrimaryKeys($database->value['name'], $model->value['name']);
-            var_dump($primary_key_name);
-            var_dump($model_value['pg_class_id']);
-            var_dump($primary_keys);
-            exit;
+                $fk_model = DB::table('Model')
+                                    ->where("pg_class_id = {$foreign['foreign_class_id']}")
+                                    ->one();
+
+                if ($attribute->value && $fk_model->value) {
+                    $fk_attribute = DB::table('Attribute')
+                                    ->where("model_id = '{$fk_model->value['id']}'")
+                                    ->where("name = '{$foreign['foreign_attname']}'")
+                                    ->one();
+
+                    if ($fk_attribute->value) {
+                        $posts['fk_attribute_id'] = $fk_attribute->value['id'];
+                        DB::table('Attribute')->update($posts, $attribute->value['id']);
+                        if ($attribute->sql_error) {
+                            echo($attribute->sql_error).PHP_EOL;
+                            exit;
+                        }
+                    } else {
+                        echo('Not found fk_attribute').PHP_EOL;
+                        exit;
+                    }
+                } else {
+                    echo('Not found fk_model').PHP_EOL;
+                    exit;
+                }
+            }
         }
+        $this->redirect_to('list');
     }
-
 }

@@ -54,7 +54,7 @@ class RelationDatabaseController extends ProjectController {
     }
 
     function action_edit() {
-        $this->model = DB::table('Model')->fetch($this->params['id']);
+        $this->relation_database = DB::table('RelationDatabase')->fetch($this->params['id']);
     }
 
     function action_add() {
@@ -75,6 +75,7 @@ class RelationDatabaseController extends ProjectController {
     function action_delete() {
         if (!isPost()) exit;
 
+        DB::table('RelationDatabase')->delete($this->params['id']);
         $this->redirect_to('list');
     }
 

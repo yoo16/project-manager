@@ -72,12 +72,12 @@ class DateHelper {
 
 
     /**
-     * convert array to string
+     * convert string (remove micro second)
      *
      * @param string $value
-     * @return array
+     * @return string
      **/
-    static function stringToArray($value) {
+    static function convertString($value) {
         preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2}) ?(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?/', $value, $m);
         if (checkdate($m[2], $m[3], $m[1])) {
             return sprintf('%4d-%02d-%02d %02d:%02d:%02d', $m[1], $m[2], $m[3], $m[4], $m[5], $m[6]);

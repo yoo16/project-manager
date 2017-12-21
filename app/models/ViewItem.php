@@ -28,6 +28,15 @@ class ViewItem extends _ViewItem {
                 $fk_attribute = DB::table('Attribute')->fetch($attribute->value['fk_attribute_id']);
                 $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']);
 
+                if (!$fk_attribute->value) {
+                    $view = DB::table('View')->fetch($view_item['view_id']);
+                    $page = DB::table('Page')->fetch($view->value['page_id']);
+                    var_dump($attribute->value['fk_attribute_id']);
+                    var_dump($attribute->value['name']);
+                    var_dump($view->value['name']);
+                    var_dump($page->value['class_name']);
+                    exit;
+                }
                 $value = '$this->'."{$fk_model->value['entity_name']}->value['{$fk_attribute->value['name']}']";
                 $value = '<?= ' . $value . ' ?>';
                 return $value;

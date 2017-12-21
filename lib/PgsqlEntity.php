@@ -1488,7 +1488,7 @@ class PgsqlEntity extends Entity {
     /**
     * where
     * 
-    * @param  string $condition
+    * @param  object $condition
     * @param  string $value
     * @param  string $eq
     * @return PgsqlEntity
@@ -1498,12 +1498,37 @@ class PgsqlEntity extends Entity {
         if (isset($value) && isset($eq)) {
             $this->conditions[] = "{$condition} {$eq} {$value}";
         } else {
-            $this->conditions[] = $condition; 
+            if (is_array($condition)) {
+                $column = $condition[0];
+                $value = $condition[1];
+                $eq = (isset($conditinos[3])) ? $conditinos[3] : '=';
+                
+                $this->conditions[] = "{$column} {$eq} {$value}";
+            } else {
+                $this->conditions[] = $condition; 
+            }
         }
         $this->conditions = array_unique($this->conditions);
         return $this;
     }
 
+    /**
+    * filter
+    * 
+    * @param  string $condition
+    * @param  string $value
+    * @param  string $eq
+    * @return PgsqlEntity
+    */
+    public function filter($filters) {
+        if (!is_array($filters)) return $this;
+        foreach ($filters as $column => $filter) {
+            $this->conditions[] = "{$column} {$filter['eq']} '{$filter['value']}'";
+        }
+        $this->conditions = array_unique($this->conditions);
+        return $this;
+    }
+    
     /**
     * initWhere
     * 
@@ -1699,7 +1724,7 @@ class PgsqlEntity extends Entity {
     */
     private function orderBySql() {
         $sql = '';
-        if ($this->columns['sort_order']) $this->order('column', 'sort_order'); 
+        if ($this->columns['sort_order']) $this->order('sort_order'); 
         if (!$this->orders) return;
         if ($order = $this->sqlOrders($this->orders)) $sql = " ORDER BY {$order}";
         return $sql;
@@ -1779,23 +1804,31 @@ class PgsqlEntity extends Entity {
         $sql = "SELECT {$column} FROM {$this->old_name}";
 
         $sql.= $this->whereSql();
-        $sql.= $this->orderBySql();
+        $sql.= $this->whereSql();
+        if ($this->old_id_column) " ORDER BY {$this->old_id_column}";
+
+        //$sql.= $this->orderBySql();
         $sql.= $this->limitSql();
         $sql.= $this->offsetSql();
         $sql.= ";";
         return $sql;
     }
 
+    /**
+    * old column for SQL select
+    * 
+    * @param  string $column
+    * @return string
+    */
     public function oldColumnForSelect() {
         if ($this->columns) {
             foreach ($this->columns as $column_name => $column) {
                 if ($column['old_name']) {
                     if ($column['old_name'] == $column_name) {
-                        $select_column = $column_name;
+                        $select_columns[] = $column_name;
                     } else {
-                        $select_column = "{$column['old_name']} AS {$column_name}";
+                        $select_columns[] = "{$column['old_name']} AS {$column_name}";
                     }
-                    $select_columns[] = $select_column;
                 }
             }
             $column = implode(", ", $select_columns).PHP_EOL;
@@ -2045,7 +2078,7 @@ class PgsqlEntity extends Entity {
     function sqlOrders($orders) {
         if (!$orders) return;
         foreach ($orders as $order) {
-            if ($order['column'] && array_key_exists($order['column'], $this->columns)) {
+            if ($order['column']) {
                 $_orders[] = "{$this->table_name}.{$order['column']} {$order['option']}";
             }
         }
@@ -2239,7 +2272,8 @@ class PgsqlEntity extends Entity {
     function pgDatabases() {
         $this->dbname = null;
         $this->loadDBInfo();
-        $sql = "SELECT * FROM pg_database WHERE datacl IS NULL;";
+        //$sql = "SELECT * FROM pg_database WHERE datacl IS NULL;";
+        $sql = "SELECT * FROM pg_database;";
         return $this->fetchRows($sql);
     }
 

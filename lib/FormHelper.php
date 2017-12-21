@@ -6,7 +6,9 @@
  */
 
 class FormHelper {
-    static $except_columns = ['model', 'label', 'where', 'value', 'values', 'label_separate', 'unselect'];
+    //TODO except columns
+    static $except_columns = ['csv', 'model', 'label', 'where', 'value', 'values', 'label_separate', 'unselect'];
+    static $radio_except_columns = ['csv', 'model', 'label', 'where', 'values', 'label_separate', 'unselect'];
 
     /**
      * selectタグ
@@ -271,6 +273,24 @@ class FormHelper {
     }
 
     /**
+     * radio tag
+     *
+     * @param string $tag
+     * @param array $attributes
+     * @return string
+     */
+    static function radioTag($attributes = null) {
+        foreach (self::$radio_except_columns as $except_column) {
+            if ($attributes[$except_column]) {
+                unset($attributes[$except_column]); 
+            }
+        }
+        $attributes['type'] = 'radio';
+        $tag = self::singleTag('input', $attributes);
+        return $tag;
+    }
+
+    /**
      * option tag
      *
      * @param string $tag
@@ -525,38 +545,21 @@ class FormHelper {
      * @return String
      */
     static function radio($params, $selected = null) {
-        if ($params['csv']) {
-            $values = CsvLite::options($params['csv']);
-        }
-        if ($values) $params['values'] = $values;
-        if (isset($selected)) $params['selected'] = $selected;
-        if ($value_key) $params['value'] = $value_key;
-        if ($label_key) $params['label'] = $label_key;
-        if (!$params['value']) $params['value'] = 'value';
-        if (!$params['label']) $params['label'] = 'label';
+        $values = self::values($params);
+        if (!is_array($values)) return;
 
-        $name = $params['name'];
+        $value_key = isset($params['value']) ? $params['value'] : 'value';
 
-        $unselect_label = $params['unselect_label'];
-        $unselect_value = $params['unselect_value'];
+        $attributes['name'] = $params['name'];
+        foreach ($values as $value) {
+            $attributes['value'] = $value[$value_key];
+            $attributes['checked'] = self::checkedTag($attributes['value'], $selected);
+            $attributes['id'] = "{$attributes['name']}_{$attributes['value']}";
 
-        $values = $params['values'];
-        $id = $params['id'];
-        $class_name = $params['class'];
-        $attribute = self::selectAttribute($params);
+            $tag.= self::radioTag($attributes);
 
-        if (is_array($values)) {
-            foreach ($values as $key => $option) {
-                $value = $option[$params['value']];
-                $label = self::convertLabel($option, $params);
-                $id_name = "{$id}_{$key}";
-
-                $checked = self::checkedTag($value, $selected);
-
-                $input_tag = "&nbsp;<input type=\"radio\" id=\"{$id_name}\" class=\"{$class_name}\" name=\"{$name}\" value=\"{$value}\"{$checked}{$attribute}>\n";
-                $tag.= "<label class=\"radio inline\" for=\"{$id_name}\">{$input_tag}&nbsp;{$label}</label>&nbsp;\n";
-
-            }
+            $label = self::convertLabel($value, $params);
+            $tag.= "<label class=\"radio inline\" for=\"{$attributes['id']}\">{$input_tag}&nbsp;{$label}</label>&nbsp;\n";
         }
         $tag = "<div class=\"form-group\">{$tag}</div>";
         return $tag;

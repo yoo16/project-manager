@@ -34,7 +34,8 @@
           <? foreach ($this->attribute->values as $attribute): ?>
             <tr>
               <td>
-                <? if (!Model::$required_columns[$attribute['name']]): ?><?= FormHelper::linkButton('edit', LABEL_EDIT, $attribute['id']) ?><? endif ?>
+                <? if (!Model::$required_columns[$attribute['name']]): ?><? endif ?>
+                <?= FormHelper::linkButton('edit', LABEL_EDIT, $attribute['id']) ?>
               </td>
 
               <td>
@@ -109,6 +110,9 @@
                     <?= FormHelper::hidden('table_name', $this->model->value['name']) ?>
                   </form>
                 <? endif ?>
+              </td>
+              <td>
+                <a class="btn btn-outline-primary" href="<?= url_for('sync_attribute', $attribute['id']) ?>">Sync</a>
               </td>
             </tr>
           <? endforeach ?>

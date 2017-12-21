@@ -28,4 +28,9 @@
     </tr>
   <? endforeach ?>
 </table>
+<? else: ?>
+<form action="<?= url_for('remove_relation') ?>" method="post">
+  <input class="btn btn-sm btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
+  <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
+</form>
 <? endif ?>

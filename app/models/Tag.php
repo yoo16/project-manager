@@ -25,7 +25,7 @@ class Tag {
             $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
             $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']); 
 
-            $tag = '$this->'.$fk_model->value["entity_name"]."->values[{$entity}]['{$view_item['label_column']}']";
+            if ($fk_model->value) $tag = '$this->'.$fk_model->value["entity_name"]."->values[{$entity}]['{$view_item['label_column']}']";
         } else if ($view_item['csv']) {
             $tag = '$this->csv_options'."['{$view_item['csv']}'][{$entity}]";
         } else {
@@ -154,6 +154,14 @@ class Tag {
         echo($this->value);
     }
 
+    function hidden($view_item, $model, $attribute) {
+        $name = "{$model['entity_name']}[{$attribute[$view_item['attribute_id']]['name']}]";
+        $value = ViewItem::hiddenValue($view_item);
+
+        $tag = "<input type=\"hidden\" name=\"{$name}\" value=\"{$value}\">";
+        return $tag;
+    }
+
     function formPassword($view_item, $model, $attribute) {
         if ($params) {
             $tag = '$this->'.$model['entity_name']."->formPassword('{$attribute['name']}', $params)";
@@ -163,7 +171,7 @@ class Tag {
         return $tag;
     }
 
-    function formSelect($view_item, $model, $attribute) {
+    function formParams($view_item, $model, $attribute) {
         //model
         if ($view_item['csv']) {
             $params = "['csv' => '{$view_item['csv']}', 'unselect' => true]";
@@ -218,6 +226,11 @@ class Tag {
                         {$value_column}
                         ]";
         }
+        return $params;
+    }
+
+    function formSelect($view_item, $model, $attribute) {
+        $params = $this->formParams($view_item, $model, $attribute);
 
         if ($params) {
             $tag = '$this->'.$model['entity_name']."->formSelect('{$attribute['name']}', $params)";
@@ -229,9 +242,7 @@ class Tag {
     }
 
     function formRadio($view_item, $model, $attribute) {
-        if ($view_item['csv']) {
-            $params = "['csv' => '{$view_item['csv']}', 'unselect' => true]";
-        }
+        $params = $this->formParams($view_item, $model, $attribute);
 
         if ($params) {
             $tag = '$this->'.$model['entity_name']."->formRadio('{$attribute['name']}', $params)";
@@ -261,7 +272,7 @@ class Tag {
                 $attribute = DB::table('Attribute')->fetch($value['attribute_id']);
                 $eq = '=';
                 if ($value['eq']) $eq = $value['eq'];
-                if ($attribute->value) $filters[] = "\"{$attribute->value['name']} {$eq} '{$value['value']}'\"";
+                if ($attribute->value) $filters[] = "'{$attribute->value['name']}' => ['value' => '{$value['value']}', 'eq' => '{$eq}']";
             }
             $filter = implode(', ', $filters);
             $name = '$filters';
@@ -279,7 +290,7 @@ class Tag {
         $return_space = PHP_EOL.'                                ';
 
         $filter_entity = '$this->filters';
-        $where = "->wheres({$filter_entity})";
+        $filter = "->filter({$filter_entity})";
 
         if ($page['list_sort_order_columns']) {
             $sort_order_columns = explode(',', $page['list_sort_order_columns']);
@@ -302,7 +313,7 @@ class Tag {
             $tag = "{$instance} = DB::table('{$model['class_name']}')";
         }
 
-        $tag.= "{$return_space}{$where}";
+        $tag.= "{$return_space}{$filter}";
         $tag.= "{$return_space}{$order}";
         $tag.= "->all();";
         echo($tag).PHP_EOL;

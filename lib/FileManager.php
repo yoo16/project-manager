@@ -688,6 +688,12 @@ class FileManager {
         return $result;
     }
 
+    static function phpClassNameFromEntityName($entity_name) {
+        $name = FileManager::pluralToSingular($entity_name);
+        $class_name = FileManager::phpClassName($name);
+        return $class_name;
+    }
+
     static function phpClassName($name) {
         $names = explode('_', $name);
         if (is_array($names)) {

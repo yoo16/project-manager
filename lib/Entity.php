@@ -316,7 +316,7 @@ class Entity {
         if ($value === '') return null;
 
         if (is_string($value)) {
-            return DateHelper::stringToArray($value);
+            return DateHelper::convertString($value);
         } else if (is_array($value)) {
             $timestamp = DateHelper::arrayToString($value);
             return $this->castTimestamp($timestamp);
@@ -324,6 +324,7 @@ class Entity {
             return $value;
         }
     }
+
 
     /**
      * castInt
@@ -617,6 +618,7 @@ class Entity {
         $params['name'] = "{$this->entity_name}[{$column}]";
         if ($params['value_column']) $params['value'] = $params['value_column'];
         if ($params['model'] && !$params['value']) $params['value'] = $this->id_column;
+
         $tag = FormHelper::radio($params, $this->value[$column]);
         return $tag;
     }

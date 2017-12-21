@@ -449,17 +449,30 @@ class AttributeController extends ProjectController {
             $this->redirect_to('project/');
         }
 
-        $model = DB::table('Model')->fetch($this->params['id']);
+        $attribute = DB::table('Attribute')->fetch($this->params['id']);
 
-        if ($model->value['id']) {
+        if ($attribute->value['id']) {
+            $model = DB::table('Model')->fetch($attribute->value['model_id']);
+
             $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
-            $pg_class = $pgsql_entity->pgClassByRelname($model->value['name']);
+            $pg_attribute = $pgsql_entity->pgAttributeByColumn($model->value['name'], $attribute->value['name']);
 
-            if ($pg_class) {
-                $model_values['pg_class_id'] = $pg_class['pg_class_id'];
-                $model = DB::table('Model')->update($model_values, $model->value['id']);
-            } else {
-                $this->syncDB($model);
+            if ($pg_attribute) {
+                $comments = $pgsql_entity->columnCommentArray($model->value['name']);
+
+                $pg_attribute['comment'] = $comments[$pg_attribute['attname']];
+
+                $value = null;
+                $value['name'] = $pg_attribute['attname'];
+                $value['type'] = $pg_attribute['udt_name'];
+                if ($pg_attribute['comment']) $value['label'] = $pg_attribute['comment'];
+                $value['length'] = $pg_attribute['character_maximum_length'];
+                $value['attrelid'] = $pg_attribute['pg_class_id'];
+                $value['attnum'] = $pg_attribute['attnum'];
+                $value['is_primary_key'] = ($pg_attribute['is_primary_key'] == 't');
+                $value['is_required'] = ($pg_attribute['attnotnull'] == 't');
+
+                $attribute = DB::table('Attribute')->update($value, $attribute->value['id']);
             }
         }
 
