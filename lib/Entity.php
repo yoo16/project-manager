@@ -423,7 +423,7 @@ class Entity {
                     if ($value > 0) $row[$column_name] = (int) $value;
                 } else {
                     if (isset($this->columns[$column_name])) {
-                        $olumn = $this->columns[$column_name];
+                        $column = $this->columns[$column_name];
                         $type = $column['type'];
                         $row[$column_name] = $this->cast($type, $value);
                     }
