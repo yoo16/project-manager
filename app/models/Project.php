@@ -36,11 +36,14 @@ class Project extends _Project {
                     }
                 } else if ($type == 'foreign') {
                     $foreign[$pg_constraint['conname']] = $pg_constraint;
+                } else if ($type == 'primary') {
+                    $primary = $pg_constraint['conname'];
                 }
             }
         }
         if ($unique) $values['unique'] = $unique;
         if ($foreign) $values['foreign'] = $foreign;
+        if ($primary) $values['primary'] = $primary;
         return $values;
     }
     

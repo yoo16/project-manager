@@ -34,6 +34,9 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
     );
 <? endif ?>
 
+<? if ($values['primary']): ?>
+    var $primary_key = '<?= $values['primary'] ?>';
+<? endif ?>
 <? if ($values['foreign']): ?>
     var $foreign = array(
 <? foreach ($values['foreign'] as $conname => $foreign): ?>

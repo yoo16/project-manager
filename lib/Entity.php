@@ -413,34 +413,24 @@ class Entity {
     /**
      * castRow
      * 
-     * @param  array $rows
+     * @param  array $row
      * @return array
      */
-    function castRow($rows) {
-        if (is_array($rows)) {
-            foreach ($rows as $column_name => $value) {
+    function castRow($row) {
+        if (is_array($row)) {
+            foreach ($row as $column_name => $value) {
                 if ($column_name === $this->id_column) {
-                    if ($value > 0) $rows[$column_name] = (int) $value;
+                    if ($value > 0) $row[$column_name] = (int) $value;
                 } else {
                     if (isset($this->columns[$column_name])) {
-                        $column = $this->columns[$column_name];
+                        $olumn = $this->columns[$column_name];
                         $type = $column['type'];
-                        $rows[$column_name] = $this->cast($type, $value);
+                        $row[$column_name] = $this->cast($type, $value);
                     }
                 }
             }
         }
-        return $rows;
-    }
-
-    /**
-     * idIndex
-     * 
-     * @return Entity
-     */
-    function idIndex() {
-        $this->id_index = true;
-        return $this;
+        return $row;
     }
 
     /**
@@ -451,7 +441,7 @@ class Entity {
      */
     function castRows($rows) {
         if (is_array($rows)) {
-            foreach ($rows as $index => $row) {
+            foreach ($rows as $row) {
                 if (isset($this->id_index) && $this->id_index == true) {
                     $id = (int) $row[$this->id_column];
                     $values[$id] = $this->castRow($row);
@@ -461,6 +451,16 @@ class Entity {
             }
         }
         return $values;
+    }
+
+    /**
+     * idIndex
+     * 
+     * @return Entity
+     */
+    function idIndex() {
+        $this->id_index = true;
+        return $this;
     }
 
    /**

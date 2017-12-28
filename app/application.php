@@ -7,7 +7,7 @@ if (defined('DB_SETTING_FILE')) {
 require_once 'application_setting.php';
 require_once 'application_function.php';
 
-$libs = array(
+$libs = [
     'helpers',
     'DB',
     'SendMail',
@@ -21,7 +21,8 @@ $libs = array(
     'ApplicationLocalize',
     'ApplicationLoader',
     'ApplicationLogger',
-    );
+    'BenchmarkTimer',
+    ];
 
 Controller::loadLib($libs);
 ApplicationLocalize::load();

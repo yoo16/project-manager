@@ -59,18 +59,23 @@ class ViewItemController extends ProjectController {
     */
     function action_list() {
         $this->page->bindBelongsTo('Model');
+
         $this->page->model->attribute = $this->page
                                               ->model
                                               ->relationMany('Attribute')
-                                              ->order('name')
                                               ->idIndex()
+                                              ->order('name')
                                               ->all();
+
 
         $this->localize_string = $this->project->relationMany('LocalizeString')
                                               ->idIndex()
                                               ->all();
 
-        $this->view->view_item = $this->view->relationMany('ViewItem')->all();
+        $this->view->view_item = $this->view
+                                      ->relationMany('ViewItem')
+                                      ->idIndex()
+                                      ->all();
 
         $this->pages = $this->project
                             ->relationMany('Page')

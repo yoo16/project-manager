@@ -72,7 +72,6 @@ class ProjectController extends AppController {
                             ->order('name')
                             ->all()
                             ->bindById('Database');
-
     }
 
     function action_edit() {

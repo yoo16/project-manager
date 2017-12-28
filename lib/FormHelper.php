@@ -664,7 +664,7 @@ class FormHelper {
             if (is_array($param)) $param = implode(' ', $param);
             if (isset($param)) $attributes[] = "{$key}=\"{$param}\"";
         }
-        $attribute = implode(' ', $attributes);
+        if ($attributes) $attribute = implode(' ', $attributes);
         return $attribute;
     }
 

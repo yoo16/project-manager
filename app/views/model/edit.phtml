@@ -29,6 +29,11 @@
         <?= $this->model->formSelect('old_database_id', ['model' => 'Database', 'label' => 'name']) ?>
       </div>
 
+      <div class="form-group row">
+        <label for="" class="col-1 col-form-label">old table</label>
+        <?= $this->model->formInput('old_name') ?>
+      </div>
+
       <?= FormHelper::submit(LABEL_UPDATE) ?>
       <?= FormHelper::linkButton('cancel', LABEL_BACK) ?>
     </form>
