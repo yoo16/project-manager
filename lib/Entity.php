@@ -13,8 +13,10 @@ class Entity {
     var $value = null;
     var $id = null;
     var $id_column = 'id';
+    var $id_index = false;
     var $posts = null;
     var $session = null;
+    var $limit = null;
 
     static $except_columns = ['id', 'created_at', 'updated_at'];
     static $app_columns = ['id', 'created_at', 'updated_at', 'sort_order', 'old_db', 'old_host', 'old_id'];
@@ -23,16 +25,11 @@ class Entity {
 
     }
 
-    function results() { trigger_error('results is not implemented', E_USER_ERROR); }
     function count()   { trigger_error('count is not implemented', E_USER_ERROR); } 
     function select()   { trigger_error('select is not implemented', E_USER_ERROR); }
     function insert()  { trigger_error('insert is not implemented', E_USER_ERROR); }
     function update()  { trigger_error('update is not implemented', E_USER_ERROR); }
     function delete()  { trigger_error('delete is not implemented', E_USER_ERROR); }
-
-    function before_save() {}
-    function before_insert() {}
-    function before_update() {}
 
     /**
      * init
@@ -48,6 +45,17 @@ class Entity {
         $this->posts = null;
         $this->session = null;
         $this->defaultValue();
+        return $this;
+    }
+
+    /**
+     * set id column
+     * 
+     * @param  string $column
+     * @return Entity
+     */
+    public function setIdColumn($column) {
+        if ($column) $this->id_column = $column;
         return $this;
     }
 
@@ -146,6 +154,22 @@ class Entity {
     }
 
     /**
+     * convert value from old value
+     * 
+     * @param
+     * @return void
+     */
+    public function convertValueFromOldValue() {
+        if ($this->columns) {
+            foreach ($this->columns as $column_name => $column) {
+                if ($column['old_name']) {
+                    $this->value[$column_name] = $this->value[$column['old_name']];
+                }
+            }
+        }
+    }
+
+    /**
      * save
      * 
      * @param
@@ -209,7 +233,7 @@ class Entity {
     public function takeValues($values) {
         if (!$values) return $this;
         foreach ($this->columns as $column_name => $value) {
-            if (array_key_exists($column_name, $values)) {
+            if (isset($values[$column_name])) {
                 $column = $this->columns[$column_name];
                 $type = $column['type'];
                 $this->value[$column_name] = $this->cast($type, $values[$column_name]);
@@ -325,7 +349,6 @@ class Entity {
         }
     }
 
-
     /**
      * castInt
      * 
@@ -409,30 +432,7 @@ class Entity {
         if ($type == 'array') return self::castArray($value);
         if ($type == 'json') return self::castJson($value);
     }
-    
-    /**
-     * castRow
-     * 
-     * @param  array $row
-     * @return array
-     */
-    function castRow($row) {
-        if (is_array($row)) {
-            foreach ($row as $column_name => $value) {
-                if ($column_name === $this->id_column) {
-                    if ($value > 0) $row[$column_name] = (int) $value;
-                } else {
-                    if (isset($this->columns[$column_name])) {
-                        $column = $this->columns[$column_name];
-                        $type = $column['type'];
-                        $row[$column_name] = $this->cast($type, $value);
-                    }
-                }
-            }
-        }
-        return $row;
-    }
-
+   
     /**
      * castRows
      * 
@@ -451,6 +451,29 @@ class Entity {
             }
         }
         return $values;
+    } 
+
+    /**
+     * castRow
+     * 
+     * @param  array $rows
+     * @return array
+     */
+    function castRow($rows) {
+        if (is_array($rows)) {
+            foreach ($rows as $column_name => $value) {
+                if ($column_name === $this->id_column) {
+                    if ($value > 0) $rows[$column_name] = (int) $value;
+                } else {
+                    if (isset($this->columns[$column_name])) {
+                        $column = $this->columns[$column_name];
+                        $type = $column['type'];
+                        $rows[$column_name] = $this->cast($type, $value);
+                    }
+                }
+            }
+        }
+        return $rows;
     }
 
     /**
@@ -618,7 +641,6 @@ class Entity {
         $params['name'] = "{$this->entity_name}[{$column}]";
         if ($params['value_column']) $params['value'] = $params['value_column'];
         if ($params['model'] && !$params['value']) $params['value'] = $this->id_column;
-
         $tag = FormHelper::radio($params, $this->value[$column]);
         return $tag;
     }
@@ -745,4 +767,35 @@ class Entity {
         }
     }
     
+    /**
+     * convert SQL copy array
+     * 
+     * @param  [type] $rows [description]
+     * @param  [type] $columns  [description]
+     * @return [type]           [description]
+     */
+    function convertCopyRows($rows, $columns) {
+        foreach ($rows as $row) {
+            $values = null;
+            foreach ($columns as $column => $meta) {
+                $value = $row[$column];
+                if (is_null($value)) {
+                    if ($meta['type'] == 'bool') {
+                        $value = 'f';
+                    } else {
+                        $value = "\N";
+                    }
+                } else {
+                    if ($meta['type'] == 'bool') {
+                        $value = ($value)? 't' : 'f';
+                    }
+                }
+                $values[] = $value;
+            }
+            $row = implode(',', $values);
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+
 }
