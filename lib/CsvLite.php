@@ -7,17 +7,17 @@
 
 class CsvLite {
 
-    var $id;
-    var $id_key='id';
-    var $name;
-    var $columns;
-    var $labels;
-    var $dir;
-    var $sort_order_keys; //Non Support
-    var $file_path;
-    var $buffer = 10240;
-    var $errors;
-    var $next_id;
+    public $id;
+    public $id_key='id';
+    public $name;
+    public $columns;
+    public $labels;
+    public $dir;
+    public $sort_order_keys; //Non Support
+    public $file_path;
+    public $buffer = 10240;
+    public $errors;
+    public $next_id;
 
     static $from_encode = '';
     static $to_encode = '';

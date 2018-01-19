@@ -20,7 +20,6 @@
       <th>リンクページ</th>
       <th>form/class</th>
       <th>where / csv</th>
-      <th>Group</th>
     </tr>
   </thead>
 
@@ -93,13 +92,7 @@
 
             <? if ($view_item['csv']): ?>csv : <?= $view_item['csv'] ?><? endif ?>
           </td>
-          <td>
-            <form action="<?= url_for('update_view_item_group') ?>" method="post">
-              <?= FormHelper::select($this->form['view_item_group'], $view_item['id']); ?>
-              <input class="btn btn-sm btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
-              <input type="hidden" name="view_item_group_member[view_item_id]" value="<?= $view_item['id'] ?>">
-            </form>
-          </td>
+
         </tr>
       <? endforeach ?>
     </tbody>

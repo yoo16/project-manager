@@ -11,34 +11,35 @@ require_once 'Entity.php';
 //TODO pg_field_num, pg_field_name
 
 class PgsqlEntity extends Entity {
-    var $pg_info = null;
-    var $pg_info_array = null;
-    var $dbname = null;
-    var $host = 'localhost';
-    var $user = 'postgres';
-    var $port = 5432;
-    var $password = null;
-    var $is_pconnect = false;
-    var $is_connect_forece_new = false;
-    var $table_name = null;
-    var $values = null;
-    var $value = null;
-    var $conditions = null;
-    var $orders = null;
-    var $limit = null;
-    var $joins = array();
-    var $sql = null;
-    var $sqls = null;
-    var $is_bulk_select = false;
-    var $is_old_table = false;
+    public $pg_info = null;
+    public $pg_info_array = null;
+    public $dbname = null;
+    public $host = 'localhost';
+    public $user = 'postgres';
+    public $port = 5432;
+    public $password = null;
+    public $is_pconnect = false;
+    public $is_connect_forece_new = false;
+    public $table_name = null;
+    public $values = null;
+    public $value = null;
+    public $conditions = null;
+    public $orders = null;
+    public $limit = null;
+    public $joins = [];
+    public $sql = null;
+    public $sqls = null;
+    public $is_bulk_select = false;
+    public $is_old_table = false;
+    public $is_sort_order = true;
 
-    static $pg_info_columns = ['dbname', 'user', 'host', 'port', 'password'];
-    static $constraint_keys = ['p' => 'Primary Key',
+    public static $pg_info_columns = ['dbname', 'user', 'host', 'port', 'password'];
+    public static $constraint_keys = ['p' => 'Primary Key',
                               'u' => 'Unique',
                               'f' => 'Foreign Key',
                               'c' => 'Check'
                               ];
-    static $constraint_actions = [
+    public static $constraint_actions = [
                                'a' => 'NO ACTION',
                                'c' => 'CASCADE',
                                'r' => 'RESTRICT',
@@ -46,7 +47,7 @@ class PgsqlEntity extends Entity {
                                'd' => 'SET DEFAULT'
                               ];
 
-    static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'double', 'real'];
+    public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'double', 'real'];
 
     /**
     * constructor
@@ -1006,6 +1007,16 @@ class PgsqlEntity extends Entity {
         return $this;
     }
 
+    /**
+     * has record value
+     * 
+     * @return PgsqlEntity
+     */
+    function hasData() {
+        $this->limit(1)->one();
+        $this->orders = null;
+        return $this->value;
+    }
 
     /**
     * fetch
@@ -1039,9 +1050,10 @@ class PgsqlEntity extends Entity {
     public function one() {
         $this->values = null;
         $sql = $this->selectSql();
-        $value = $this->fetchRow($sql);
+        $this->fetchRow($sql);
 
         $this->id = $this->value[$this->id_column];
+        $this->before_value = $this->value;
         return $this;
     }
 
@@ -1059,8 +1071,6 @@ class PgsqlEntity extends Entity {
         if (!$id) return $this;
 
         $this->where("{$this->id_column} = {$id}")->one($params);
-
-        $this->before_value = $this->value;
         return $this;
     }
 
@@ -1246,9 +1256,6 @@ class PgsqlEntity extends Entity {
     public function update($posts = null, $id = null) {
         if ($id > 0) $this->fetch($id);
         if (!$this->id) return $this;
-
-        $this->before_value = $this->value;
-
         if ($posts) $this->takeValues($posts);
 
         $this->after_value = $this->value;
@@ -1558,6 +1565,7 @@ class PgsqlEntity extends Entity {
     public function filter($filters) {
         if (!is_array($filters)) return $this;
         foreach ($filters as $column => $filter) {
+            if (!$filter['eq']) $filter['eq'] = '=';
             $this->conditions[] = "{$column} {$filter['eq']} '{$filter['value']}'";
         }
         $this->conditions = array_unique($this->conditions);
@@ -1759,7 +1767,6 @@ class PgsqlEntity extends Entity {
     */
     private function orderBySql() {
         $sql = '';
-        if ($this->columns['sort_order']) $this->order('sort_order'); 
         if (!$this->orders) return;
         if ($order = $this->sqlOrders($this->orders)) $sql = " ORDER BY {$order}";
         return $sql;
@@ -1839,7 +1846,7 @@ class PgsqlEntity extends Entity {
     * 
     * @return string
     */
-    private function selectSql() {
+    public function selectSql() {
         if (is_array($this->select_columns)) {
             $columns = $this->select_columns;
         } else {
@@ -1898,7 +1905,6 @@ class PgsqlEntity extends Entity {
         $sql = "SELECT {$column} FROM {$this->old_name}";
 
         $sql.= $this->whereSql();
-        $sql.= $this->whereSql();
         if ($this->old_id_column) " ORDER BY {$this->old_id_column}";
 
         //$sql.= $this->orderBySql();
@@ -1906,6 +1912,24 @@ class PgsqlEntity extends Entity {
         $sql.= $this->offsetSql();
         $sql.= ";";
         return $sql;
+    }
+
+    /**
+    * old column for SQL select
+    * 
+    * @return PgsqlEntity
+    */
+    public function selectOldColumns() {
+        $this->select_columns = null;
+        if ($this->old_id_column) $select_columns[] = $this->old_id_column;
+        if ($this->columns) {
+            foreach ($this->columns as $column_name => $column) {
+                if ($column['old_name']) {
+                    $this->select_columns[] = $column['old_name'];
+                }
+            }
+        }
+        return $this;
     }
 
     /**

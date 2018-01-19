@@ -175,7 +175,7 @@ class AttributeController extends ProjectController {
             $attribute->delete($attribute->value['id']);
         }
         if ($attribute->errors) {
-            $this->flash['errors'] = $project->errors;
+            $this->flash['errors'] = $attribute->errors;
             $this->redirect_to('edit', $this->params['id']);
         } else {
             $this->redirect_to('index');

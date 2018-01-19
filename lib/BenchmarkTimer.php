@@ -9,13 +9,13 @@
 
 class BenchmarkTimer {
 
-    var $current_time = 0;
-    var $start_time = 0;
-    var $end_time = 0;
-    var $is_run = false;
-    var $rap_time = 0;
-    var $rap_times = array();
-    var $timestamp = null;
+    public $current_time = 0;
+    public $start_time = 0;
+    public $end_time = 0;
+    public $is_run = false;
+    public $rap_time = 0;
+    public $rap_times = array();
+    public $timestamp = null;
 
     function __construct() {
 

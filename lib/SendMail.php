@@ -6,13 +6,13 @@
  */
 
 class SendMail {
-    var $from;
-    var $to;
-    var $cc;
-    var $bcc;
-    var $body;
-    var $setting_file_path;
-    var $type;
+    public $from;
+    public $to;
+    public $cc;
+    public $bcc;
+    public $body;
+    public $setting_file_path;
+    public $type;
 
     /**
      * コンストラクタ

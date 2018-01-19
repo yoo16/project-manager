@@ -6,23 +6,23 @@
  */
 
 class FtpLite {
-    var $login_name = NULL;
-    var $password = NULL;
-    var $default_dir = NULL;
-    var $ip = NULL;
-    var $get_latest_prg = FTP_GET_LATEST_SHELL;
-    var $local_dir = FILE_GET_DIR;
-    var $log = NULL;
-    var $error = array('login'=>0);
-    var $ftp_open_cmd = null;
-    var $ftp_quit_cmd = null;
-    var $ch_dir_cmd = null;
-    var $delete_file_cmd = null;
-    var $target_dir = null;
-    var $delete_limit = 50;
-    var $ftp_cmd = 'ftp -i -n -v';
-    var $last_exec_logfile = null;
-    var $scp_port = 22;
+    public $login_name = NULL;
+    public $password = NULL;
+    public $default_dir = NULL;
+    public $ip = NULL;
+    public $get_latest_prg = FTP_GET_LATEST_SHELL;
+    public $local_dir = FILE_GET_DIR;
+    public $log = NULL;
+    public $error = array('login'=>0);
+    public $ftp_open_cmd = null;
+    public $ftp_quit_cmd = null;
+    public $ch_dir_cmd = null;
+    public $delete_file_cmd = null;
+    public $target_dir = null;
+    public $delete_limit = 50;
+    public $ftp_cmd = 'ftp -i -n -v';
+    public $last_exec_logfile = null;
+    public $scp_port = 22;
 
     function __construct() {
     }

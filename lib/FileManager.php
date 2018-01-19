@@ -74,8 +74,8 @@ class FileManager {
         '(.)s$'         =>  '$1',
     );
 
-    var $base_dir;
-    var $base_url;
+    public $base_dir;
+    public $base_url;
 
     function __construct($path=null) {
         $this->base_dir = $path;

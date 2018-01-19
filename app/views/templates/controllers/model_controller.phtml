@@ -18,9 +18,9 @@ class <?= $values['page']['name'] ?>Controller extends <?= $values['page']['pare
 class <?= $values['page']['name'] ?>Controller extends AppController {
 <? endif ?>
 
-    var $name = '<?= $values['page']['entity_name'] ?>';
+    public $name = '<?= $values['page']['entity_name'] ?>';
 <? if ($values['page']['layout_name']): ?>
-    var $layout = '<?= $values['page']['layout_name'] ?>';
+    public $layout = '<?= $values['page']['layout_name'] ?>';
 <? endif ?>
 <? if ($values['page_filter']): ?>
     <? Tag::init()->pageFilters($values['page_filter']) ?>

@@ -242,6 +242,18 @@ class ModelController extends ProjectController {
         $model = DB::table('Model')->fetch($this->params['id']);
         if ($model->value['id']) {
 
+            $attribute = $model->relationMany('Attribute')->all();
+            if ($attribute->values) {
+                foreach ($attribute->values as $attribute_value) {
+                    $attribute = DB::table('Attribute')->fetch($attribute_value['id']);
+                    if ($attribute->value['id'] && $attribute->value['attnum']) {
+                        $pgsql = $this->database->pgsql();
+                        $pgsql->dropColumn($model->value['name'], $attribute->value['name']);
+                        $attribute->delete($attribute->value['id']);
+                    }
+                } 
+            }
+
             if (!$database->value['is_lock']) {
                 $database = DB::table('Database')->fetch($this->database->value['id']);
                 $pgsql = $database->pgsql();
@@ -252,6 +264,7 @@ class ModelController extends ProjectController {
             
             if ($model->errors) {
                 $this->flash['errors'] = $model->errors;
+
                 $this->redirect_to('edit', $this->params['id']);
                 exit;
             }

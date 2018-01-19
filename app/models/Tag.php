@@ -276,7 +276,7 @@ class Tag {
             }
             $filter = implode(', ', $filters);
             $name = '$filters';
-            $tag = "var {$name} = [{$filter}];";
+            $tag = "public {$name} = [{$filter}];";
 
             echo($tag).PHP_EOL;
         }

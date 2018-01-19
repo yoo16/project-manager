@@ -69,6 +69,11 @@
           &nbsp;
           <a class="btn btn-danger btn-sm" href="<?= url_for('delete_old_name', $this->attribute->value['id']) ?>"><?= LABEL_DELETE ?></a>
         </div>
+      <? else: ?>
+        <div class="form-group row">
+          <label for="" class="form-control-label col-2">Old Column</label>
+          <?= $this->attribute->formInput('old_name') ?>
+        </div>
       <? endif ?>
 
       <div class="form-group row">

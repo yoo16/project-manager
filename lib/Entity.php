@@ -6,20 +6,20 @@
  */
 
 class Entity {
-    var $conditions = array();
-    var $columns = array();
-    var $errors = array();
-    var $values = null;
-    var $value = null;
-    var $id = null;
-    var $id_column = 'id';
-    var $id_index = false;
-    var $posts = null;
-    var $session = null;
-    var $limit = null;
+    public $conditions = [];
+    public $columns = [];
+    public $errors = [];
+    public $values = null;
+    public $value = null;
+    public $id = null;
+    public $id_column = 'id';
+    public $id_index = false;
+    public $posts = null;
+    public $session = null;
+    public $limit = null;
 
-    static $except_columns = ['id', 'created_at', 'updated_at'];
-    static $app_columns = ['id', 'created_at', 'updated_at', 'sort_order', 'old_db', 'old_host', 'old_id'];
+    public static $except_columns = ['id', 'created_at', 'updated_at'];
+    public static $app_columns = ['id', 'created_at', 'updated_at', 'sort_order', 'old_db', 'old_host', 'old_id'];
 
     function __construct($params = null) {
 

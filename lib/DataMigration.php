@@ -6,8 +6,8 @@
  */
 
 class DataMigration {
-    var $from_pgsql;
-    var $used_old_host = false;
+    public $from_pgsql;
+    public $used_old_host = false;
 
     function __construct($params = null) {
         $this->pgsql($params);
