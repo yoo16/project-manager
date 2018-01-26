@@ -572,9 +572,24 @@ class PgsqlEntity extends Entity {
     * @param string $table_name
     * @param string $column
     * @param array $options
-    * @return resource
+    * @return void
     */
-    public function changeColumnType($table_name, $column, $options) {
+    public function changeColumnType($table_name, $column, $options, $is_query = true) {
+        $this->sql = $this->alterColumnTypeSQL($table_name, $column, $options);
+        if ($is_query) {
+            //$this->query($this->sql);
+        }
+    }
+
+    /**
+    * ALTER column type SQL
+    * 
+    * @param string $table_name
+    * @param string $column
+    * @param array $options
+    * @return string
+    */
+    public function alterColumnTypeSQL($table_name, $column, $options) {
         if (!$table_name) return;
         if (!$column) return;
         if (!$options) return;
@@ -587,10 +602,7 @@ class PgsqlEntity extends Entity {
             $using = " USING {$column}::int";
         }
         $sql = "ALTER TABLE \"{$table_name}\" ALTER COLUMN \"{$column}\" TYPE {$type}{$using};";
-        $results = $this->query($sql);
-        if ($this->sql_error) {
-            return false;
-        }
+        return $sql;
     }
 
     /**
@@ -2600,10 +2612,13 @@ class PgsqlEntity extends Entity {
     /**
     * attributes
     *
+    * TODO: select_columns
+    *
     * @param string $table_name
+    * @param array $select_columns
     * @return array
     **/
-    function pgAttributes($table_name = null) {
+    function pgAttributes($table_name = null, $select_columns = null) {
         $sql = "SELECT pg_class.oid AS pg_class_id, * FROM pg_class 
                 LEFT JOIN pg_attribute ON pg_class.oid = pg_attribute.attrelid
                 LEFT JOIN information_schema.columns ON information_schema.columns.table_name = pg_class.relname
@@ -3231,7 +3246,7 @@ class PgsqlEntity extends Entity {
         $this->entity_name = FileManager::pluralToSingular($table_name);
         $this->name = $table_name;
         $this->from($this->name);
-
+   
         $pg_attributes = $this->pgAttributes($this->name);
         if (!$pg_attributes) return;
 
@@ -3266,6 +3281,43 @@ class PgsqlEntity extends Entity {
         $values = str_replace('}', '', $values);
         $values = explode(',', $values);
         return $values;
+    }
+
+    public function diffFromVoModel() {
+        $model_path = BASE_DIR."app/models/vo/*.php";
+        foreach (glob($model_path) as $model_file) {
+            $path_info = pathinfo($model_file);
+
+            $model = new $path_info['filename'];
+            if ($model->name && $model->columns) {
+                foreach ($this->pgAttributes($model->name) as $pg_attribute) {
+                    if ($pg_attribute['attname']) {
+                        $pg_attributes[$pg_attribute['attname']] = $pg_attribute;
+                    }
+                }
+                if ($pg_attributes) {
+                    foreach ($model->columns as $column_name => $column) {
+                        $attribute = $pg_attributes[$column_name];
+                        if (!$attribute) {
+                            $status = "---- Not Found ----".PHP_EOL;
+                            $status.= "{$model->name}.{$column_name}".PHP_EOL;
+                            echo($status);
+                        }
+                        if ($column['type'] != $attribute['udt_name']) {
+                            $status = "---- Diff column type ----".PHP_EOL;
+                            $status.= "{$model->name}.{$column_name}".PHP_EOL;
+                            $status.= "{$column['type']} != {$attribute['udt_name']}".PHP_EOL;
+                            echo($status);
+
+                            $options['type'] = $column['type'];
+                            $options['length'] = $column['length'];
+                            $this->changeColumnType($model->name, $column_name, $options, false);
+                            echo($this->sql).PHP_EOL;
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
