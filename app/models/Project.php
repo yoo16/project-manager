@@ -137,7 +137,7 @@ class Project extends _Project {
 
 
     //controller view
-    function exportPHPControllers() {
+    function exportPHPControllers($is_overwrite = false) {
         $pages = $this->hasMany('Page')->values;
         if ($pages) {
             foreach ($pages as $page) {
@@ -162,7 +162,8 @@ class Project extends _Project {
                 $values['page_filter'] = $page_filter->values;
 
                 $page_path = Page::projectFilePath($this->user_project_setting->value, $page);
-                if (!file_exists($page_path) || $page['is_overwrite']) {
+
+                if (!file_exists($page_path) || ($is_overwrite && $page['is_overwrite'])) {
                     $page_template_path = Page::templateFilePath($page);
                     $contents = FileManager::bufferFileContetns($page_template_path, $values);
                     file_put_contents($page_path, $contents);
@@ -171,7 +172,7 @@ class Project extends _Project {
         }
     }
 
-    function exportPHPViews($page, $values) {
+    function exportPHPViews($is_overwrite = false) {
         $pages = $this->relationMany('Page')
                       ->idIndex()
                       ->all()
@@ -199,7 +200,7 @@ class Project extends _Project {
 
                     foreach ($views as $view) {
                         $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
-                        if (!file_exists($view_path) || $view['is_overwrite']) {
+                        if (!file_exists($view_path) || ($is_overwrite && $view['is_overwrite'])) {
                             $view['view_item'] = DB::table('View')->fetch($view['id'])
                                                                   ->relationMany('ViewItem')
                                                                   ->order('sort_order')

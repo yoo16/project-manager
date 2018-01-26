@@ -203,4 +203,15 @@ class PageController extends ProjectController {
         }
         $this->redirect_to('list');
     }
+
+    function action_all_off_overwrite() {
+        $page = $this->project->relationMany('Page')->all();
+
+        foreach ($page->values as $page_value) {
+            $posts['is_overwrite'] = false;
+            $page = DB::table('Page')->update($posts, $page_value['id']);
+        }
+        $this->redirect_to('list');
+    }
+
 }

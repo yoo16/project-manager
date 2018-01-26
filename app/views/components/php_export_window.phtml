@@ -49,6 +49,9 @@
         &nbsp;
         <form action="<?=url_for('project/export_php_controller_view') ?>" method="post">
           <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">Controller/View</button>
+          <div>
+          <input type="checkbox" name="is_overwrite" value="1"> overwrite
+          </div>
           <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
           <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
         </form>

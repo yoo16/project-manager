@@ -975,7 +975,7 @@ class PgsqlEntity extends Entity {
     * @return PgsqlEntity
     */
     public function belongsTo($class_name, $foreign_key = null, $value_key = null) {
-        if (is_null($this->value)) return $this;
+        if (is_null($this->value)) return;
 
         if (!is_string($class_name)) exit('belongsTo: $class_name is not string');
         $relation = DB::table($class_name);
@@ -984,7 +984,7 @@ class PgsqlEntity extends Entity {
         if (!$value_key) $value_key = "{$relation->entity_name}_id";
 
         $value = $this->value[$value_key];
-        if (is_null($value)) return $this;
+        if (is_null($value)) return;
         $condition = "{$foreign_key} = '{$value}'";
         return $relation->where($condition)->one();
     }
@@ -1278,21 +1278,18 @@ class PgsqlEntity extends Entity {
      * 
      * @return [type] [description]
      */
-    public function upsert() {
-        if ($id > 0) $this->fetch($id);
-        if (!$this->id) return $this;
-
-        $this->before_value = $this->value;
-
-        if ($posts) $this->takeValues($posts);
-
-        $this->validate();
-        if ($this->errors) return $this;
-
+    public function upsert($posts) {
+        $this->takeValues($posts);
         $sql = $this->upsertSql();
 
-        echo($sql).PHP_EOL;
-        exit;
+        $result = $this->query($sql);
+        if ($result === false) {
+            $this->addError('sql', 'error');
+            $message = "SQL Error: {$sql}";
+            echo($message);
+            exit;
+        }
+        return $this;
     }
 
     /**
@@ -1543,7 +1540,7 @@ class PgsqlEntity extends Entity {
             if (is_array($condition)) {
                 $column = $condition[0];
                 $value = $condition[1];
-                $eq = (isset($conditinos[3])) ? $conditinos[3] : '=';
+                $eq = (isset($conditions[3])) ? $conditions[3] : '=';
                 
                 $this->conditions[] = "{$column} {$eq} {$value}";
             } else {
@@ -1551,6 +1548,24 @@ class PgsqlEntity extends Entity {
             }
         }
         $this->conditions = array_unique($this->conditions);
+        return $this;
+    }
+
+    /**
+    * where
+    * 
+    * @param  string $column
+    * @param  array $values
+    * @return PgsqlEntity
+    */
+    public function whereIn($column, $values) {
+        if (!$column) return $this;
+        if (!$values) return $this;
+        if (is_array($values)) {
+            $value = implode(', ', $values);
+            $condition = "{$column} in ({$value})";
+            $this->where($condition);
+        }
         return $this;
     }
 
@@ -2083,23 +2098,61 @@ class PgsqlEntity extends Entity {
         return $sql;
     }
 
+    public function reloadPrimaryKey() {
+        $this->primary_key = "{$this->table_name}_pkey";
+        return $this;
+    }
+
+    public function setUpsertConstraint($constraint_name) {
+        $this->upsert_constraint = $constraint_name;
+        return $this;
+    }
+
     private function upsertSql() {
-        if ($this->primary_key) {
-            echo('Not found primary key!').PHP_EOL;
+        if (!$this->upsert_constraint) {
+            echo('Not found upsert constraint key!').PHP_EOL;
             exit;
         }
-        $insert_sql = $this->insertSQL();
-        $update_sql = $this->updateSQL();
 
-        $sql = $update_sql;
-        $sql.= "ON CONFLICT ON CONSTRAINT DO {$this->primary_key} ";
-        $sql.= $insert_sql;
+        //insert
+        foreach ($this->columns as $key => $type) {
+            $value = $this->sqlValue($this->value[$key]);
+            if ($key == 'created_at') $value = 'current_timestamp';
+            $columns[] = $key;
+            $values[] = $value;
+        }
+        $column = implode(',', $columns);
+        $value = implode(',', $values);
+        $insert_sql = "INSERT INTO {$this->table_name} ({$column}) VALUES ({$value})";
+
+        //update
+        foreach ($this->value as $key => $value) {
+            if ($key) {
+                if (is_bool($value)) {
+                    if ($value === true) {
+                        $value = 'TRUE';
+                    } else {
+                        $value = 'FALSE';
+                    }
+                    $set_values[] = "{$key} = {$value}";
+                } else {
+                    $set_values[] = "{$key} = '{$value}'";
+                }
+            }
+        }
+        if (isset($this->columns['updated_at'])) $set_values[] = "updated_at = current_timestamp";
+        if ($set_values) $set_value = implode(', ', $set_values);
+        $update_sql = "UPDATE SET {$set_value}";
+
+        $sql = $insert_sql;
+        $sql.= " ON CONFLICT ON CONSTRAINT {$this->upsert_constraint} DO ";
+        $sql.= $update_sql;
 
         return $sql;
     }
 
     /**
-    * updateSql
+    * updates Sql
     * 
     * @return string
     */
@@ -2457,12 +2510,12 @@ class PgsqlEntity extends Entity {
     * pg_class
     *
     * @param int $pg_class_id
-    * @param array $conditinos
+    * @param array $conditions
     * @param string $relkind
     * @param string $schema_name
     * @return array
     **/
-    function pgClass($pg_class_id, $conditinos = null, $relkind = 'r', $schema_name = 'public') {
+    function pgClass($pg_class_id, $conditions = null, $relkind = 'r', $schema_name = 'public') {
         $sql = "SELECT pg_class.oid AS pg_class_id, * FROM pg_class 
                 LEFT JOIN pg_tables ON pg_tables.tablename = pg_class.relname
                 LEFT JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace";
@@ -2490,12 +2543,12 @@ class PgsqlEntity extends Entity {
     * f: foreign table
     *
     * @param array $pg_class_ids
-    * @param array $conditinos
+    * @param array $conditions
     * @param string $relkind
     * @param string $schema_name
     * @return array
     **/
-    function pgClasses($pg_class_ids = null, $conditinos = null, $relkind = 'r', $schema_name = 'public') {
+    function pgClasses($pg_class_ids = null, $conditions = null, $relkind = 'r', $schema_name = 'public') {
         $sql = "SELECT pg_class.oid AS pg_class_id, * FROM pg_class 
                 LEFT JOIN pg_tables ON pg_tables.tablename = pg_class.relname
                 LEFT JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace";

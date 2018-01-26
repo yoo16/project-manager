@@ -53,6 +53,124 @@ class DataMigration {
             }
         }
     }
+    
+    /**
+     * update from old table
+     *
+     * @param  PgsqlEntity $db_info
+     * @param  string $class_name
+     * @param  int $old_id
+     * @return PgsqlEntity
+     */
+    function updateValuesFromOldDB($db_info, $class_name, $foreign_classes = null, $search_columns = null) {
+        if (!$db_info) {
+            exit("Not found db_info.").PHP_EOL;
+            return;
+        }
+        if (!$class_name) {
+            exit("Not found class_name.").PHP_EOL;
+            return;
+        }
+
+        $old_pgsql = new PgsqlEntity();
+        $old_pgsql->setDBInfo($db_info);
+        $old_values = DB::table($class_name)->valuesFromOldTable($old_pgsql);
+
+        if (!$old_values) {
+            exit("{$class_name} has not data.").PHP_EOL;
+            return;
+        }
+
+        foreach ($old_values as $value) {
+            $is_update = true;
+
+            if ($foreign_classes) {
+                foreach ($foreign_classes as $foreign_column => $foreign_class) {
+                    if ($foreign_class['search_columns']) {
+                        $old_foreign = DB::table($foreign_class['class_name']);
+                        $old_foreign->setIdColumn($old_foreign->old_id_column)
+                                    ->setDBInfo($db_info)
+                                    ->select(['*'])
+                                    ->from($old_foreign->old_name)
+                                    ->fetch($value[$foreign_column]);
+                        $foreign = DB::table($foreign_class['class_name']);
+                        if ($old_foreign->value) {
+                            foreach ($foreign_class['search_columns'] as $search_column) {
+                                $search_value = $old_foreign->value[$search_column];
+                                if ($search_value) $foreign->where("{$search_column} = '{$search_value}'");
+                            }
+                            $foreign->one();
+                        }
+                    } else {
+                        if ($foreign_class['db_info']) {
+                            $old_foregin_pgsql = new PgsqlEntity($foreign_class['db_info']);
+                        } else {
+                            $old_foregin_pgsql = $old_pgsql;
+                        }
+                        $foreign = DataMigration::fetchByOldId($old_foregin_pgsql, $foreign_class['class_name'], $value[$foreign_column]);
+                    }
+                    $value[$foreign_column] = $foreign->value['id'];
+
+                    //TODO refectoring
+                    $is_update = !($foreign_class['is_require'] && !$value[$foreign_column]);
+                }
+            }
+
+            if ($is_update) {
+                if ($search_columns) {
+                    $new_class = DB::table($class_name);
+                    foreach ($search_columns as $search_column) {
+                        $search_value = $value[$search_column];
+                        $new_class->where("{$search_column} = '{$search_value}'");
+                    }
+                    $new_class->one();
+                } else {
+                    $new_class = DataMigration::fetchByOldId($old_pgsql, $class_name, $value['old_id']);
+                }
+
+                $value['old_host'] = $old_pgsql->host;
+                $value['old_db'] = $old_pgsql->dbname;
+
+                if ($new_class->value['id']) {
+                    $new_class->update($value);
+                } else {
+                    $new_class = DB::table($class_name)->insert($value);
+                }
+
+                //TODO LOG
+                // if ($new_class->sql_error) {
+                //     $error.= $new_class->sql.PHP_EOL;
+                //     $error.= $new_class->name.PHP_EOL;
+                //     $error.= $new_class->sql_error.PHP_EOL;
+                //     $error.= PHP_EOL;
+                // }
+            }
+        }
+        //$this->exportErrorLog($error, $class_name);
+    }
+
+    /**
+     * fetch from old id
+     *
+     * @param  PgsqlEntity $old_pgsql
+     * @param  string $class_name
+     * @param  int $old_id
+     * @return PgsqlEntity
+     */
+    static function fetchByOldId($old_pgsql, $class_name, $old_id) {
+        $instance = DB::table($class_name);
+        if ($old_id && $old_pgsql->host && $old_pgsql->dbname) {
+            $instance->select(['*'])
+                      ->where("old_id IS NOT NULL")
+                      ->where("old_host IS NOT NULL")
+                      ->where("old_db IS NOT NULL")
+                      ->where("old_id = {$old_id}")
+                      ->where("old_host = '{$old_pgsql->host}'")
+                      ->where("old_db = '{$old_pgsql->dbname}'")
+                      ->one();
+        }
+        return $instance;
+    }
 
     function truncates($model_names) {
         foreach ($model_names as $model_name) {
