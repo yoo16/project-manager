@@ -3,10 +3,10 @@ require_once dirname(__FILE__).'/../../lib/Controller.php';
 
 ApplicationLoader::autoloadModel();
 
-if (defined(!'EXCEL_EXPORT_DIR')) exit('Not defined EXCEL_EXPORT_DIR');
-if (defined(!'EXCEL_SCP_UPLOAD_HOST')) exit('Not defined EXCEL_SCP_UPLOAD_HOST');
-if (defined(!'EXCEL_SCP_UPLOAD_USER')) exit('Not defined EXCEL_SCP_UPLOAD_USER');
-if (defined(!'EXCEL_SCP_UPLOAD_DIR')) exit('Not defined EXCEL_SCP_UPLOAD_DIR');
+if (!defined('EXCEL_EXPORT_DIR')) exit('Not defined EXCEL_EXPORT_DIR');
+if (!defined('EXCEL_SCP_UPLOAD_HOST')) exit('Not defined EXCEL_SCP_UPLOAD_HOST');
+if (!defined('EXCEL_SCP_UPLOAD_USER')) exit('Not defined EXCEL_SCP_UPLOAD_USER');
+if (!defined('EXCEL_SCP_UPLOAD_DIR')) exit('Not defined EXCEL_SCP_UPLOAD_DIR');
 
 $project_name = $argv[1];
 $is_not_export = $argv[2];
