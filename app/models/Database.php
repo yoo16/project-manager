@@ -240,7 +240,7 @@ class Database extends _Database {
         }
     }
 
-    function createExcelAttributes($row, $pg_attributes, $attributes) {
+    function createExcelAttributes($row, $pg_attributes) {
         //TODO array setting
         $this->sheet->setCellValueByColumnAndRow(0, $row, 'attribute');
         $this->sheet->setCellValueByColumnAndRow(1, $row, 'comment');
