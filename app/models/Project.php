@@ -27,7 +27,7 @@ class Project extends _Project {
         return $project;
     }
 
-    function pgConstraints($pg_class) {
+    function pgConstraintValues($pg_class) {
         foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
             foreach ($pg_constraints as $pg_constraint) {
                 if ($type == 'unique') {
@@ -113,7 +113,7 @@ class Project extends _Project {
                                                 ->one()
                                                 ->value['old_name'];
 
-                $pg_constraints = $this->pgConstraints($pg_class);
+                $pg_constraints = $this->pgConstraintValues($pg_class);
                 $values['unique'] = $pg_constraints['unique'];
                 $values['foreign'] = $pg_constraints['foreign'];
                 $values['primary'] = $pg_constraints['primary'];
