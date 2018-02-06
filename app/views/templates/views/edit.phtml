@@ -7,8 +7,10 @@
     <div class="card-header">
       <h4></h4>
       <div class="text-left">
+
         <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
         <? Tag::init()->php('FormHelper::linkButton("cancel", LABEL_BACK)') ?>
+
       </div>
     </div>
 
@@ -22,7 +24,9 @@
 
   <div class="card-footer">
     <div class="text-left">
+
       <? Tag::init()->php('$this->'."{$values['model']['entity_name']}".'->formDelete()') ?>
+      
     </div>
   </div>
 

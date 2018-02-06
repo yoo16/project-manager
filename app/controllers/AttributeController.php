@@ -198,6 +198,7 @@ class AttributeController extends ProjectController {
 
     function add_column() {
         if (!isPost()) exit;
+
         $attribute = DB::table('Attribute')->fetch($this->params['id']);
         $database = DB::table('Database')->fetch($this->project->value['database_id']);
 

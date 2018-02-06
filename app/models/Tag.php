@@ -38,10 +38,12 @@ class Tag {
         if ($tag) $this->php($tag);
     }
 
-    function formEditForModel($model, $attribute) {
+    function formInput($view_item, $model, $attribute) {
         $entity = '$this->'.$model['entity_name'];
         if ($attribute['type'] == 'bool') {
             $method = "formCheckbox('{$attribute['name']}')";
+        } else if (in_array($attribute['type'], ['int2', 'int4', 'int8', 'float', 'float8', 'double', 'double precision', 'real'])) {
+            $method = "formInput('{$attribute['name']}', ['class' => 'form-control col-2 number'])";
         } else {
             $method = "formInput('{$attribute['name']}')";
         }

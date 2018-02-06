@@ -161,4 +161,24 @@ class RecordItemController extends RecordController {
         exit;
     }
 
+   /**
+    * add record
+    *
+    * @param
+    * @return void
+    */
+    function batch_add() {
+        if ($_REQUEST['record_id'] && $_REQUEST['count']) {
+            $record = DB::table('Record')->fetch($_REQUEST['record_id']);
+            if ($record->value) {
+                for ($i = 0; $i < $_REQUEST['count']; $i++) {
+                    $posts['record_id'] = $record->value['id'];
+                    $posts['key'] = $i + 1;
+                    $posts['value'] = $i + 1;
+                    $record_item = DB::table('RecordItem')->insert($posts);
+                }
+            }
+        }
+    }
+
 }

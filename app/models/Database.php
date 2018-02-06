@@ -51,9 +51,10 @@ class Database extends _Database {
     /**
      * export database
      *
+     * @param file_path $file_path
      * @return bool
      */
-    function exportDatabase() {
+    function exportDatabase($file_path = '') {
         date_default_timezone_set('Asia/Tokyo');
         require BASE_DIR.'/vendor/autoload.php';
 
@@ -169,18 +170,20 @@ class Database extends _Database {
 
         $book->setActiveSheetIndex(0);
         $writer = PHPExcel_IOFactory::createWriter($book, 'Excel2007');
-        header("Pragma: public");
-        header("Expires: 0");
-        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-        header("Content-Type: application/force-download");
-        header("Content-Type: application/octet-stream");
-        header("Content-Type: application/download");
-        header("Content-Disposition: attachment;filename={$file_name}");
-        header("Content-Transfer-Encoding: binary ");
-        $writer->save('php://output');
 
-        //FileManager::createDir($tmp_dir);
-        //$writer->save($export_path);
+        if ($file_path) {
+            $writer->save($file_path);
+        } else {
+            header("Pragma: public");
+            header("Expires: 0");
+            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            header("Content-Type: application/force-download");
+            header("Content-Type: application/octet-stream");
+            header("Content-Type: application/download");
+            header("Content-Disposition: attachment;filename={$file_name}");
+            header("Content-Transfer-Encoding: binary ");
+            $writer->save('php://output');
+        }
     }
 
     /**

@@ -223,7 +223,7 @@ class Project extends _Project {
                                 file_put_contents($form_path, $contents);
 
                                 //form
-                                $new_template_path = View::templateNameFilePath('form');
+                                $new_template_path = View::templateNameFilePath('form_for_table');
                                 $contents = FileManager::bufferFileContetns($new_template_path, $values);
 
                                 $new_file_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'form');

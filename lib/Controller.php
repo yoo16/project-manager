@@ -5,21 +5,22 @@
  * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
-if (!defined('BASE_DIR')) {
-    define('BASE_DIR', dirname(dirname(__FILE__)) . '/');
-}
-@include_once(BASE_DIR."lib/PwSetting.php");
+@include_once("PwSetting.php");
 if (!defined('ROOT_CONTROLLER_NAME')) define('ROOT_CONTROLLER_NAME', 'root');
 if (!defined('APP_NAME')) define('APP_NAME', 'controller');
 
 class Controller extends RuntimeException {
     static $routes = ['controller', 'action', 'id'];
-    var $name;
-    var $layout = true;
-    var $session_name = '';
-    var $headers = array();
-    var $_performed_render = false;
-    var $relative_base = '';
+    public $name;
+    public $layout = true;
+    public $session_name = '';
+    public $headers = [];
+    public $_performed_render = false;
+    public $relative_base = '';
+    public $project_name = '';
+    public $pw_controller = '';
+    public $pw_action = '';
+    public $pw_method = '';
 
     function __construct($name = null) {
         $class_name = strtolower(get_class($this));
@@ -133,7 +134,11 @@ class Controller extends RuntimeException {
                 }
             }
         } 
+        $params = Controller::bindPwRequestParams($params);
+        return $params;
+    }
 
+    static function bindPwRequestParams($params) {
         $request_url = parse_url($request);
         if (isset($request_url['query'])) {
             $values = explode('&', $request_url['query']);
@@ -220,33 +225,12 @@ class Controller extends RuntimeException {
     }
 
     /**
-     * render
+     * pw layout
      * 
-     * @param  string $action
      * @param  boolean $with_layout
-     * @return void
+     * @return string
      */
-    function render($action, $with_layout = true) {
-        if ($this->_performed_render) return;
-        $this->before_rendering($action, $with_layout);
-
-        if (substr($action, 0, 1) === '/') {
-            $template = "views{$action}.phtml";
-        } else {
-            $template = "views/{$this->name}/{$action}.phtml";
-        }
-
-        if (!file_exists(BASE_DIR."app/{$template}")) {
-            $error_message = "template missing: {$template}";
-            trigger_error($error_message, E_USER_ERROR);
-        }
-        
-        $GLOBALS['template'] = $template;
-
-        //@include_once "helpers.php";
-        @include_once BASE_DIR."app/helpers/application_helper.php";
-
-        // layout
+    public function pwLayout($with_layout = true) {
         if (is_string($with_layout)) {
             $layout = $with_layout;
         } else if ($with_layout) {
@@ -256,21 +240,71 @@ class Controller extends RuntimeException {
                 $layout = $this->name;
             }
         }
+        $this->pw_layout = $layout;
+        return $layout;
+    }
 
-        // header
+    public function pwTemplate($action) {
+        if (substr($action, 0, 1) === '/') {
+            $template = "views{$action}.phtml";
+        } else {
+            $template = "views/{$this->name}/{$action}.phtml";
+        }
+        // if (!file_exists(BASE_DIR."app/{$template}")) {
+        //     $error_message = "template missing: {$template}";
+        //     exit($error_message);
+        // }
+        $this->pw_template = $template;
+        return $template;
+    }
+
+    /**
+     * load pw template
+     *
+     * @return void
+     */
+    function loadPwTemplate() {
+        ob_start();
+        include BASE_DIR."app/{$this->pw_template}";
+        $this->content_for_layout = ob_get_contents();
+        ob_end_clean();
+    }
+
+    /**
+     * load pw headers
+     * 
+     * @return void
+     */
+    function loadPwHeaders() {
         header('Content-Type: ' . $this->contentType());
-        if ($this->headers) {
-            foreach ($this->headers as $key => $value) {
+        if ($this->pw_headers) {
+            foreach ($this->pw_headers as $key => $value) {
                 header("{$key}: {$value}");
             }
         }
+    }
+
+    /**
+     * render
+     * 
+     * @param  string $action
+     * @param  boolean $with_layout
+     * @return void
+     */
+    function render($action, $with_layout = true) {
+        if ($this->_performed_render) return;
+        $this->before_rendering($action, $with_layout);
+        $template = $this->pwTemplate($action);
+
+        @include_once BASE_DIR."app/helpers/application_helper.php";
+
+        $layout = $this->pwLayout();
+
+        $this->loadPwHeaders();
 
         if (isset($layout) && file_exists(BASE_DIR."app/views/layouts/{$layout}.phtml")) {
             try {
-                ob_start();
-                include BASE_DIR."app/{$template}";
-                $this->content_for_layout = ob_get_contents();
-                ob_end_clean();
+                $this->loadPwTemplate();
             } catch (Throwable $t) {
                 $errors = $this->throwErrors($t);
                 self::renderError($errors);
@@ -284,7 +318,7 @@ class Controller extends RuntimeException {
 
             include BASE_DIR."app/views/layouts/{$layout}.phtml";
         } else {
-            include BASE_DIR."app/{$template}";
+            include BASE_DIR."app/{$this->pw_template}";
         }
         $this->_performed_render = true;
     }
@@ -434,6 +468,8 @@ class Controller extends RuntimeException {
 
     /**
      * redirect
+     *
+     * TODO: remove
      * 
      * @param  array $params
      * @param  array $options
@@ -454,13 +490,89 @@ class Controller extends RuntimeException {
         exit;
     }
 
+
+    /**
+     * redirect
+     * 
+     * @param  array $params
+     * @param  array $options
+     * @return void
+     */
+    function redirectTo($params, $options = null) {
+        $this->_performed_render = true;
+
+        if (strpos($params, '://')) {
+            $url = $params;
+        } else {
+            $url = $this->url_for($params, $options);
+            if (!strpos($url, '://')) $url = $this->base . $url;
+            if (SID) $url .= ((strpos($url, '?')) ? '&' : '?' ) . SID;
+        }
+        if (defined('DEBUG') && DEBUG) error_log("<REDIRECT> {$url}");
+        header("Location: {$url}");
+        exit;
+    }
+
     /**
      * url for params
+     *
+     * TODO: remove
+     * 
      * @param  array $url_params
      * @param  array $options
      * @return string
      */
     function url_for($url_params, $options = null) {
+        $params = array();
+        if (is_string($url_params)) {
+            $_params = explode('?', $url_params);
+            if ($_params[0]) $url_params = $_params[0];
+            if ($_params[1]) $query = $_params[1];
+
+            $_params = explode('#', $url_params);
+            if ($_params[0]) $url_params = $_params[0];
+            if ($_params[1]) $params['.anchor'] = $_params[1];
+
+            $_params = explode('.', $url_params);
+            if ($_params[0]) $url_params = $_params[0];
+            if ($_params[1]) $params['.extension'] = $_params[1];
+
+            $_params = explode('/', $url_params);
+            if (isset($_params[1])) {
+                if (empty($_params[0])) {
+                    $params['controller'] = ROOT_CONTROLLER_NAME;
+                    $params['action'] = 'index';
+                } else {
+                    $params['controller'] = $_params[0];
+                    $params['action'] = $_params[1];
+                }
+            } else {
+                $params['controller'] = $this->name;
+                $params['action'] = $_params[0];
+            }
+            if (!$params['action']) $params['action'] = 'index';
+        }
+
+        if (is_array($options)) {
+            $params['params'] = $options;
+        } else if (isset($options)) {
+            $params['id'] = $options;
+        }
+        $url = Controller::generateUrl($params);
+        return $url;
+    }
+
+
+    /**
+     * url for params
+     *
+     * TODO: refectoring
+     * 
+     * @param  array $url_params
+     * @param  array $options
+     * @return string
+     */
+    function urlFor($url_params, $options = null) {
         $params = array();
         if (is_string($url_params)) {
             $_params = explode('?', $url_params);
@@ -519,6 +631,99 @@ class Controller extends RuntimeException {
     }
 
     /**
+     * project name for PHP_SELF
+     *
+     * @return $string
+     */
+    public function projectName() {
+        $php_self = $_SERVER['PHP_SELF'];
+        $this->project_name = str_replace('public', '', $php_self);
+        $this->project_name = str_replace('dispatch.php', '', $this->project_name);
+        $this->project_name = str_replace('/', '', $this->project_name);
+        return $this->project_name;
+    }
+
+    /**
+     * relative base url for QUERY_STRING
+     *
+     * @return string
+     */
+    public function relativeBaseURL() {
+        $query = str_replace('?', '', $_SERVER['QUERY_STRING']);
+        $count = substr_count($query, '/');
+        for ($i = 0; $i < $count; $i++) {
+            $this->relative_base .= '../';
+        }
+        return $this->relative_base;
+    }
+
+    /**
+     * base url for HTTPS & HTTP_HOST
+     *
+     * @return string
+     */
+    public function baseUrl() {
+        $this->projectName();
+        $this->http_host = $_SERVER['HTTP_HOST'];
+
+        if (defined('BASE_URL') && is_string(BASE_URL)) {
+            $this->base = BASE_URL;
+            return;
+        }
+        if (isset($_SERVER['HTTPS'])) {
+            $this->base = 'https://' . preg_replace('/:443$/', '', $this->http_host);
+        } else {
+            $this->base = 'http://' . preg_replace('/:80$/', '', $this->http_host);
+        }
+        $this->base.= '/';
+        if ($this->project_name) $this->base .= $this->project_name.'/';
+        return $this->base;
+    }
+
+    /**
+     * pw controller
+     *
+     * @return string
+     */
+    public function pwController() {
+        $this->pw_controller = $this->params['controller'];
+        return $this->pw_controller;
+    }
+
+    /**
+     * pw action
+     *
+     * @return string
+     */
+    public function pwAction() {
+        $this->pw_action = $this->params['action'];
+        if (!isset($this->pw_action) || $this->pw_action === '') {
+            $this->pw_action = 'index';
+        } else if ($pos = strpos($this->pw_action, '.')) {
+            $this->pw_action = substr($this->pw_action, 0, $pos);
+        }
+        return $this->pw_action;
+    }
+
+    /**
+     * pw method
+     * 
+     * @param string $action
+     * @return string
+     */
+    public function pwMethod($action) {
+        if (method_exists($this, $action)) {
+            $method = $action;
+        } else if (method_exists($this, "action_{$action}")) {
+            $method = "action_{$action}";
+        }
+        if (method_exists(new Controller(), $method)) {
+            $method = null;
+        }
+        return $method;
+    }
+
+    /**
      * invoke
      * 
      * @return void
@@ -529,52 +734,23 @@ class Controller extends RuntimeException {
             error_log("<USER_AGENT> {$_SERVER['HTTP_USER_AGENT']}");
         }
 
-        //TODO
-        if (defined('BASE_URL') && is_string(BASE_URL)) {
-            $this->base = BASE_URL;
-        } else {
-            if (isset($_SERVER['HTTPS'])) {
-                $this->base = 'https://' . preg_replace('/:443$/', '', $_SERVER['HTTP_HOST']);
-            } else {
-                $this->base = 'http://' . preg_replace('/:80$/', '', $_SERVER['HTTP_HOST']);
-            }
-            $request = $_SERVER['REQUEST_URI'];
-            $query = $_SERVER['QUERY_STRING'];
-            $this->base .= substr($request, 0, strlen($request) - strlen($query));
+        $this->base = $this->baseUrl();
+        $this->relativeBaseURL();
 
-            //TODO
-            $count = substr_count($query, '/');
-            for ($i = 0; $i < $count; $i++) {
-                $this->relative_base .= '../';
-            }
-        }
+        $this->pwAction();
+        $method = $this->pwMethod($this->pw_action);
 
-        // action
-        $action = $this->params['action'];
-        if (!isset($action) || $action === '') {
-            $action = 'index';
-        } else if ($pos = strpos($action, '.')) {
-            $action = substr($action, 0, $pos);
-        }
-
-        if (method_exists($this, $action)) {
-            $method = $action;
-        } else if (method_exists($this, "action_{$action}")) {
-            $method = "action_{$action}";
-        }
-        if (method_exists(new Controller(), $method)) {
-            $method = null;
-        }
         //TODO
         if (!empty($method)) {
-            $this->before_action($action);
+            $this->before_action($this->pw_action);
             if ($this->_performed_render) return;
 
-            $this->before_invocation($action);
             $this->$method();
-            if (defined('DEBUG') && DEBUG) error_log("<INVOKED> {$action}");
 
-            $this->render($action);
+            $this->before_invocation($action);
+            if (defined('DEBUG') && DEBUG) error_log("<INVOKED> {$this->pw_action}");
+
+            $this->render($this->pw_action);
         } else {
             //TODO try catch
             //$error_message = "{$_SERVER['REQUEST_URI']} Not Found";
@@ -584,9 +760,9 @@ class Controller extends RuntimeException {
             $errors['query'] = $_SERVER['QUERY_STRING'];
             $errors['request'] = $_SERVER['REQUEST_URI'];
             $errors['controller'] = $this->name;
-            $errors['action'] = $action;
+            $errors['action'] = $this->pw_action;
             $errors['signature'] = $_SERVER['SERVER_SIGNATURE'];
-            $content_for_layout = self::renderError($errors, false);
+            $content_for_layout = Controller::renderError($errors, false);
 
             ob_start();
             include BASE_DIR."app/views/layouts/error.phtml";
@@ -599,27 +775,54 @@ class Controller extends RuntimeException {
         unset($this->params['id']);
     }
 
+    /**
+     * load $_POST
+     *
+     * @return void
+     */
     function loadPosts() {
-        if ($_POST) {
-            AppSession::set('posts', $_POST);
-        }
+        if ($_POST) AppSession::set('posts', $_POST);
         $this->posts = AppSession::get('posts');
     }
 
+    /**
+     * clear $_POST
+     *
+     * @return void
+     */
     function clearPosts() {
         $this->clearSessions('posts');
     }
 
+    /**
+     * get sessions by key
+     *
+     * @param  string $key
+     * @return string
+     */
     function getSessions($key) {
         if (!$this->session_name) return;
         return AppSession::getWithKey($this->session_name, $key); 
     }
 
+    /**
+     * set sessions by key value
+     *
+     * @param  string $key
+     * @param  array $vaues
+     * @return void
+     */
     function setSessions($key, $values) {
         if (!$this->session_name) return;
         AppSession::setWithKey($this->session_name, $key, $values); 
     }
 
+    /**
+     * clear sessions by key
+     *
+     * @param  string $key
+     * @return void
+     */
     function clearSessions($key) {
         if (!$this->session_name) return;
         AppSession::clearWithKey($this->session_name, $key); 

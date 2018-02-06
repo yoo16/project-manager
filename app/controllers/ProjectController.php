@@ -161,7 +161,7 @@ class ProjectController extends AppController {
         if (!isPost()) exit;
         $this->project = DB::table('Project')->fetch($this->posts['project_id']);
         $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($this->posts['user_project_setting_id']);
-        $this->project->exportPHPViews();
+        $this->project->exportPHPViews($_REQUEST['is_overwrite']);
 
         $params['project_id'] = $this->project->value['id'];
         $this->redirect_to('page/list', $params);
