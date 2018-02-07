@@ -126,6 +126,19 @@ class ProjectController extends AppController {
         $this->redirect_to('model/list', $params);
     }
 
+    function action_export_php_page() {
+        if (!isPost()) exit;
+        $this->page = DB::table('Page')->fetch($this->posts['page_id']);
+        $this->project = DB::table('Project')->fetch($this->posts['project_id']);
+
+        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($this->posts['user_project_setting_id']);
+        $this->project->exportPHPController($this->page->value, $_REQUEST['is_overwrite']);
+        $this->project->exportPHPView($this->page->value, $_REQUEST['is_overwrite']);
+
+        $params['project_id'] = $this->project->value['id'];
+        $this->redirect_to('page/list', $params);
+    }
+
     function action_export_php_model() {
         if (!isPost()) exit;
         $this->project = DB::table('Project')->fetch($this->posts['project_id']);

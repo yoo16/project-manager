@@ -39,39 +39,47 @@ class _ViewItem extends PgsqlEntity {
         'where_string' => array('type' => 'text'),
     );
 
+    var $primary_key = 'view_items_pkey';
     var $foreign = array(
             'view_items_page_id_fkey' => [
                                   'column' => 'page_id',
+                                  'class_name' => 'Page',
                                   'foreign_table' => 'pages',
                                   'foreign_column' => 'id',
                                   ],
             'view_items_where_attribute_id_fkey' => [
                                   'column' => 'where_attribute_id',
+                                  'class_name' => 'Attribute',
                                   'foreign_table' => 'attributes',
                                   'foreign_column' => 'id',
                                   ],
             'view_items_link_param_id_attribute_id_fkey' => [
                                   'column' => 'link_param_id_attribute_id',
+                                  'class_name' => 'Attribute',
                                   'foreign_table' => 'attributes',
                                   'foreign_column' => 'id',
                                   ],
             'view_items_attribute_id_fkey' => [
                                   'column' => 'attribute_id',
+                                  'class_name' => 'Attribute',
                                   'foreign_table' => 'attributes',
                                   'foreign_column' => 'id',
                                   ],
             'view_items_where_model_id_fkey' => [
                                   'column' => 'where_model_id',
+                                  'class_name' => 'Model',
                                   'foreign_table' => 'models',
                                   'foreign_column' => 'id',
                                   ],
             'view_items_view_id_fkey' => [
                                   'column' => 'view_id',
+                                  'class_name' => 'View',
                                   'foreign_table' => 'views',
                                   'foreign_column' => 'id',
                                   ],
             'view_items_localize_string_id_fkey' => [
                                   'column' => 'localize_string_id',
+                                  'class_name' => 'LocalizeString',
                                   'foreign_table' => 'localize_strings',
                                   'foreign_column' => 'id',
                                   ],

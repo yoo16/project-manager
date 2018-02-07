@@ -136,104 +136,109 @@ class Project extends _Project {
     }
 
 
-    //controller view
+    //controllers
     function exportPHPControllers($is_overwrite = false) {
         $pages = $this->hasMany('Page')->values;
         if ($pages) {
             foreach ($pages as $page) {
-                $values = null;
-                $values['page'] = $page;
-                if ($page['model_id']) {
-                    $model = DB::table('Model')->fetch($page['model_id']);
-                    $values['model'] = $model->value;
-                    $values['model']['attributes'] = $model->hasMany('Attribute')->values;
-                }
-
-                if ($page['parent_page_id']) {
-                    $values['page']['parent'] = DB::table('Page')->fetch($page['parent_page_id'])->value;
-                }
-
-                $page_model = DB::table('PageModel')->where("page_id = {$page['id']}")
-                                                              ->join('Model', 'id', 'model_id')
-                                                              ->all();
-                $values['page_model'] = $page_model->values;
-
-                $page_filter = DB::table('PageFilter')->where("page_id = {$page['id']}")->all();
-                $values['page_filter'] = $page_filter->values;
-
-                $page_path = Page::projectFilePath($this->user_project_setting->value, $page);
-
-                if (!file_exists($page_path) || ($is_overwrite && $page['is_overwrite'])) {
-                    $page_template_path = Page::templateFilePath($page);
-                    $contents = FileManager::bufferFileContetns($page_template_path, $values);
-                    file_put_contents($page_path, $contents);
-                }
+                $this->exportPHPController($page, $is_overwrite);
             }   
         }
     }
 
+    //views
     function exportPHPViews($is_overwrite = false) {
-        $pages = $this->relationMany('Page')
-                      ->idIndex()
-                      ->all()
-                      ->values;
-
+        $pages = $this->relationMany('Page')->idIndex()->all()->values;
         if ($pages) {
             foreach ($pages as $page) {
-                $values = null;
-                $values['pages'] = $pages;
-                $values['page'] = $page;
-                if ($page['model_id']) {
-                    $model = DB::table('Model')->fetch($page['model_id']);
-                    $values['model'] = $model->value;
-                    $values['attribute'] = $model->relationMany('Attribute')->idIndex()->all()->values;
-                }
-
-                $views = DB::table('Page')->fetch($page['id'])->hasMany('View')->values;
-
-                if ($views) {
-                    //TODO header contents
-                    $header_path = View::headerFilePath($this->user_project_setting->value, $page);
-                    if (!file_exists($header_path)) {
-                        file_put_contents($header_path, '');
-                    }
-
-                    foreach ($views as $view) {
-                        $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
-                        if (!file_exists($view_path) || ($is_overwrite && $view['is_overwrite'])) {
-                            $view['view_item'] = DB::table('View')->fetch($view['id'])
-                                                                  ->relationMany('ViewItem')
-                                                                  ->order('sort_order')
-                                                                  ->all()
-                                                                  ->values;
-                            $values['view'] = $view;
-
-                            $view_template_path = View::templateFilePath($view);
-                            if (file_exists($view_template_path)) {
-                                $contents = FileManager::bufferFileContetns($view_template_path, $values);
-                                file_put_contents($view_path, $contents);
-                            }
-
-                            if ($view['name'] == 'edit') {
-                                //new
-                                $form_template_path = View::templateNameFilePath('new');
-                                $contents = FileManager::bufferFileContetns($form_template_path, $values);
-
-                                $form_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'new');
-                                file_put_contents($form_path, $contents);
-
-                                //form
-                                $new_template_path = View::templateNameFilePath('form_for_table');
-                                $contents = FileManager::bufferFileContetns($new_template_path, $values);
-
-                                $new_file_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'form');
-                                file_put_contents($new_file_path, $contents);
-                            }
-                        } 
-                    }
-                }  
+                $this->exportPHPView($page, $is_overwrite);
             }
         }
+    }
+
+    function exportPHPController($page, $is_overwrite = false) {
+        $values = null;
+        $values['page'] = $page;
+        if ($page['model_id']) {
+            $model = DB::table('Model')->fetch($page['model_id']);
+            $values['model'] = $model->value;
+            $values['model']['attributes'] = $model->hasMany('Attribute')->values;
+        }
+
+        if ($page['parent_page_id']) {
+            $values['page']['parent'] = DB::table('Page')->fetch($page['parent_page_id'])->value;
+        }
+
+        $page_model = DB::table('PageModel')->where("page_id = {$page['id']}")
+                                                      ->join('Model', 'id', 'model_id')
+                                                      ->all();
+        $values['page_model'] = $page_model->values;
+
+        $page_filter = DB::table('PageFilter')->where("page_id = {$page['id']}")->all();
+        $values['page_filter'] = $page_filter->values;
+
+        $page_path = Page::projectFilePath($this->user_project_setting->value, $page);
+
+        if (!file_exists($page_path) || ($is_overwrite && $page['is_overwrite'])) {
+            $page_template_path = Page::templateFilePath($page);
+            $contents = FileManager::bufferFileContetns($page_template_path, $values);
+            file_put_contents($page_path, $contents);
+        }
+    }
+
+    function exportPHPView($page, $is_overwrite = false) {
+        $values = null;
+        $values['pages'] = $pages;
+        $values['page'] = $page;
+        if ($page['model_id']) {
+            $model = DB::table('Model')->fetch($page['model_id']);
+            $values['model'] = $model->value;
+            $values['attribute'] = $model->relationMany('Attribute')->idIndex()->all()->values;
+        }
+
+        $views = DB::table('Page')->fetch($page['id'])->hasMany('View')->values;
+
+        if ($views) {
+            //TODO header contents
+            $header_path = View::headerFilePath($this->user_project_setting->value, $page);
+            if (!file_exists($header_path)) {
+                file_put_contents($header_path, '');
+            }
+
+            foreach ($views as $view) {
+                $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
+                if (!file_exists($view_path) || ($is_overwrite && $view['is_overwrite'])) {
+                    $view['view_item'] = DB::table('View')->fetch($view['id'])
+                                                          ->relationMany('ViewItem')
+                                                          ->order('sort_order')
+                                                          ->all()
+                                                          ->values;
+                    $values['view'] = $view;
+
+                    $view_template_path = View::templateFilePath($view);
+                    if (file_exists($view_template_path)) {
+                        $contents = FileManager::bufferFileContetns($view_template_path, $values);
+                        file_put_contents($view_path, $contents);
+                    }
+
+                    if ($view['name'] == 'edit') {
+                        //new
+                        $form_template_path = View::templateNameFilePath('new');
+                        $contents = FileManager::bufferFileContetns($form_template_path, $values);
+
+                        $form_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'new');
+                        file_put_contents($form_path, $contents);
+
+                        //form
+                        $new_template_path = View::templateNameFilePath('form_for_table');
+                        $contents = FileManager::bufferFileContetns($new_template_path, $values);
+
+                        $new_file_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'form');
+                        file_put_contents($new_file_path, $contents);
+                    }
+                } 
+            }
+        }  
     }
 
     function exportRecord() {

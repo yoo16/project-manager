@@ -16,8 +16,8 @@ class _Attribute extends PgsqlEntity {
     var $entity_name = 'attribute';
 
     var $columns = array(
-        'attnum' => array('type' => 'int4', 'is_required' => true),
-        'attrelid' => array('type' => 'int4', 'is_required' => true),
+        'attnum' => array('type' => 'int4'),
+        'attrelid' => array('type' => 'int4'),
         'created_at' => array('type' => 'timestamp'),
         'csv' => array('type' => 'varchar', 'length' => 256),
         'default_value' => array('type' => 'varchar'),
@@ -41,9 +41,11 @@ class _Attribute extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
+    var $primary_key = 'attributes_pkey';
     var $foreign = array(
             'attributes_model_id_fkey' => [
                                   'column' => 'model_id',
+                                  'class_name' => 'Model',
                                   'foreign_table' => 'models',
                                   'foreign_column' => 'id',
                                   ],

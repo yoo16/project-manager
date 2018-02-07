@@ -23,9 +23,11 @@ class _ViewItemGroup extends PgsqlEntity {
         'view_id' => array('type' => 'int4', 'is_required' => true),
     );
 
+    var $primary_key = 'view_item_groups_pkey';
     var $foreign = array(
             'view_item_groups_view_id_fkey' => [
                                   'column' => 'view_id',
+                                  'class_name' => 'View',
                                   'foreign_table' => 'views',
                                   'foreign_column' => 'id',
                                   ],

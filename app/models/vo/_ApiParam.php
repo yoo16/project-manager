@@ -25,9 +25,11 @@ class _ApiParam extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
+    var $primary_key = 'api_params_pkey';
     var $foreign = array(
             'api_params_api_id_fkey' => [
                                   'column' => 'api_id',
+                                  'class_name' => 'Api',
                                   'foreign_table' => 'apis',
                                   'foreign_column' => 'id',
                                   ],

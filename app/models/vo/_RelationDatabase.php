@@ -23,14 +23,17 @@ class _RelationDatabase extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
+    var $primary_key = 'relation_databases_pkey';
     var $foreign = array(
             'relation_databases_old_database_id_fkey' => [
                                   'column' => 'old_database_id',
+                                  'class_name' => 'Database',
                                   'foreign_table' => 'databases',
                                   'foreign_column' => 'id',
                                   ],
             'relation_databases_project_id_fkey' => [
                                   'column' => 'project_id',
+                                  'class_name' => 'Project',
                                   'foreign_table' => 'projects',
                                   'foreign_column' => 'id',
                                   ],

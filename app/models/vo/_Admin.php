@@ -28,6 +28,7 @@ class _Admin extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
+    var $primary_key = 'admins_pkey';
 
     var $unique = array(
             'admins_email_key' => [

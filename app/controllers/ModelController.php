@@ -209,7 +209,13 @@ class ModelController extends ProjectController {
             unset($posts['pg_class_id']);
 
             $new_model = DB::table('Model')->insert($posts);
-
+            if ($new_model->error) {
+                echo("Error: create new model {$posts['name']}").PHP_EOL;
+                echo("{$new_model->error}").PHP_EOL;
+                echo("SQL: {$new_model->sql_error}").PHP_EOL;
+                echo("{$new_model->sql}").PHP_EOL;
+                exit;
+            }
             foreach ($attribute->values as $value) {
                 $value['name'] = "{$value['name']}";
                 $value['model_id'] = $new_model->value['id'];

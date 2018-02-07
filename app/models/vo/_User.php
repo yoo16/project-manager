@@ -32,6 +32,7 @@ class _User extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
+    var $primary_key = 'users_pkey';
 
     var $unique = array(
             'users_email_key' => [

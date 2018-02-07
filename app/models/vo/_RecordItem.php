@@ -24,9 +24,11 @@ class _RecordItem extends PgsqlEntity {
         'value' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
     );
 
+    var $primary_key = 'record_items_pkey';
     var $foreign = array(
             'record_items_record_id_fkey' => [
                                   'column' => 'record_id',
+                                  'class_name' => 'Record',
                                   'foreign_table' => 'records',
                                   'foreign_column' => 'id',
                                   ],

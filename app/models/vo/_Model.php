@@ -29,17 +29,19 @@ class _Model extends PgsqlEntity {
         'note' => array('type' => 'text'),
         'old_database_id' => array('type' => 'int4'),
         'old_name' => array('type' => 'varchar', 'length' => 256),
-        'pg_class_id' => array('type' => 'int4', 'is_required' => true),
+        'pg_class_id' => array('type' => 'int4'),
         'project_id' => array('type' => 'int4', 'is_required' => true),
-        'relfilenode' => array('type' => 'int4', 'is_required' => true),
+        'relfilenode' => array('type' => 'int4'),
         'sort_order' => array('type' => 'int4'),
         'sub_table_name' => array('type' => 'varchar'),
         'updated_at' => array('type' => 'timestamp'),
     );
 
+    var $primary_key = 'models_pkey';
     var $foreign = array(
             'models_project_id_fkey' => [
                                   'column' => 'project_id',
+                                  'class_name' => 'Project',
                                   'foreign_table' => 'projects',
                                   'foreign_column' => 'id',
                                   ],

@@ -27,6 +27,7 @@ class _Project extends PgsqlEntity {
         'url' => array('type' => 'varchar', 'length' => 256),
     );
 
+    var $primary_key = 'projects_pkey';
 
 
 

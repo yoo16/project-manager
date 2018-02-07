@@ -27,6 +27,7 @@ class _View extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
+    var $primary_key = 'views_pkey';
 
 
 

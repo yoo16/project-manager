@@ -27,6 +27,7 @@ class _Database extends PgsqlEntity {
         'user_name' => array('type' => 'varchar', 'is_required' => true),
     );
 
+    var $primary_key = 'databases_pkey';
 
     var $unique = array(
             'databases_name_hostname_key' => [

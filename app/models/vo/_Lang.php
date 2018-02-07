@@ -23,6 +23,7 @@ class _Lang extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
+    var $primary_key = 'langs_pkey';
 
     var $unique = array(
             'langs_lang_key' => [

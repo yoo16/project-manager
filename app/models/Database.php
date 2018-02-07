@@ -294,16 +294,12 @@ class Database extends _Database {
                         }
                         $this->sheet->setCellValueByColumnAndRow(2, $row, $pg_constraint['attname']);
 
-                        if ($pg_constraint['foreign_relname'] && $pg_constraint['foreign_attname']) {
-                            $foreign_key = "{$pg_constraint['foreign_relname']} : {$pg_constraint['foreign_attname']}";
-                            $this->sheet->setCellValueByColumnAndRow(3, $row, $foreign_key);
-                        }
-
                         $this->drawBorders($row, 3);
                         $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
                     }
                 }
             }
+
         }
         return $row;
     }

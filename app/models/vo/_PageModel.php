@@ -26,14 +26,17 @@ class _PageModel extends PgsqlEntity {
         'where_model_id' => array('type' => 'int4'),
     );
 
+    var $primary_key = 'page_models_pkey';
     var $foreign = array(
             'page_models_model_id_fkey' => [
                                   'column' => 'model_id',
+                                  'class_name' => 'Model',
                                   'foreign_table' => 'models',
                                   'foreign_column' => 'id',
                                   ],
             'page_models_page_id_fkey' => [
                                   'column' => 'page_id',
+                                  'class_name' => 'Page',
                                   'foreign_table' => 'pages',
                                   'foreign_column' => 'id',
                                   ],

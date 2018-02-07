@@ -2,9 +2,12 @@
 
 <? include('add_window.phtml') ?>
 
+<? include('views/components/php_page_export_window.phtml') ?>
+
 <div class="pt-3">
   <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
   <?= FormHelper::linkButton('page/', LABEL_BACK) ?>
+  <?= FormHelper::linkModal('#php-page-export-window', 'PHP Export', ['class' => 'btn btn-sm btn-success']) ?>
 </div>
 
 <? if ($this->page->view->values): ?>

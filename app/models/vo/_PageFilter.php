@@ -25,14 +25,17 @@ class _PageFilter extends PgsqlEntity {
         'value' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
     );
 
+    var $primary_key = 'page_filters_pkey';
     var $foreign = array(
             'page_filters_attribute_id_fkey' => [
                                   'column' => 'attribute_id',
+                                  'class_name' => 'Attribute',
                                   'foreign_table' => 'attributes',
                                   'foreign_column' => 'id',
                                   ],
             'page_filters_page_id_fkey' => [
                                   'column' => 'page_id',
+                                  'class_name' => 'Page',
                                   'foreign_table' => 'pages',
                                   'foreign_column' => 'id',
                                   ],

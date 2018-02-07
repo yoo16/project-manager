@@ -26,6 +26,7 @@ class _UserProjectSetting extends PgsqlEntity {
         'user_name' => array('type' => 'varchar', 'length' => 256),
     );
 
+    var $primary_key = 'user_project_settings_pkey';
 
 
 

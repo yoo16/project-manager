@@ -25,9 +25,11 @@ class _Record extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
+    var $primary_key = 'records_pkey';
     var $foreign = array(
             'records_project_id_fkey' => [
                                   'column' => 'project_id',
+                                  'class_name' => 'Project',
                                   'foreign_table' => 'projects',
                                   'foreign_column' => 'id',
                                   ],
