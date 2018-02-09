@@ -554,6 +554,10 @@ class Controller extends RuntimeException {
         }
 
         if (is_array($options)) {
+            if ($options['id'] > 0) {
+                $params['id'] = $options['id'];
+                unset($options['id']);
+            }
             $params['params'] = $options;
         } else if (isset($options)) {
             $params['id'] = $options;
@@ -771,8 +775,6 @@ class Controller extends RuntimeException {
             echo($contents);
             exit;
         }
-        unset($this->params['action']);
-        unset($this->params['id']);
     }
 
     /**

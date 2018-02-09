@@ -52,7 +52,7 @@ class PwSetting {
             set_include_path(BASE_DIR.'app'.PATH_SEPARATOR.BASE_DIR.'lib');
         }
         $application_path = BASE_DIR.'app/application.php';
-        if (!@include_once $application_path) {
+        if (!@include_once($application_path)) {
             error_log('cannot find setting');
             $msg = "cannot find setting file in '{$application_path}'";
             exit($msg);

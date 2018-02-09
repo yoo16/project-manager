@@ -13,11 +13,24 @@ class DataMigration {
         $this->pgsql($params);
     }
 
+    /**
+     * pgsql instance
+     * 
+     * @param  array $params
+     * @return void
+     */
     function pgsql($params = null) {
         $this->from_pgsql = new PgsqlEntity();
         if ($params) $this->from_pgsql->setDBInfo($params);
     }
 
+    /**
+     * search reduplication
+     * 
+     * @param  array $db_infos   [description]
+     * @param  string $class_name [description]
+     * @return void
+     */
     function searchReduplication($db_infos, $class_name) {
         if (!$db_infos) return;
         
@@ -172,7 +185,14 @@ class DataMigration {
         return $instance;
     }
 
+    /**
+     * truncates
+     * 
+     * @param  array $model_names
+     * @return void
+     */
     function truncates($model_names) {
+        if (!is_array($model_names)) return;
         foreach ($model_names as $model_name) {
             if (class_exists($model_name)) {
                 $model = DB::table($model_name)->truncate('RESTART IDENTITY CASCADE');
@@ -187,6 +207,12 @@ class DataMigration {
         }
     }
 
+    /**
+     * create master table from old table
+     * 
+     * @param  array $model_names
+     * @return void
+     */
     function createMasterTable($model_names) {
         foreach ($model_names as $model_name) {
             $model = DB::table($model_name)->all();
@@ -205,16 +231,22 @@ class DataMigration {
         }
     }
 
+    /**
+     * foreign models
+     * 
+     * @param  string $class_name
+     * @return array
+     */
     function fromFkModels($class_name) {
         if (!class_exists($class_name)) {
             echo("Not found class : {$class_name}");
-            exit;
+            return;
         }
 
         $model = DB::table($class_name);
         if (!$model->old_name) {
             echo("Not found class's $old_name : {$class_name}");
-            exit;
+            return;
         }
 
         if (!$model->foreign) return;
@@ -240,6 +272,12 @@ class DataMigration {
         return $results;
     }
 
+    /**
+     * foreign id array
+     * 
+     * @param  string $class_name
+     * @return array
+     */
     function fkIds($class_name) {
         if (!class_exists($class_name)) {
             echo("Not found class : {$class_name}");
@@ -271,6 +309,12 @@ class DataMigration {
         return $results;
     }
 
+    /**
+     * bind columns by old columns
+     * 
+     * @param  string $class_name
+     * @return array
+     */
     function bindByOldColumns($old_columns, $value) {
         if ($old_columns) {
             foreach ($old_columns as $column => $old_column) {
@@ -282,6 +326,13 @@ class DataMigration {
         return $value;
     }
 
+    /**
+     * bind foreign id by forign ids
+     * 
+     * @param  array $fk_ids
+     * @param  array $value
+     * @return array
+     */
     function bindFkIdsByFkIds($fk_ids, $value) {
         if ($fk_ids) {
             foreach ($fk_ids as $fk_column => $fk_id) {
@@ -293,6 +344,14 @@ class DataMigration {
         return $value;
     }
 
+    /**
+     * update model from old model
+     * 
+     * @param  string $class_name
+     * @param  array $find_columns
+     * @param  string $old_id_column
+     * @return void
+     */
     function updateModelFromOldModel($class_name, $find_columns = null, $old_id_column = null) {
         $model = DB::table($class_name);
         if (!$model->old_name) {

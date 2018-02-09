@@ -797,7 +797,7 @@ class FormHelper {
      */
     static function text($name, $value = null, $params = null) {
         $params['type'] = "text";
-        if (!$params['class']) $params['class'] = 'col-4';
+        //if (!$params['class']) $params['class'] = 'col-4';
         $params['class'].= " form-control";
 
         $tag = self::input($params, $name, $value);
