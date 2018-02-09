@@ -118,7 +118,12 @@ class LocalizeStringController extends ProjectController {
                 }
             }
         }
-        $this->redirect_to('list');
+
+        if ($_REQUEST['redirect']) {
+            $this->redirect_to($_REQUEST['redirect']);
+        } else {
+            $this->redirect_to('list');
+        }
     }
 
    /**

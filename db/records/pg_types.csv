@@ -7,6 +7,7 @@ value,label
 "double","double"
 "double precision","double precision"
 "float","float"
+"float4","float4"
 "float8","float8"
 "varchar","varchar"
 "text","text"

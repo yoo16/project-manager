@@ -17,7 +17,7 @@
     <?= FormHelper::submit('Import from DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you import from DB?']) ?>
     <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
     <?= FormHelper::link('localize_string/import_from_model',
-     'Localize', ['model_id' => $this->model->value['id']],
+     'Localize', ['model_id' => $this->model->value['id'], 'redirect' => 'attribute/list'],
      ['class' => 'btn btn-outline-primary'])
      ?>
    </form>
