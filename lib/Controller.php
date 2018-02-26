@@ -209,6 +209,8 @@ class Controller extends RuntimeException {
         $GLOBALS['controller'] = $this;
         $this->params = (empty($params)) ? $_GET : $params;
         $this->loadPosts();
+        $this->errors = $this->getErrors();
+        $this->flushErrors();
 
         try {
             $this->_invoke();
@@ -794,6 +796,34 @@ class Controller extends RuntimeException {
      */
     function clearPosts() {
         $this->clearSessions('posts');
+    }
+
+    /**
+     * set session errors
+     *
+     * @param  array $errors
+     * @return void
+     */
+    function setErrors($errors) {
+        AppSession::setWithKey('errors', $this->name, $errors);
+    }
+
+    /**
+     * get session errors
+     *
+     * @return array
+     */
+    function getErrors() {
+        return AppSession::getWithKey('errors', $this->name);
+    }
+
+    /**
+     * get session errors
+     *
+     * @return array
+     */
+    function flushErrors() {
+        return AppSession::clearWithKey('errors', $this->name);
     }
 
     /**

@@ -116,6 +116,17 @@ class ProjectController extends AppController {
         }
     }
 
+    function action_export_php_view_edit() {
+        if (!isPost()) exit;
+        $this->page = DB::table('Page')->fetch($this->posts['page_id']);
+
+        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($this->posts['user_project_setting_id']);
+        $this->project->exportPHPViewsEdit($_REQUEST['is_overwrite']);
+
+        $params['project_id'] = $this->project->value['id'];
+        $this->redirect_to('page/list', $params);
+    }
+
     function action_export_php() {
         if (!isPost()) exit;
         $this->project = DB::table('Project')->fetch($this->posts['project_id']);

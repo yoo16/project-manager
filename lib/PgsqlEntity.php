@@ -1119,7 +1119,7 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     */
     public function first() {
         $this->limit(1);
-        return $this->all();
+        return $this->one();
     }
 
     /**
@@ -1343,6 +1343,22 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
             $message = "SQL Error: {$sql}";
             echo($message);
             exit;
+        }
+        return $this;
+    }
+
+    /**
+    * renameColumn
+    * 
+    * @param int $id
+    * @param string $column
+    * @return resource
+    */
+    public function reverseBool($id, $column) {
+        $this->fetch($id);
+        if ($this->value) {
+            $posts[$column] = !$this->value[$column];
+            $this->update($posts);
         }
         return $this;
     }
@@ -1579,7 +1595,7 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     }
 
     /**
-    * where
+    * where in
     * 
     * @param  string $column
     * @param  array $values
@@ -1587,7 +1603,6 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     */
     public function whereIn($column, $values) {
         if (!$column) return $this;
-        if (!$values) return $this;
         if (is_array($values)) {
             $value = implode(', ', $values);
             $condition = "{$column} in ({$value})";

@@ -14,7 +14,7 @@ class AppController extends Controller {
     var $csv_options = array();
     var $layout = 'root';
 
-    function before_action($action) {
+    function before_action($action = null) {
 
         $pgsql_entity = new PgsqlEntity();
         if (!$pgsql_entity->connection()) {

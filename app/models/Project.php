@@ -156,6 +156,16 @@ class Project extends _Project {
         }
     }
 
+    //views
+    function exportPHPViewsEdit($is_overwrite = false) {
+        $pages = $this->relationMany('Page')->idIndex()->all()->values;
+        if ($pages) {
+            foreach ($pages as $page) {
+                $this->exportPHPViewEdit($page, $is_overwrite);
+            }
+        }
+    }
+
     function exportPHPController($page, $is_overwrite = false) {
         $values = null;
         $values['page'] = $page;
@@ -239,6 +249,35 @@ class Project extends _Project {
                 } 
             }
         }  
+    }
+
+    function exportPHPViewEdit($page, $is_overwrite = false) {
+        $values = null;
+        $values['pages'] = $pages;
+        $values['page'] = $page;
+        if ($page['model_id']) {
+            $model = DB::table('Model')->fetch($page['model_id']);
+            $values['model'] = $model->value;
+            $values['attribute'] = $model->relationMany('Attribute')->idIndex()->all()->values;
+        }
+
+        $views = DB::table('Page')->fetch($page['id'])->hasMany('View')->values;
+
+        $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
+
+        //new
+        $form_template_path = View::templateNameFilePath('new');
+        $contents = FileManager::bufferFileContetns($form_template_path, $values);
+
+        $form_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'new');
+        file_put_contents($form_path, $contents);
+
+        //edit
+        $form_template_path = View::templateNameFilePath('edit');
+        $contents = FileManager::bufferFileContetns($form_template_path, $values);
+
+        $form_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'edit');
+        file_put_contents($form_path, $contents);
     }
 
     function exportRecord() {

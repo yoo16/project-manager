@@ -1,18 +1,8 @@
 <?= "<? include('_header.phtml') ?>" ?>
 
-<div class="card">
+<form action="<? Tag::init()->php('url_for(\'update\', $this->params[\'id\'])') ?>" method="post">
 
-  <form action="<? Tag::init()->php('url_for(\'update\', $this->params[\'id\'])') ?>" method="post">
-
-    <div class="card-header">
-      <h4></h4>
-      <div class="text-left">
-
-        <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
-        <? Tag::init()->php('FormHelper::linkButton("cancel", LABEL_BACK)') ?>
-
-      </div>
-    </div>
+  <div class="card">
 
     <div class="card-block">
 
@@ -20,14 +10,26 @@
 
     </div>
 
-  </form>
+    <div class="card-footer">
+      <h4></h4>
+      <div class="text-left">
 
+        <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
+        
+        <? Tag::init()->php('FormHelper::linkButton("cancel", LABEL_BACK)') ?>
+
+      </div>
+    </div>
+
+  </div>
+</form>
+
+<div class="card">
   <div class="card-footer">
     <div class="text-left">
 
       <? Tag::init()->php('$this->'."{$values['model']['entity_name']}".'->formDelete()') ?>
-      
+
     </div>
   </div>
-
 </div>

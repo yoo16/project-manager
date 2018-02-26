@@ -22,6 +22,7 @@ $libs = [
     'ApplicationLoader',
     'ApplicationLogger',
     'BenchmarkTimer',
+    'ErrorMessage',
     ];
 
 Controller::loadLib($libs);
