@@ -19,7 +19,7 @@ class FormHelper {
      */
     static function select($params, $selected=null) {
         if (!$params) return;
-        if (!isset($params['class'])) $params['class'] = 'form-control col-4';
+        if (!isset($params['class'])) $params['class'] = 'form-control';
 
         $tag = self::selectOptions($params, $selected);
 
@@ -264,7 +264,7 @@ class FormHelper {
      */
     static function selectTag($tag, $attributes = null) {
        foreach (self::$except_columns as $except_column) {
-           if ($attributes[$except_column]) {
+           if (isset($attributes[$except_column])) {
                 unset($attributes[$except_column]); 
            }
        }
@@ -356,11 +356,13 @@ class FormHelper {
         if (isset($params['csv']) && $params['csv']) {
             $values = CsvLite::options($params['csv']);
         } else if (isset($params['model']) && $params['model']) {
-            $values = DB::table($params['model'])
-                                ->where($params['where'])
-                                ->order($params['order'])
-                                ->all()
-                                ->values;
+            $instance = DB::table($params['model']);
+
+            if (isset($params['where'])) $instance->where($params['where']);
+            if (isset($params['order'])) $instance->order($params['order']);
+            $instance->all();
+
+            $values = $instance->values;
         } else {
             $values = $params['values'];
         }
@@ -421,7 +423,11 @@ class FormHelper {
     static function unselectOption($params) {
         $tag = '';
         if (isset($params['unselect'])) {
-            $tag.= "<option value=\"{$params['unselect']['value']}\">{$params['unselect']['label']}</option>\n";
+            $unselect_value = '';
+            $unselect_label = '';
+            if (isset($params['unselect_value'])) $unselect_value = $params['unselect_value'];
+            if (isset($params['unselect_label'])) $unselect_label = $params['unselect_label'];
+            $tag.= "<option value=\"{$unselect_value}\">{$unselect_label}</option>\n";
         }
         return $tag;
     }
@@ -779,9 +785,7 @@ class FormHelper {
      */
     static function textarea($name, $value = null, $params = null) {
         if (isset($name)) $params['name'] = $name;
-        if (!$params['class']) $params['class'] = 'col-12';
         if (!$params['rows']) $params['rows'] = '10';
-        $params['class'].= " form-control";
 
         $tag = self::tag('textarea', $value, $params);
         return $tag;
@@ -887,6 +891,23 @@ class FormHelper {
     static function hidden($name, $value = null, $params = null) {
         $params['type'] = "hidden";
         $tag = self::input($params, $name, $value);
+        return $tag;
+    }
+
+    /**
+    * label
+    *
+    * @param Boolean $is_active
+    * @return String
+    */ 
+    static function changeActiveLabelTag($action, $params, $is_active, $valid_label = LABEL_TRUE, $invalid_label = LABEL_FALSE) {
+        if ($is_active) {
+            $tag = "<span class=\"btn btn-success btn-sm\">{$valid_label}</span>";
+        } else {
+            $tag = "<span class=\"btn btn-secondary btn-sm\">{$invalid_label}</span>";
+        }
+        $href = url_for($action, $params);
+        $tag = "<a href=\"{$href}\">{$tag}</a>";
         return $tag;
     }
 

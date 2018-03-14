@@ -140,7 +140,7 @@ class Entity {
      * default
      * 
      * @param
-     * @return void
+     * @return Entity
      */
     public function defaultValue() {
         if ($this->columns) {
@@ -151,6 +151,7 @@ class Entity {
                 }
             }
         }
+        return $this;
     }
 
     /**

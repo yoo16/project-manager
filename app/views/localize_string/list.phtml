@@ -12,6 +12,7 @@
       <th>&nbsp;</th>
       <th>名称</th>
       <th>言語</th>
+      <th>&nbsp;</th>
     </tr>
   </thead>
 
@@ -29,6 +30,7 @@
           <? endforeach ?>
           </dl>
         </td>
+        <td><a class="btn btn-outline-primary" href="<?= url_for('duplicate', $values['id']) ?>"><?= LABEL_DUPLICATE ?></a></td>
       </tr>
     <? endforeach ?>
   <? endif ?>

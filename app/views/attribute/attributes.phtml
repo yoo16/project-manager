@@ -3,6 +3,11 @@
   <h4 class="card-header">
     <?= $this->model->value['name'] ?>
     <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label>
+    <div>
+    <small>
+    <?= $this->model->value['old_name'] ?>
+    </small>
+    </div>
   </h4>
   
   <? if ($this->pg_class['pg_class_id'] != $this->model->value['pg_class_id']): ?>

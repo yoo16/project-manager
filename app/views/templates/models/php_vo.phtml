@@ -13,19 +13,19 @@ require_once 'PgsqlEntity.php';
 class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
 
 <? if ($values['model']['is_none_id_column']): ?>
-    var $is_none_id_column = true;
+    public $is_none_id_column = true;
 <? else: ?>
 <? if ($values['model']['id_column_name']): ?>
-    var $id_column = '<?=  $values['model']["id_column_name"] ?>';
+    public $id_column = '<?=  $values['model']["id_column_name"] ?>';
 <? else: ?>
-    var $id_column = 'id';
+    public $id_column = 'id';
 <? endif ?>
 <? endif ?>
-    var $name = '<?= $values['model']['name'] ?>';
-    var $entity_name = '<?= $values['model']['entity_name']?>';
+    public $name = '<?= $values['model']['name'] ?>';
+    public $entity_name = '<?= $values['model']['entity_name']?>';
 
 <? if ($values['attribute']): ?>
-    var $columns = array(
+    public $columns = array(
 <? foreach ($values['attribute'] as $attribute): ?>
 <? if ($attribute['name'] != 'id'): ?>
         <?= Model::columnPropertyForTemplate($attribute) ?>,
@@ -35,10 +35,10 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
 <? endif ?>
 
 <? if ($values['primary']): ?>
-    var $primary_key = '<?= $values['primary'] ?>';
+    public $primary_key = '<?= $values['primary'] ?>';
 <? endif ?>
 <? if ($values['foreign']): ?>
-    var $foreign = array(
+    public $foreign = array(
 <? foreach ($values['foreign'] as $conname => $foreign): ?>
             '<?= $conname ?>' => [
                                   'column' => '<?= $foreign['attname'] ?>',
@@ -51,7 +51,7 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
 <? endif ?>
 
 <? if ($values['unique']): ?>
-    var $unique = array(
+    public $unique = array(
 <? foreach ($values['unique'] as $conname => $uniques): ?>
             '<?= $conname ?>' => [
 <? foreach ($uniques as $unique): ?>
@@ -63,11 +63,11 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
 <? endif ?>
 
 <? if ($values['model']['old_name']): ?>
-    var $old_name = '<?= $values['model']['old_name'] ?>';
+    public $old_name = '<?= $values['model']['old_name'] ?>';
 <? endif ?>
 
 <? if ($values['old_id_column']): ?>
-    var $old_id_column = '<?= $values['old_id_column'] ?>';
+    public $old_id_column = '<?= $values['old_id_column'] ?>';
 <? endif ?>
 
     function __construct($params = null) {

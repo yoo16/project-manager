@@ -91,17 +91,18 @@ class Controller extends RuntimeException {
      * @return string
      */
     static function generateUrl($params) {
+        $url = '';
         if ($params['controller'] == ROOT_CONTROLLER_NAME) unset($params['controller']);
         if ($params['action'] == 'index') unset($params['action']);
 
-        if (isset($params['controller'])) $url.= "{$params['controller']}/";
+        if (isset($params) && isset($params['controller'])) $url.= "{$params['controller']}/";
         if (isset($params['action'])) {
             $url.= "{$params['action']}";
             if (isset($params['id'])) $url.= "/{$params['id']}";
         }
 
         if (!$url) $url = './';
-        if (is_array($params['params'])) {
+        if (isset($params['params']) && is_array($params['params'])) {
             $url_params = http_build_query($params['params']);
             $url = "{$url}?{$url_params}";
         }
@@ -134,7 +135,6 @@ class Controller extends RuntimeException {
                 }
             }
         } 
-        $params = Controller::bindPwRequestParams($params);
         return $params;
     }
 
@@ -279,7 +279,7 @@ class Controller extends RuntimeException {
      */
     function loadPwHeaders() {
         header('Content-Type: ' . $this->contentType());
-        if ($this->pw_headers) {
+        if (isset($this->pw_headers)) {
             foreach ($this->pw_headers as $key => $value) {
                 header("{$key}: {$value}");
             }
@@ -529,15 +529,15 @@ class Controller extends RuntimeException {
         if (is_string($url_params)) {
             $_params = explode('?', $url_params);
             if ($_params[0]) $url_params = $_params[0];
-            if ($_params[1]) $query = $_params[1];
+            if (isset($_params[1])) $query = $_params[1];
 
             $_params = explode('#', $url_params);
             if ($_params[0]) $url_params = $_params[0];
-            if ($_params[1]) $params['.anchor'] = $_params[1];
+            if (isset($_params[1])) $params['.anchor'] = $_params[1];
 
             $_params = explode('.', $url_params);
             if ($_params[0]) $url_params = $_params[0];
-            if ($_params[1]) $params['.extension'] = $_params[1];
+            if (isset($_params[1])) $params['.extension'] = $_params[1];
 
             $_params = explode('/', $url_params);
             if (isset($_params[1])) {
@@ -556,7 +556,7 @@ class Controller extends RuntimeException {
         }
 
         if (is_array($options)) {
-            if ($options['id'] > 0) {
+            if (isset($options['id']) && $options['id'] > 0) {
                 $params['id'] = $options['id'];
                 unset($options['id']);
             }
@@ -753,7 +753,7 @@ class Controller extends RuntimeException {
 
             $this->$method();
 
-            $this->before_invocation($action);
+            $this->before_invocation($this->pw_action);
             if (defined('DEBUG') && DEBUG) error_log("<INVOKED> {$this->pw_action}");
 
             $this->render($this->pw_action);

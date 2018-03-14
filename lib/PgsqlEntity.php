@@ -33,6 +33,7 @@ class PgsqlEntity extends Entity {
     public $is_old_table = false;
     public $is_sort_order = true;
     public $is_excute_sql = true;
+    public $is_value_object = false;
 
     public static $pg_info_columns = ['dbname', 'user', 'host', 'port', 'password'];
     public static $constraint_keys = [
@@ -390,6 +391,16 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
         return $sql;
     }
 
+    /**
+     * [tableExists description]
+     * 
+     * @param  stirng $table_name [description]
+     * @return resource
+     */
+    public function tableExists($table_name) {
+        $sql = "SELECT relname FROM pg_class WHERE relkind = 'r' AND relname = '{$table_name}'";
+        return $this->fetchRow($sql);
+    }
 
     /**
     * create constraint SQL
@@ -1490,7 +1501,10 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     */
     public function delete($id = null) {
         if (is_numeric($id)) $this->id = (int) $id;
-        if (is_numeric($this->id)) $this->initWhere("{$this->id_column} = {$this->id}");
+        if (is_numeric($this->id)) {
+            $this->initWhere();
+            $this->where("{$this->id_column} = {$this->id}");
+        }
 
         $sql = $this->deleteSql();
         $result = $this->query($sql);
@@ -1893,7 +1907,8 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     * @return string
     */
     private function selectColumnString($columns) {
-        $column = implode(", \n", $columns).PHP_EOL;
+        $column = '';
+        if (is_array($columns)) $column = implode(", ", $columns);
         return $column;
     }
 
@@ -1904,7 +1919,7 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     * @return string
     */
     public function selectSql() {
-        if (is_array($this->select_columns)) {
+        if (isset($this->select_columns) && is_array($this->select_columns)) {
             $columns = $this->select_columns;
         } else {
             $columns = $this->selectColumnArray();

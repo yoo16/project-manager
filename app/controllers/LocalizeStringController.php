@@ -228,6 +228,28 @@ class LocalizeStringController extends ProjectController {
     }
 
    /**
+    * add
+    *
+    * @param
+    * @return void
+    */
+    function action_duplicate() {
+        $localize_string = DB::table('LocalizeString')->fetch($this->params['id']);
+
+        if ($localize_string->value) {
+            $posts = $localize_string->value;
+            $posts['name'] = "{$posts['name']}_1";
+            unset($posts['id']);
+
+            $localize_string->insert($posts);
+            if ($localize_string->errors) {
+                $this->addErrors($localize_string->errors);
+            }
+        }
+        $this->redirect_to('index');
+    }
+
+   /**
     * delete
     *
     * @param
