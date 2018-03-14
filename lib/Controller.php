@@ -568,6 +568,31 @@ class Controller extends RuntimeException {
         return $url;
     }
 
+    /**
+     * url for params
+     *
+     * @param  array $controller
+     * @param  array $action
+     * @param  array $id
+     * @param  array $params
+     * @return string
+     */
+    function url_for_mvc($controller, $action, $id = null, $params = null) {
+        $values['controller'] = $controller;
+        $values['action'] = $action;
+        $values['id'] = $id;
+
+        $url = $this->base;
+        $url.= "{$controller}/";
+        if ($action) $url.= "{$action}/";
+        if ($id) $url.= "{$id}";
+
+        if (isset($params) && is_array($params)) {
+            $url_params = http_build_query($params);
+            $url = "{$url}?{$url_params}";
+        }
+        return $url;
+    }
 
     /**
      * url for params

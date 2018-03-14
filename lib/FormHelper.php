@@ -7,8 +7,8 @@
 
 class FormHelper {
     //TODO except columns
-    static $except_columns = ['csv', 'model', 'label', 'where', 'value', 'values', 'label_separate', 'unselect'];
-    static $radio_except_columns = ['csv', 'model', 'label', 'where', 'values', 'label_separate', 'unselect'];
+    static $except_columns = ['csv', 'model', 'label', 'where', 'order', 'select_columns', 'value', 'values', 'label_separate', 'unselect', 'unselct_label', 'unselct_value'];
+    static $radio_except_columns = ['csv', 'model', 'label', 'where', 'order', 'select_columns', 'values', 'label_separate', 'unselect', 'unselct_label', 'unselct_value'];
 
     /**
      * selectタグ
@@ -23,7 +23,7 @@ class FormHelper {
 
         $tag = self::selectOptions($params, $selected);
 
-        $tag = self::selectTag($tag, $params);
+        if ($tag) $tag = self::selectTag($tag, $params);
         return $tag;
     }
 
@@ -358,6 +358,7 @@ class FormHelper {
         } else if (isset($params['model']) && $params['model']) {
             $instance = DB::table($params['model']);
 
+            if (isset($params['select_columns'])) $instance->select($params['select_columns']);
             if (isset($params['where'])) $instance->where($params['where']);
             if (isset($params['order'])) $instance->order($params['order']);
             $instance->all();
@@ -535,6 +536,8 @@ class FormHelper {
      */
     static function checkedTag($value, $selected) {
         if (is_bool($value) && (bool) $value == (bool) $selected) {
+            $tag = 'checked';
+        } else if (is_bool($selected) && (bool) $value == (bool) $selected) {
             $tag = 'checked';
         } elseif (isset($value) && $value == $selected) {
             $tag = 'checked';

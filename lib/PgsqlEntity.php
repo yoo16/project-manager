@@ -1395,7 +1395,9 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     foreach ($rows as $row) {
         $sql_values = null;
         foreach ($model_columns as $column_name) {
-            $sql_values[] = $this->sqlValue($row[$column_name]);
+            $value = null;
+            if (isset($row[$column_name])) $value = $row[$column_name];
+            $sql_values[] = $this->sqlValue($value);
         }
         $value = implode(', ', $sql_values);
         $values[] = "\n({$value})";
@@ -1502,8 +1504,7 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     public function delete($id = null) {
         if (is_numeric($id)) $this->id = (int) $id;
         if (is_numeric($this->id)) {
-            $this->initWhere();
-            $this->where("{$this->id_column} = {$this->id}");
+            $this->initWhere()->where("{$this->id_column} = {$this->id}");
         }
 
         $sql = $this->deleteSql();
@@ -1527,7 +1528,6 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     public function deletes() {
         $sql = $this->deletesSql();
         $result = $this->query($sql);
-
         if ($result === false) {
             $this->addError($this->name, 'delete');
         } else {
@@ -1649,9 +1649,9 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     * @param  string $condition
     * @return PgsqlEntity
     */
-    public function initWhere($condition) {
+    public function initWhere() {
         $this->conditions = null;
-        return $this->where($condition);
+        return $this;
     }
 
     /**
@@ -1664,7 +1664,7 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     public function order($column, $option = null) {
         $value['column'] = $column;
         $value['option'] = $option;
-        $this->orders[] = $value; 
+        $this->orders[$column] = $value; 
         $this->orders = array_unique($this->orders);
         return $this;
     }
@@ -2042,6 +2042,30 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     }
 
     /**
+    * selectMax
+    * 
+    * @param  string $column
+    * @return string
+    */
+    public function selectMax($column = null) {
+        $sql = $this->selectMaxSql($column);
+        $values = $this->fetchResult($sql);
+        return $values;
+    }
+
+    /**
+    * selectMax
+    * 
+    * @param  string $column
+    * @return string
+    */
+    public function selectMin($column = null) {
+        $sql = $this->selectMinSql($column);
+        $values = $this->fetchResult($sql);
+        return $values;
+    }
+
+    /**
     * selectMaxSql
     * 
     * @param  string $column
@@ -2057,7 +2081,7 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     }
 
     /**
-    * selectMaxSql
+    * selectMinSql
     * 
     * @param  string $column
     * @return string
@@ -2072,7 +2096,7 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     }
 
     /**
-    * selectMaxSql
+    * selectSumSql
     * 
     * @param  string $column
     * @return string
@@ -2087,7 +2111,7 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     }
 
     /**
-    * selectMaxSql
+    * selectAvgSql
     * 
     * @param  string $column
     * @return string

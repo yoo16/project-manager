@@ -123,7 +123,6 @@ class DataMigration {
                         $foreign = DataMigration::fetchByOldId($old_foregin_pgsql, $foreign_class['class_name'], $value[$foreign_column]);
                     }
                     $value[$foreign_column] = $foreign->value['id'];
-
                     //TODO refectoring
                     $is_update = !($foreign_class['is_require'] && !$value[$foreign_column]);
                 }
@@ -149,17 +148,8 @@ class DataMigration {
                 } else {
                     $new_class = DB::table($class_name)->insert($value);
                 }
-
-                //TODO LOG
-                // if ($new_class->sql_error) {
-                //     $error.= $new_class->sql.PHP_EOL;
-                //     $error.= $new_class->name.PHP_EOL;
-                //     $error.= $new_class->sql_error.PHP_EOL;
-                //     $error.= PHP_EOL;
-                // }
             }
         }
-        //$this->exportErrorLog($error, $class_name);
     }
 
     /**
@@ -175,10 +165,8 @@ class DataMigration {
         if ($old_id && $old_pgsql->host && $old_pgsql->dbname) {
             $instance->select(['*'])
                       ->where("old_id IS NOT NULL")
-                      ->where("old_host IS NOT NULL")
                       ->where("old_db IS NOT NULL")
                       ->where("old_id = {$old_id}")
-                      ->where("old_host = '{$old_pgsql->host}'")
                       ->where("old_db = '{$old_pgsql->dbname}'")
                       ->one();
         }
@@ -379,10 +367,8 @@ class DataMigration {
                 $model->one();
             } else {
                 $model->where("old_id IS NOT NULL")
-                      ->where("old_host IS NOT NULL")
                       ->where("old_db IS NOT NULL")
                       ->where("old_id = {$value['old_id']}")
-                      ->where("old_host = '{$this->from_pgsql->host}'")
                       ->where("old_db = '{$this->from_pgsql->dbname}'")
                       ->one();
             }

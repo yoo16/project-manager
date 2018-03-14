@@ -716,4 +716,16 @@ class FileManager {
         return $contents;
     }
 
+
+   /**
+    * convrt jpeg to png
+    *
+    * @param String $path
+    * @return void
+    */ 
+    static public function convertJpgToPng($path) {
+        $image = @imagecreatefromjpeg($path);
+        imagepng($image, $path);
+    }
+
 }

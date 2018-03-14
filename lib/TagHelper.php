@@ -7,9 +7,16 @@
 
 class TagHelper {
     static function baseUrl() {
-        if ($GLOBALS['controller']) {
+        $url = '';
+        if (isset($GLOBALS['controller'])) {
             $url = $GLOBALS['controller']->relative_base;
         }
+        return $url;
+    }
+
+    static function image($image_name, $image_dir = 'images') {
+        $base = $GLOBALS['controller']->base;
+        $url = "{$base}{$image_dir}/{$image_name}";
         return $url;
     }
 

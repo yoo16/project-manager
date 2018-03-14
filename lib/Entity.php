@@ -60,7 +60,7 @@ class Entity {
     }
 
     /**
-     * loadSession
+     * requestSession
      * 
      * @param  string $request_column
      * @return Entity
@@ -100,6 +100,7 @@ class Entity {
     */
     public function setSession() {
         AppSession::set($this->entity_name, $this);
+        return $this;
     }
 
    /**
@@ -109,6 +110,7 @@ class Entity {
     */
     public function clearSession() {
         AppSession::clear($this->entity_name);
+        return $this;
     }
 
     /**
@@ -328,7 +330,7 @@ class Entity {
      */
     private function castBool($value) {
         if (is_bool($value)) return $value;
-        return in_array($value, array('t', 'true', '1'));
+        return in_array($value, array('t', 'true', 'on', '1'));
     }
 
     /**
@@ -441,6 +443,7 @@ class Entity {
      * @return array
      */
     function castRows($rows) {
+        $values = null;
         if (is_array($rows)) {
             foreach ($rows as $row) {
                 if (isset($this->id_index) && $this->id_index == true) {
@@ -646,6 +649,7 @@ class Entity {
         if (!$params['name']) $params['name'] = "{$this->entity_name}[{$column}]";
         if ($params['value_column']) $params['value'] = $params['value_column'];
         if ($params['model'] && !$params['value']) $params['value'] = $this->id_column;
+
         $tag = FormHelper::radio($params, $this->value[$column]);
         return $tag;
     }
@@ -769,6 +773,18 @@ class Entity {
             $table_name = substr($column_name, 0, $pos);
             $table_name = FileManager::singularToPlural($table_name);
             return $table_name;
+        }
+    }
+
+    /**
+     * values by column
+     * 
+     * @param  string $column [description]
+     * @return array
+     */
+    function valuesByColumn($column = 'id') {
+        if ($this->values) {
+            return array_column($this->values, $column);
         }
     }
     
