@@ -6,12 +6,32 @@
  */
 
 class TagHelper {
+
+    /**
+     * base url
+     *
+     * @return String
+     */
     static function baseUrl() {
         $url = '';
         if (isset($GLOBALS['controller'])) {
             $url = $GLOBALS['controller']->relative_base;
         }
         return $url;
+    }
+
+    /**
+    * urlFor
+    *
+    * @param String $action
+    * @param Integer $id
+    * @param params $params
+    * @return string
+    */
+    static function urlFor($action = null, $id = null, $params = null) {
+        if ($controller = $GLOBALS['controller']) {
+            $controller->urlFor($controller->name, $action, $id, $params);
+        }
     }
 
     static function image($image_name, $image_dir = 'images') {
@@ -78,4 +98,35 @@ class TagHelper {
         return "<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">\n";
     }
 
+    /**
+    * convertDisplay
+    *
+    *  カラー表示
+    *
+    *  @param  String $color
+    *  @return String
+    */
+    static function color($color) {
+        if ($color) {
+            $color = TagHelper::convertColorForSharp($color);
+            $value = "<span class=\"badge p-2\" style=\"background-color: {$color}\">{$color}</span>";
+            return $value;
+        }
+    }
+
+    /**
+     * 16進カラーのシャープ付き変換
+     *
+     * TODO Class
+     *
+     * @param  String $color
+     * @return String
+     */
+    static function convertColorForSharp($color) {
+        if ($color) {
+            $pos = strpos($color, '#');
+            if (!is_numeric($pos)) $color = "#{$color}";
+            return $color;
+        }
+    }
 }

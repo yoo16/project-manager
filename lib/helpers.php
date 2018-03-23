@@ -43,7 +43,6 @@ function url_for($params, $option = null) {
     }
 }
 
-
 /**
 * is POST method
 *

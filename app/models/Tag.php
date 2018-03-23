@@ -51,8 +51,12 @@ class Tag {
         if ($method) $this->php($param);
     }
 
-    function phpTag($value = null) {
-        return '<?= '.$value.' ?>';
+    function phpTag($value = null, $has_equal = true) {
+        if ($has_equal) {
+            return '<?= '.$value.' ?>';
+        } else {
+            return '<? '.$value.' ?>';
+        }
     }
 
     function php($value = null) {
@@ -334,7 +338,7 @@ class Tag {
     }
 
     function sortbleLink() {
-        $tag = '<a href="#" class="btn btn-outline-primary change-sortable" rel="list-table"><?= LABEL_SORT_ORDER ?></a>';
+        $tag = $this->phpTag("include('views/components/sortable.phtml')", false);
         echo($tag).PHP_EOL;
     }
 

@@ -531,6 +531,29 @@ class FileManager {
     }
 
     /**
+     * output download header
+     * 
+     * @param  string $file_name [description]
+     * @return void
+     */
+    static function outputDownloadHeader($file_name) {
+        if (preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT']) || strpos($_SERVER['HTTP_USER_AGENT'], 'Trident')) {
+            $file_name = mb_convert_encoding($file_name, 'SJIS', 'UTF-8');
+        }
+        header("Content-type: application/octet-stream; name=\"{$file_name}\"");
+        header("Content-Disposition: Attachment; filename=\"{$file_name}\""); 
+        header('Pragma: private');
+        header('Cache-control: private, must-revalidate');
+    }
+
+    static function outputCsvLine($values) {
+        $line = implode(',', $values);
+        $line.="\r\n";
+        $line = mb_convert_encoding($line, 'SJIS', 'UTF-8');
+        echo($line);
+    }
+
+    /**
      * ファイルダウンロード
      *
      * @param String $url
@@ -549,14 +572,8 @@ class FileManager {
      * @param String $path
      * @return void
      **/
-    function downloadContents($file_name, $contents) {
-        if (preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT']) || strpos($_SERVER['HTTP_USER_AGENT'], 'Trident')) {
-            $file_name = mb_convert_encoding($file_name, 'SJIS', 'UTF-8');
-        }
-        header('Cache-Control: public');
-        header('Pragma: public');
-        header("Content-Disposition: Attachment; filename=\"{$file_name}\""); 
-        header("Content-type: application/octet-stream; name=\"{$file_name}\"");
+    static function downloadContents($file_name, $contents) {
+        FileManager::outputHeader();
         echo($contents);
         exit;
     }

@@ -1,6 +1,6 @@
 <?= "<? include('_header.phtml') ?>" ?>
 
-<form action="<? Tag::init()->php('url_for(\'update\', $this->params[\'id\'])') ?>" method="post">
+<form action="<? Tag::init()->php('$this->urlSelfFor(\'update\', $this->params[\'id\'])') ?>" method="post">
 
   <div class="card">
 
@@ -16,7 +16,7 @@
 
         <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
         
-        <? Tag::init()->php('FormHelper::linkButton("cancel", LABEL_BACK)') ?>
+        <? Tag::init()->php('FormHelper::linkButton("cancel", null, [\'label\' => LABEL_BACK])') ?>
 
       </div>
     </div>

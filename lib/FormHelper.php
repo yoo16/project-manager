@@ -10,6 +10,8 @@ class FormHelper {
     static $except_columns = ['csv', 'model', 'label', 'where', 'order', 'select_columns', 'value', 'values', 'label_separate', 'unselect', 'unselct_label', 'unselct_value'];
     static $radio_except_columns = ['csv', 'model', 'label', 'where', 'order', 'select_columns', 'values', 'label_separate', 'unselect', 'unselct_label', 'unselct_value'];
 
+    static $http_tag_columns = ['id', 'class'];
+
     /**
      * selectタグ
      *
@@ -360,6 +362,7 @@ class FormHelper {
 
             if (isset($params['select_columns'])) $instance->select($params['select_columns']);
             if (isset($params['where'])) $instance->where($params['where']);
+            if (isset($params['wheres'])) $instance->wheres($params['wheres']);
             if (isset($params['order'])) $instance->order($params['order']);
             $instance->all();
 
@@ -423,7 +426,7 @@ class FormHelper {
      */
     static function unselectOption($params) {
         $tag = '';
-        if (isset($params['unselect'])) {
+        if (isset($params['unselect']) && $params['unselect']) {
             $unselect_value = '';
             $unselect_label = '';
             if (isset($params['unselect_value'])) $unselect_value = $params['unselect_value'];
@@ -682,16 +685,15 @@ class FormHelper {
      *
      * @param string $action
      * @param string $label
-     * @param array $query
      * @param array $params
      * @return string
      */
-    static function link($action, $label, $query = null, $params = null) {
+    static function link($action, $params = null) {
         $attribute = self::attribute($params);
         if (substr($action, 0, 1) == '#') {
             $href = '#';
         } else {
-            $href = url_for($action, $query);
+            $href = TagHelper::urlFor($action, $query);
         }
         $tag = "<a href=\"{$href}\" {$attribute}>{$label}</a>\n";
         return $tag;
@@ -701,14 +703,15 @@ class FormHelper {
      * link button
      *
      * @param string $action
-     * @param string $label
-     * @param array $query
      * @param array $params
      * @return string
      */
-    static function linkButton($action, $label, $query = null, $params = null) {
+    static function linkButton($action, $id = null, $params = null) {
         if (!$params['class']) $params['class'] = 'btn btn-outline-primary';
-        $tag = self::link($action, $label, $query, $params);
+        $controller = $GLOBALS['controller'];
+        if ($controller) {
+            $tag = $controller->linkTag($controller->name, $action, $id, $params);
+        }
         return $tag;
     }
 
@@ -879,7 +882,11 @@ class FormHelper {
      */
     static function password($name, $value = null, $params = null) {
         $params['type'] = "password";
-        $tag = self::input($params, $name);
+        if ($params['is_show_value']) {
+            $tag = self::input($params, $name, $value);
+        } else {
+            $tag = self::input($params, $name);
+        }
         return $tag;
     }
 
@@ -905,9 +912,9 @@ class FormHelper {
     */ 
     static function changeActiveLabelTag($action, $params, $is_active, $valid_label = LABEL_TRUE, $invalid_label = LABEL_FALSE) {
         if ($is_active) {
-            $tag = "<span class=\"btn btn-success btn-sm\">{$valid_label}</span>";
+            $tag = "<span class=\"btn btn-sm btn-success action-loading\">{$valid_label}</span>";
         } else {
-            $tag = "<span class=\"btn btn-secondary btn-sm\">{$invalid_label}</span>";
+            $tag = "<span class=\"btn btn-sm btn-secondary btn-sm action-loading\">{$invalid_label}</span>";
         }
         $href = url_for($action, $params);
         $tag = "<a href=\"{$href}\">{$tag}</a>";
@@ -953,7 +960,8 @@ class FormHelper {
      * @param string $selected
      * @return string
      */
-    static function linkActive($key, $selected) {
+    static function linkActive($key, $selected = null) {
+        if (!$selected) $selected = $GLOBALS['controller']->name;
         if ($key == $selected) {
             $tag.=' active';
         }
