@@ -7,6 +7,39 @@
  * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
+class Helper {
+    /**
+     * random string
+     * 
+     * @param  Integer $length
+     * @return String
+     */
+    static function randomString($length = 16) {
+        $values = array_merge(range('a', 'z'), range('0', '9'), range('A', 'Z'));
+        $count = count($values) - 1;
+        $random_string = null;
+        for ($i = 0; $i < $length; $i++) {
+            $index = rand(0, $count);
+            $random_string.= $values[$index];
+        }
+        return $random_string;
+    } 
+
+    /**
+     * number format
+     *
+     * @param Float $value
+     * @param Integer $digit
+     * @param String $not_format
+     * @return Float
+     */ 
+    static function numberFormat($value, $digit = 1, $not_format = '-') {
+        if (is_numeric($value)) return number_format($value, $digit);
+        if ($not_format) return $not_format;
+        return '';
+    }
+}
+
 /**
 * url_for_session
 *
@@ -82,12 +115,3 @@ function dump(&$object, $file = null, $line = null) {
 function email_valid($email) {
     return preg_match("/^\w+[\w\-\.]*@([\w\-]+\.)+\w{2,4}$/", $email) == 1;
 }
-
-function random_string($length = "8", $elemstr = "abcdefghkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ2345679") {
-    $elem = preg_split("//", $elemstr, 0, PREG_SPLIT_NO_EMPTY);
-    $random_string = "";
-    for ($i = 0; $i < $length; $i++ ) {
-        $random_string .= $elem[array_rand($elem)];
-    }
-    return $random_string;
-} 

@@ -1,7 +1,7 @@
 <? include('_header.phtml') ?>
 
 <div class="pt-3">
-  <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
+  <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
   <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table"><?= LABEL_SORT_ORDER ?></a>
 
   <a href="#" class="btn btn-primary update-sortable" controller="record_item"><?= LABEL_UPDATE ?></a>
@@ -12,18 +12,20 @@
     <tr>
       <th>&nbsp;</th>
       <th><?= LABEL_RECORD_ITEMS_KEY ?></th>
-            <th><?= LABEL_RECORD_ITEMS_VALUE ?></th>
-          </tr>
+      <th><?= LABEL_RECORD_ITEMS_VALUE ?></th>
+      <th><?= LABEL_RECORD_ITEMS_VALUE_EN ?></th>
+    </tr>
   </thead>
 
   <? if ($this->record_item->values): ?>
-  <? foreach ($this->record_item->values as $values): ?>
-  <tr id="<?= $values['id'] ?>">
-    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-    <td><?= $values['key'] ?></td>
-    <td><?= $values['value'] ?></td>
-  </tr>
-  <? endforeach ?>
+    <? foreach ($this->record_item->values as $values): ?>
+      <tr id="<?= $values['id'] ?>">
+        <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT, 'class' => 'btn btn-outline-primary']) ?></td>
+        <td><?= $values['key'] ?></td>
+        <td><?= $values['value'] ?></td>
+        <td><?= $values['value_en'] ?></td>
+      </tr>
+    <? endforeach ?>
   <? endif ?>
 
 </table>

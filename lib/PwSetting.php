@@ -5,28 +5,38 @@
  * @copyright 2017 copyright Yohei Yoshikawa (http://yoo-s.com)
  */
 
-ini_set('display_errors', 'Off');
-ini_set('log_errors', 'On');
-ini_set('mbstring.language', 'Japanese');
-ini_set('mbstring.internal_encoding', 'UTF-8');
-ini_set('default_charset', 'UTF-8');
-
-if (!defined('BASE_DIR')) define('BASE_DIR', dirname(dirname(__FILE__)) . '/');
-
-define('APP_DIR', BASE_DIR.'app/');
-define('MODEL_DIR', APP_DIR.'models/');
-define('VIEW_DIR', APP_DIR.'views/');
-define('CONTROLLER_DIR', APP_DIR.'controllers/');
-define('TEMPLATE_DIR', VIEW_DIR.'templates/');
-
-set_include_path(BASE_DIR.'app'.PATH_SEPARATOR.BASE_DIR.'lib');
-
-PwSetting::loadAppSettingFile();
-
-if (!defined('ROOT_CONTROLLER_NAME')) define('ROOT_CONTROLLER_NAME', 'root');
-if (!defined('APP_NAME')) define('APP_NAME', 'PW-Project');
-
 class PwSetting {
+    /**
+     * loadIniSet
+     * 
+     * @return 
+     */
+    static function loadIniSet() {
+        //TODO localize
+        //ini_set('display_errors', 'Off');
+        ini_set('log_errors', 'On');
+        ini_set('mbstring.language', 'Japanese');
+        ini_set('mbstring.internal_encoding', 'UTF-8');
+        ini_set('default_charset', 'UTF-8');
+    }
+
+    /**
+     * loadBasePath
+     * 
+     * @return 
+     */
+    static function loadBasePath() {
+        if (!defined('BASE_DIR')) define('BASE_DIR', dirname(dirname(__FILE__)) . '/');
+        set_include_path(BASE_DIR.'app'.PATH_SEPARATOR.BASE_DIR.'lib');
+        define('APP_DIR', BASE_DIR.'app/');
+        define('MODEL_DIR', APP_DIR.'models/');
+        define('VIEW_DIR', APP_DIR.'views/');
+        define('CONTROLLER_DIR', APP_DIR.'controllers/');
+        define('TEMPLATE_DIR', VIEW_DIR.'templates/');
+
+        if (!defined('ROOT_CONTROLLER_NAME')) define('ROOT_CONTROLLER_NAME', 'root');
+        if (!defined('APP_NAME')) define('APP_NAME', 'PW-Project');
+    }
 
     /**
      * hostname
@@ -51,8 +61,8 @@ class PwSetting {
      * 
      * @return String
      */
-    static function appSettingFilePath() {
-        $hostname = self::hostname();
+    static function hostSettingFilePath() {
+        $hostname = PwSetting::hostname();
         $path = BASE_DIR."app/settings/{$hostname}.php";
         if (file_exists($path)) return $path;
 
@@ -61,27 +71,58 @@ class PwSetting {
     }
 
     /**
+     * DB setting file path
+     * 
+     * @return String
+     */
+    static function loadHostSetting() {
+        $path = PwSetting::hostSettingFilePath();
+        PwSetting::loadFile($path);
+    }
+
+    /**
+     * DB setting file path
+     * 
+     * @return String
+     */
+    static function loadDBSetting() {
+        if (defined('DB_SETTING_FILE')) PwSetting::loadFile(DB_SETTING_FILE);
+    }
+
+    /**
+     * application file
+     * 
+     * @return String
+     */
+    static function loadApplication() {
+        $path = BASE_DIR.'app/application.php';
+        PwSetting::loadFile($path);
+    }
+
+    /**
+     * DB setting file path
+     * 
+     * @return String
+     */
+    static function loadFile($file_path) {
+        //require_once $file_path;
+        if (!@include_once($file_path)) {
+            error_log('cannot find setting');
+            $msg = "cannot find setting file in '{$file_path}'";
+            exit($msg);
+        }
+    }
+
+    /**
      * load app setting file
      * 
      * @return void
      */
-    static function loadAppSettingFile() {
-        $path = self::appSettingFilePath();
-        if (!@include_once($path)) {
-            error_log('cannot find setting');
-            $msg = "cannot find setting file in '{$path}'";
-            exit($msg);
-        } else {
-            define('APP_SETTING_FILE_PATH', $path);
-            set_include_path(BASE_DIR.'app'.PATH_SEPARATOR.BASE_DIR.'lib');
-        }
-        $application_path = BASE_DIR.'app/application.php';
-        if (!@include_once($application_path)) {
-            error_log('cannot find setting');
-            $msg = "cannot find setting file in '{$application_path}'";
-            exit($msg);
-        }
-
+    static function load() {
+        PwSetting::loadIniSet();
+        PwSetting::loadBasePath();
+        PwSetting::loadHostSetting();
+        PwSetting::loadDBSetting();
     }
 
 }

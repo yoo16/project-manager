@@ -2,24 +2,22 @@
 <form action="<?= url_for('add') ?>" method="post">
 
   <table class="table">
-    
+
     <tr>
       <th>名称</th>
       <td>
-                <?= $this->lang->formInput('name') ?>        
+        <?= $this->lang->formInput('name') ?>        
       </td>
     </tr>
 
-        
     <tr>
       <th>言語</th>
       <td>
-                <?= $this->lang->formInput('lang') ?>        
+        <?= $this->lang->formInput('lang') ?>        
       </td>
     </tr>
 
-    
   </table>
 
-    
-  <?= FormHelper::submit(LABEL_SAVE) ?>  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?></form>
+  <?= FormHelper::submit(LABEL_SAVE) ?>
+  <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?></form>

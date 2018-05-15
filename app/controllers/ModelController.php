@@ -393,6 +393,24 @@ class ModelController extends ProjectController {
         $this->redirect_to('list');
     }
 
+    function action_sync_model() {
+        if (!$this->database->value['id']) $this->redirect_to('project/');
+
+        $model = DB::table('Model')->fetch($this->params['id']);
+        if ($model->value) {
+            $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+            $pg_class = $pgsql_entity->pgClassByRelname($model->value['name']);
+            if ($pg_class) {
+                $posts['pg_class_id'] = $pg_class['pg_class_id'];
+                $model = $model->update($posts);
+
+                $attribute = new Attribute();
+                $attribute->importByModel($model_values, $this->database);
+            }
+        }
+        $this->redirect_to('list');
+    }
+
     //TODO Model
     function syncDB($model) {
         $model = DB::table('Model')->fetch($this->params['id']);

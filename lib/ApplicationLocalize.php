@@ -19,15 +19,33 @@ class ApplicationLocalize {
     /**
      * load
      *
-     * @param 
-     * @return void
+     * @return String
      **/
     static function load() {
-        $lang = self::loadLocale();
-        if (!$lang) $lang = self::defaultLocale();
-        self::loadLocalizeFile($lang);
+        $lang = AppSession::get('lang');
+        if (!$lang) $lang = ApplicationLocalize::loadLocale();
+        ApplicationLocalize::loadLocalizeFile($lang);
+        return $lang;
     }
 
+    /**
+     * lang
+     * 
+     * @param  String $lang
+     * @return String
+     */
+    static function lang() {
+        $lang = AppSession::get('lang');
+        if (!$lang) $lang = ApplicationLocalize::loadLocale();
+        return $lang;
+    }
+
+    /**
+     * load localize file
+     * 
+     * @param  String $lang
+     * @return void
+     */
     static function loadLocalizeFile($lang) {
         $localize_path = BASE_DIR."app/localize/{$lang}/localize.php";
         if (file_exists($localize_path)) {
@@ -36,42 +54,57 @@ class ApplicationLocalize {
     }
 
     /**
-     * [load_model description]
+     * default locale
      * 
-     * @param
-     * @return string 
+     * @param  String
+     * @return String 
      */
-    static function defaultLocale($lang = null) {
+    static function defaultLocale() {
         if (defined('DEFAULT_LOCALE') && DEFAULT_LOCALE) {
             $lang = DEFAULT_LOCALE;
         } else {
             $lang = 'ja';
-            define('DEFAULT_LOCALE', $lang);
         }
         return $lang;
     }
 
     /**
-     * [load_model description]
+     * load locale
      * 
      * @param
      * @return string 
      */
-    static function loadLocale() {
+    static function requestLocale() {
         if ($_REQUEST['lang']) {
-            if ($_REQUEST['lang'] == 'default') {
-                AppSession::clear('lang');
-                unset($_REQUEST['lang']);
-            }
             AppSession::set('lang', $_REQUEST['lang']);
-            self::claerLocaleValues();
+            ApplicationLocalize::claerLocaleValues();
         }
         $lang = AppSession::get('lang');
         return $lang;
     }
 
+    /**
+     * load locale
+     * 
+     * @param
+     * @return string 
+     */
+    static function loadLocale() {
+        ApplicationLocalize::requestLocale();
+        if (!$lang) {
+            $lang = ApplicationLocalize::defaultLocale();
+            AppSession::set('lang', $lang);
+        }
+        return $lang;
+    }
+
+    /**
+     * clear locale values
+     *
+     * @return void
+     */
     static function claerLocaleValues() {
-        AppSession::clear('option');
+        AppSession::clearWithKey('app', 'csv_options');
     }
 
 }

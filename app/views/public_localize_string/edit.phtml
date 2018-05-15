@@ -1,0 +1,30 @@
+<? include('_header.phtml') ?>
+<form action="<?= $this->urlSelfFor('update', $this->params['id']) ?>" method="post">
+
+  <div class="card">
+
+    <div class="card-block">
+
+      <? include('form.phtml') ?>
+    </div>
+
+    <div class="card-footer">
+      <h4></h4>
+      <div class="text-left">
+
+        <?= FormHelper::submit(LABEL_SAVE) ?>        
+        <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
+      </div>
+    </div>
+
+  </div>
+</form>
+
+<div class="card">
+  <div class="card-footer">
+    <div class="text-left">
+
+      <?= $this->public_localize_string->formDelete() ?>
+    </div>
+  </div>
+</div>

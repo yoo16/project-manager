@@ -1,0 +1,226 @@
+$menu-background: rgba(23, 46, 60, 0.95);
+$menu-border: rgba(23, 46, 60, 1.0);
+$active: rgba(240, 50, 20, 0.95);
+$menu-color: rgba(255, 255, 255, 1.0);
+$table-background: rgba(23, 46, 60, 0.95);
+$btn-color: rgba(23, 46, 60, 1.0);
+$btn-hover-color: rgba(200, 200, 200, 0.95);
+$sortable-selected: rgba(200, 220, 230, 0.95);
+
+body {
+ 	font-family: "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", Arial, sans-serif;
+}
+
+body,
+table {
+	font-size: 0.8rem;
+}
+
+input[type="text"],
+input[type="password"]
+ {
+ 	width: 100%;
+	font-size: 0.8rem;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6,
+h1, h2, h3, h4, h5, h6 {
+	padding: 8px 0;
+	font-size: 1rem;
+}
+
+.container-fluid {
+	padding: 0;
+}
+
+.error-window {
+}
+
+.form-control {
+	display: inline;
+	width: auto;
+    padding: .3rem .5rem;
+    line-height: 1;
+    font-size: 0.8rem;
+}
+
+textarea.form-control {
+	padding: 0.5rem;
+}
+
+select.form-control:not([size]):not([multiple]) {
+	height: 2rem;
+}
+
+.form-control-label {
+}
+
+#main {
+	padding-right: 2rem;
+}
+
+.container-fluid {
+}
+
+.form-group {
+	margin: 0;
+}
+
+.col-12 {
+	width: 100%;
+}
+
+.table.max {
+	width: 100%;
+}
+
+.table {
+	/*width: auto;*/
+	border: 1px solid #eceeef;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+
+.table.table-form {
+	table-layout: fixed;
+}
+
+.table td,
+.table th {
+    padding: 0.5rem 0.8rem;
+    vertical-align: middle;
+}
+
+.table td {
+	border-bottom: 1px solid #eceeef;
+}
+
+.table th {
+    color: #ffffff;
+    background-image: none;
+    background-color: var($table-background);
+    border: 1px solid var($menu-border);
+}
+
+.table thead th {
+	border: 1px solid var($menu-border);
+}
+
+.table-list {
+	width: auto;
+}
+
+.sortable-selected {
+	background-color: var($sortable-selected);
+}
+
+a {
+  color : #0088cc;
+  text-decoration: none;
+}
+
+a .fa {
+	width: 22px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.btn .fa {
+	width: 12px;
+}
+
+
+.nav-pills .nav-item.show .nav-link,
+.nav-pills .nav-link.active {
+	background: var(--main-btn-color);
+	border-color: var(--main-active);
+}
+
+.btn {
+	cursor: pointer;
+	font-size: 0.7rem;
+	margin: 0.1rem;
+}
+
+.btn-sm {
+	font-size: 0.7rem;
+}
+
+.btn-primary {
+	background: var(--main-btn-color);
+	border-color: var(--main-btn-color);
+}
+
+.btn-outline-primary {
+	color: var(--main-btn-color);
+	border-color: var(--main-btn-color);
+}
+
+.btn-primary:hover,
+.btn-outline-primary:hover {
+	background: var(--main-btn-hover-color);
+	border-color: var(--main-btn-hover-color);
+}
+
+.btn-secondary {
+	color: rgba(255, 255, 255, 1.0);
+	background: var(--main-btn-color);
+}
+
+.btn-secondary:hover {
+	color: rgba(255, 255, 255, 1.0);
+	background: var(--main-btn-hover-color);
+}
+
+#log-window {
+	display: none;
+	position: absolute;
+
+	background: rgba(255, 255, 255, 0.8);
+	font-size: 0.8rem;
+}
+
+#log-contents {
+	overflow: scroll;
+	max-height: 40rem;
+}
+
+#indicator {
+	display: none;
+	position: absolute;
+	left: 0;
+	top: 0;
+	background: rgba(255, 255, 255, 0.3);
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}
+
+#indicator img {
+	margin-top: 10rem;
+}
+
+.number {
+	text-align: right;
+}
+
+.update-sortable,
+.close-sortable
+ {
+	display: none;
+}
+
+
+/* login */
+.card {
+    background-color: #ffffff;
+}
+
+.card-header,
+.card-footer {
+	padding: 5px 15px;
+}
+
+.card-block {
+	padding: 6px;
+}

@@ -57,7 +57,6 @@ class DataMigration {
                         echo($db_info['port']).PHP_EOL;
                         echo($db_info['user']).PHP_EOL;
                         echo("{$class_name} reduplication : id = {$id}").PHP_EOL;
-                        var_dump($value);
                         exit;
                     } else {
                         $values[$id] = $value;
@@ -408,6 +407,20 @@ class DataMigration {
             echo($file_name).PHP_EOL;
             echo($contents).PHP_EOL;
         }
+    }
+
+    /**
+     * export error log
+     * @param  String $contents
+     * @param  String $class_name
+     * @return void
+     */
+    function exportErrorLog($contents, $class_name) {
+        if ($contents) {
+            $file_name = date('Ymd')."_error_{$class_name}.log";
+            $error_log_dir = LOG_DIR."error_log/";
+            FileManager::outputFile($error_log_dir, $file_name, $contents);
+        }   
     }
 
 }

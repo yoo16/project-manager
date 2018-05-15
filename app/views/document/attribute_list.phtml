@@ -3,7 +3,7 @@
 <div class="card">
   <h4 class="card-header">
   <?= $this->model->value['name'] ?> <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label>
-  <a class="btn btn-outline-primary" href="<?= url_for('list') ?>"><?= LABEL_BACK ?></a>
+  <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
   </h4>
 
   <div class="card-body">

@@ -23,12 +23,12 @@ class ApplicationLoader {
     /**
      * load_model
      * 
-     * @param  string $file_path          [description]
-     * @param  string $project_name [description]
-     * @return string               [description]
+     * @param  string $file_path
+     * @param  string $project_name
+     * @return string
      */
-    static function loadModel($file_path, $project_name) {
-        $models = self::rows($file_path);
+    static function loadModel($file_path, $project_name = null) {
+        $models = ApplicationLoader::rows($file_path);
         if (!$models) return;
         if ($project_name) {
             $model_path = BASE_DIR."app/{$project_name}/";

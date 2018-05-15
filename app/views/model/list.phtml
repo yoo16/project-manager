@@ -20,7 +20,7 @@
       <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
       <?= FormHelper::submit('Import from DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you import from DB?']) ?>
       <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
-      <?= FormHelper::linkButton('lock', 'Lock', null ,['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you lock models?']) ?>
+      <?= FormHelper::linkButton('lock', null ,['label' => 'Lock', 'class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you lock models?']) ?>
     </form>
   </div>
 
@@ -44,9 +44,20 @@
     <? if ($this->model->values): ?>
       <? foreach ($this->model->values as $model): ?>
         <tr>
-          <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $model['id']) ?></td>
+          <td><?= FormHelper::linkButton('edit', $model['id'], ['label' => LABEL_EDIT, 'class' => 'btn btn-outline-primary']) ?></td>
           <td>
-            <div><?= FormHelper::link('attribute/', $model['name'], ['model_id' => $model['id']]) ?></div>
+            <div>
+              <?= $this->linkControllerTag(
+                'attribute', 
+                [
+                  'label' => $model['name'], 
+                  'http_params' => [
+                    'model_id' => $model['id']
+                  ]
+                ]
+              )
+              ?>
+            </div>
             <div><?= $model['label'] ?></div>
             <? if ($model['old_name']): ?><div>(<?= $model['old_name'] ?> : <?= $model['old_database_id'] ?>)</div><? endif ?>
           </td>

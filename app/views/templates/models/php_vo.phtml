@@ -84,21 +84,4 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
         parent::validate();
     }
 
-   /**
-    * update sort_order
-    *
-    * @param array $sort_orders
-    * @return void
-    */
-    function updateSortOrder($sort_orders) {
-        if (is_array($sort_orders)) {
-            foreach ($sort_orders as $sort_order => $id) {
-                if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = $sort_order;
-                    $this->update($posts, $id);
-                }
-            }
-        }
-    }
-
 }

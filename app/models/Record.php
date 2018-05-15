@@ -29,13 +29,13 @@ class Record extends _Record {
      * @param array $record
      * @return string
      */
-    static function csvFilePath($user_project_setting, $record) {
+    static function csvFilePath($user_project_setting, $record, $lang = 'ja') {
         if (!$user_project_setting) return;
         if (!$record['name']) return;
         if (!file_exists($user_project_setting['project_path'])) return;
 
         $file_name = "{$record['name']}.csv";
-        $path = $user_project_setting['project_path']."db/records/{$file_name}";
+        $path = $user_project_setting['project_path']."db/records/{$lang}/{$file_name}";
         return $path;
     }
 

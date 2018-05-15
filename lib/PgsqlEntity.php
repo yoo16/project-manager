@@ -34,6 +34,7 @@ class PgsqlEntity extends Entity {
     public $is_sort_order = true;
     public $is_excute_sql = true;
     public $is_value_object = false;
+    public $is_use_select_column = false;
 
     public static $pg_info_columns = ['dbname', 'user', 'host', 'port', 'password'];
     public static $constraint_keys = [
@@ -50,7 +51,7 @@ class PgsqlEntity extends Entity {
                                          'd' => 'SET DEFAULT'
                                         ];
 
-public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'double', 'real'];
+    public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'double', 'real'];
 
     /**
     * constructor
@@ -738,6 +739,28 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     }
 
     /**
+    * fetchObjctRows
+    * 
+    * @param string $sql
+    * @return array
+    */
+    function fetchObjctRows($sql) {
+        if ($rs = $this->query($sql)) {
+            while ($row = pg_fetch_object($rs)) {
+                if ($this->id_index) {
+                    $rows[$row[$this->id_column]] = $this->castRow($row);
+                } else {
+                    $rows[] = $this->castRow($row);
+                }
+            }
+            return $rows;
+        } else {
+            return;
+        }
+    }
+
+
+    /**
     * fetchRows
     * 
     * @param string $sql
@@ -745,18 +768,8 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     */
     function fetchRows($sql) {
         if ($rs = $this->query($sql)) {
-            if ($this->is_value_object) {
-                while ($row = pg_fetch_object($rs)) {
-                    if ($this->id_index) {
-                        $rows[$row[$this->id_column]] = $this->castRow($row);
-                    } else {
-                        $rows[] = $this->castRow($row);
-                    }
-                }
-            } else {
-                $rows = pg_fetch_all($rs);
-                if ($this->columns) $rows = $this->castRows($rows);
-            }
+            $rows = pg_fetch_all($rs);
+            if ($this->columns) $rows = $this->castRows($rows);
             return $rows;
         } else {
             return;
@@ -930,6 +943,18 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     * @param  string $value_key
     * @return PgsqlEntity
     */
+    public function relation($class_name, $foreign_key = null, $value_key = null) {
+        return $this->relationOne($class_name, $foreign_key, $value_key);
+    }
+
+    /**
+    * relation one to one by model
+    * 
+    * @param  string $class_name
+    * @param  string $foreign_key
+    * @param  string $value_key
+    * @return PgsqlEntity
+    */
     public function relationOne($class_name, $foreign_key = null, $value_key = null) {
         if (is_null($this->value)) return $this;
 
@@ -938,7 +963,6 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
 
         if (!$foreign_key) $foreign_key = "{$this->entity_name}_id";
         if (!$value_key) $value_key = $this->id_column;
-
 
         $value = $this->value[$value_key];
         if (is_null($value)) {
@@ -1048,12 +1072,13 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     /**
      * has record value
      * 
-     * @return PgsqlEntity
+     * @return Boolean
      */
     function hasData() {
-        $this->limit(1)->one();
-        $this->orders = null;
-        return $this->value;
+        $this->select(['id'])
+             ->limit(1)
+             ->one();
+        return (Boolean) $this->value;
     }
 
     /**
@@ -1086,12 +1111,13 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     * @return array
     */
     public function one() {
-        $this->values = null;
+        $this->initOrder();
         $sql = $this->selectSql();
         $this->fetchRow($sql);
 
         $this->id = $this->value[$this->id_column];
         $this->before_value = $this->value;
+        $this->values = null;
         return $this;
     }
 
@@ -1099,16 +1125,39 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     * fetch
     * 
     * @param  int $id
-    * @param  array $params
-    * @return Object
+    * @param  array $conditions
+    * @return PgsqlEntity
     */
-    public function fetch($id, $params=null) {
+    public function fetch($id, $conditions = null) {
         $this->conditions = null;
         $this->orders = null;
         $this->values = null;
         if (!$id) return $this;
 
-        $this->where("{$this->id_column} = {$id}")->one($params);
+        $this->where("{$this->id_column} = {$id}")
+             ->wheres($conditions)
+             ->one();
+        return $this;
+    }
+
+    /**
+    * fetch
+    * 
+    * @param  int $id
+    * @param  array $columns
+    * @return PgsqlEntity
+    */
+    public function fetchByTrue($id, $columns) {
+        $this->conditions = null;
+        $this->orders = null;
+        $this->values = null;
+        if (!$id) return $this;
+
+        $this->where("{$this->id_column} = {$id}");
+        foreach ($columns as $column) {
+            $this->where("{$column} = true");
+        }
+        $this->one();
         return $this;
     }
 
@@ -1116,7 +1165,7 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     * find
     * 
     * @param  int $id
-    * @return Object
+    * @return PgsqlEntity
     */
     public function find($id) {
         return $this->fetch($id);
@@ -1153,18 +1202,9 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
         if ($this->is_bulk_select) {
             return $this->bulkAll($this->limit);
         } else {
-            // $benchmark = new BenchmarkTimer(); 
-            // $benchmark->start();
-
-            if (!$this->orders && $this->columns['sort_order']) {
-                $this->order('sort_order');
-            }
+            if (!$this->orders && $this->columns['sort_order']) $this->order('sort_order');
             $sql = $this->selectSql();
             $this->values = $this->fetchRows($sql);
-
-            // $benchmark->stop();
-            // $benchmark->status();
-
             return $this;
         }
     }
@@ -1302,6 +1342,28 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
         if ($this->errors) return $this;
 
         $sql = $this->updateSql();
+        $this->after_value = null;
+        if (!$sql) return $this;
+
+        $result = $this->query($sql);
+        if ($result === false) $this->addError('sql', 'error');
+        return $this;
+    }
+
+
+    /**
+    * update by id
+    * 
+    * TODO update
+    * mixed pg_update ( resource $connection , string $table_name , array $data , array $condition [, int $options = PGSQL_DML_EXEC ] )
+    * 
+    * @param  array $posts
+    * @param  int $id
+    * @return PgsqlEntity
+    */
+    public function updateById($id, $posts) {
+        $sql = $this->updateSqlById($id, $posts);
+
         if (!$sql) return $this;
 
         $result = $this->query($sql);
@@ -1317,10 +1379,13 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
      * @return [type] [description]
      */
     public function upsert($posts) {
+        if (!$this->table_name) return $this;
+
         $this->takeValues($posts);
         $sql = $this->upsertSql();
 
         $result = $this->query($sql);
+        if ($this->sql_error) dump($this->sql_error);
         if ($result === false) {
             $this->addError('sql', 'error');
             $message = "SQL Error: {$sql}";
@@ -1432,8 +1497,12 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
        if (is_array($sort_orders)) {
             foreach ($sort_orders as $id => $sort_order) {
                 if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = (int) $sort_order;
-                    $this->update($posts, $id);
+                    if ($this->select(['id', 'sort_order'])->fetch($id)) {
+                        if ($this->value['sort_order'] != $sort_order) {
+                            $posts['sort_order'] = (int) $sort_order;
+                            $this->update($posts);
+                        }
+                    }
                 }
             }
         }
@@ -1617,12 +1686,24 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     */
     public function whereIn($column, $values) {
         if (!$column) return $this;
+        $condition = PgsqlEntity::whereInConditoin($column, $values);
+        $this->where($condition);
+        return $this;
+    }
+
+    /**
+    * where in conditon
+    * 
+    * @param  string $column
+    * @param  array $values
+    * @return string
+    */
+    static function whereInConditoin($column, $values) {
         if (is_array($values)) {
             $value = implode(', ', $values);
             $condition = "{$column} in ({$value})";
-            $this->where($condition);
         }
-        return $this;
+        return $condition;
     }
 
     /**
@@ -1690,13 +1771,11 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     /**
     * initOrder
     * 
-    * @param  string $column
-    * @param  string $option
     * @return PgsqlEntity
     */
-    public function initOrder($column, $option = null) {
+    public function initOrder() {
         $this->orders = null;
-        return $this->order($column, $option);
+        return $this;
     }
 
     /**
@@ -1921,13 +2000,13 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     public function selectSql() {
         if (isset($this->select_columns) && is_array($this->select_columns)) {
             $columns = $this->select_columns;
-        } else {
+        } else if ($this->is_use_select_column) {
             $columns = $this->selectColumnArray();
             $columns = $this->selectJoinColumnArray($columns);
+        } else {
+            $columns[] = '*';
         }
-
         $column = $this->selectColumnString($columns);
-
         $sql = "SELECT {$column} FROM {$this->table_name}";
 
         if ($this->joins) $sql.= $this->joinSql();
@@ -2066,6 +2145,18 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
     }
 
     /**
+    * selectMaxMin
+    * 
+    * @param  string $column
+    * @return string
+    */
+    public function selectMaxMin($column = null) {
+        $sql = $this->selectMaxMinSql($column);
+        $values = $this->fetchRow($sql);
+        return $values;
+    }
+
+    /**
     * selectMaxSql
     * 
     * @param  string $column
@@ -2090,6 +2181,21 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
         // TODO GROUP BY
         if (!$column) $column = $this->table_name;
         $sql = "SELECT min({$column}) FROM {$this->table_name}";
+        $sql.= $this->whereSql();
+        $sql.= ";";
+        return $sql;
+    }
+
+    /**
+    * selectMaxSql
+    * 
+    * @param  string $column
+    * @return string
+    */
+    private function selectMaxMinSql($column = null) {
+        // TODO GROUP BY
+        if (!$column) $column = $this->table_name;
+        $sql = "SELECT max({$column}), min({$column}) FROM {$this->table_name}";
         $sql.= $this->whereSql();
         $sql.= ";";
         return $sql;
@@ -2179,16 +2285,56 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
         return $sql;
     }
 
+
+    /**
+    * updateSql by Id
+    * 
+    * @param Integer $id
+    * @param Array $posts
+    * @return String
+    */
+    private function updateSqlById($id, $posts) {
+        $sql = '';
+        foreach ($posts as $column_name => $value) {
+            if (isset($this->columns[$column_name])) {
+                $value = $this->sqlValue($value);
+                $set_values[] = "{$column_name} = {$value}";
+            }
+        }
+        if (isset($this->columns['updated_at'])) $set_values[] = "updated_at = current_timestamp";
+        if ($set_values) $set_value = implode(',', $set_values);
+
+        if ($set_value) {
+            $sql = "UPDATE {$this->table_name} SET {$set_value} WHERE {$this->id_column} = {$id};";
+        }
+        return $sql;
+    }
+
+    /**
+     * reload primary key
+     * 
+     * @return PgsqlEntity
+     */
     public function reloadPrimaryKey() {
         $this->primary_key = "{$this->table_name}_pkey";
         return $this;
     }
 
+    /**
+     * set upsert constraint
+     * 
+     * @return PgsqlEntity
+     */
     public function setUpsertConstraint($constraint_name) {
         $this->upsert_constraint = $constraint_name;
         return $this;
     }
 
+    /**
+     * upsertSql
+     * 
+     * @return String
+     */
     private function upsertSql() {
         if (!$this->upsert_constraint) {
             echo('Not found upsert constraint key!').PHP_EOL;
@@ -2693,8 +2839,7 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
                 LEFT JOIN information_schema.columns ON information_schema.columns.table_name = pg_class.relname
                 AND information_schema.columns.column_name = pg_attribute.attname 
                 WHERE pg_attribute.attnum > 0
-                AND atttypid > 0 
-                AND relacl IS NULL";
+                AND atttypid > 0";
 
         if ($table_name) $sql.= " AND relname = '{$table_name}'";
         $sql.= ' ORDER BY pg_attribute.attname;';
@@ -3381,9 +3526,12 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
 
                 echo($status);
             } else if ($model->columns) {
-                foreach ($this->pgAttributes($model->name) as $pg_attribute) {
-                    if ($pg_attribute['attname']) {
-                        $pg_attributes[$pg_attribute['attname']] = $pg_attribute;
+                $pg_attributes = null;
+                if ($attributes = $this->pgAttributes($model->name)) {
+                    foreach ($attributes as $pg_attribute) {
+                        if ($pg_attribute['attname']) {
+                            $pg_attributes[$pg_attribute['attname']] = $pg_attribute;
+                        }
                     }
                 }
                 if ($pg_attributes) {
@@ -3420,6 +3568,24 @@ public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'doubl
                 }
             }
         }
+    }
+
+    /**
+     * [oldDbInfoByOldHost description]
+     * @return [type] [description]
+     */
+    static function oldDbInfoByOldHost($old_host, $old_db) {
+        if (!defined('OLD_DB_INFO')) return;
+
+        $old_db_infos = OLD_DB_INFO;
+        foreach ($old_db_infos as $key => $_old_db_infos) {
+            foreach ($_old_db_infos as $system => $old_db_info) {
+                if ($old_db_info['host'] == $old_host && $old_db_info['dbname'] == $old_db) {
+                    return $system;
+                }
+            }
+        }
+
     }
 
 }

@@ -41,7 +41,7 @@
                   <? if (file_exists($user_project_setting['project_path']."app/")): ?>
 
                     <div class="form-inline">
-                      <form action="<?=url_for('project/export_php_model') ?>" method="post">
+                      <form action="<?=url_for('project/export_php_models') ?>" method="post">
                         <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">Model</button>
                         <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
                         <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">

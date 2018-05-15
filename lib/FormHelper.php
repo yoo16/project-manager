@@ -40,13 +40,15 @@ class FormHelper {
         if (!$params) return;
         
         $params['class'].= ' form-control';
-        if (!$params['hide_year']) $tag.= self::selectYear($params, $selected);
-        if (!$params['hide_month']) $tag.= self::selectMonth($params, $selected);
-        if (!$params['hide_day']) $tag.= self::selectDays($params, $selected);
-        if ($params['show_hour']) $tag = self::selectTime($params, $selected);
+        if (!$params['hide_year']) $tag.= FormHelper::selectYear($params, $selected);
+        if (!$params['hide_month']) $tag.= FormHelper::selectMonth($params, $selected);
+        if (!$params['hide_day']) $tag.= FormHelper::selectDays($params, $selected);
+        if ($params['show_hour']) $tag = FormHelper::selectTime($params, $selected);
 
-        $tag = "<div class=\"form-group\">\n{$tag}\n</div>\n";
-        $tag = "<div class=\"form-inline\">\n{$tag}\n</div>\n";
+        if ($params['one_day']) {
+            $name = "{$params['name']}[day]";
+            $tag.= FormHelper::input(['type' => 'hidden', 'name' => $name, 'value' => 1]);
+        }
         return $tag;
     }
 
@@ -356,7 +358,8 @@ class FormHelper {
      */
     static function values($params) {
         if (isset($params['csv']) && $params['csv']) {
-            $values = CsvLite::options($params['csv']);
+            $lang = AppSession::get('lang');
+            $values = CsvLite::options($params['csv'], $lang);
         } else if (isset($params['model']) && $params['model']) {
             $instance = DB::table($params['model']);
 
@@ -573,7 +576,6 @@ class FormHelper {
             $label = self::convertLabel($value, $params);
             $tag.= "<label class=\"radio inline\" for=\"{$attributes['id']}\">{$input_tag}&nbsp;{$label}</label>&nbsp;\n";
         }
-        $tag = "<div class=\"form-group\">{$tag}</div>";
         return $tag;
     }
 
@@ -600,7 +602,7 @@ class FormHelper {
      * @return string
      */
     static function checkbox($params, $selected = null) {
-        $label = ($params['label']) ? $params['label'] : LABEL_TRUE;
+        $label = (isset($params['label'])) ? $params['label'] : LABEL_TRUE;
         if (!isset($params['value'])) $params['value'] = 1;
 
         $attributes['type'] = 'checkbox';
@@ -808,7 +810,14 @@ class FormHelper {
     static function text($name, $value = null, $params = null) {
         $params['type'] = "text";
         //if (!$params['class']) $params['class'] = 'col-4';
-        $params['class'].= " form-control";
+        //$params['class'].= " form-control";
+
+        if ($value && $params['date-formatter']) {
+            $value = date($params['date-formatter'], strtotime($value));
+        }
+        if (isset($value) && is_numeric($params['number-format'])) {
+            $value = number_format($value, $params['number-format']);
+        }
 
         $tag = self::input($params, $name, $value);
         return $tag;
@@ -832,14 +841,45 @@ class FormHelper {
     /**
      * delete
      *
-     * @param string $value
-     * @param array $params
-     * @param string $name
-     * @return string $name
+     * @param Array $params
+     * @return String
      */
-    static function delete($value = null, $params = null, $name = null) {
+    static function delete($params = null) {
         if (!$params['class']) $params['class'] = 'btn btn-danger';
-        $tag = self::submit($value, $params, $name);
+        if ($params['is_check_delete']) {
+            $rel_name = "delete_link";
+            $params['id'] = $rel_name;
+            $params['disabled'] = 'disabled';
+        }
+        if ($params['is_confirm']) {
+            $params['class'].= ' confirm-dialog'; 
+            unset($params['is_confirm']);
+        }
+
+        $params['class'].= ' fa fa-erase';
+
+        $tag = self::submit($params['label'], $params);
+
+        if ($params['is_check_delete']) {
+            $check_delete_tag = "<label for=\"delete_checkbox\"><input class=\"delete_checkbox\" type=\"checkbox\" rel=\"{$rel_name}\"></label>";
+            $tag.= $check_delete_tag;
+            unset($params['is_check_delete']);
+        }
+        return $tag;
+    }
+
+    /**
+     * delete
+     *
+     * @param Array $params
+     * @return String
+     */
+    static function confirmDelete($params = null) {
+        if (!isset($params['label'])) $params['label'] = LABEL_DELETE;
+        if (!isset($params['class'])) $params['class'] = 'btn btn-danger';
+        $params['class'].= ' confirm-delete fa fa-erase';
+
+        $tag = "<a class=\"{$params['class']}\" delete-id={$params['value']} title={$params['title']}>{$params['label']}</a>";
         return $tag;
     }
 
@@ -912,9 +952,9 @@ class FormHelper {
     */ 
     static function changeActiveLabelTag($action, $params, $is_active, $valid_label = LABEL_TRUE, $invalid_label = LABEL_FALSE) {
         if ($is_active) {
-            $tag = "<span class=\"btn btn-sm btn-success action-loading\">{$valid_label}</span>";
+            $tag = "<span class=\"btn btn-sm btn-danger action-loading\">{$valid_label}</span>";
         } else {
-            $tag = "<span class=\"btn btn-sm btn-secondary btn-sm action-loading\">{$invalid_label}</span>";
+            $tag = "<span class=\"btn btn-sm btn-outline-primary btn-sm action-loading\">{$invalid_label}</span>";
         }
         $href = url_for($action, $params);
         $tag = "<a href=\"{$href}\">{$tag}</a>";

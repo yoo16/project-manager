@@ -1,9 +1,9 @@
 <? include('_header.phtml') ?>
 
 <div class="pt-3">
-  <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
-  <?= FormHelper::linkButton('import_from_model', LABEL_IMPORT) ?>
-  <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
+  <?= FormHelper::linkButton('new', null, ['class' => 'btn btn-primary', 'label' => LABEL_ADD]) ?>
+  <?= FormHelper::linkButton('import_from_model', null, ['class' => 'btn btn-outline-primary', 'label' => LABEL_IMPORT]) ?>
+  <?= FormHelper::linkButton('sort_order', null, ['class' => 'btn btn-outline-primary', 'label' => LABEL_SORT_ORDER]) ?>
 </div>
 
 <table class="table">
@@ -19,7 +19,7 @@
   <? if ($this->localize_string->values): ?>
     <? foreach ($this->localize_string->values as $values): ?>
       <tr>
-        <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
+        <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
         <td><?= $values['name'] ?></td>
         <td>
           <dl class="row">

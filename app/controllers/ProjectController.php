@@ -150,11 +150,30 @@ class ProjectController extends AppController {
         $this->redirect_to('page/list', $params);
     }
 
-    function action_export_php_model() {
+    function action_export_php_models() {
         if (!isPost()) exit;
         $this->project = DB::table('Project')->fetch($this->posts['project_id']);
         $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($this->posts['user_project_setting_id']);
-        $this->project->exportPHPModels();
+
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $pgsql = $database->pgsql();
+
+        $this->project->exportPHPModels($pgsql);
+
+        $params['project_id'] = $this->project->value['id'];
+        $this->redirect_to('attribute/list', $params);
+    }
+
+    function action_export_php_model() {
+        if (!isPost()) exit;
+        $this->model = DB::table('Model')->fetch($this->posts['model_id']);
+        $this->project = DB::table('Project')->fetch($this->model->value['project_id']);
+        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($this->posts['user_project_setting_id']);
+
+        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $pgsql = $database->pgsql();
+
+        $this->project->exportPHPModel($pgsql, $this->model);
 
         $params['project_id'] = $this->project->value['id'];
         $this->redirect_to('model/list', $params);
@@ -193,7 +212,7 @@ class ProjectController extends AppController {
 
     function action_export_db() {
         $database = DB::table('Database')
-                            ->fetch($_REQUEST['database_id'])
+                            ->fetch($this->project->value['database_id'])
                             ->exportDatabase();
 
         if ($this->project->value) {

@@ -1,41 +1,177 @@
-/* TODO sass */
+:root {
+  --main-menu-background: rgba(23, 46, 60, 0.95);
+  --main-menu-border: rgba(23, 46, 60, 1.0);
+  --main-active: rgba(240, 50, 20, 0.95);
+  --main-menu-color: rgba(255, 255, 255, 1.0);
+  --main-table-background: rgba(23, 46, 60, 0.95);
+  --main-btn-color: rgba(23, 46, 60, 1.0);
+  --main-btn-hover-color: rgba(200, 200, 200, 0.95);
+  --main-sortable-selected: rgba(200, 220, 230, 0.95);
+}
+
+body {
+ 	font-family: "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", Arial, sans-serif;
+}
+
 body,
-table
+table {
+	font-size: 0.8rem;
+}
+
+input[type="text"],
+input[type="password"]
  {
+ 	width: 100%;
 	font-size: 0.8rem;
 }
 
-/* TODO sass */
-input[type=text],
-input[type=password],
-input[type=select],
-input[type=submit]
-{
-	font-size: 0.8rem;
+.h1, .h2, .h3, .h4, .h5, .h6,
+h1, h2, h3, h4, h5, h6 {
+	padding: 8px 0;
+	font-size: 1rem;
 }
 
-/* TODO sass */
+.container-fluid {
+	padding: 0;
+}
+
+.error-window {
+}
+
 .form-control {
-	font-size: 0.8rem;
+	display: inline;
+	width: auto;
+    padding: .3rem .5rem;
+    line-height: 1;
+    font-size: 0.8rem;
 }
 
-/* TODO sass */
-.btn {
-	font-size: 0.8rem;
-	padding: 0.5rem 0.8rem;
+textarea.form-control {
+	padding: 0.5rem;
+}
+
+select.form-control:not([size]):not([multiple]) {
+	height: 2rem;
+}
+
+.form-control-label {
+}
+
+#main {
+	padding-right: 2rem;
+}
+
+.container-fluid {
+}
+
+.form-group {
+	margin: 0;
+}
+
+.col-12 {
+	width: 100%;
+}
+
+.table.max {
+	width: 100%;
+}
+
+.table {
+	/*width: auto;*/
+	border: 1px solid #eceeef;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+
+.table.table-form {
+	table-layout: fixed;
+}
+
+.table td,
+.table th {
+    padding: 0.5rem 0.8rem;
+    vertical-align: middle;
+}
+
+.table td {
+	border-bottom: 1px solid #eceeef;
+}
+
+.table th {
+    color: #ffffff;
+    background-image: none;
+    background-color: var(--main-table-background);
+    border: 1px solid var(--main-menu-border);
+}
+
+.table thead th {
+	border: 1px solid var(--main-menu-border);
+}
+
+.table-list {
+	width: auto;
+}
+
+.sortable-selected {
+	background-color: var(--main-sortable-selected);
+}
+
+a {
+  color : #0088cc;
+  text-decoration: none;
+}
+
+a .fa {
+	width: 22px;
+	text-align: center;
 	cursor: pointer;
 }
 
-h1 {
-	font-size: 1.4rem;
+.btn .fa {
+	width: 12px;
 }
 
-h2 {
-	font-size: 1.2rem;
+
+.nav-pills .nav-item.show .nav-link,
+.nav-pills .nav-link.active {
+	background: var(--main-btn-color);
+	border-color: var(--main-active);
 }
 
-h3,h4,h5 {
-	font-size: 1.0rem;
+.btn {
+	cursor: pointer;
+	font-size: 0.7rem;
+	margin: 0.1rem;
+}
+
+.btn-sm {
+	font-size: 0.7rem;
+}
+
+.btn-primary {
+	background: var(--main-btn-color);
+	border-color: var(--main-btn-color);
+}
+
+.btn-outline-primary {
+	color: var(--main-btn-color);
+	border-color: var(--main-btn-color);
+}
+
+.btn-primary:hover,
+.btn-outline-primary:hover {
+	background: var(--main-btn-hover-color);
+	border-color: var(--main-btn-hover-color);
+}
+
+.btn-secondary {
+	color: rgba(255, 255, 255, 1.0);
+	background: var(--main-btn-color);
+}
+
+.btn-secondary:hover {
+	color: rgba(255, 255, 255, 1.0);
+	background: var(--main-btn-hover-color);
 }
 
 #log-window {
@@ -66,39 +202,27 @@ h3,h4,h5 {
 	margin-top: 10rem;
 }
 
-.overflow-list {
-	overflow-y: auto;
-	max-height: 30rem;
+.number {
+	text-align: right;
 }
 
-#main {
-	/*margin-top: 5rem;*/
-}
-
-.php_error {
-	position: absolute !important;
-	left: 5rem !important;
-	top: 5rem !important;
-	z-index: 100000;
-}
-
-.db-list {
-	font-size: 0.7rem !important;
-}
-
-.db-list.card-header {
-	padding: 0.1rem 0.5rem;
-}
-
-.db-list td,
-.db-list th
+.update-sortable,
+.close-sortable
  {
-	font-size: 0.7rem !important;
-	padding: 0.2rem 0.5rem;
+	display: none;
 }
 
-@media print {
-.database-index {
-	display: none;
-	}
+
+/* login */
+.card {
+    background-color: #ffffff;
+}
+
+.card-header,
+.card-footer {
+	padding: 5px 15px;
+}
+
+.card-block {
+	padding: 6px;
 }

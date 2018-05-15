@@ -1,0 +1,28 @@
+<? include('_header.phtml') ?>
+
+<div class="pt-3">
+  <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary'] ) ?>
+  <? include('views/components/sortable.phtml') ?>
+
+</div>
+
+<table id="list-table" class="table">
+  <thead class="thead-deffault">
+    <tr>
+      <th>&nbsp;</th>
+      <th><?= LABEL_PUBLIC_LOCALIZE_STRINGS_LABEL ?></th>
+            <th><?= LABEL_PUBLIC_LOCALIZE_STRINGS_NAME ?></th>
+          </tr>
+  </thead>
+
+  <? if ($this->public_localize_string->values): ?>
+  <? foreach ($this->public_localize_string->values as $values): ?>
+  <tr id="<?= $values['id'] ?>">
+    <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
+    <td><?= $values['label'] ?></td>
+    <td><?= $values['name'] ?></td>
+  </tr>
+  <? endforeach ?>
+  <? endif ?>
+
+</table>

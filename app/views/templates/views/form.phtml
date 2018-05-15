@@ -17,7 +17,7 @@
   <? elseif ($view_item['form_type'] == 'password'): ?>
   <? Tag::init()->formPassword($view_item, $values['model'], $values['attribute'][$view_item['attribute_id']]) ?>
   <? else: ?>
-  <? Tag::init()->php('$this->'.$values['model']['entity_name']."->formInput('{$values['attribute'][$view_item['attribute_id']]['name']}')") ?>
+  <? Tag::init()->formInput($view_item, $values['model'], $values['attribute'][$view_item['attribute_id']]) ?>
   <? endif ?>
   <? if ($view_item['note']): ?>
   <span class="text-danger"><?= $view_item['note'] ?></span>

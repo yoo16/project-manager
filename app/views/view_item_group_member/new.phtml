@@ -6,11 +6,14 @@
     <div class="card-header">
       <h4></h4>
       <div class="text-left">
-        <?= FormHelper::submit(LABEL_SAVE) ?>        <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>      </div>
+        <?= FormHelper::submit(LABEL_SAVE) ?>
+        <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
+      </div>
     </div>
 
     <div class="card-block">
-      <? include('form.phtml') ?>    </div>
+      <? include('form.phtml') ?>
+    </div>
 
   </form>
 

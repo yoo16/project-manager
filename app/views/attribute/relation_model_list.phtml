@@ -1,4 +1,3 @@
-
 <h3 class=""><?= $this->model->value['name'] ?> -> <?= $this->attribute->value['name'] ?></h3>
 
 <? if ($this->fk_attribute->value): ?>
@@ -11,13 +10,13 @@
 </form>
 <? endif ?>
 
-<? if (!$this->attribute->value['fk_attribute_id']): ?>
 <table class="table table-sm">
   <? foreach ($this->project->model->values as $model): ?>
   <tr>
     <td>
-    <?= FormHelper::link('#relation-window', $model['name'], null,
+    <?= FormHelper::link('#relation-window', null,
         [
+        'label' => $model['name'],
         'class' => 'pw-app', 
         'pw-controller' => 'attribute',
         'pw-action' => 'relation_attribute_list', 
@@ -28,6 +27,8 @@
     </tr>
   <? endforeach ?>
 </table>
+<? if (!$this->attribute->value['fk_attribute_id']): ?>
+
 <? else: ?>
 <form action="<?= url_for('remove_relation') ?>" method="post">
   <input class="btn btn-sm btn-danger" type="submit" value="<?= LABEL_DELETE ?>">

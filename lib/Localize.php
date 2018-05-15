@@ -19,5 +19,3 @@ class Localize {
         return $values[$key];
     }
 }
-
-?>

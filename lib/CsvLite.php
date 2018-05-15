@@ -26,8 +26,8 @@ class CsvLite {
      * constructor
      *
      **/
-    function __construct($file_path=null) {
-        $file_path = CsvLite::csvPath($file_path);
+    function __construct($file_path = null, $lang = 'ja') {
+        $file_path = CsvLite::csvPath($file_path, $lang);
         if (file_exists($file_path)) {
             $this->file_path = $file_path;
         }
@@ -37,12 +37,14 @@ class CsvLite {
      * csvPath
      *
      * @param string $csv_name
+     * @param string $lang
      * @return string
      **/
-    static function csvPath($csv_name) {
+    static function csvPath($csv_name, $lang = 'ja') {
+        if (!$lang) $lang = 'ja';
         if (!$csv_name) return;
-        $file_path = BASE_DIR."db/records/{$csv_name}.csv";
-        if (!file_exists($file_path)) $file_path = BASE_DIR."db/records/{$csv_name}";
+        $file_path = BASE_DIR."db/records/{$lang}/{$csv_name}.csv";
+        if (!file_exists($file_path)) $file_path = BASE_DIR."db/records/{$lang}/{$csv_name}";
         if (!file_exists($file_path)) $file_path = BASE_DIR."{$csv_name}";
         if (!file_exists($file_path)) $file_path = $csv_name;
         if (file_exists($file_path)) return $file_path;
@@ -54,9 +56,9 @@ class CsvLite {
      * @param String $file_path
      * @return Array
      **/
-    static function options($file_path) {
+    static function options($file_path, $lang = null) {
         $results = array();
-        $file_path = CsvLite::csvPath($file_path);
+        $file_path = CsvLite::csvPath($file_path, $lang);
         if (file_exists($file_path)) {
             $fp = fopen($file_path, "r");
             $columns = fgetcsv($fp, 1024, ",");
@@ -79,9 +81,9 @@ class CsvLite {
      * @param String $label_column
      * @return Array
      **/
-     static function keyValues($file_path, $id_column='value', $label_column='label') {
+     static function keyValues($file_path, $id_column='value', $label_column='label', $lang = 'ja') {
         $results = array();
-        $file_path = CsvLite::csvPath($file_path);
+        $file_path = CsvLite::csvPath($file_path, $lang);
         if (!$file_path || !file_exists($file_path)) return;
         $values = self::options($file_path);
         if (is_array($values)) {
@@ -175,8 +177,8 @@ class CsvLite {
      * @param string $csv_name
      * @return array
      **/
-     function valuesForCsvName($csv_name) {
-        $file_path = CsvLite::csvPath($file_path);
+     function valuesForCsvName($csv_name, $lang = 'ja') {
+        $file_path = CsvLite::csvPath($file_path, $lang);
         if (!$file_path || !file_exists($file_path)) return;
 
         $values = $this->_readCsv($file_path);
@@ -475,18 +477,6 @@ class CsvLite {
     }
 
     /**
-     * _constructFilePath
-     *
-     * @param String $dir
-     * @param String $name
-     * @return
-     **/
-    static function _constructFilePath($dir, $name) {
-        $this->file_path = "{$dir}{$name}";
-    }
-
-
-    /**
      * escapeValue
      *
      * @param String $value
@@ -496,6 +486,21 @@ class CsvLite {
         $value = str_replace('"', '""', $value);
         $value = str_replace(',', '、', $value);
         return $value;
+    }
+
+    /**
+     * output values
+     * 
+     * @param  array $values      [description]
+     * @param  string $from_encode [description]
+     * @param  string $to_encode   [description]
+     * @return void
+     */
+    static function outputLine($values, $from_encode = 'SJIS', $to_encode = 'UTF-8') {
+        $value = implode(',', $values);
+        $value.="\r\n";
+        $value = mb_convert_encoding($value, $from_encode, $to_encode);
+        echo($value);
     }
 
 }

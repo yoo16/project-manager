@@ -13,7 +13,7 @@ $(function() {
         $('#result-html').html('');
         
         var method_name = $(this).attr('method-name');
-        var url = http_base() + 'api/' + method_name;
+        var url = projectUrl() + 'api/' + method_name;
         var params = {};
         $('.api-params').each(function(index, value) {
             var key = $(this).attr('name');
@@ -22,6 +22,7 @@ $(function() {
             //TODO ES6
             params[key] = value; 
         });
+        // console.log(url);
         jsonApi(url, params, render);
 
         function render(json) {
@@ -91,7 +92,6 @@ $(function() {
         var param = $.param(params);
         url+= '?' + param; 
 
-        //console.log(url);
         $('#url').html(url);
         $('#image').attr('src', url);
     });
@@ -343,4 +343,15 @@ function showIndicator() {
 **/
 function hideIndicator() {
     $('#indicator').css('display', 'none');
+}
+
+/**
+ * render html
+ * 
+ * @param  String html_id [description]
+ * @param  String data    [description]
+ * @return void
+ */
+ function renderHtml(html_id, data) {
+    $(html_id).html(data);
 }

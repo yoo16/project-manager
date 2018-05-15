@@ -17,7 +17,7 @@ $(document).on('click', '.action-log_list', function() {
     var params = {};
 
     $(html_id).html('');
-    postApi(url, params, showLog);
+    pw_app.urlPost(url, params, showLog);
 
     function showLog(json) {
         values = JSON.parse(json);
@@ -50,7 +50,7 @@ $(document).on('click', '.action-show_log', function() {
     log_file_name = $(this).attr('filename');
 
     params.filename = log_file_name;
-    postApi(url, params, showLog);
+    pw_app.urlPost(url, params, showLog);
 
     function showLog(data) {
         values = nl2br(data);
@@ -79,4 +79,3 @@ $(document).on('click', '.action-delete-log', function() {
         }
     }
 }); 
-

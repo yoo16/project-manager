@@ -10,29 +10,46 @@
   </ul>
 </div>
 
-<div class="container row">
+<div class="d-flex">
   <form action="<?= url_for('sync_model', $this->model->value['id']) ?>" method="post">
     <?= FormHelper::linkModal('#add-attribute', LABEL_ADD) ?>
-    <?= FormHelper::linkButton('model/list', LABEL_BACK) ?>
+    <?= $this->linkControllerTag("model", ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
     <?= FormHelper::submit('Sync', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you sync from DB?']) ?>
     <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
-    <?= FormHelper::link('localize_string/import_from_model',
-     'Localize', ['model_id' => $this->model->value['id'], 'redirect' => 'attribute/list'],
-     ['class' => 'btn btn-outline-primary'])
-     ?>
-   </form>
-   &nbsp;
-   <form action="<?= url_for('page/create_page_from_model') ?>" method="post" class="form-inline">
+    <?= $this->linkTag('localize_string', 'import_from_model', null, 
+      [
+        'label' => 'Localize',
+        'class' => 'btn btn-outline-primary',
+        'http_params' => [
+          'model_id' => $this->model->value['id'],
+          'redirect' => 'attribute/list'
+        ]
+      ]
+    )
+    ?>
+  </form>
+
+  <form>
+  <?= FormHelper::linkModal('#php-page-export-window', 'Model', ['class' => 'btn btn-outline-primary']) ?>
+  </form>
+
+  &nbsp;
+  <form action="<?= url_for('page/create_page_from_model') ?>" method="post" class="form-inline">
     <? if ($this->page->value): ?>
-    <?= FormHelper::link('view/',
-     'View', ['page_id' => $this->page->value['id']],
-     ['class' => 'btn btn-outline-primary'])
-     ?>
-   <? else: ?>
-    <?= FormHelper::button('Create Page', ['class' => 'btn btn-sm btn-outline-primary confirm-dialog', 'message' => "Create page?"]) ?>
-    <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
-  <? endif ?>
-</form>
+      <?= $this->linkControllerTag (
+        'view',
+        [
+          'label' => 'View',
+          'class' => 'btn btn-outline-primary',
+          'http_params' => ['page_id' => $this->page->value['id']]
+        ]
+      )
+      ?>
+    <? else: ?>
+      <?= FormHelper::button('Create Page', ['class' => 'btn btn-sm btn-outline-primary confirm-dialog', 'message' => "Create page?"]) ?>
+      <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
+    <? endif ?>
+  </form>
 </div>
 
 <? include('add_window.phtml') ?>
@@ -42,3 +59,5 @@
 <? include('attributes.phtml') ?>
 
 <? include('constraints.phtml') ?>
+
+<? include('views/components/php_page_export_window.phtml') ?>

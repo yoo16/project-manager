@@ -460,7 +460,7 @@ class FileManager {
     * @param  Array $path
     * @return void
     */ 
-    static function createDir($path) {
+    static function createDir($path, $chmod = '777') {
         if (!file_exists($path)) {
             if (defined('PHP_FUNCTION_MODE') && PHP_FUNCTION_MODE) {
                 $is_suceess = mkdir($path);
@@ -474,7 +474,7 @@ class FileManager {
             } else {
                 $cmd = "mkdir -p {$path}";
                 exec($cmd);
-                $cmd = "chmod 777 {$path}";
+                $cmd = "chmod {$chmod} {$path}";
                 exec($cmd);
             }
         }

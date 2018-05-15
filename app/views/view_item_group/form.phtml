@@ -6,5 +6,5 @@
 
 
 <?= FormHelper::submit(LABEL_SAVE) ?>
-<?= FormHelper::linkButton("cancel", LABEL_BACK) ?>
+<?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
 <input type="hidden" name="view_item_group[view_id]" value="<?= $this->view->value['id'] ?>">

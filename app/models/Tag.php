@@ -43,9 +43,9 @@ class Tag {
         if ($attribute['type'] == 'bool') {
             $method = "formCheckbox('{$attribute['name']}')";
         } else if (in_array($attribute['type'], ['int2', 'int4', 'int8', 'float', 'float8', 'double', 'double precision', 'real'])) {
-            $method = "formInput('{$attribute['name']}', ['class' => 'form-control col-2 number'])";
+            $method = "formInput('{$attribute['name']}', ['class' => 'form-control col-4 number'])";
         } else {
-            $method = "formInput('{$attribute['name']}')";
+            $method = "formInput('{$attribute['name']}', ['class' => 'form-control'])";
         }
         $param = "{$entity}->{$method}";
         if ($method) $this->php($param);
@@ -319,8 +319,8 @@ class Tag {
             $tag = "{$instance} = DB::table('{$model['class_name']}')";
         }
 
-        $tag.= "{$return_space}{$filter}";
-        $tag.= "{$return_space}{$order}";
+        //$tag.= "{$return_space}{$filter}";
+        if ($order) $tag.= "{$return_space}{$order}";
         $tag.= "->all();";
         echo($tag).PHP_EOL;
     }

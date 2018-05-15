@@ -4,9 +4,9 @@
  *
  * @copyright 2017 copyright Yohei Yoshikawa (http://yoo-s.com)
  */
-require_once 'ProjectController.php';
+require_once 'ModelController.php';
 
-class AttributeController extends ProjectController {
+class AttributeController extends ModelController {
 
     var $name = 'attribute';
 
@@ -171,11 +171,13 @@ class AttributeController extends ProjectController {
         $attribute = DB::table('Attribute')->fetch($this->params['id']);
         if ($attribute->value['id'] && $attribute->value['attnum']) {
             $pgsql = $this->database->pgsql();
-            $pgsql->dropColumn($this->model->value['name'], $attribute->value['name']);
-            $attribute->delete($attribute->value['id']);
+            $result = $pgsql->dropColumn($this->model->value['name'], $attribute->value['name']);
         }
+        $attribute->delete($attribute->value['id']);
+
         if ($attribute->errors) {
-            $this->flash['errors'] = $attribute->errors;
+            $errors['attributes'] = $attribute->errors;
+            $this->setErrors($errors);
             $this->redirect_to('edit', $this->params['id']);
         } else {
             $this->redirect_to('index');

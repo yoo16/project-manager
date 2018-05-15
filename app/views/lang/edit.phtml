@@ -2,23 +2,23 @@
 <form action="<?= url_for('update', $this->params['id']) ?>" method="post">
 
   <table class="table">
-      <tr>
+    <tr>
       <th>名称</th>
       <td>
-                <?= $this->lang->formInput('name') ?>        
+        <?= $this->lang->formInput('name') ?>        
       </td>
     </tr>
-        <tr>
+    <tr>
       <th>言語</th>
       <td>
-                <?= $this->lang->formInput('lang') ?>        
+        <?= $this->lang->formInput('lang') ?>        
       </td>
     </tr>
-    </table>
+  </table>
 
   <?= FormHelper::submit(LABEL_SAVE) ?>
-  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?>  
-    
+  <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>  
+  
 </form>
 
-  <?= $this->lang->formDelete() ?>
+<?= $this->lang->formDelete() ?>

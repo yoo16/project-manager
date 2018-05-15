@@ -7,7 +7,7 @@
  * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
-if (!defined('APP_NAME')) exit ('not found APP_NAME');
+if (!defined('APP_NAME')) exit('Not found APP NAME');
 
 class AppSession {
 

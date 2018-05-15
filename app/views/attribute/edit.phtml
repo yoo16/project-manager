@@ -82,7 +82,7 @@
       </div>
 
       <?= FormHelper::submit(LABEL_UPDATE) ?>
-      <?= FormHelper::linkButton('list', LABEL_BACK) ?>
+      <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
 
       <?= $this->attribute->formHidden('attnum') ?>
 

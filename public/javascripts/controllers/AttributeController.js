@@ -13,6 +13,7 @@ var AttributeController = function() {
         pw_app.apiPost(dom, params, callback);
 
         function callback(data) {
+            console.log(data);
             $('#relation_list').html(data);
         }
     }
@@ -35,7 +36,9 @@ var AttributeController = function() {
 
         pw_app.apiPost(dom, params, callback);
 
+
         function callback(data) {
+            console.log(data);
             $('#unique_attribute_list').html(data);
         }
     }

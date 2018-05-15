@@ -43,8 +43,17 @@
 
       <div class="form-inline">
 
+        <? if ($this->model->value): ?>
+        <form action="<?= $this->urlFor('project', 'export_php_model') ?>" method="post">
+          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP model?">Model</button>
+          <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
+          <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+        </form>
+        <? endif ?>
+
+        <? if ($this->page->value): ?>
         <form action="<?=url_for('project/export_php_page') ?>" method="post">
-          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">Controller/View</button>
+          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP controller files?">Controller/View</button>
           <div>
           <input type="checkbox" name="is_overwrite" value="1"> overwrite
           </div>
@@ -52,6 +61,7 @@
           <input type="hidden" name="page_id" value="<?= $this->page->value['id'] ?>">
           <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
         </form>
+        <? endif ?>
 
       </div>
       

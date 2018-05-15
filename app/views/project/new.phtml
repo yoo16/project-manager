@@ -5,5 +5,6 @@
 
   </table>
 
-
-  <?= FormHelper::submit(LABEL_SAVE) ?>  <?= FormHelper::linkButton("cancel", LABEL_BACK) ?></form>
+  <?= FormHelper::submit(LABEL_SAVE) ?>
+  <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
+</form>

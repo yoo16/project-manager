@@ -35,7 +35,7 @@
       </div>
 
       <?= FormHelper::submit(LABEL_UPDATE) ?>
-      <?= FormHelper::linkButton('cancel', LABEL_BACK) ?>
+      <?= FormHelper::linkButton('cancel', null, ['label' => LABEL_BACK]) ?>
     </form>
 
     <?= $this->model->formDelete() ?>

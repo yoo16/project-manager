@@ -26,15 +26,23 @@
   </thead>
 
   <? if (is_array($this->project->values)): ?>
-  <? foreach ($this->project->values as $project): ?>
-  <tr>
-    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $project['id']) ?></td>
-    <td><?= FormHelper::link('model/list', $project['name'], ['project_id' => $project['id']]) ?></td>
-    <td><?= $project['database']['name'] ?></td>
-    <td><?= FormHelper::linkButton('export_list', LABEL_EXPORT.LABEL_SETTING, $project['id']) ?></td>
-  </tr>
-<? endforeach ?>
-<? endif ?>
+    <? foreach ($this->project->values as $project): ?>
+      <tr>
+        <td><?= FormHelper::linkButton('edit', $project['id'], ['label' => LABEL_EDIT]) ?></td>
+        <td>
+          <?= $this->linkControllerTag('model', 
+            [
+              'label' => $project['name'],
+              'http_params' => ['project_id' => $project['id']]
+            ]
+          )
+          ?>
+        </td>
+        <td><?= $project['database']['name'] ?></td>
+        <td><?= FormHelper::linkButton('export_list', LABEL_EXPORT.LABEL_SETTING, $project['id']) ?></td>
+      </tr>
+    <? endforeach ?>
+  <? endif ?>
 
 </table>
 </div>

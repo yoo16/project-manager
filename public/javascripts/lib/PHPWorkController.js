@@ -9,7 +9,6 @@ var pw_app;
 
 $(document).ready(function(){
     pw_app = new PHPWorkController();
-    console.log(pw_app);
 });
 
 var PHPWorkController = function() {
@@ -104,9 +103,9 @@ var PHPWorkController = function() {
         return value;
     }
 
-    function controllerAction(obj) {
-        var controller_name = $(obj).attr('pw-controller') + 'Controller';
-        var action = $(obj).attr('pw-action');
+    $(document).on('click', '.pw-app', function() {
+        var controller_name = $(this).attr('pw-controller') + 'Controller';
+        var action = $(this).attr('pw-action');
 
         if (!controller_name) console.log('Not found pw-controller');
         if (!action) console.log('Not found pw-action');
@@ -115,29 +114,9 @@ var PHPWorkController = function() {
         if (controller_name in window) {
             var controller = new window[controller_name]();
             if (action in controller) {
-                controller[action](obj);
+                controller[action](this);
             }
         }
-    }
-
-    $(document).on('click', 'a.pw-app', function() {
-        controllerAction(this);
-    }); 
-
-    $(document).on('click', '.btn.pw-app', function() {
-        controllerAction(this);
-    }); 
-
-    /**
-     * change action
-     *
-     * TODO public click action
-     * 
-     * @param  {[type]} 
-     * @return {[type]}
-     */
-    $(document).on('change', 'select.pw-app', function() {
-        controllerAction(this);
     }); 
 
 }

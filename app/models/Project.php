@@ -58,31 +58,28 @@ class Project extends _Project {
             exit;
         }
         $localize_strings = $this->hasMany('LocalizeString')->values;
-        foreach ($localize_strings as $localize_string) {
-            $lang = 'ja';
+        $file_name = "_localize.php";
+        foreach (['ja', 'en'] as $lang) {
+            $row = null;
             $path = Attribute::localizeFilePath($this->user_project_setting->value, $lang);
-            $file_name = "_localize.php";
-            $file = "{$localize_dir}{$file_name}";
+            foreach ($localize_strings as $localize_string) {
+                $labels = json_decode($localize_string['label'], true);
+                $label = $labels[$lang];
+                if ($label) $row.= "define('{$localize_string['name']}', '{$label}');\n";
+            }
 
-            $labels = json_decode($localize_string['label'], true);
-            $label = $labels['ja'];
-            $row.= "define('{$localize_string['name']}', '{$label}');\n";
+            $body = '<?php'.PHP_EOL.$row;
+            $results = file_put_contents($path, $body);
+            $cmd = "chmod 666 {$path}";
+            exec($cmd);
         }
-
-        $body = '<?php'.PHP_EOL.$row;
-        $results = file_put_contents($path, $body);
-        $cmd = "chmod 666 {$file}";
-        exec($cmd);
     }
 
     /**
      * export php
      * @return bool
      */
-    function exportPHPModels() {
-        $database = DB::table('Database')->fetch($this->value['database_id']);
-        $pgsql = $database->pgsql();
-
+    function exportPHPModels($pgsql) {
         //model
         $this->bindMany('Model');
 
@@ -94,47 +91,57 @@ class Project extends _Project {
 
         if ($this->model->values) {
             foreach ($this->model->values as $model) {
-                $pg_class = $pgsql->pgClassArray($model['pg_class_id']);
-
-                $values = null;
-                $values['project'] = $this->value;
-                
-                $_model = DB::table('Model')->fetch($model['id']);
-                $attribute = $_model->relationMany('Attribute')
-                                     ->order('name')
-                                     ->all();
-
-                $values['model'] = $model;
-                $values['attribute'] = $attribute->values;
-                
-                $values['old_id_column'] = DB::table('Attribute')
-                                                ->where("model_id = '{$model['id']}'")
-                                                ->where("name = 'old_id'")
-                                                ->one()
-                                                ->value['old_name'];
-
-                $pg_constraints = $this->pgConstraintValues($pg_class);
-                $values['unique'] = $pg_constraints['unique'];
-                $values['foreign'] = $pg_constraints['foreign'];
-                $values['primary'] = $pg_constraints['primary'];
-
-                $model = $values['model'];
-                $model_path = Model::projectFilePath($this->user_project_setting->value, $model);
-
-                if (!file_exists($model_path)) {
-                    $model_template_path = Model::templateFilePath($model);
-                    $contents = FileManager::bufferFileContetns($model_template_path, $values);
-                    file_put_contents($model_path, $contents);
-                }
-
-                $vo_model_path = Model::projectVoFilePath($this->user_project_setting->value, $model);
-                $vo_model_template_path = Model::voTemplateFilePath($model);
-                $contents = FileManager::bufferFileContetns($vo_model_template_path, $values);
-                file_put_contents($vo_model_path, $contents);
+                $this->model->value = $model;
+                $this->exportpHPModel($pgsql, $this->model);
             }
         }
     }
 
+    /**
+     * export php model
+     * 
+     * @param Model $model
+     * @return bool
+     */
+    function exportPHPModel($pgsql, $model) {
+        $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
+
+        $values = null;
+        $values['project'] = $this->value;
+        
+        $attribute = $model->relationMany('Attribute')
+                           ->order('name')
+                           ->all();
+
+        $values['model'] = $model->value;
+        $values['attribute'] = $attribute->values;
+        
+        $values['old_id_column'] = DB::table('Attribute')
+                                        ->where("model_id = '{$model->value['id']}'")
+                                        ->where("name = 'old_id'")
+                                        ->one()
+                                        ->value['old_name'];
+
+        $pg_constraints = $this->pgConstraintValues($pg_class);
+        $values['unique'] = $pg_constraints['unique'];
+        $values['foreign'] = $pg_constraints['foreign'];
+        $values['primary'] = $pg_constraints['primary'];
+
+        $model_path = Model::projectFilePath($this->user_project_setting->value, $model->value);
+
+
+        if (!file_exists($model_path)) {
+            $model_template_path = Model::templateFilePath();
+            $contents = FileManager::bufferFileContetns($model_template_path, $values);
+            file_put_contents($model_path, $contents);
+        }
+
+
+        $vo_model_path = Model::projectVoFilePath($this->user_project_setting->value, $model->value);
+        $vo_model_template_path = Model::voTemplateFilePath();
+        $contents = FileManager::bufferFileContetns($vo_model_template_path, $values);
+        file_put_contents($vo_model_path, $contents);
+    }
 
     //controllers
     function exportPHPControllers($is_overwrite = false) {
@@ -289,17 +296,22 @@ class Project extends _Project {
                                                 ->all()
                                                 ->values;
 
-                $csv_path = Record::csvFilePath($this->user_project_setting->value, $record);
-
-                if ($record_items) {
-                    $csv = '';
-                    $csv.=  'value,label'.PHP_EOL;
-                    foreach ($record_items as $record_item) {
-                        //TODO CsvLite
-                        $csv.=  "\"{$record_item['key']}\",\"{$record_item['value']}\"".PHP_EOL;
-                    }
-                    file_put_contents($csv_path, $csv);
-                }  
+                foreach (['ja', 'en'] as $lang) {
+                    $csv_path = Record::csvFilePath($this->user_project_setting->value, $record, $lang);
+                    if ($record_items) {
+                        $csv = '';
+                        $csv.=  'value,label'.PHP_EOL;
+                        foreach ($record_items as $record_item) {
+                            $column_name = 'value';
+                            if ($lang == 'en') {
+                                $column_name.= "_{$lang}";
+                            }
+                            $value = $record_item[$column_name];
+                            $csv.=  "\"{$record_item['key']}\",\"{$value}\"".PHP_EOL;
+                        }
+                        file_put_contents($csv_path, $csv);
+                    }  
+                }
             }
         }
     }

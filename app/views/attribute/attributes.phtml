@@ -41,7 +41,7 @@
             <tr>
               <td>
                 <? if (!Model::$required_columns[$attribute['name']]): ?><? endif ?>
-                <?= FormHelper::linkButton('edit', LABEL_EDIT, $attribute['id']) ?>
+                <?= FormHelper::linkButton('edit', $attribute['id'], ['label' => LABEL_EDIT]) ?>
               </td>
 
               <td>
@@ -89,9 +89,9 @@
             <td>
               <? if (!Model::$required_columns[$attribute['name']]): ?>
                 <? if ($attribute['is_required']): ?>
-                  <?= FormHelper::link('change_required', 'required', $attribute['id'], ['class' => 'badge badge-success']) ?>
+                  <?= $this->linkTag($this->name, 'change_required', $attribute['id'], ['label' => 'required', 'class' => 'badge badge-success']) ?>
                 <? else: ?>
-                  <?= FormHelper::link('change_required', 'required', $attribute['id'], ['class' => 'badge badge-default']) ?>
+                  <?= $this->linkTag($this->name, 'change_required', $attribute['id'], ['label' => 'required', 'class' => 'badge badge-default']) ?>
                 <? endif ?>
               <? endif ?>
             </td>
