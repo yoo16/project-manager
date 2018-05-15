@@ -1,0 +1,125 @@
+@import 'setting.scss';
+
+.nav-item {
+}
+
+.nav-item a {
+	color: $menu-color;
+}
+
+.nav-item a:hover {
+	color: $menu-color;
+	background: $active;
+}
+
+.nav-link {
+	padding: 12px 10px;
+	border-radius: none;
+}
+
+.nav-pills .nav-link {
+	border-radius: 0;
+}
+
+.nav-item .nav-link.active {
+	background-color: $active;
+	border-color: $active;
+}
+
+.btn-outline-primary.active,
+.btn-outline-primary:active,
+.show>.btn-outline-primary.dropdown-toggle {
+	background-color: $active;
+	border-color: $active;
+}
+
+.dropdown-item  {
+	padding-left: 36px;
+}
+
+.dropdown-item a {
+	color: $menu-color;
+}
+
+.dropdown-item.active {
+	color: $menu-color;
+	background: $active;
+}
+
+#header {
+	background: $menu-background;
+}
+
+.bg-faded {
+	margin: 0;
+	padding: 5px 0;
+	background: $menu-background;
+	color: $menu-color;
+	margin-bottom: 1px;
+}
+
+.bg-faded .nav-link {
+}
+
+#side-nav  .nav-link {
+	border-bottom: 1px solid $menu-border;
+}
+
+.bg-faded a {
+	font-size: 10pt;
+	color: $menu-color;
+}
+
+#header, #header .nav-link {
+	color: $menu-color;
+}
+
+#header .navbar-brand {
+	font-size: 14pt;
+}
+
+#header a {
+	font-size: 10pt;
+	color: $menu-color;
+}
+
+#header .dropdown-menu {
+	background: $menu-background;
+}
+
+#header .dropdown-menu a {
+	padding: 10px;
+}
+
+#side-nav h1,
+#side-nav h2,
+#side-nav h3,
+#side-nav h4,
+#side-nav h5,
+#side-nav h6 {
+	font-size: 0.9rem;
+	margin: 0;
+}
+
+#side-nav {
+	padding-right: 0 !important;
+}
+
+#side-nav ul {
+	width: 100%;
+}
+
+.bg-faded .dropdown-menu {
+	background: $menu-background;
+}
+
+.bg-faded .dropdown-item {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	color: $menu-color;
+}
+
+.bg-faded.active {
+	background: $active;
+	border-color: $active;
+}
