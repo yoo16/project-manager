@@ -26,7 +26,8 @@ class SettingController extends AppController {
     function action_pgsql() {
         $pgsql_entity = new PgsqlEntity();
         $this->pg_connection = $pgsql_entity->connection();
-        $this->sql = $pgsql_entity->createTablesSQLForPath();
+        $vo_path = BASE_DIR."app/models/vo/";
+        $this->sql = $pgsql_entity->createTablesSQLForPath($vo_path);
     }
 
     function action_create_database() {
@@ -36,7 +37,7 @@ class SettingController extends AppController {
 
     function action_create_tables() {
         $pgsql_entity = new PgsqlEntity();
-        $this->results = $pgsql_entity->createTables();
+        $this->results = $pgsql_entity->createTablesForProject($vo_path);
         $this->sql = $pgsql_entity->sql;
     }
 

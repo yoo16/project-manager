@@ -1,126 +1,152 @@
 <? include('_header.phtml') ?>
 
-<div class="pt-3">
-  <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
+  <div class="pt-3">
+    <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
 
-  <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table"><?= LABEL_SORT_ORDER ?></a>
-  <a href="#" class="btn btn-primary update-sortable" controller="view_item">更新</a>
+    <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table">
+      <?= LABEL_SORT_ORDER ?>
+    </a>
+    <a href="#" class="btn btn-primary update-sortable" controller="view_item">更新</a>
 
-  <?= $this->linkControllerTag('view', ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-  <a class="btn btn-primary" href="<?= url_for('add_all') ?>"><?= LABEL_ALL ?><?= LABEL_ADD ?></a>
+    <?= $this->linkControllerTag('view', ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
+    <a class="btn btn-primary" href="<?= url_for('add_all') ?>">
+      <?= LABEL_ALL ?>
+      <?= LABEL_ADD ?>
+    </a>
 
-  <a class="btn btn-outline-primary" href="<?= url_for('view_item_group/', ['view_id' => $this->view->value['id']]) ?>"><?= LABEL_VIEW_ITEM_GROUPS ?></a>
-</div>
+    <a class="btn btn-outline-primary" href="<?= url_for('view_item_group/', ['view_id' => $this->view->value['id']]) ?>">
+      <?= LABEL_VIEW_ITEM_GROUPS ?>
+    </a>
+  </div>
 
-<table id="list-table" class="table sortable">
-  <thead class="thead-deffault">
-    <tr>
-      <th>&nbsp;</th>
-      <th>カラム</th>
-      <th>リンクページ</th>
-      <th>form/class</th>
-      <th>where / csv</th>
-    </tr>
-  </thead>
-
-  <? if ($this->view->view_item->values): ?>
-    <tbody>
-      <? foreach ($this->view->view_item->values as $view_item): ?>
-        <tr id="<?= $view_item['id'] ?>">
-          <td>
-            <?= FormHelper::linkButton('edit', LABEL_EDIT, $view_item['id']) ?>
-          </td>
-          <td>
-            <?= $this->page->model->attribute->values[$view_item['attribute_id']]['name'] ?>
-            <div>
-              <small class="text-danger"><?= $view_item['note'] ?></small>
-            </div>
-
-            <div>
-            <? if ($view_item['attribute_id']): ?>
-              <?= $this->page->model->attribute->values[$view_item['attribute_id']]['label'] ?>
-            <? elseif ($view_item['localize_string_id']): ?>
-              <?= $this->localize_string->values[$view_item['localize_string_id']]['name'] ?>  
-            <? endif ?>
-            </div>
-          </td>
-
-          <td>
-            <?= $this->pages[$view_item['page_id']]['name'] ?>
-            <div>
-              <? if ($view_item['link_param_id_attribute_id']): ?>
-                id = <?= DB::table('Attribute')->fetch($view_item['link_param_id_attribute_id'])->value['name'] ?>
-              <? endif ?>
-            </div>
-          </td>
-          <td>
-            <div>
-              <? if (in_array($this->view->value['name'], ['new' ,'edit'])): ?>
-                <? if ($view_item['form_type'] == 'select'): ?>
-                  <select class="form-control col-4">
-                    <option><?= $view_item['label_column'] ?></option>
-                  </select>
-                <? elseif ($view_item['form_type'] == 'hidden'): ?>
-                  hidden
-                <? elseif ($view_item['form_type'] == 'radio'): ?>
-                  <input class="form-control" type="radio" name=""><?= $view_item['label_column'] ?>
-                <? elseif ($view_item['form_type'] == 'checkbox'): ?>
-                  <input class="form-control" type="checkbox" name=""><?= $view_item['label_column'] ?>
-                <? elseif ($view_item['form_type'] == 'textarea'): ?>
-                  <textarea></textarea>
-                <? elseif ($view_item['form_type'] == 'password'): ?>
-                  <input class="form-control col-4" type="password" name="">
-                <? else: ?>
-                  <input class="form-control col-4" type="text" name="">
-                <? endif ?>
-              <? endif ?>
-            </div>
-            <div>
-              <?= FormHelper::activeLabelTag($view_item['css_class']) ?>
-            </div>
-          </td>
-          <td>
-            <? if ($view_item['where_model_id']): ?>
-              <?= DB::table('Model')->fetch($view_item['where_model_id'])->value['name'] ?> -> id
-            <? endif ?>
-
-            <? if ($view_item['form_model_id']): ?>
-              = 
-              <?= DB::table('Model')->fetch($view_item['form_model_id'])->value['entity_name'] ?>
-              <? if ($view_item['where_attribute_id']): ?>.<?= DB::table('Attribute')->fetch($view_item['where_attribute_id'])->value['name'] ?><? endif ?>
-            <? endif ?>
-
-            <? if ($view_item['csv']): ?>csv : <?= $view_item['csv'] ?><? endif ?>
-          </td>
-
-        </tr>
-      <? endforeach ?>
-    </tbody>
-  <? endif ?>
-</table>
-
-<table class="table table-sm">
-  <thead class="thead-deffault">
-    <tr>
-      <th>&nbsp;</th>
-      <th>カラム</th>
-      <th>ラベル</th>
-    </tr>
-  </thead>
-
-  <? if ($this->page->model->attribute->values): ?>
-    <? foreach ($this->page->model->attribute->values as $view_item): ?>
+  <table id="list-table" class="table sortable">
+    <thead class="thead-deffault">
       <tr>
-        <td>
-          <form action="<?= url_for('add_for_attribute') ?>" method="post">
-            <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-sm btn-primary']) ?>
-            <?= FormHelper::hidden('view_item[attribute_id]', $view_item['id']) ?>
-          </form>
-        </td>
-        <td><?= $view_item['name'] ?></td>
-        <td><?= $view_item['label'] ?></td>
+        <th>&nbsp;</th>
+        <th>カラム</th>
+        <th>リンクページ</th>
+        <th>form/class</th>
+        <th>where / csv</th>
       </tr>
-    <? endforeach ?>
-  <? endif ?>
+    </thead>
 
-</table>
+    <? if ($this->view->view_item->values): ?>
+      <tbody>
+        <? foreach ($this->view->view_item->values as $view_item): ?>
+          <tr id="<?= $view_item['id'] ?>">
+            <td>
+              <?= $this->linkTag($this->pw_controller, 'edit', $view_item['id'],
+            [
+            'label' => LABEL_EDIT,
+            'class' => 'btn btn-outline-primary'
+            ])
+            ?>
+            </td>
+            <td>
+              <?= $this->page->model->attribute->values[$view_item['attribute_id']]['name'] ?>
+              <div>
+                <small class="text-danger">
+                  <?= $view_item['note'] ?>
+                </small>
+              </div>
+
+              <div>
+                <? if ($view_item['attribute_id']): ?>
+                  <?= $this->page->model->attribute->values[$view_item['attribute_id']]['label'] ?>
+                  <? elseif ($view_item['localize_string_id']): ?>
+                    <?= $this->localize_string->values[$view_item['localize_string_id']]['name'] ?>
+                    <? endif ?>
+              </div>
+            </td>
+
+            <td>
+              <?= $this->pages[$view_item['page_id']]['name'] ?>
+              <div>
+                <? if ($view_item['link_param_id_attribute_id']): ?>
+                  id =
+                  <?= DB::table('Attribute')->fetch($view_item['link_param_id_attribute_id'])->value['name'] ?>
+                  <? endif ?>
+              </div>
+            </td>
+            <td>
+              <div>
+                <? if (in_array($this->view->value['name'], ['new' ,'edit'])): ?>
+                  <? if ($view_item['form_type'] == 'select'): ?>
+                    <select class="form-control col-4">
+                      <option>
+                        <?= $view_item['label_column'] ?>
+                      </option>
+                    </select>
+                    <? elseif ($view_item['form_type'] == 'hidden'): ?>
+                      hidden
+                      <? elseif ($view_item['form_type'] == 'radio'): ?>
+                        <input class="form-control" type="radio" name="">
+                        <?= $view_item['label_column'] ?>
+                        <? elseif ($view_item['form_type'] == 'checkbox'): ?>
+                          <input class="form-control" type="checkbox" name="">
+                          <?= $view_item['label_column'] ?>
+                          <? elseif ($view_item['form_type'] == 'textarea'): ?>
+                            <textarea></textarea>
+                            <? elseif ($view_item['form_type'] == 'password'): ?>
+                              <input class="form-control col-4" type="password" name="">
+                              <? else: ?>
+                                <input class="form-control col-4" type="text" name="">
+                                <? endif ?>
+                                  <? endif ?>
+              </div>
+              <div>
+                <?= FormHelper::activeLabelTag($view_item['css_class']) ?>
+              </div>
+            </td>
+            <td>
+              <? if ($view_item['where_model_id']): ?>
+                <?= DB::table('Model')->fetch($view_item['where_model_id'])->value['name'] ?> -> id
+                <? endif ?>
+
+                  <? if ($view_item['form_model_id']): ?>
+                    =
+                    <?= DB::table('Model')->fetch($view_item['form_model_id'])->value['entity_name'] ?>
+                    <? if ($view_item['where_attribute_id']): ?>.
+                      <?= DB::table('Attribute')->fetch($view_item['where_attribute_id'])->value['name'] ?>
+                      <? endif ?>
+                        <? endif ?>
+
+                          <? if ($view_item['csv']): ?>csv :
+                            <?= $view_item['csv'] ?>
+                            <? endif ?>
+            </td>
+
+          </tr>
+          <? endforeach ?>
+      </tbody>
+      <? endif ?>
+  </table>
+
+  <table class="table table-sm">
+    <thead class="thead-deffault">
+      <tr>
+        <th>&nbsp;</th>
+        <th>カラム</th>
+        <th>ラベル</th>
+      </tr>
+    </thead>
+
+    <? if ($this->page->model->attribute->values): ?>
+      <? foreach ($this->page->model->attribute->values as $view_item): ?>
+        <tr>
+          <td>
+            <form action="<?= url_for('add_for_attribute') ?>" method="post">
+              <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-sm btn-primary']) ?>
+              <?= FormHelper::hidden('view_item[attribute_id]', $view_item['id']) ?>
+            </form>
+          </td>
+          <td>
+            <?= $view_item['name'] ?>
+          </td>
+          <td>
+            <?= $view_item['label'] ?>
+          </td>
+        </tr>
+        <? endforeach ?>
+          <? endif ?>
+  </table>

@@ -380,7 +380,7 @@ class ProjectController extends AppController {
         $vo_path = "{$user_project_setting->value['project_path']}app/models/vo/";
         $sql = $pgsql_entity->createTablesSQLForPath($vo_path);
 
-var_dump($sql);
+        echo($sql);
         exit;
     }
 
