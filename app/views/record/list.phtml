@@ -1,29 +1,42 @@
 <? include('_header.phtml') ?>
 
-<div class="pt-3">
-  <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
-  <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table"><?= LABEL_SORT_ORDER ?></a>
+  <div class="pt-3">
+    <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
+    <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table">
+      <?= LABEL_SORT_ORDER ?>
+    </a>
 
-  <a href="#" class="btn btn-primary update-sortable" controller="record"><?= LABEL_UPDATE ?></a>
-</div>
+    <? include('views/components/sortable.phtml') ?>
+  </div>
 
-<table id="list-table" class="table">
-  <thead class="thead-deffault">
-    <tr>
-      <th>&nbsp;</th>
-      <th><?= LABEL_RECORDS_NAME ?></th>
-      <th><?= LABEL_RECORDS_LABEL ?></th>
-    </tr>
-  </thead>
-
-  <? if ($this->record->values): ?>
-    <? foreach ($this->record->values as $values): ?>
-      <tr id="<?= $values['id'] ?>">
-        <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
-        <td><a href="<?= url_for('record_item/', ['record_id' => $values['id']]) ?>"><?= $values['name'] ?></a></td>
-        <td><?= $values['label'] ?></td>
+  <table id="sortable-table" class="table table-list">
+    <thead class="thead-default">
+      <tr>
+        <th>&nbsp;</th>
+        <th>
+          <?= LABEL_RECORDS_NAME ?>
+        </th>
+        <th>
+          <?= LABEL_RECORDS_LABEL ?>
+        </th>
       </tr>
-    <? endforeach ?>
-  <? endif ?>
+    </thead>
 
+    <? if ($this->record->values): ?>
+      <? foreach ($this->record->values as $values): ?>
+        <tr id="<?= $values['id'] ?>">
+          <td>
+            <?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?>
+          </td>
+          <td>
+            <a href="<?= url_for('record_item/', ['record_id' => $values['id']]) ?>">
+              <?= $values['name'] ?>
+            </a>
+          </td>
+          <td>
+            <?= $values['label'] ?>
+          </td>
+        </tr>
+        <? endforeach ?>
+          <? endif ?>
 </table>

@@ -2,13 +2,12 @@
 
 <div class="pt-3">
   <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
-  <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table"><?= LABEL_SORT_ORDER ?></a>
 
-  <a href="#" class="btn btn-primary update-sortable" controller="record_item"><?= LABEL_UPDATE ?></a>
+  <? include('views/components/sortable.phtml') ?>
 </div>
 
-<table id="list-table" class="table">
-  <thead class="thead-deffault">
+<table id="sortable-table" class="table table-list">
+  <thead class="thead-default">
     <tr>
       <th>&nbsp;</th>
       <th><?= LABEL_RECORD_ITEMS_KEY ?></th>

@@ -5,12 +5,17 @@
   <?= FormHelper::linkButton('import_from_model', null, ['class' => 'btn btn-outline-primary', 'label' => LABEL_IMPORT]) ?>
   <?= FormHelper::linkButton('sort_order', null, ['class' => 'btn btn-outline-primary', 'label' => LABEL_SORT_ORDER]) ?>
 </div>
-
+<div>
+  <form action="<?= url_for('csv_import'); ?>" method="post" enctype="multipart/form-data">
+    <input class="btn btn-primary" type="submit" value="<?= LABEL_CSV_IMPORT ?>">
+    <input type="file" name="file">
+  </form>
+</div>
 <table class="table">
   <thead class="thead-deffault">
     <tr>
       <th>&nbsp;</th>
-      <th>名称</th>
+      <th>坝称</th>
       <th>言語</th>
       <th>&nbsp;</th>
     </tr>

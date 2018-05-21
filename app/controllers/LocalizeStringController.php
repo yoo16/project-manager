@@ -126,6 +126,46 @@ class LocalizeStringController extends ProjectController {
         }
     }
 
+    /**
+     * csv import
+     *
+     * @return void
+     */
+    function action_csv_import() {
+        if ($this->project->value['id']) {
+            $file_path = FileManager::uploadFilePath();
+            $csv = new CsvLite($file_path);
+            $csv->from_encode = 'AUTO';
+            $csv->to_encode = 'UTF-8';
+            $csv_values = $csv->results();
+
+            $localize_string = DB::table('LocalizeString')->where("project_id = {$this->project->value['id']}")
+                                                          ->all();
+
+            foreach ($csv_values as $csv_value) {
+                if ($key = $csv_value['key']) {
+                    $csv_labels[$key] = $csv_value;
+                }
+            }
+
+            foreach ($localize_string->values as $localize_string_value) {
+                $name = $localize_string_value['name'];
+                $csv_label = $csv_labels[$name];
+
+                if ($csv_label['en']) {
+                    $labels = json_decode($localize_string_value['label'], true);
+                    if ($labels['en'] != $csv_label['en']) {
+                        $labels['en'] = $csv_label['en'];
+                        $posts['label'] = json_encode($labels);
+
+                        $localize_string->update($posts, $localize_string_value['id']);
+                    }
+                }
+            }
+        } 
+        $this->redirect_to('list');
+    }
+
    /**
     * new
     *
