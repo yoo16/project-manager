@@ -4,17 +4,17 @@
     <tr>
       <th>名称</th>
       <td>
-        <input class="form-control" name="user[login_name]" type="text" value="<?= $this->user['login_name'] ?>">
+        <input class="form-control" name="user[login_name]" type="text" value="<?= $this->user->value['login_name'] ?>">
       </td>
     </tr>
 
     <tr>
       <th>プロジェクトパス</th>
       <td>
-        <input class="form-control" name="user[default_project_path]" type="text" value="<?= $this->user['default_project_path'] ?>">
+        <input class="form-control" name="user[default_project_path]" type="text" value="<?= $this->user->value['default_project_path'] ?>">
       </td>
     </tr>
 
   </table>
 
-  <input name="user[id]" type="hidden" value="<?= $this->user['id'] ?>" class="" />
+  <input name="user[id]" type="hidden" value="<?= $this->user->value['id'] ?>">

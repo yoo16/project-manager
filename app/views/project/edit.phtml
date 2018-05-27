@@ -4,7 +4,25 @@
 
         <table class="table">
             <tr>
-                <th class="form-group row">
+            <th class="form-group row">
+                ProjectPath
+            </th>
+            <td>
+                <?= $this->user_project_setting->formInput('name', ['class' => 'form-control']) ?>
+            </td>
+            </tr>
+        </table>
+
+        <?= FormHelper::submit(LABEL_UPDATE) ?>
+        <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK])?>
+    </form>
+    <?= $this->project->formDelete() ?>
+
+    <form action="<?= url_for('update', $this->params['id']) ?>" method="post">
+
+        <table class="table">
+            <tr>
+                <th>
                     <?= FormHelper::formLabel('Name', ['class' => 'col-2']) ?>
                 </th>
                 <td>
@@ -18,10 +36,9 @@
                     <?= $this->project->formSelect('database_id', ['model' => 'Database', 'label' => 'name']) ?>
                 </td>
 
-                <?= FormHelper::submit(LABEL_UPDATE) ?>
-                <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
             </tr>
         </table>
 
-    </form>
-<?= $this->project->formDelete() ?>
+        <?= FormHelper::submit(LABEL_UPDATE) ?>
+        <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
+</form>

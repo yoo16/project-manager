@@ -80,6 +80,15 @@ class ProjectController extends AppController {
                         ->takeValues($this->posts['project']);
 
         $this->database = DB::table('Database')->fetch($this->project->value['database_id']);
+
+        $this->user_project_setting = DB::table('UserProjectSetting');
+        $this->user_project_setting->where("user_id = {$this->login_user->value['id']}")
+                                   ->where("project_id = {$this->project->value['id']}")
+                                   ->first();
+        if (!$this->user_project_setting->value) {
+            $posts['user_id'] = $this->login_user->value['id'];
+            $posts['project_id'] = $this->project->value['id'];
+        }
     }
 
     function action_add() {

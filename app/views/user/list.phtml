@@ -13,9 +13,9 @@
       </tr>
     </thead>
 
-<? if (is_array($this->users)): ?>
+<? if (is_array($this->user->values)): ?>
 
-<? foreach ($this->users as $key => $user): ?>
+<? foreach ($this->user->values as $key => $user): ?>
     <tr>
       <td>
         <a class="btn btn-outline-primary" href="<?= url_for('edit', $user['id']) ?>"><?= LABEL_EDIT ?></a>

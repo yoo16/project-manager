@@ -1,13 +1,13 @@
 <? include('_header.phtml') ?>
 <div id="user">
-  <form id="" action="<?= url_for('update', $this->user['id']) ?>" method="post">
+  <form id="" action="<?= url_for('update', $this->user->value['id']) ?>" method="post">
     <? include('_edit.phtml') ?>
 
     <input class="btn btn-outline-primary" type="submit" value="<?= LABEL_UPDATE ?>">
     <a class="btn btn-outline-primary" href="<?= url_for('cancel') ?>"><?= LABEL_CANCEL ?></a>
   </form>
 
-  <form id="" action="<?= url_for('delete', $this->user['id']) ?>" method="post">
+  <form id="" action="<?= url_for('delete', $this->user->value['id']) ?>" method="post">
     <input class="btn btn-outline-danger" type="submit" value="<?= LABEL_DELETE ?>">
   </form>
 </div>
