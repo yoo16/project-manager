@@ -31,6 +31,7 @@ class PwSetting {
         define('APP_DIR', BASE_DIR.'app/');
         define('MODEL_DIR', APP_DIR.'models/');
         define('VIEW_DIR', APP_DIR.'views/');
+        define('SCRIPT_DIR', BASE_DIR.'script/');
         define('CONTROLLER_DIR', APP_DIR.'controllers/');
         define('TEMPLATE_DIR', VIEW_DIR.'templates/');
 

@@ -2,13 +2,26 @@
   <div class="card">
 
     <div class="card-block">
-      <h2>Error</h2>
       <table class="table">
-      <? foreach ($errors as $key => $error): ?>
+      <? foreach ($errors as $key => $error) : ?>
+      <? if ($key == 'params') : ?>
+        <tr>
+          <th><?= $key ?></th>
+          <td>
+            <dl>
+        <? foreach ($error as $param_key => $param) : ?>
+            <dt><?= $key ?></dt>
+            <dd><?= $param ?></dd>
+        <? endforeach ?>
+            </dl>
+          </td>
+        </tr>
+      <? else : ?>
         <tr>
           <th><?= $key ?></th>
           <td><?= $error ?></td>
         </tr>
+      <? endif ?>
       <? endforeach ?>
       </table>
     </div>

@@ -18,6 +18,9 @@ class CsvLite {
     public $buffer = 10240;
     public $errors;
     public $next_id;
+    public $lang = 'ja';
+    public $id_column = 'value';
+    public $label_column = 'label';
 
     static $from_encode = '';
     static $to_encode = '';
@@ -27,6 +30,7 @@ class CsvLite {
      *
      **/
     function __construct($file_path = null, $lang = 'ja') {
+        $this->setLang($lang);
         $file_path = CsvLite::csvPath($file_path, $lang);
         if (file_exists($file_path)) {
             $this->file_path = $file_path;
@@ -53,8 +57,8 @@ class CsvLite {
     /**
      * options
      *
-     * @param String $file_path
-     * @return Array
+     * @param string $file_path
+     * @return array
      **/
     static function options($file_path, $lang = null) {
         $results = array();
@@ -74,12 +78,33 @@ class CsvLite {
     }
 
     /**
+     * setLang
+     *
+     * @param string $lang
+     * @return CsvLite
+     */ 
+    function setLang($lang) {
+        $this->lang = $lang;
+        return $this;
+    }
+
+    /**
+     * key value all
+     * 
+     * @return CsvLite
+     **/
+    function keyValueAll() {
+        $this->values = CsvLite::keyValues($this->file_path, $this->id_column, $this->label_column, $this->lang);
+        return $this;
+    }
+
+    /**
      * key value
      *
-     * @param String $file_path
-     * @param String $id_column
-     * @param String $label_column
-     * @return Array
+     * @param string $file_path
+     * @param string $id_column
+     * @param string $label_column
+     * @return array
      **/
      static function keyValues($file_path, $id_column='value', $label_column='label', $lang = 'ja') {
         $results = array();
@@ -111,10 +136,10 @@ class CsvLite {
     /**
      * 配列からCSV行に変換（カラム用）
      *
-     * @param Array $values
-     * @param Array $columns
-     * @param Array $csv_callbacks
-     * @return Array
+     * @param array $values
+     * @param array $columns
+     * @param array $csv_callbacks
+     * @return array
      **/
     static function arrayToCsvForColumns($values, $columns, $csv_callbacks=null) {
         if (is_array($columns)) {
@@ -145,8 +170,8 @@ class CsvLite {
     /**
      * arrayToCsv
      *
-     * @param Array $values
-     * @return Array
+     * @param array $values
+     * @return array
      **/
     static function arrayToCsv($values) {
         if (is_array($values)) {
@@ -193,7 +218,7 @@ class CsvLite {
     /**
      * create
      *
-     * @param Array $columns
+     * @param array $columns
      * @return
      **/
      function create($columns=null) {
@@ -215,8 +240,8 @@ class CsvLite {
      * fetch
      *
      * @param int $id
-     * @param String $column_key
-     * @return Array
+     * @param string $column_key
+     * @return array
      **/
     function fetch($id) {
         $values = $this->_readCsv();
@@ -234,8 +259,8 @@ class CsvLite {
     /**
      * _list
      *
-     * @param Array $columns
-     * @return Array
+     * @param array $columns
+     * @return array
      **/
     function _list($columns) {
         $values = array();
@@ -268,8 +293,8 @@ class CsvLite {
     /**
      * results
      *
-     * @param Array $conditions
-     * @return Array
+     * @param array $conditions
+     * @return array
      **/
     function results($conditions=null) {
         $values = $this->_readCsv();
@@ -293,9 +318,9 @@ class CsvLite {
     /**
      * _sortOrder
      *
-     * @param Array $values
-     * @param String $sort_key
-     * @return Array
+     * @param array $values
+     * @param string $sort_key
+     * @return array
      **/
     function _sortOrder($values, $sort_key='id') {
         if ($this->sort_key) $sort_key = $this->sort_key;
@@ -315,8 +340,8 @@ class CsvLite {
     /**
      * insert
      *
-     * @param Array $posts
-     * @return Array
+     * @param array $posts
+     * @return array
      **/
     function insert($posts) {
         //TODO new file
@@ -334,8 +359,8 @@ class CsvLite {
     /**
      * take_values
      *
-     * @param Array $posts
-     * @return Array
+     * @param array $posts
+     * @return array
      **/
     function take_values($posts) {
         if ($this->id > 0) {
@@ -358,7 +383,7 @@ class CsvLite {
                         $this->values[$key] = $this->value;
                     }
                 }
-                $this->_writeCsv($this->values);
+                $this->write($this->values);
             }
         }
     }
@@ -376,7 +401,7 @@ class CsvLite {
                     unset($this->values[$key]);
                 }
             }
-            $this->_writeCsv($this->values);
+            $this->write($this->values);
         }
     }
 
@@ -417,12 +442,12 @@ class CsvLite {
     }
 
     /**
-     * _writeCsv
+     * write
      *
-     * @param Array $values
+     * @param array $values
      * @return
      **/
-    function _writeCsv($values) {
+    function write($values) {
         $csv = implode(',', $this->columns)."\n";
 
         if(is_array($values)) {
@@ -454,7 +479,7 @@ class CsvLite {
     /**
      * implodeColumn
      *
-     * @param Array $columns
+     * @param array $columns
      * @return
      **/
     static function implodeColumn($columns) {
@@ -469,7 +494,7 @@ class CsvLite {
     /**
      * csvValue
      *
-     * @param String $value
+     * @param string $value
      * @return
      **/
     static function csvValue($value) {
@@ -479,7 +504,7 @@ class CsvLite {
     /**
      * escapeValue
      *
-     * @param String $value
+     * @param string $value
      * @return
      **/
     static function escapeValue($value) {
@@ -489,11 +514,11 @@ class CsvLite {
     }
 
     /**
-     * output values
+     * output line
      * 
-     * @param  array $values      [description]
-     * @param  string $from_encode [description]
-     * @param  string $to_encode   [description]
+     * @param  array $values
+     * @param  string $from_encode
+     * @param  string $to_encode
      * @return void
      */
     static function outputLine($values, $from_encode = 'SJIS', $to_encode = 'UTF-8') {
@@ -501,6 +526,21 @@ class CsvLite {
         $value.="\r\n";
         $value = mb_convert_encoding($value, $from_encode, $to_encode);
         echo($value);
+    }
+
+    /**
+     * line
+     * 
+     * @param  array $values
+     * @param  string $from_encode
+     * @param  string $to_encode
+     * @return void
+     */
+    static function line($values, $from_encode = 'SJIS', $to_encode = 'UTF-8') {
+        $value = implode(',', $values);
+        $value.="\r\n";
+        $value = mb_convert_encoding($value, $from_encode, $to_encode);
+        return $value;
     }
 
 }

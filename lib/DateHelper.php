@@ -16,6 +16,7 @@ class DateHelper {
      * @return string
      */
     static function datetimeFormat($value, $separate = 's') {
+        if (!$separate) $separate = 's';
         if ($value) {
             $format = self::formatter($separate, true);
             return date($format, strtotime($value));
@@ -30,6 +31,7 @@ class DateHelper {
      * @return string
      */
     static function dateFormat($value, $separate = 's') {
+        if (!$separate) $separate = 's';
         if ($value) {
             $format = self::formatter($separate);
             return date($format, strtotime($value));
@@ -44,10 +46,11 @@ class DateHelper {
      * @return string
      */
     static function formatter($separate, $is_time = false) {
+        if (!$separate) $separate = 's';
         $formatters = self::formatters($separate);
-        $year = $formatters['y'];
-        $month = $formatters['m'];
-        $day = $formatters['d'];
+        $year = $formatters['year'];
+        $month = $formatters['month'];
+        $day = $formatters['day'];
         if ($is_time) {
             $format = "Y{$year}m{$month}d{$day} H:i";
         } else {
@@ -66,7 +69,7 @@ class DateHelper {
         if (!$key) return;
         $formatters['s'] = array ('year' => '/', 'month' => '/', 'day' => '');
         $formatters['h'] = array ('year' => '-', 'month' => '-', 'day' => '');
-        $formatters['j'] = array ('year' => '年', 'month' => '月', 'day' => '日');
+        $formatters['j'] = array ('year' => '?', 'month' => '?', 'day' => '?');
         return $formatters[$key];
     }
 

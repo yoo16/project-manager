@@ -21,8 +21,8 @@ class ApplicationLocalize {
      *
      * @return String
      **/
-    static function load() {
-        $lang = AppSession::get('lang');
+    static function load($lang = null) {
+        if (!$lang) $lang = AppSession::get('lang');
         if (!$lang) $lang = ApplicationLocalize::loadLocale();
         ApplicationLocalize::loadLocalizeFile($lang);
         return $lang;

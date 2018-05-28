@@ -36,6 +36,7 @@ class Controller extends RuntimeException {
         'SendMail',
         'CsvLite',
         'DataMigration',
+        'DateManager',
         'FileManager',
         'FtpLite',
         'FormHelper',
@@ -217,8 +218,10 @@ class Controller extends RuntimeException {
         if ($controller) {
             try {
                 session_start();
-                $controller->lang = ApplicationLocalize::load();
+                $controller->lang = ApplicationLocalize::load($_REQUEST['lang']);
                 $controller->loadDefaultCsvOptions((bool) $_REQUEST['lang']);
+                if ($_REQUEST['lang']) AppSession::set('lang', $_REQUEST['lang']);
+
                 $controller->run($params);
             } catch (Throwable $t) {
                 $errors = Controller::throwErrors($t);
@@ -1032,8 +1035,8 @@ class Controller extends RuntimeException {
      * 
      * @return void
      */
-    function loadDefaultCsvOptions($is_reload = false) {
-        if ($is_reload) {
+    function loadDefaultCsvOptions($lang = null) {
+        if ($lang) {
             AppSession::clearWithKey('app', 'csv_options');
         } else {
             $this->csv_options = AppSession::getWithKey('app', 'csv_options');

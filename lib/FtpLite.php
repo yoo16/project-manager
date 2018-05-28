@@ -165,6 +165,17 @@ class FtpLite
     }
 
     /**
+     * ftp close
+     * 
+     * @return Bool
+     */
+    function ftpClose()
+    {
+        if ($this->connect) ftp_close($this->connect);
+        return $this;
+    }
+
+    /**
      * ftp login
      * 
      * @return Bool
@@ -212,6 +223,40 @@ class FtpLite
         return ftp_mlsd($this->connect, '.');
     }
 
+
+    /**
+     * ftpList
+     *
+     * @param String $path
+     * @return mix
+     */
+    function ftpFileList($path)
+    {
+        return ftp_nlist($this->connect, $path);
+    }
+
+    /**
+     * ftpLatestList
+     *
+     * @param String $path
+     * @return mix
+     */
+    function ftpLatestFileList($path, $search_fix = '.CSV')
+    {
+        $files = $this->ftpFileList($path);
+        foreach ($files as $file) {
+            $file_name = str_replace($path, '', $file);
+            if (strpos($file_name, $search_fix)) {
+                $time = ftp_mdtm($this->connect, $file);
+                if ($time > $latest_time) {
+                    $latest_time = $time;
+                    $latest_file = $file_name;
+                }
+            }
+        }
+        return $latest_file;
+    }
+
     /**
      * ftpLatestList
      *
@@ -245,7 +290,7 @@ class FtpLite
         if (!$this->is_login) return;
         ftp_pasv($this->connect, true);
         $this->is_success_download = ftp_get($this->connect, $file_path, $remote_path, $upload_mode);
-        ftp_close($this->connect);
+        //ftp_close($this->connect);
 
         $this->changeMod($file_path);
         return $this;
