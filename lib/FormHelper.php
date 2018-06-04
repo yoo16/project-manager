@@ -7,8 +7,8 @@
 
 class FormHelper {
     //TODO except columns
-    static $except_columns = ['csv', 'model', 'label', 'where', 'order', 'select_columns', 'value', 'values', 'label_separate', 'unselect', 'unselct_label', 'unselct_value'];
-    static $radio_except_columns = ['csv', 'model', 'label', 'where', 'order', 'select_columns', 'values', 'label_separate', 'unselect', 'unselct_label', 'unselct_value'];
+    static $except_columns = ['csv', 'model', 'label', 'where', 'wheres', 'order', 'select_columns', 'value', 'values', 'label_separate', 'unselect', 'unselct_label', 'unselct_value'];
+    static $radio_except_columns = ['csv', 'model', 'label', 'where', 'wheres', 'order', 'select_columns', 'values', 'label_separate', 'unselect', 'unselct_label', 'unselct_value'];
 
     static $http_tag_columns = ['id', 'class'];
 

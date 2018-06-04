@@ -120,12 +120,25 @@ class DateManager {
         $this->setEndAt($end_at);
 
         if (!$this->from_at) $this->setFromAt($end_at);
-        if (!$this->from_at) $this->setFromAt(date('Y-m-1'));
+        if (!$this->from_at) $this->setFromAt(date('Y-m-01'));
 
         $this->limitDate();
 
         $this->setOneDay($days);
         $this->setNextPrevDatesForFromDate($days, 'days');
+    }
+
+    /**
+     * set interval by from_at
+     *
+     * @param string $from_at
+     * @param string $interval_string
+     */
+    function limitNow() {
+        if (!$this->to_datetime) return;
+        $now = time();
+        if ($this->to_datetime > $now) $this->to_datetime = $now;
+        $this->setToDatetime($this->to_datetime);
     }
 
     /**
@@ -166,7 +179,6 @@ class DateManager {
             $this->setIntervalByFromAt($from_at, $format);
         }
     }
-
 
     /**
      * set interval days from end_at
@@ -233,11 +245,9 @@ class DateManager {
     function setIntervalByFromAt($from_at, $interval_string, $is_limit_now = true) {
         $this->setFromAt($from_at);
         $to_datetime = strtotime($interval_string, $this->from_datetime);
-        if ($is_limit_now) {
-            $now = time();
-            if ($to_datetime > $now) $to_datetime = $now;
-        }
         $this->setToDatetime($to_datetime);
+
+        if ($is_limit_now) $this->limitNow();
     }
 
     /**
@@ -245,9 +255,8 @@ class DateManager {
      *
      * @param String $to_at
      * @param String $interval_string
-     * @param Boolean $is_limit_now
      */
-    function setIntervalByToAt($to_at, $interval_string, $is_limit_now = true) {
+    function setIntervalByToAt($to_at, $interval_string) {
         $this->setToAt($to_at);
         $from_datetime = strtotime($interval_string, $this->to_datetime);
         $this->setFromDatetime($from_datetime);

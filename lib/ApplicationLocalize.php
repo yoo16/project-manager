@@ -54,6 +54,28 @@ class ApplicationLocalize {
     }
 
     /**
+     * load Csv values
+     * 
+     * @return array
+     */
+    static function loadCsvOptions($lang = null, $is_clear = false) {
+        if ($is_clear) AppSession::clearWithKey('app', 'csv_options');
+        $csv_options = AppSession::getWithKey('app', 'csv_options');
+        if ($csv_options) return $csv_options;
+
+        if (!$lang) $lang = AppSession::get('lang');
+        if (!$lang) $lang = 'ja';
+
+        $path = DB_DIR."records/{$lang}/*.csv";
+        foreach (glob($path) as $file_path) {
+            $path_info = pathinfo($file_path);
+            $csv_options[$path_info['filename']] = CsvLite::keyValues($file_path);
+        }
+        AppSession::setWithKey('app', 'csv_options', $csv_options);
+        return $csv_options;
+    }
+
+    /**
      * default locale
      * 
      * @param  String

@@ -6,13 +6,14 @@
  */
 
 class Entity {
-    public $conditions = [];
+    public $is_cast = true;
+    public $id_column = 'id';
     public $columns = [];
+    public $conditions = [];
     public $errors = [];
     public $values = null;
     public $value = null;
     public $id = null;
-    public $id_column = 'id';
     public $id_index = false;
     public $posts = null;
     public $session = null;
@@ -27,12 +28,6 @@ class Entity {
 
     }
 
-    function count()   { trigger_error('count is not implemented', E_USER_ERROR); } 
-    function select()   { trigger_error('select is not implemented', E_USER_ERROR); }
-    function insert()  { trigger_error('insert is not implemented', E_USER_ERROR); }
-    function update()  { trigger_error('update is not implemented', E_USER_ERROR); }
-    function delete()  { trigger_error('delete is not implemented', E_USER_ERROR); }
-
     /**
      * init
      * 
@@ -44,16 +39,31 @@ class Entity {
         $this->values = null;
         $this->value = null;
         $this->id = null;
+        $this->id_index = false;
         $this->posts = null;
         $this->session = null;
+        $this->limit = null;
+        $this->values_index_column = null;
+        $this->values_index_column_type = null;
         $this->defaultValue();
+        return $this;
+    }
+
+    /**
+     * set is cast
+     * 
+     * @param  boolean $column
+     * @return Entity
+     */
+    public function setIsCast($is_cast) {
+        $this->is_cast = $is_cast;
         return $this;
     }
 
     /**
      * set id column
      * 
-     * @param  String $column
+     * @param  string $column
      * @return Entity
      */
     public function setIdColumn($column) {
@@ -64,8 +74,8 @@ class Entity {
     /**
      * set values index column
      * 
-     * @param  String $values_index_column
-     * @param  String $values_index_column_type
+     * @param  string $values_index_column
+     * @param  string $values_index_column_type
      * @return Entity
      */
     public function setValuesIndexColumn($values_index_column, $values_index_column_type = null) {
@@ -77,7 +87,7 @@ class Entity {
     /**
      * requestSession
      * 
-     * @param  String $request_column
+     * @param  string $request_column
      * @return Entity
      */
     public function requestSession($request_column = null) {
@@ -274,8 +284,8 @@ class Entity {
     /**
      * addError
      * 
-     * @param  String $column
-     * @param  String $message
+     * @param  string $column
+     * @param  string $message
      * @return array
      */
     public function addError($column, $message) {
@@ -288,7 +298,7 @@ class Entity {
     /**
      * getErrorMessage
      * 
-     * @param  String $column
+     * @param  string $column
      * @return array
      */
     public function getErrorMessage($column) {
@@ -340,8 +350,8 @@ class Entity {
     /**
      * castBool
      * 
-     * @param  String $value
-     * @return String
+     * @param  string $value
+     * @return string
      */
     private function castString($value) {
         if (is_string($value)) return $value;
@@ -351,7 +361,7 @@ class Entity {
     /**
      * castBool
      * 
-     * @param  String $value
+     * @param  string $value
      * @return bool
      */
     private function castBool($value) {
@@ -362,8 +372,8 @@ class Entity {
     /**
      * castTimestamp
      * 
-     * @param  String $value
-     * @return String
+     * @param  string $value
+     * @return string
      */
     private function castTimestamp($value) {
         if ($value === '') return null;
@@ -421,7 +431,7 @@ class Entity {
      * castArray
      * 
      * @param  object $value
-     * @return String
+     * @return string
      */
     private function castArray($value) {
         if (is_array($value)) return $value;
@@ -433,7 +443,7 @@ class Entity {
      * castJson
      * 
      * @param  object $value
-     * @return String
+     * @return string
      */
     private function castJson($value) {
         return json_decode($value);
@@ -444,7 +454,7 @@ class Entity {
      *
      * TODO: functional
      * 
-     * @param  String $type
+     * @param  string $type
      * @param  object $value
      * @return object
      */
@@ -532,36 +542,33 @@ class Entity {
     /**
      * castRow
      * 
-     * @param  array $rows
+     * @param  array $values
      * @return array
      */
-    function castRow($rows, $relation_values = null) {
-        if (is_array($rows)) {
-            foreach ($rows as $column_name => $value) {
-                if ($column_name === $this->id_column) {
-                    if ($value > 0) {
-                        $id = (int) $value;
-                        $rows[$column_name] = $id;
-                        if ($this->child_relations) {
-                            foreach ($this->child_relations as $relation_name => $relation) {
-                                $rows[$relation_name] = $relation->values[$id];
-                            }
-                        }
+    function castRow($values, $relation_values = null) {
+        if (!is_array($values)) return;
+        foreach ($values as $column_name => $value) {
+            if ($column_name === $this->id_column) {
+                $id = (int) $value;
+                $values[$column_name] = $id;
+                if ($this->child_relations) {
+                    foreach ($this->child_relations as $relation_name => $relation) {
+                        $values[$relation_name] = $relation->values[$id];
                     }
-                } else {
-                    if (isset($this->columns[$column_name])) {
-                        $rows[$column_name] = $this->cast($this->columns[$column_name]['type'], $value);
-                    }
+                }
+            } else {
+                if (isset($this->columns[$column_name])) {
+                    $values[$column_name] = $this->cast($this->columns[$column_name]['type'], $value);
                 }
             }
         }
-        return $rows;
+        return $values;
     }
 
     /**
      * idIndex
      * 
-     * @param  Boolean $is_index
+     * @param  boolean $is_index
      * @return Entity
      */
     function idIndex($is_index = true) {
@@ -630,7 +637,7 @@ class Entity {
     *
     * @param string $column
     * @param array $params
-    * @return String
+    * @return string
     */
     function formInput($column, $params = null) {
         if (!$column) return;
@@ -648,7 +655,7 @@ class Entity {
     *
     * @param string $column
     * @param array $params
-    * @return String
+    * @return string
     */
     function formPassword($column, $params = null) {
         if (!$column) return;
@@ -662,7 +669,7 @@ class Entity {
     *
     * @param string $column
     * @param array $params
-    * @return String
+    * @return string
     */
     function formTextarea($column, $params = null) {
         if (!$column) return;
@@ -676,7 +683,7 @@ class Entity {
     *
     * @param string $column
     * @param array $params
-    * @return String
+    * @return string
     */
     function formHidden($column, $params = null) {
         if (!$column) return;
@@ -690,7 +697,7 @@ class Entity {
     *
     * @param string $column
     * @param array $params
-    * @return String
+    * @return string
     */
     function formSelect($column, $params = null) {
         if (!$column) return;
@@ -706,7 +713,7 @@ class Entity {
      *
      * @param array $params
      * @param string $selected
-     * @return String
+     * @return string
      */
     function formSelectDate($column, $params = null) {
         if (!$column) return;
@@ -721,7 +728,7 @@ class Entity {
     *
     * @param string $column
     * @param array $params
-    * @return String
+    * @return string
     */
     function formRadio($column, $params = null) {
         if (!$column) return;
@@ -738,7 +745,7 @@ class Entity {
     *
     * @param string $column
     * @param array $params
-    * @return String
+    * @return string
     */
     function formCheckbox($column, $params = null) {
         if (!$column) return;
@@ -752,7 +759,7 @@ class Entity {
     * formDelete
     *
     * @param array $params
-    * @return String
+    * @return string
     */
     function formDelete($params = null) {
         $action =  (isset($params['action'])) ? $params['action'] : 'delete';
@@ -777,7 +784,7 @@ class Entity {
     * formDelete
     *
     * @param array $params
-    * @return String
+    * @return string
     */
     function confirmDelete($params = null) {
         if (!$this->value[$this->id_column]) return;
@@ -790,10 +797,10 @@ class Entity {
    /**
     * record value
     *
-    * @param String $column
-    * @param String $csv_name
-    * @param Array $params
-    * @return String
+    * @param string $column
+    * @param string $csv_name
+    * @param array $params
+    * @return string
     */
     function recordValue($csv_name, $column, $params = null) {
         if (!isset($this->value[$column])) return;
@@ -846,7 +853,7 @@ class Entity {
     * binds by relation many
     *
     * @param Entity $relation
-    * @param String $relation_key
+    * @param string $relation_key
     * @return Entity
     */
     function bindMany($relation, $relation_key = null) {
@@ -868,7 +875,7 @@ class Entity {
     * binds by relation many
     *
     * @param Entity $relation
-    * @param String $relation_key
+    * @param string $relation_key
     * @return Entity
     */
     function bindsMany($relation, $relation_key = null) {
@@ -894,7 +901,7 @@ class Entity {
     * find Parent 
     *
     * @param Entity $relation
-    * @param String $relation_key
+    * @param string $relation_key
     * @return Entity
     */
     function findParent($relation, $relation_key = null) {
@@ -915,7 +922,7 @@ class Entity {
      * @param string $key
      * @return Entity
      */
-    function valueFrom($key) {
+    function valueFromValues($key) {
         if (!$this->values) return $this;
         $this->value = $this->values[$key];
         return $this;
@@ -941,7 +948,7 @@ class Entity {
      * values by column
      * 
      * @param  Entity $relation
-     * @param  String $column
+     * @param  string $column
      * @return Entity
      */
     function findValueByRelation($relation, $column = null) {
@@ -955,7 +962,7 @@ class Entity {
     /**
      * column_name is maybe foreign key
      *
-     * @param  String $column_name
+     * @param  string $column_name
      * @return int
      */
     static function isForeignColumnName($column_name) {
@@ -966,8 +973,8 @@ class Entity {
     /**
      * table_name is maybe by foreign column_name
      *
-     * @param  String $column_name
-     * @return String
+     * @param  string $column_name
+     * @return string
      */
     static function foreignTableByColumnName($column_name) {
         if ($pos = strpos($column_name, '_id')) {
@@ -980,8 +987,8 @@ class Entity {
     /**
      * values by column
      * 
-     * @param  String $column [description]
-     * @return Array
+     * @param  string $column [description]
+     * @return array
      */
     function valuesByColumn($column = 'id') {
         if ($this->values) {
@@ -992,9 +999,9 @@ class Entity {
     /**
      * convert SQL copy array
      * 
-     * @param  Array $rows
-     * @param  Array $columns
-     * @return Array
+     * @param  array $rows
+     * @param  array $columns
+     * @return array
      */
     function convertCopyRows($rows, $columns) {
         foreach ($rows as $row) {

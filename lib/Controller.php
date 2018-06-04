@@ -93,8 +93,8 @@ class Controller extends RuntimeException {
     /**
      * load
      *
-     * @param  String $name
-     * @return Class
+     * @param  string $name
+     * @return Controller
      */
     static function load($name) {
         $controller_path = Controller::controllerPath($name);
@@ -112,8 +112,8 @@ class Controller extends RuntimeException {
     /**
      * className
      *
-     * @param  String $name
-     * @return String
+     * @param  string $name
+     * @return string
      */
     static function className($name) {
         $controller = str_replace(" ", "", ucwords(str_replace("_", " ", $name))) . "Controller";
@@ -123,8 +123,8 @@ class Controller extends RuntimeException {
     /**
      * className
      *
-     * @param  String $name
-     * @return String
+     * @param  string $name
+     * @return string
      */
     static function controllerPath($name) {
         $controller = Controller::className($name);
@@ -218,9 +218,9 @@ class Controller extends RuntimeException {
         if ($controller) {
             try {
                 session_start();
+                if ($_REQUEST['lang'] && $_REQUEST['is_change_lang']) AppSession::set('lang', $_REQUEST['lang']);
                 $controller->lang = ApplicationLocalize::load($_REQUEST['lang']);
-                $controller->loadDefaultCsvOptions((bool) $_REQUEST['lang']);
-                if ($_REQUEST['lang']) AppSession::set('lang', $_REQUEST['lang']);
+                $controller->loadDefaultCsvOptions($_REQUEST['lang'], $_REQUEST['is_change_lang']);
 
                 $controller->run($params);
             } catch (Throwable $t) {
@@ -641,6 +641,24 @@ class Controller extends RuntimeException {
     }
 
     /**
+     * link tag for action id
+     *
+     * @param  string $controller
+     * @param  string $action
+     * @param  string $id
+     * @param  array $params
+     * @return string
+     */
+    function linkActionTag($action = null, $id = null, $params = null) {
+        $controller = $this->pw_controller;
+        if ($params['is_use_selected']) $params['class'].= FormHelper::linkActive($controller, $this->name);
+        $params['href'] = $this->urlFor($controller, $action, $id, $params['http_params']);
+
+        $tag = TagHelper::aTag($params);
+        return $tag;
+    }
+
+    /**
      * link tag for controller
      *
      * @param  string $controller
@@ -1021,34 +1039,12 @@ class Controller extends RuntimeException {
     }
 
     /**
-     * reload Csv values
-     * 
-     * @return void
-     */ 
-    function reloadDefaultCsvOptions() {
-        AppSession::clearWithKey('app', 'csv_options');
-        $this->loadDefaultCsvOptions();
-    }
-
-    /**
      * load Csv values
      * 
      * @return void
      */
     function loadDefaultCsvOptions($lang = null) {
-        if ($lang) {
-            AppSession::clearWithKey('app', 'csv_options');
-        } else {
-            $this->csv_options = AppSession::getWithKey('app', 'csv_options');
-        }
-        if ($this->csv_options) return;
-
-        $path = DB_DIR."records/{$this->lang}/*.csv";
-        foreach (glob($path) as $file_path) {
-            $path_info = pathinfo($file_path);
-            $this->csv_options[$path_info['filename']] = CsvLite::keyValues($file_path);
-        }
-        AppSession::setWithKey('app', 'csv_options', $this->csv_options);
+        $this->csv_options = ApplicationLocalize::loadCsvOptions($lang);
     }
 
     /**
@@ -1091,9 +1087,9 @@ class Controller extends RuntimeException {
    /**
     * change boolean
     *
-    * @param String $model_name
-    * @param String $column
-    * @param String $id_column
+    * @param string $model_name
+    * @param string $column
+    * @param string $id_column
     * @return void
     */
     function changeBoolean($model_name, $column, $id_column = 'id') {
@@ -1105,7 +1101,7 @@ class Controller extends RuntimeException {
    /**
     * update sort order
     *
-    * @param String $model_name
+    * @param string $model_name
     * @return void
     */
     function updateSort($model_name) {
@@ -1122,9 +1118,9 @@ class Controller extends RuntimeException {
     /**
      * record value
      *
-     * @param  String $csv_name
-     * @param  String $key
-     * @return String
+     * @param  string $csv_name
+     * @param  string $key
+     * @return string
      */
     function recordValue($csv_name, $key) {
         $value = $this->csv_options[$csv_name][$key];

@@ -124,7 +124,7 @@ class FileManager {
     }
 
     /**
-     * ログファイル
+     * log files
      *
      * @param array
      **/
@@ -138,12 +138,12 @@ class FileManager {
     }
 
     /**
-     * ログ書き出し
+     * output log file
      *
      * @param string $content
      * @param string $file_name
      **/
-    static function log($content, $file_name=null) {
+    static function log($content, $file_name = null) {
         if (defined('LOG_DIR')) {
             $date = date('Ymd');
             if ($file_name) {
@@ -401,7 +401,6 @@ class FileManager {
      */
     static function removeFile($path, $is_file_delete=false) {
         if (file_exists($path)) {
-            dump($path);
             if (defined('PHP_FUNCTION_MODE') && PHP_FUNCTION_MODE) {
                 if (is_dir($path)) {
                     if ($is_file_delete) {
@@ -435,20 +434,14 @@ class FileManager {
      */
     static function moveFile($from_path, $to_path) {
         if (file_exists($from_path)) {
-            dump($from_path);
-            dump($to_path);
             if (defined('PHP_FUNCTION_MODE') && PHP_FUNCTION_MODE) {
                 $is_success = rename($from_path, $to_path);
-                dump($is_success);
                 $is_success = chmod($to_path, 0755);
-                dump($is_success);
             } else {
                 $cmd = "mv {$from_path} {$to_path}";
                 exec($cmd);
-                dump($cmd);
                 $cmd = "chmod 777 {$to_path}";
                 exec($cmd);
-                dump($cmd);
                 return true;
             }
         }
@@ -602,7 +595,7 @@ class FileManager {
      * @return void
      */
     static function outputDownloadHeader($file_name) {
-        if (preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT']) || strpos($_SERVER['HTTP_USER_AGENT'], 'Trident')) {
+        if (FileManager::isIE()) {
             $file_name = mb_convert_encoding($file_name, 'SJIS', 'UTF-8');
         }
         header("Content-type: application/octet-stream; name=\"{$file_name}\"");
@@ -628,8 +621,8 @@ class FileManager {
      * is IE
      *
      **/
-    static function isIE($server) {
-        if (preg_match('/MSIE/', $server['HTTP_USER_AGENT']) || strpos($server['HTTP_USER_AGENT'], 'Trident')) {
+    static function isIE() {
+        if (preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT']) || strpos($_SERVER['HTTP_USER_AGENT'], 'Trident')) {
             return true;
         } else {
             return false;
@@ -874,6 +867,9 @@ class FileManager {
         if (file_exists($path)) {
             if ($params) {
                 foreach ($params as $key => $param) {
+                    if (is_array($param)) {
+                        $param = json_encode($param);
+                    }
                     $params[$key] = "'{$param}'";
                 }
                 $param = implode(' ', $params);
