@@ -11,11 +11,11 @@ require_once 'PgsqlEntity.php';
 
 class _Admin extends PgsqlEntity {
 
-    var $id_column = 'id';
-    var $name = 'admins';
-    var $entity_name = 'admin';
+    public $id_column = 'id';
+    public $name = 'admins';
+    public $entity_name = 'admin';
 
-    var $columns = array(
+    public $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'email' => array('type' => 'varchar', 'length' => 256),
         'first_name' => array('type' => 'varchar', 'length' => 64),
@@ -28,9 +28,9 @@ class _Admin extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
-    var $primary_key = 'admins_pkey';
+    public $primary_key = 'admins_pkey';
 
-    var $unique = array(
+    public $unique = array(
             'admins_email_key' => [
                         'email',
                         ],
@@ -53,23 +53,6 @@ class _Admin extends PgsqlEntity {
     */
     function validate() {
         parent::validate();
-    }
-
-   /**
-    * update sort_order
-    *
-    * @param array $sort_orders
-    * @return void
-    */
-    function updateSortOrder($sort_orders) {
-        if (is_array($sort_orders)) {
-            foreach ($sort_orders as $sort_order => $id) {
-                if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = $sort_order;
-                    $this->update($posts, $id);
-                }
-            }
-        }
     }
 
 }

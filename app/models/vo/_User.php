@@ -11,32 +11,29 @@ require_once 'PgsqlEntity.php';
 
 class _User extends PgsqlEntity {
 
-    var $id_column = 'id';
-    var $name = 'users';
-    var $entity_name = 'user';
+    public $id_column = 'id';
+    public $name = 'users';
+    public $entity_name = 'user';
 
-    var $columns = array(
+    public $columns = array(
         'birthday_at' => array('type' => 'timestamp'),
         'created_at' => array('type' => 'timestamp'),
-        'default_project_path' => array('type' => 'varchar', 'length' => 256),
         'email' => array('type' => 'varchar', 'length' => 256),
         'first_name' => array('type' => 'varchar', 'length' => 64),
         'first_name_kana' => array('type' => 'varchar', 'length' => 64),
-        'gender' => array('type' => 'varchar', 'length' => 8),
         'last_name' => array('type' => 'varchar', 'length' => 64),
         'last_name_kana' => array('type' => 'varchar', 'length' => 64),
-        'login_name' => array('type' => 'varchar', 'length' => 256),
+        'login_name' => array('type' => 'varchar', 'length' => 64),
         'memo' => array('type' => 'text'),
         'password' => array('type' => 'varchar', 'length' => 256),
         'sort_order' => array('type' => 'int2'),
-        'tel' => array('type' => 'float8'),
         'tmp_password' => array('type' => 'varchar', 'length' => 256),
         'updated_at' => array('type' => 'timestamp'),
     );
 
-    var $primary_key = 'users_pkey';
+    public $primary_key = 'users_pkey';
 
-    var $unique = array(
+    public $unique = array(
             'users_email_key' => [
                         'email',
                         ],
@@ -56,23 +53,6 @@ class _User extends PgsqlEntity {
     */
     function validate() {
         parent::validate();
-    }
-
-   /**
-    * update sort_order
-    *
-    * @param array $sort_orders
-    * @return void
-    */
-    function updateSortOrder($sort_orders) {
-        if (is_array($sort_orders)) {
-            foreach ($sort_orders as $sort_order => $id) {
-                if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = $sort_order;
-                    $this->update($posts, $id);
-                }
-            }
-        }
     }
 
 }

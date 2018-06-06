@@ -11,11 +11,11 @@ require_once 'PgsqlEntity.php';
 
 class _Lang extends PgsqlEntity {
 
-    var $id_column = 'id';
-    var $name = 'langs';
-    var $entity_name = 'lang';
+    public $id_column = 'id';
+    public $name = 'langs';
+    public $entity_name = 'lang';
 
-    var $columns = array(
+    public $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'lang' => array('type' => 'varchar', 'length' => 8, 'is_required' => true),
         'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
@@ -23,9 +23,9 @@ class _Lang extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
-    var $primary_key = 'langs_pkey';
+    public $primary_key = 'langs_pkey';
 
-    var $unique = array(
+    public $unique = array(
             'langs_lang_key' => [
                         'lang',
                         ],
@@ -48,23 +48,6 @@ class _Lang extends PgsqlEntity {
     */
     function validate() {
         parent::validate();
-    }
-
-   /**
-    * update sort_order
-    *
-    * @param array $sort_orders
-    * @return void
-    */
-    function updateSortOrder($sort_orders) {
-        if (is_array($sort_orders)) {
-            foreach ($sort_orders as $sort_order => $id) {
-                if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = $sort_order;
-                    $this->update($posts, $id);
-                }
-            }
-        }
     }
 
 }

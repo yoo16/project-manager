@@ -11,11 +11,11 @@ require_once 'PgsqlEntity.php';
 
 class _PageFilter extends PgsqlEntity {
 
-    var $id_column = 'id';
-    var $name = 'page_filters';
-    var $entity_name = 'page_filter';
+    public $id_column = 'id';
+    public $name = 'page_filters';
+    public $entity_name = 'page_filter';
 
-    var $columns = array(
+    public $columns = array(
         'attribute_id' => array('type' => 'int4', 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
         'equal_sign' => array('type' => 'varchar', 'length' => 8),
@@ -25,8 +25,8 @@ class _PageFilter extends PgsqlEntity {
         'value' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
     );
 
-    var $primary_key = 'page_filters_pkey';
-    var $foreign = array(
+    public $primary_key = 'page_filters_pkey';
+    public $foreign = array(
             'page_filters_attribute_id_fkey' => [
                                   'column' => 'attribute_id',
                                   'class_name' => 'Attribute',
@@ -56,23 +56,6 @@ class _PageFilter extends PgsqlEntity {
     */
     function validate() {
         parent::validate();
-    }
-
-   /**
-    * update sort_order
-    *
-    * @param array $sort_orders
-    * @return void
-    */
-    function updateSortOrder($sort_orders) {
-        if (is_array($sort_orders)) {
-            foreach ($sort_orders as $sort_order => $id) {
-                if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = $sort_order;
-                    $this->update($posts, $id);
-                }
-            }
-        }
     }
 
 }

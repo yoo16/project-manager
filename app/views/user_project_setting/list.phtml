@@ -10,15 +10,19 @@
   <thead class="thead-default">
     <tr>
       <th>&nbsp;</th>
-      <th><?= LABEL_USERS_LOGIN_NAME ?></th>
+      <th><?= LABEL_USERS ?></th>
+            <th><?= LABEL_USER_PROJECT_SETTINGS_PROJECT_PATH ?></th>
+            <th><?= LABEL_USER_PROJECT_SETTINGS_GROUP_NAME ?></th>
           </tr>
   </thead>
 
-  <? if ($this->user->values): ?>
-  <? foreach ($this->user->values as $values): ?>
+  <? if ($this->user_project_setting->values): ?>
+  <? foreach ($this->user_project_setting->values as $values): ?>
   <tr id="<?= $values['id'] ?>">
     <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
-    <td><?= $values['login_name'] ?></td>
+    <td><?= $this->user->values[$values['user_id']][''] ?></td>
+    <td><?= $values['project_path'] ?></td>
+    <td><?= $values['group_name'] ?></td>
   </tr>
   <? endforeach ?>
   <? endif ?>

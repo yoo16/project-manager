@@ -11,11 +11,11 @@ require_once 'PgsqlEntity.php';
 
 class _Database extends PgsqlEntity {
 
-    var $id_column = 'id';
-    var $name = 'databases';
-    var $entity_name = 'database';
+    public $id_column = 'id';
+    public $name = 'databases';
+    public $entity_name = 'database';
 
-    var $columns = array(
+    public $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'current_version' => array('type' => 'int4'),
         'hostname' => array('type' => 'varchar', 'is_required' => true),
@@ -27,9 +27,9 @@ class _Database extends PgsqlEntity {
         'user_name' => array('type' => 'varchar', 'is_required' => true),
     );
 
-    var $primary_key = 'databases_pkey';
+    public $primary_key = 'databases_pkey';
 
-    var $unique = array(
+    public $unique = array(
             'databases_name_hostname_key' => [
                         'name',
                         'hostname',
@@ -50,23 +50,6 @@ class _Database extends PgsqlEntity {
     */
     function validate() {
         parent::validate();
-    }
-
-   /**
-    * update sort_order
-    *
-    * @param array $sort_orders
-    * @return void
-    */
-    function updateSortOrder($sort_orders) {
-        if (is_array($sort_orders)) {
-            foreach ($sort_orders as $sort_order => $id) {
-                if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = $sort_order;
-                    $this->update($posts, $id);
-                }
-            }
-        }
     }
 
 }

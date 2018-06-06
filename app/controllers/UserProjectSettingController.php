@@ -1,15 +1,15 @@
 <?php
 /**
- * UserController 
+ * UserProjectSettingController 
  *
- * @create  2018-06-06 18:36:34 
+ * @create  2018-06-06 19:00:32 
  */
 
 require_once 'AppController.php';
 
-class UserController extends AppController {
+class UserProjectSettingController extends AppController {
 
-    public $name = 'user';
+    public $name = 'user_project_setting';
 
    /**
     * before_action
@@ -51,7 +51,7 @@ class UserController extends AppController {
     * @return void
     */
     function action_list() {
-        $this->user = DB::table('User')->all();
+        $this->user_project_setting = DB::table('UserProjectSetting')->all();
 
                 
     }
@@ -63,7 +63,7 @@ class UserController extends AppController {
     * @return void
     */
     function action_new() {
-        $this->user = DB::table('User')->init()->takeValues($this->posts['user']);
+        $this->user_project_setting = DB::table('UserProjectSetting')->init()->takeValues($this->posts['user_project_setting']);
     }
 
    /**
@@ -75,9 +75,9 @@ class UserController extends AppController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->user = DB::table('User')
+        $this->user_project_setting = DB::table('UserProjectSetting')
                     ->fetch($this->params['id'])
-                    ->takeValues($this->posts['user']);
+                    ->takeValues($this->posts['user_project_setting']);
     }
 
    /**
@@ -88,11 +88,11 @@ class UserController extends AppController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["user"];
-        $user = DB::table('User')->insert($posts);
+        $posts = $this->posts["user_project_setting"];
+        $user_project_setting = DB::table('UserProjectSetting')->insert($posts);
 
-        if ($user->errors) {
-            $errors['users'] = $user->errors;
+        if ($user_project_setting->errors) {
+            $errors['user_project_settings'] = $user_project_setting->errors;
             $this->setErrors($errors);
             $this->redirect_to('new');
             exit;
@@ -109,11 +109,11 @@ class UserController extends AppController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["user"];
-        $user = DB::table('User')->update($posts, $this->params['id']);
+        $posts = $this->posts["user_project_setting"];
+        $user_project_setting = DB::table('UserProjectSetting')->update($posts, $this->params['id']);
 
-        if ($user->errors) {
-            $errors['users'] = $user->errors;
+        if ($user_project_setting->errors) {
+            $errors['user_project_settings'] = $user_project_setting->errors;
             $this->setErrors($errors);
         }
         $this->redirect_to('edit', $this->params['id']);
@@ -127,7 +127,7 @@ class UserController extends AppController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('User')->delete($this->params['id']);
+        DB::table('UserProjectSetting')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 
@@ -138,7 +138,7 @@ class UserController extends AppController {
     * @return void
     */
     function action_update_sort() {
-        $this->updatSort('User');
+        $this->updatSort('UserProjectSetting');
         exit;
     }
 

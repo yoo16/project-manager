@@ -11,11 +11,11 @@ require_once 'PgsqlEntity.php';
 
 class _ApiParam extends PgsqlEntity {
 
-    var $id_column = 'id';
-    var $name = 'api_params';
-    var $entity_name = 'api_param';
+    public $id_column = 'id';
+    public $name = 'api_params';
+    public $entity_name = 'api_param';
 
-    var $columns = array(
+    public $columns = array(
         'api_id' => array('type' => 'int4', 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
         'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
@@ -25,8 +25,8 @@ class _ApiParam extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
-    var $primary_key = 'api_params_pkey';
-    var $foreign = array(
+    public $primary_key = 'api_params_pkey';
+    public $foreign = array(
             'api_params_api_id_fkey' => [
                                   'column' => 'api_id',
                                   'class_name' => 'Api',
@@ -50,23 +50,6 @@ class _ApiParam extends PgsqlEntity {
     */
     function validate() {
         parent::validate();
-    }
-
-   /**
-    * update sort_order
-    *
-    * @param array $sort_orders
-    * @return void
-    */
-    function updateSortOrder($sort_orders) {
-        if (is_array($sort_orders)) {
-            foreach ($sort_orders as $sort_order => $id) {
-                if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = $sort_order;
-                    $this->update($posts, $id);
-                }
-            }
-        }
     }
 
 }

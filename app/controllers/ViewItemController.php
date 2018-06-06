@@ -254,26 +254,13 @@ class ViewItemController extends ProjectController {
     }
 
    /**
-    * sort order
-    *
-    * @param
-    * @return void
-    */
-    function action_sort_order() {
-        $this->view_item = DB::table('ViewItem')->all();
-    }
-
-   /**
     * update sort order
     *
     * @param
     * @return void
     */
     function action_update_sort() {
-        if (!isPost()) exit;
-
-        $view_item = DB::table('ViewItem')->updateSortOrder($_REQUEST['sort_order']);
-        $this->redirect_to('list');
+        $this->updateSort('ViewItem');
     }
 
 

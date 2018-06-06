@@ -3,10 +3,7 @@
   <div class="pt-3">
     <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
 
-    <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table">
-      <?= LABEL_SORT_ORDER ?>
-    </a>
-    <a href="#" class="btn btn-primary update-sortable" controller="view_item">更新</a>
+    <? include('views/components/sortable.phtml') ?>
 
     <?= $this->linkControllerTag('view', ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
     <a class="btn btn-primary" href="<?= url_for('add_all') ?>">
@@ -19,7 +16,7 @@
     </a>
   </div>
 
-  <table id="list-table" class="table sortable">
+  <table id="sortable-table" class="table table-list">
     <thead class="thead-default">
       <tr>
         <th>&nbsp;</th>

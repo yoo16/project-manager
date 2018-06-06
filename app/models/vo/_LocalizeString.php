@@ -11,11 +11,11 @@ require_once 'PgsqlEntity.php';
 
 class _LocalizeString extends PgsqlEntity {
 
-    var $id_column = 'id';
-    var $name = 'localize_strings';
-    var $entity_name = 'localize_string';
+    public $id_column = 'id';
+    public $name = 'localize_strings';
+    public $entity_name = 'localize_string';
 
-    var $columns = array(
+    public $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'label' => array('type' => 'text'),
         'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
@@ -24,8 +24,8 @@ class _LocalizeString extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
-    var $primary_key = 'localize_strings_pkey';
-    var $foreign = array(
+    public $primary_key = 'localize_strings_pkey';
+    public $foreign = array(
             'localize_strings_project_id_id_fkey' => [
                                   'column' => 'project_id',
                                   'class_name' => 'Project',
@@ -34,7 +34,7 @@ class _LocalizeString extends PgsqlEntity {
                                   ],
     );
 
-    var $unique = array(
+    public $unique = array(
             'localize_strings_name_project_id_key' => [
                         'project_id',
                         'name',
@@ -55,23 +55,6 @@ class _LocalizeString extends PgsqlEntity {
     */
     function validate() {
         parent::validate();
-    }
-
-   /**
-    * update sort_order
-    *
-    * @param array $sort_orders
-    * @return void
-    */
-    function updateSortOrder($sort_orders) {
-        if (is_array($sort_orders)) {
-            foreach ($sort_orders as $sort_order => $id) {
-                if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = $sort_order;
-                    $this->update($posts, $id);
-                }
-            }
-        }
     }
 
 }

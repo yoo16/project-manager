@@ -11,11 +11,11 @@ require_once 'PgsqlEntity.php';
 
 class _ViewItem extends PgsqlEntity {
 
-    var $id_column = 'id';
-    var $name = 'view_items';
-    var $entity_name = 'view_item';
+    public $id_column = 'id';
+    public $name = 'view_items';
+    public $entity_name = 'view_item';
 
-    var $columns = array(
+    public $columns = array(
         'attribute_id' => array('type' => 'int4'),
         'created_at' => array('type' => 'timestamp'),
         'css_class' => array('type' => 'bool'),
@@ -39,12 +39,18 @@ class _ViewItem extends PgsqlEntity {
         'where_string' => array('type' => 'text'),
     );
 
-    var $primary_key = 'view_items_pkey';
-    var $foreign = array(
+    public $primary_key = 'view_items_pkey';
+    public $foreign = array(
             'view_items_page_id_fkey' => [
                                   'column' => 'page_id',
                                   'class_name' => 'Page',
                                   'foreign_table' => 'pages',
+                                  'foreign_column' => 'id',
+                                  ],
+            'view_items_localize_string_id_fkey' => [
+                                  'column' => 'localize_string_id',
+                                  'class_name' => 'LocalizeString',
+                                  'foreign_table' => 'localize_strings',
                                   'foreign_column' => 'id',
                                   ],
             'view_items_where_attribute_id_fkey' => [
@@ -77,12 +83,6 @@ class _ViewItem extends PgsqlEntity {
                                   'foreign_table' => 'views',
                                   'foreign_column' => 'id',
                                   ],
-            'view_items_localize_string_id_fkey' => [
-                                  'column' => 'localize_string_id',
-                                  'class_name' => 'LocalizeString',
-                                  'foreign_table' => 'localize_strings',
-                                  'foreign_column' => 'id',
-                                  ],
     );
 
 
@@ -100,23 +100,6 @@ class _ViewItem extends PgsqlEntity {
     */
     function validate() {
         parent::validate();
-    }
-
-   /**
-    * update sort_order
-    *
-    * @param array $sort_orders
-    * @return void
-    */
-    function updateSortOrder($sort_orders) {
-        if (is_array($sort_orders)) {
-            foreach ($sort_orders as $sort_order => $id) {
-                if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = $sort_order;
-                    $this->update($posts, $id);
-                }
-            }
-        }
     }
 
 }

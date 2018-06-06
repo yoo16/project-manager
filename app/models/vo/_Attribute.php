@@ -11,11 +11,11 @@ require_once 'PgsqlEntity.php';
 
 class _Attribute extends PgsqlEntity {
 
-    var $id_column = 'id';
-    var $name = 'attributes';
-    var $entity_name = 'attribute';
+    public $id_column = 'id';
+    public $name = 'attributes';
+    public $entity_name = 'attribute';
 
-    var $columns = array(
+    public $columns = array(
         'attnum' => array('type' => 'int4'),
         'attrelid' => array('type' => 'int4'),
         'created_at' => array('type' => 'timestamp'),
@@ -41,8 +41,8 @@ class _Attribute extends PgsqlEntity {
         'updated_at' => array('type' => 'timestamp'),
     );
 
-    var $primary_key = 'attributes_pkey';
-    var $foreign = array(
+    public $primary_key = 'attributes_pkey';
+    public $foreign = array(
             'attributes_model_id_fkey' => [
                                   'column' => 'model_id',
                                   'class_name' => 'Model',
@@ -51,7 +51,7 @@ class _Attribute extends PgsqlEntity {
                                   ],
     );
 
-    var $unique = array(
+    public $unique = array(
             'attributes_name_model_id_key' => [
                         'name',
                         'model_id',
@@ -72,23 +72,6 @@ class _Attribute extends PgsqlEntity {
     */
     function validate() {
         parent::validate();
-    }
-
-   /**
-    * update sort_order
-    *
-    * @param array $sort_orders
-    * @return void
-    */
-    function updateSortOrder($sort_orders) {
-        if (is_array($sort_orders)) {
-            foreach ($sort_orders as $sort_order => $id) {
-                if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = $sort_order;
-                    $this->update($posts, $id);
-                }
-            }
-        }
     }
 
 }

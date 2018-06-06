@@ -11,11 +11,11 @@ require_once 'PgsqlEntity.php';
 
 class _UserProjectSetting extends PgsqlEntity {
 
-    var $id_column = 'id';
-    var $name = 'user_project_settings';
-    var $entity_name = 'user_project_setting';
+    public $id_column = 'id';
+    public $name = 'user_project_settings';
+    public $entity_name = 'user_project_setting';
 
-    var $columns = array(
+    public $columns = array(
         'created_at' => array('type' => 'timestamp'),
         'group_name' => array('type' => 'varchar', 'length' => 256),
         'project_id' => array('type' => 'int4', 'is_required' => true),
@@ -26,7 +26,7 @@ class _UserProjectSetting extends PgsqlEntity {
         'user_name' => array('type' => 'varchar', 'length' => 256),
     );
 
-    var $primary_key = 'user_project_settings_pkey';
+    public $primary_key = 'user_project_settings_pkey';
 
 
 
@@ -43,23 +43,6 @@ class _UserProjectSetting extends PgsqlEntity {
     */
     function validate() {
         parent::validate();
-    }
-
-   /**
-    * update sort_order
-    *
-    * @param array $sort_orders
-    * @return void
-    */
-    function updateSortOrder($sort_orders) {
-        if (is_array($sort_orders)) {
-            foreach ($sort_orders as $sort_order => $id) {
-                if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = $sort_order;
-                    $this->update($posts, $id);
-                }
-            }
-        }
     }
 
 }
