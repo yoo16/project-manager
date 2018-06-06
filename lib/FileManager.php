@@ -879,4 +879,19 @@ class FileManager {
             exec($cmd);
         }
     }
+
+    /**
+     * file count
+     *
+     * @param string $dir_path
+     * @return interger
+     */
+    static function fileCount($dir_path)
+    {
+        if (is_dir($dir_path)) {
+            $path = "{$dir_path}*";
+            $iterator = new GlobIterator($path);
+            if ($iterator) return $iterator->count();
+        }
+    }
 }

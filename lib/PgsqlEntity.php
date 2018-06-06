@@ -846,6 +846,7 @@ class PgsqlEntity extends Entity
         }
     }
 
+    //TODO  pg_fetch_result(): Unable to jump to row 0 on PostgreSQL result index
     /**
      * fetch result
      * 
@@ -875,6 +876,12 @@ class PgsqlEntity extends Entity
         $this->table_name = "{$this->name}{$separater}{$key}";
     }
 
+    /**
+     * chunk
+     *
+     * @param integer $limit
+     * @return void
+     */
     public function chunk($limit)
     {
         $count = $this->count();
@@ -1721,19 +1728,6 @@ class PgsqlEntity extends Entity
     }
 
     /**
-     * wheres
-     * 
-     * @param  array $conditions
-     * @return PgsqlEntity
-     */
-    public function wheres($conditions)
-    {
-        if (!$conditions) return $this;
-        foreach ($conditions as $condition) $this->where($condition);
-        return $this;
-    }
-
-    /**
      * where
      * 
      * @param  string $condition
@@ -1807,6 +1801,19 @@ class PgsqlEntity extends Entity
     }
 
     /**
+     * wheres
+     * 
+     * @param  array $conditions
+     * @return PgsqlEntity
+     */
+    public function wheres($conditions)
+    {
+        if (!$conditions) return $this;
+        foreach ($conditions as $condition) $this->where($condition);
+        return $this;
+    }
+
+    /**
      * filter
      * 
      * @param  string $condition
@@ -1823,6 +1830,64 @@ class PgsqlEntity extends Entity
         }
         $this->conditions = array_unique($this->conditions);
         return $this;
+    }
+
+    /**
+    * days condition
+    * 
+    * @param array $hours
+    * @param string $column
+    * @return PgsqlEntity
+    */
+    function daysCondition($days, $column) {
+        if (!$days) return $this;
+        foreach ($days as $day) {
+            $conditions[] = $this->dayCondition($day, $column);
+        }
+        $condition = $this->sqlOrConditions($conditions);
+        $this->where($condition);
+        return $this;
+    }
+
+    /**
+    * day condition
+    * 
+    * @param int $day
+    * @param string $column
+    * @return string
+    */
+    function dayCondition($day, $column) {
+        $condition = "date_part('day', $column) = {$day}";
+        return $condition;
+    }
+
+    /**
+    * hour
+    * 
+    * @param array $hours
+    * @param string $column
+    * @return PgsqlEntity
+    */
+    function hoursCondition($hours, $column) {
+        if (!$hours) return $this;
+        foreach ($hours as $hour) {
+            $conditions[] = $this->hourCondition($hour, $column);
+        }
+        $condition = $this->sqlOrConditions($conditions);
+        $this->where($condition);
+        return $this;
+    }
+
+    /**
+    * hour
+    * 
+    * @param int $hour
+    * @param string $column
+    * @return string
+    */
+    function hourCondition($hour, $column) {
+        $condition = "date_part('hour', $column) = {$hour}";
+        return $condition;
     }
 
     /**
@@ -2680,6 +2745,23 @@ class PgsqlEntity extends Entity
             $condition = $conditions;
         } elseif (is_array($conditions)) {
             $condition = implode(' AND ', $conditions);
+        }
+        return $condition;
+    }
+
+    /**
+     * sql condition
+     * 
+     * @param array $conditions
+     * @return string
+     **/
+    function sqlOrConditions($conditions)
+    {
+        if (is_null($conditions)) return;
+        if (is_string($conditions)) {
+            $condition = $conditions;
+        } elseif (is_array($conditions)) {
+            $condition = implode(' OR ', $conditions);
         }
         return $condition;
     }

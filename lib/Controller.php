@@ -254,7 +254,11 @@ class Controller extends RuntimeException {
     function run($params = array()) {
         $GLOBALS['controller'] = $this;
 
-        $this->params = (empty($params)) ? $_GET : $params;
+        if ($_GET) $this->params = $_GET;
+        if (isset($params['controller'])) $this->params['controller'] = $params['controller'];
+        if (isset($params['action'])) $this->params['action'] = $params['action'];
+        if (isset($params['id'])) $this->params['id'] = $params['id'];
+
         $this->loadPosts();
         $this->errors = $this->getErrors();
         $this->flushErrors();
@@ -1127,4 +1131,15 @@ class Controller extends RuntimeException {
         return $value;
     }
 
+    /**
+     * render json
+     *
+     * @param $array $values
+     * @return void
+     */
+    function renderJson($values) {
+        $json = json_encode($values);
+        echo ($json);
+        exit;
+    }
 }
