@@ -1,36 +1,35 @@
-
-
-<div class="form-group row">
-  <label class="form-control-label col-2" for="model_id"><?= LABEL_MODELS ?></label>
-    <?= $this->page_model->formSelect('model_id', [
+<table class="table table-form">
+  <tr>
+    <th>
+      <?= LABEL_MODELS ?>
+    </th>
+    <td>
+      <?= $this->page_model->formSelect('model_id', [
                         'unselect' => true,
                         'label_separate' => '-',
                         'label' => ['name',' label'],
                         'model' => 'Model',
                         'where' => "project_id = {$this->project->value['id']}",
                         'order' => 'name',
-                        
-                        ]) ?>    
-</div>
+                        ]) ?>
+    </td>
+  </tr>
 
+  <tr>
+    <th class="form-control-label col-2" for="is_fetch_list_values">
+      <?= LABEL_PAGE_MODELS_IS_FETCH_LIST_VALUES ?>
+    </th>
+    <td>
+      <?= $this->page_model->formRadio('is_fetch_list_values', ['csv' => 'active', 'unselect' => true]) ?>
+    </td>
 
-
-
-
-
-<div class="form-group row">
-  <label class="form-control-label col-2" for="is_fetch_list_values"><?= LABEL_PAGE_MODELS_IS_FETCH_LIST_VALUES ?></label>
-    <?= $this->page_model->formRadio('is_fetch_list_values', ['csv' => 'active', 'unselect' => true]) ?>    
-</div>
-
-
-
-<div class="form-group row">
-  <label class="form-control-label col-2" for="is_request_session"><?= LABEL_PAGE_MODELS_IS_REQUEST_SESSION ?></label>
-    <?= $this->page_model->formRadio('is_request_session', ['csv' => 'active', 'unselect' => true]) ?>    
-</div>
-
-
-
-
+    <tr>
+      <th>
+        <?= LABEL_PAGE_MODELS_IS_REQUEST_SESSION ?>
+      </th>
+      <td>
+        <?= $this->page_model->formRadio('is_request_session', ['csv' => 'active', 'unselect' => true]) ?>
+      </td>
+    </tr>
+</table>
 <input type="hidden" name="page_model[page_id]" value="<?= $this->page->value['id'] ?>">

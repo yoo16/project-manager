@@ -30,7 +30,7 @@
   <? if ($this->pages): ?>
     <? foreach ($this->pages as $page): ?>
       <tr>
-        <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $page['id']) ?></td>
+        <td><?= FormHelper::linkButton('edit', $page['id'], ['label' => LABEL_EDIT]) ?></td>
         <td>
           <div>
             <a class="" href="<?= url_for('view/', array('page_id' => $page['id'])) ?>"><?= $page['name'] ?></a>

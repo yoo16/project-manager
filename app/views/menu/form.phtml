@@ -1,0 +1,21 @@
+
+<table class="table">
+
+    <tr>
+      <th><?= LABEL_MENUS_IS_PROVIDE ?></th>
+      <td>
+          <?= $this->menu->formRadio('is_provide', ['csv' => 'active', 'unselect' => true]) ?>
+      </td>
+    </tr>
+
+
+    <tr>
+      <th><?= LABEL_MENUS_NAME ?></th>
+      <td>
+          <?= $this->menu->formInput('name', ['class' => 'form-control']) ?>
+      </td>
+    </tr>
+
+</table>
+
+    

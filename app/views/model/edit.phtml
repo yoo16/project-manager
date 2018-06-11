@@ -4,40 +4,56 @@
 
     <form id="" action="<?= url_for('update', $this->model->value['id']) ?>" method="post" autocomplete="off">
 
-      <div class="form-group row">
-        <label for="model-name" class="col-1 col-form-label">Name</label>
-        <?= $this->model->formInput('name') ?>
-      </div>
+      <table class="table">
+        <tr>
+          <th>Name</th>
+          <td>
+            <?= $this->model->formInput('name', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
 
-      <div class="form-group row">
-        <label for="" class="col-1 col-form-label">Label</label>
-        <?= $this->model->formInput('label') ?>
-      </div>
-      
-      <div class="form-group row">
-        <label for="" class="col-1 col-form-label">Lock</label>
-        <?= $this->model->formCheckbox('is_lock') ?>
-      </div>
+        <tr>
+          <th>Label</th>
+          <td>
+            <?= $this->model->formInput('label', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
 
-      <div class="form-group row">
-        <label for="" class="form-control-label col-2">Note</label>
-        <?= $this->model->formTextarea('note') ?>
-      </div> 
-      
-      <div class="form-group row">
-        <?= FormHelper::formLabel('Old Database', ['class' => 'col-2']) ?>
-        <?= $this->model->formSelect('old_database_id', ['model' => 'Database', 'label' => 'name']) ?>
-      </div>
+        <tr>
+          <th>Lock</th>
+          <td>
+            <?= $this->model->formCheckbox('is_lock', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
 
-      <div class="form-group row">
-        <label for="" class="col-1 col-form-label">old table</label>
-        <?= $this->model->formInput('old_name') ?>
-      </div>
+        <tr>
+          <th>Note</th>
+          <td>
+            <?= $this->model->formTextarea('note', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
+
+        <tr>
+          <th>
+            <?= FormHelper::formLabel('Old Database', ['class' => 'col-2']) ?>
+          </th>
+          <td>
+            <?= $this->model->formSelect('old_database_id', ['model' => 'Database', 'label' => 'name', 'unselect' => true]) ?>
+          </td>
+        </tr>
+
+        <tr>
+          <th>old table</th>
+          <td>
+            <?= $this->model->formInput('old_name', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
+      </table>
 
       <?= FormHelper::submit(LABEL_UPDATE) ?>
       <?= FormHelper::linkButton('cancel', null, ['label' => LABEL_BACK]) ?>
     </form>
 
     <?= $this->model->formDelete() ?>
-</div>
+  </div>
 </div>

@@ -15,7 +15,6 @@ class AppController extends Controller {
     var $layout = 'root';
 
     function before_action($action = null) {
-
         $pgsql_entity = new PgsqlEntity();
         if (!$pgsql_entity->connection()) {
             $this->redirect_to('setting/');

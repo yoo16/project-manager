@@ -3,24 +3,24 @@
 /**
  * <?= Page::className($values['page']) ?> 
  *
- * @create  <?= $values['page']['created_at'] ?> 
+ * @create  <?= $values['page']->value['created_at'] ?> 
  */
 
-<? if ($values['page']['parent']): ?>
-require_once '<?= $values['page']['parent']['name'] ?>Controller.php';
+<? if ($values['page']->parent): ?>
+require_once '<?= $values['page']->parent->value['name'] ?>Controller.php';
 <? else: ?>
 require_once 'AppController.php';
 <? endif ?>
 
-<? if ($values['page']['parent']): ?>
-class <?= $values['page']['name'] ?>Controller extends <?= $values['page']['parent']['name'] ?>Controller {
+<? if ($parent = $values['page']->parent): ?>
+class <?= $values['page']->value['name'] ?>Controller extends <?= $parent->value['name'] ?>Controller {
 <? else: ?>
-class <?= $values['page']['name'] ?>Controller extends AppController {
+class <?= $values['page']->value['name'] ?>Controller extends AppController {
 <? endif ?>
 
-    public $name = '<?= $values['page']['entity_name'] ?>';
-<? if ($values['page']['layout_name']): ?>
-    public $layout = '<?= $values['page']['layout_name'] ?>';
+    public $name = '<?= $values['page']->value['entity_name'] ?>';
+<? if ($values['page']->value['layout_name']): ?>
+    public $layout = '<?= $values['page']->value['layout_name'] ?>';
 <? endif ?>
 <? if ($values['page_filter']): ?>
     <? Tag::init()->pageFilters($values['page_filter']) ?>
@@ -34,7 +34,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     */
     function before_action($action) {
         parent::before_action($action);
-        <?= Tag::init()->requestInstance($values['page_model']) ?>
+        <?= Tag::init()->requestInstance($page_model) ?>
 
     }
 
@@ -69,7 +69,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     function action_list() {
         <?= Tag::init()->listValues($values['model'], $values['page']) ?>
 
-        <?= Tag::init()->modelValues($values['page_model']) ?>
+        <?= Tag::init()->modelValues($page_model) ?>
         
     }
 
@@ -80,8 +80,8 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_new() {
-<? if ($values['model']): ?>
-        $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->init()->takeValues($this->posts['<?= $values['model']['entity_name'] ?>']);
+<? if ($model = $values['model']): ?>
+        $this-><?= $model->value['entity_name'] ?> = DB::table('<?= $model->value['class_name'] ?>')->init()->takeValues($this->posts['<?= $model->value['entity_name'] ?>']);
 <? endif ?>
     }
 
@@ -92,12 +92,12 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_edit() {
-<? if ($values['model']): ?>
+<? if ($model = $values['model']): ?>
         $this->checkEdit();
 
-        $this-><?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')
+        $this-><?= $model->value['entity_name'] ?> = DB::table('<?= $model->value['class_name'] ?>')
                     ->fetch($this->params['id'])
-                    ->takeValues($this->posts['<?= $values['model']['entity_name'] ?>']);
+                    ->takeValues($this->posts['<?= $model->value['entity_name'] ?>']);
 <? endif ?>
     }
 
@@ -109,17 +109,16 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     */
     function action_add() {
         if (!isPost()) exit;
-<? if ($values['model']): ?>
-        $posts = $this->posts["<?= $values['model']['entity_name'] ?>"];
-        $<?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->insert($posts);
+<? if ($model = $values['model']): ?>
+        $posts = $this->posts["<?= $model->value['entity_name'] ?>"];
+        $<?= $model->value['entity_name'] ?> = DB::table('<?= $model->value['class_name'] ?>')->insert($posts);
 
-        if ($<?= $values['model']['entity_name'] ?>->errors) {
-            $errors['<?= $values['model']['name'] ?>'] = $<?= $values['model']['entity_name'] ?>->errors;
-            $this->setErrors($errors);
-            $this->redirect_to('new');
+        if ($<?= $model->value['entity_name'] ?>->errors) {
+            $this->addError('<?= $model->value['name'] ?>', $<?= $model->value['entity_name'] ?>->errors);
+            $this->redirectTo('new');
             exit;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo('index');
         }
 <? endif ?>
     }
@@ -132,12 +131,12 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     */
     function action_update() {
         if (!isPost()) exit;
-<? if ($values['model']): ?>
-        $posts = $this->posts["<?= $values['model']['entity_name'] ?>"];
-        $<?= $values['model']['entity_name'] ?> = DB::table('<?= $values['model']['class_name'] ?>')->update($posts, $this->params['id']);
+<? if ($model = $values['model']): ?>
+        $posts = $this->posts["<?= $model->value['entity_name'] ?>"];
+        $<?= $model->value['entity_name'] ?> = DB::table('<?= $model->value['class_name'] ?>')->update($posts, $this->params['id']);
 
-        if ($<?= $values['model']['entity_name'] ?>->errors) {
-            $errors['<?= $values['model']['name'] ?>'] = $<?= $values['model']['entity_name'] ?>->errors;
+        if ($<?= $model->value['entity_name'] ?>->errors) {
+            $errors['<?= $model->value['name'] ?>'] = $<?= $model->value['entity_name'] ?>->errors;
             $this->setErrors($errors);
         }
         $this->redirect_to('edit', $this->params['id']);
@@ -153,7 +152,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     function action_delete() {
         if (!isPost()) exit;
 <? if ($values['model']): ?>
-        DB::table('<?= $values['model']['class_name'] ?>')->delete($this->params['id']);
+        DB::table('<?= $model->value['class_name'] ?>')->delete($this->params['id']);
 <? endif ?>
         $this->redirect_to('index');
     }
@@ -166,7 +165,7 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     */
     function action_update_sort() {
 <? if ($values['model']): ?>
-        $this->updatSort('<?= $values['model']['class_name'] ?>');
+        $this->updatSort('<?= $model->value['class_name'] ?>');
 <? endif ?>
         exit;
     }

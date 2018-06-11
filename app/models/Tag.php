@@ -260,21 +260,21 @@ class Tag {
     }
 
 
-    function requestInstance($page_models) {
-        if ($page_models) {
-            foreach ($page_models as $page_model) {
-                if ($page_model['is_request_session']) {
-                    $instance = '$this->'.$page_model['model_entity_name'];
-                    $tag = "{$instance} = DB::table('{$page_model['model_class_name']}')->requestSession();";
+    function requestInstance($page_model) {
+        if ($page_model->values) {
+            foreach ($page_model->values as $page_model_value) {
+                if ($page_model_value['is_request_session']) {
+                    $instance = '$this->'.$page_model_value['entity_name'];
+                    $tag = "{$instance} = DB::table('{$page_model_value['class_name']}')->requestSession();";
                     echo($tag).PHP_EOL;
                 }
             }
         }
     }
 
-    function pageFilters($page_filters) {
-        if ($page_filters) {
-            foreach ($page_filters as $value) {
+    function pageFilters($page_filter) {
+        if ($page_filter->values) {
+            foreach ($page_filter->values as $value) {
                 $attribute = DB::table('Attribute')->fetch($value['attribute_id']);
                 $eq = '=';
                 if ($value['eq']) $eq = $value['eq'];
@@ -289,48 +289,59 @@ class Tag {
 
     }
 
-    //TODO page_models ?
+    /**
+     * Undocumented function
+     *
+     * @param Model $model
+     * @param Page $page
+     * @return void
+     */
     function listValues($model, $page) {
-        $instance = '$this->'.$model['entity_name'];
+        $instance = '$this->'.$model->value['entity_name'];
 
         $return_space = PHP_EOL.'                                ';
 
         $filter_entity = '$this->filters';
         $filter = "->filter({$filter_entity})";
 
-        if ($page['list_sort_order_columns']) {
-            $sort_order_columns = explode(',', $page['list_sort_order_columns']);
+        if ($page->value['list_sort_order_columns']) {
+            $sort_order_columns = explode(',', $page->value['list_sort_order_columns']);
             //TODO asc desc
             foreach ($sort_order_columns as $sort_order_column) {
                 $sort_order_column = trim($sort_order_column);
                 $order.= "->order('{$sort_order_column}')";
             }
         }
-        if ($page['where_model_id']) {
-            $parent_model = DB::table('Model')->fetch($page['where_model_id']);
+        if ($page->value['where_model_id']) {
+            $parent_model = DB::table('Model')->fetch($page->value['where_model_id']);
 
             $parent_instance = '$this->'.$parent_model->value['entity_name'];
             $relation_many = "{$parent_instance}->relationMany";
             $redirect = '$this->redirect_to(\'/\')';
 
             $tag = "if (!{$parent_instance}->value) {$redirect};".PHP_EOL;
-            $tag.= "        {$instance} = {$relation_many}('{$model['class_name']}')";
+            $tag.= "        {$instance} = {$relation_many}('{$model->value['class_name']}')";
         } else {
-            $tag = "{$instance} = DB::table('{$model['class_name']}')";
+            $tag = "{$instance} = DB::table('{$model->value['class_name']}')";
         }
 
-        //$tag.= "{$return_space}{$filter}";
         if ($order) $tag.= "{$return_space}{$order}";
         $tag.= "->all();";
         echo($tag).PHP_EOL;
     }
 
-    function modelValues($page_models) {
-        if ($page_models) {
-            foreach ($page_models as $page_model) {
-                if ($page_model['is_fetch_list_values']) {
-                    $instance = '$this->'.$page_model['model_entity_name'];
-                    $tag = "{$instance} = DB::table('{$page_model['model_class_name']}')->idIndex()->all();";
+    /**
+     * model values
+     *
+     * @param PageModel $page_model
+     * @return void
+     */
+    function modelValues($page_model) {
+        if ($page_model->values) {
+            foreach ($page_model->values as $page_model_value) {
+                if ($page_model_value['is_fetch_list_values']) {
+                    $instance = '$this->'.$page_model_value['model_entity_name'];
+                    $tag = "{$instance} = DB::table('{$page_model_value['model_class_name']}')->idIndex()->all();";
                     echo($tag).PHP_EOL;
                 }
             }

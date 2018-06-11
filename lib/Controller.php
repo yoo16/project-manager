@@ -951,6 +951,17 @@ class Controller extends RuntimeException {
     }
 
     /**
+     * add session error
+     *
+     * @param  array $errors
+     * @return void
+     */
+    function addError($key, $values) {
+        $errors[$key] = $values;
+        AppSession::setWithKey('errors', $this->name, $errors);
+    }
+
+    /**
      * set session errors
      *
      * @param  array $errors

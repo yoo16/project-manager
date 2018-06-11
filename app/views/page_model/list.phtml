@@ -1,31 +1,48 @@
 <? include('_header.phtml') ?>
 
-<div class="pt-3">
-  <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
-  <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table"><?= LABEL_SORT_ORDER ?></a>
+  <div class="pt-3">
+    <?= FormHelper::linkButton('new', null, ['class' => 'btn btn-primary', 'label' => LABEL_ADD]) ?>
+    <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table">
+      <?= LABEL_SORT_ORDER ?>
+    </a>
 
-  <a href="#" class="btn btn-primary update-sortable" controller="page_model"><?= LABEL_UPDATE ?></a>
-</div>
+    <a href="#" class="btn btn-primary update-sortable" controller="page_model">
+      <?= LABEL_UPDATE ?>
+    </a>
+  </div>
 
-<table id="list-table" class="table">
-  <thead class="thead-default">
-    <tr>
-      <th>&nbsp;</th>
-      <th><?= LABEL_MODELS ?></th>
-            <th><?= LABEL_PAGE_MODELS_IS_FETCH_LIST_VALUES ?></th>
-            <th><?= LABEL_PAGE_MODELS_IS_REQUEST_SESSION ?></th>
-          </tr>
-  </thead>
+  <table id="list-table" class="table">
+    <thead class="thead-default">
+      <tr>
+        <th>&nbsp;</th>
+        <th>
+          <?= LABEL_MODELS ?>
+        </th>
+        <th>
+          <?= LABEL_PAGE_MODELS_IS_FETCH_LIST_VALUES ?>
+        </th>
+        <th>
+          <?= LABEL_PAGE_MODELS_IS_REQUEST_SESSION ?>
+        </th>
+      </tr>
+    </thead>
 
-  <? if ($this->page_model->values): ?>
-  <? foreach ($this->page_model->values as $values): ?>
-  <tr id="<?= $values['id'] ?>">
-    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-    <td><?= $this->model->values[$values['model_id']]['name'] ?></td>
-    <td><?= FormHelper::activeLabelTag($values['is_fetch_list_values']) ?></td>
-    <td><?= FormHelper::activeLabelTag($values['is_request_session']) ?></td>
-  </tr>
-  <? endforeach ?>
-  <? endif ?>
-
+    <? if ($this->page_model->values): ?>
+      <? foreach ($this->page_model->values as $values): ?>
+        <tr id="<?= $values['id'] ?>">
+          <td>
+            <?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?>
+          </td>
+          <td>
+            <?= $this->model->values[$values['model_id']]['name'] ?>
+          </td>
+          <td>
+            <?= FormHelper::activeLabelTag($values['is_fetch_list_values']) ?>
+          </td>
+          <td>
+            <?= FormHelper::activeLabelTag($values['is_request_session']) ?>
+          </td>
+        </tr>
+        <? endforeach ?>
+          <? endif ?>
 </table>

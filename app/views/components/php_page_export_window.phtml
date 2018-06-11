@@ -62,7 +62,18 @@
           <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
         </form>
         <? endif ?>
-
+        <?= $this->linkTag('localize_string', 'import_from_model', null, 
+        [
+          'label' => 'Localize',
+          'class' => 'btn btn-sm btn-primary',
+          'http_params' => [
+            'model_id' => $this->model->value['id'],
+            'user_project_setting_id' => $user_project_setting['id'],
+            'redirect' => 'attribute/list'
+          ]
+        ]
+      )
+      ?>
       </div>
       
   <? endif ?>

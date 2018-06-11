@@ -1,99 +1,137 @@
 <? include('_header.phtml'); ?>
-<div class="card">
-  <h3 class="card-header">Page</h3>
-  <div class="card-block">
+  <div class="card">
+    <h3 class="card-header">Page</h3>
+    <div class="card-block">
 
-  <form action="<?= url_for('update', $this->page->value['id']) ?>" method="post">
-    
-      <div class="form-group row">
-        <label for="" class="col-3 col-form-label">Overwrite</label>
-        <?= FormHelper::checkbox($this->forms['is_overwrite'], (bool) $this->page->value['is_overwrite']) ?>
-      </div>
+      <form action="<?= url_for('update', $this->page->value['id']) ?>" method="post">
 
-      <? if ($this->model->value): ?>
-      <div class="form-group row">
-        <label for="" class="col-3 col-form-label">Model</label>
-        <?= $this->model->value['name'] ?>
-      </div>
-      <? endif ?>
-      
-      <div class="form-group row">
-        <label for="" class="col-3 col-form-label">Class Name</label>
-        <?= $this->model->value['class_name'] ?>
-      </div>
+        <table class="table">
+          <tr>
+            <th>Overwrite</th>
+            <td>
+              <?= FormHelper::checkbox($this->forms['is_overwrite'], (bool) $this->page->value['is_overwrite']) ?>
+            </td>
+          </tr>
 
-      <div class="form-group row">
-        <label for="page-name" class="col-3 col-form-label">Name</label>
-        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'name') ?>" type="text" name="page[name]" value="<?= $this->page->value['name'] ?>" required autocomplete="off">
-      </div>
+          <? if ($this->model->value): ?>
+            <tr>
+              <th>Model</th>
+              <td>
+                <?= $this->model->value['name'] ?>
+              </td>
+            </tr>
+            <? endif ?>
 
-      <div class="form-group row">
-        <label for="" class="col-3 col-form-label">Label</label>
-        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'label') ?>" type="text" name="page[label]" value="<?= $this->page->value['label'] ?>" required autocomplete="off">
-      </div>
+              <tr>
+                <th>Class Name</th>
+                <td>
+                  <?= $this->model->value['class_name'] ?>
+                </td>
+              </tr>
 
-      <div class="form-group row">
-        <label for="" class="col-3 col-form-label">Entity Name</label>
-        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'entity_name') ?>" type="text" name="page[entity_name]" value="<?= $this->page->value['entity_name'] ?>" required autocomplete="off">
-      </div>
+              <tr>
+                <th>Name</th>
+                <td>
+                  <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'name') ?>" type="text" name="page[name]"
+                    value="<?= $this->page->value['name'] ?>" required autocomplete="off">
+                </td>
+              </tr>
 
-      <div class="form-group row">
-        <label for="" class="col-3 col-form-label">View Name</label>
-        <input class="form-control col-5" type="text" name="page[view_name]" value="<?= $this->page->value['view_name'] ?>" autocomplete="off">
-      </div>
-      
-      <div class="form-group row">
-        <label for="" class="col-3 col-form-label">Layout</label>
-        <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'layout_name') ?>" type="text" name="page[layout_name]" value="<?= $this->page->value['layout_name'] ?>" autocomplete="off">
-      </div>
-      
-      <div class="form-group row">
-        <label for="" class="col-3 col-form-label">Parent Page</label>
-        <?= $this->page->formSelect('parent_page_id', 
-                   [
-                    'unselect' => true,
-                    'label' => ['name'],
-                    'model' => 'Page',
-                    'where' => "project_id = {$this->project->value['id']}",
-                    'order' => 'name',
-                    ]
-                    ) ?>
-      </div>
-      
-      <div class="form-group row">
-        <label for="" class="col-3 col-form-label">Relation model for list values</label>
-        <?= $this->page->formSelect('where_model_id', 
-                   [
-                    'unselect' => true,
-                    'label_separate' => '-',
-                    'label' => ['name'],
-                    'model' => 'Model',
-                    'where' => "project_id = {$this->project->value['id']}",
-                    'order' => 'name',
-                    ]
-                    ) ?>
-        .id
-        <? if ($this->page->value['where_model_id']): ?>
-        =
-        <?= $this->model->value['name'] ?>.<?= DB::table('Model')->fetch($this->page->value['where_model_id'])->value['entity_name'] ?>_id
-        <? endif ?>
-      </div>
+              <tr>
+                <th>Label</th>
+                <td>
+                  <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'label') ?>" type="text" name="page[label]"
+                    value="<?= $this->page->value['label'] ?>" required autocomplete="off">
+                </td>
+              </tr>
 
-      <div class="form-group row">
-        <label for="" class="col-3 col-form-label">sort_order for list</label>
-        <input class="form-control col-5" type="text" name="page[list_sort_order_columns]" value="<?= $this->page->value['list_sort_order_columns'] ?>" autocomplete="off">
-      </div>
+              <tr>
+                <th>Entity Name</th>
+                <td>
+                  <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'entity_name') ?>" type="text" name="page[entity_name]"
+                    value="<?= $this->page->value['entity_name'] ?>" required autocomplete="off">
+                </td>
+              </tr>
 
-      <div class="form-group row">
-        <label for="page-name" class="col-3 col-form-label">Note</label>
-        <textarea class="form-control" name="page[note]" rows="5"><?= $this->page->value['note'] ?></textarea>
-      </div>
+              <tr>
+                <th>View Name</th>
+                <td>
+                  <input class="form-control col-5" type="text" name="page[view_name]" value="<?= $this->page->value['view_name'] ?>" autocomplete="off">
+                </td>
+              </tr>
 
-      <button class="btn btn-primary" type="submit"><?= LABEL_UPDATE ?></button>
+              <tr>
+                <th>Layout</th>
+                <td>
+                  <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'layout_name') ?>" type="text" name="page[layout_name]"
+                    value="<?= $this->page->value['layout_name'] ?>" autocomplete="off">
+                </td>
+              </tr>
+
+              <tr>
+                <th>Parent Page</th>
+                <td>
+                  <?= $this->page->formSelect('parent_page_id', 
+[
+'unselect' => true,
+'label' => ['name'],
+'model' => 'Page',
+'where' => "project_id = {$this->project->value['id']}",
+'order' => 'name',
+]
+) ?>
+                </td>
+              </tr>
+
+              <tr>
+
+                <th>Relation model for list values</th>
+                <td>
+                  <?= $this->page->formSelect('where_model_id', 
+[
+'unselect' => true,
+'label_separate' => '-',
+'label' => ['name'],
+'model' => 'Model',
+'where' => "project_id = {$this->project->value['id']}",
+'order' => 'name',
+]
+) ?> .id
+                  <? if ($this->page->value['where_model_id']): ?>
+                    =
+                    <?= $this->model->value['name'] ?>.
+                    <?= DB::table('Model')->fetch($this->page->value['where_model_id'])->value['entity_name'] ?>_id
+                    <? endif ?>
+                </td>
+              </tr>
+
+              <tr>
+
+                <th>sort_order for list</th>
+                <td>
+                  <input class="form-control col-5" type="text" name="page[list_sort_order_columns]" value="<?= $this->page->value['list_sort_order_columns'] ?>"
+                    autocomplete="off">
+                </td>
+              </tr>
+
+              <tr>
+
+                <th>Note</th>
+                <td>
+                  <textarea class="form-control" name="page[note]" rows="5"><?= $this->page->value['note'] ?></textarea>
+                </td>
+              </tr>
+
+              <tr>
+
+        </table>
+
+      </form>
+
+      <button class="btn btn-primary" type="submit">
+        <?= LABEL_UPDATE ?>
+      </button>
       <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
-
-    </form>
-
-    <?= $this->page->formDelete() ?>
-</div>
+      <?= $this->page->formDelete() ?>
+    </div>
 </div>

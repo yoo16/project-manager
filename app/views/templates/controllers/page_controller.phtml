@@ -38,7 +38,6 @@ class <?= $values['page']['name'] ?>Controller extends AppController {
     function before_action($action) {
         parent::before_action($action);
         <?= Tag::init()->requestInstance($values['page_model']) ?>
-
     }
 
 }

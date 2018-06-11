@@ -1,0 +1,28 @@
+<? include('_header.phtml') ?>
+
+<div class="pt-3">
+  <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary'] ) ?>
+  <? include('views/components/sortable.phtml') ?>
+
+</div>
+
+<table id="list-table" class="table">
+  <thead class="thead-default">
+    <tr>
+      <th>&nbsp;</th>
+      <th><?= LABEL_MENUS_IS_PROVIDE ?></th>
+            <th><?= LABEL_MENUS_NAME ?></th>
+          </tr>
+  </thead>
+
+  <? if ($this->menu->values): ?>
+  <? foreach ($this->menu->values as $values): ?>
+  <tr id="<?= $values['id'] ?>">
+    <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
+    <td><?= FormHelper::activeLabelTag($values['is_provide']) ?></td>
+    <td><?= $values['name'] ?></td>
+  </tr>
+  <? endforeach ?>
+  <? endif ?>
+
+</table>

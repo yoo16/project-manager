@@ -5,15 +5,15 @@
 
     <? include('views/components/sortable.phtml') ?>
 
-    <?= $this->linkControllerTag('view', ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-    <a class="btn btn-primary" href="<?= url_for('add_all') ?>">
-      <?= LABEL_ALL ?>
-      <?= LABEL_ADD ?>
-    </a>
+      <?= $this->linkControllerTag('view', ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
+      <a class="btn btn-primary" href="<?= url_for('add_all') ?>">
+        <?= LABEL_ALL ?>
+        <?= LABEL_ADD ?>
+      </a>
 
-    <a class="btn btn-outline-primary" href="<?= url_for('view_item_group/', ['view_id' => $this->view->value['id']]) ?>">
-      <?= LABEL_VIEW_ITEM_GROUPS ?>
-    </a>
+      <a class="btn btn-outline-primary" href="<?= url_for('view_item_group/', ['view_id' => $this->view->value['id']]) ?>">
+        <?= LABEL_VIEW_ITEM_GROUPS ?>
+      </a>
   </div>
 
   <table id="sortable-table" class="table table-list">
@@ -24,6 +24,7 @@
         <th>リンクページ</th>
         <th>form/class</th>
         <th>where / csv</th>
+        <th></th>
       </tr>
     </thead>
 
@@ -80,16 +81,16 @@
                         <input class="form-control" type="radio" name="">
                         <?= $view_item['label_column'] ?>
                         <? elseif ($view_item['form_type'] == 'checkbox'): ?>
-                          <input class="form-control" type="checkbox" name="">
-                          <?= $view_item['label_column'] ?>
-                          <? elseif ($view_item['form_type'] == 'textarea'): ?>
-                            <textarea></textarea>
-                            <? elseif ($view_item['form_type'] == 'password'): ?>
-                              <input class="form-control col-4" type="password" name="">
-                              <? else: ?>
-                                <input class="form-control col-4" type="text" name="">
-                                <? endif ?>
-                                  <? endif ?>
+                        <input class="form-control" type="checkbox" name="">
+                        <?= $view_item['label_column'] ?>
+                        <? elseif ($view_item['form_type'] == 'textarea'): ?>
+                        <textarea></textarea>
+                        <? elseif ($view_item['form_type'] == 'password'): ?>
+                        <input class="form-control col-4" type="password" name="">
+                        <? else: ?>
+                        <input class="form-control col-4" type="text" name="">
+                        <? endif ?>
+                        <? endif ?>
               </div>
               <div>
                 <?= FormHelper::activeLabelTag($view_item['css_class']) ?>
@@ -113,6 +114,12 @@
                             <? endif ?>
             </td>
 
+            <td>
+              <form action="<?= url_for('delete') ?>" method="post">
+                <?= FormHelper::submit(LABEL_DELETE, ['class' => 'btn btn-sm btn-danger confim-dialog', 'message' => 'Delete Topic?']) ?>
+                <?= FormHelper::hidden('id', $view_item['id']) ?>
+              </form>
+            </td>
           </tr>
           <? endforeach ?>
       </tbody>

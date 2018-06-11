@@ -119,6 +119,11 @@ class LocalizeStringController extends ProjectController {
             }
         }
 
+        if ($_REQUEST['user_project_setting_id']) {
+            $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+            $this->project->exportAttributeLabels();
+        }
+
         if ($_REQUEST['redirect']) {
             $this->redirect_to($_REQUEST['redirect']);
         } else {

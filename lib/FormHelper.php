@@ -673,7 +673,7 @@ class FormHelper {
      * @return string
      */
     static function attribute($params) {
-        if (!$params) return;
+        if (!is_array($params)) return;
         foreach ($params as $key => $param) {
             if (is_array($param)) $param = implode(' ', $param);
             if (isset($param)) $attributes[] = "{$key}=\"{$param}\"";
@@ -709,6 +709,7 @@ class FormHelper {
      * @return string
      */
     static function linkButton($action, $id = null, $params = null) {
+        if (!is_array($params)) return;
         if (!$params['class']) $params['class'] = 'btn btn-outline-primary';
         $controller = $GLOBALS['controller'];
         if ($controller) {

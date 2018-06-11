@@ -28,14 +28,14 @@ class Page extends _Page {
      * @return string
      */
     static function className($page) {
-        $name = "{$page['name']}Controller";
+        $name = "{$page->value['name']}Controller";
         return $name;
     }
 
     /**
      * class file name
      * 
-     * @param array $page
+     * @param Page $page
      * @return string
      */
     static function classFileName($page) {
@@ -47,17 +47,17 @@ class Page extends _Page {
     /**
      * project path
      * 
-     * @param array $user_project_setting
-     * @param array $page
+     * @param array UserProjectSetting $user_project_setting
+     * @param array Page $page
      * @return string
      */
     static function projectFilePath($user_project_setting, $page) {
-        if (!$user_project_setting) return;
-        if (!$page['name']) return;
-        if (!file_exists($user_project_setting['project_path'])) return;
+        if (!$user_project_setting->value) return;
+        if (!$page->value['name']) return;
+        if (!file_exists($user_project_setting->value['project_path'])) return;
 
         $file_name = Page::classFileName($page);
-        $path = $user_project_setting['project_path']."app/controllers/{$file_name}";
+        $path = $user_project_setting->value['project_path']."app/controllers/{$file_name}";
         return $path;
     }
 
@@ -68,7 +68,7 @@ class Page extends _Page {
      * @return string
      */
     static function templateFilePath($page) {
-        if ($page['model_id']) {
+        if ($page->value['model_id']) {
             $path = TEMPLATE_DIR.'controllers/model_controller.phtml';
         } else {
             $path = TEMPLATE_DIR.'controllers/page_controller.phtml';

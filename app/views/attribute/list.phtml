@@ -14,23 +14,12 @@
   <form action="<?= url_for('sync_model', $this->model->value['id']) ?>" method="post">
     <?= FormHelper::linkModal('#add-attribute', LABEL_ADD) ?>
     <?= $this->linkControllerTag("model", ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-    <?= FormHelper::submit('Sync', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you sync from DB?']) ?>
+    <?= FormHelper::submit('Sync DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you sync from DB?']) ?>
     <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
-    <?= $this->linkTag('localize_string', 'import_from_model', null, 
-      [
-        'label' => 'Localize',
-        'class' => 'btn btn-outline-primary',
-        'http_params' => [
-          'model_id' => $this->model->value['id'],
-          'redirect' => 'attribute/list'
-        ]
-      ]
-    )
-    ?>
   </form>
 
   <form>
-  <?= FormHelper::linkModal('#php-page-export-window', 'Model', ['class' => 'btn btn-outline-primary']) ?>
+  <?= FormHelper::linkModal('#php-page-export-window', 'PHP Export', ['class' => 'btn btn-outline-primary']) ?>
   </form>
 
   &nbsp;
@@ -46,7 +35,7 @@
       )
       ?>
     <? else: ?>
-      <?= FormHelper::button('Create Page', ['class' => 'btn btn-sm btn-outline-primary confirm-dialog', 'message' => "Create page?"]) ?>
+      <?= FormHelper::button('Create Page', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => "Do you create page from Model?"]) ?>
       <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
     <? endif ?>
   </form>

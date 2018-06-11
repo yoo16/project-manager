@@ -145,9 +145,10 @@ class Project extends _Project {
 
     //controllers
     function exportPHPControllers($is_overwrite = false) {
-        $pages = $this->hasMany('Page')->values;
-        if ($pages) {
-            foreach ($pages as $page) {
+        $page = $this->hasMany('Page');
+        if ($page->values) {
+            foreach ($page->values as $value) {
+                $page->setValue($value);
                 $this->exportPHPController($page, $is_overwrite);
             }   
         }
@@ -173,32 +174,40 @@ class Project extends _Project {
         }
     }
 
+    /**
+     * export PHP Controller 
+     *
+     * @param Page $page
+     * @param boolean $is_overwrite
+     * @return void
+     */
     function exportPHPController($page, $is_overwrite = false) {
         $values = null;
         $values['page'] = $page;
-        if ($page['model_id']) {
-            $model = DB::table('Model')->fetch($page['model_id']);
-            $values['model'] = $model->value;
-            $values['model']['attributes'] = $model->hasMany('Attribute')->values;
+        if ($page->value['model_id']) {
+            $model = DB::table('Model')->fetch($page->value['model_id']);
+            $model->attribute = $model->hasMany('Attribute');
+            $values['model'] = $model;
         }
 
-        if ($page['parent_page_id']) {
-            $values['page']['parent'] = DB::table('Page')->fetch($page['parent_page_id'])->value;
+        if ($page->value['parent_page_id']) {
+            $page->parent = DB::table('Page')->fetch($page->value['parent_page_id']);
+            $values['page'] = $page;
         }
+        $page_model = $page->relationMany('PageModel')->join('Model', 'id', 'model_id')->all();
+        $values['page_filter'] = DB::table('PageFilter')->where("page_id = {$page->value['id']}")->all();
 
-        $page_model = DB::table('PageModel')->where("page_id = {$page['id']}")
-                                                      ->join('Model', 'id', 'model_id')
-                                                      ->all();
-        $values['page_model'] = $page_model->values;
+        $page_path = Page::projectFilePath($this->user_project_setting, $page);
 
-        $page_filter = DB::table('PageFilter')->where("page_id = {$page['id']}")->all();
-        $values['page_filter'] = $page_filter->values;
-
-        $page_path = Page::projectFilePath($this->user_project_setting->value, $page);
-
-        if (!file_exists($page_path) || ($is_overwrite && $page['is_overwrite'])) {
+        if (!file_exists($page_path) || ($is_overwrite && $page->value['is_overwrite'])) {
             $page_template_path = Page::templateFilePath($page);
-            $contents = FileManager::bufferFileContetns($page_template_path, $values);
+            if (file_exists($page_template_path)) {
+                ob_start();
+                include $page_template_path;
+                $contents = ob_get_contents();
+                ob_end_clean();
+            }
+            //$contents = FileManager::bufferFileContetns($page_template_path, $values);
             file_put_contents($page_path, $contents);
         }
     }

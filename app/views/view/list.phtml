@@ -1,5 +1,4 @@
 <? include('_header.phtml') ?>
-
 <? include('add_window.phtml') ?>
 
 <? include('views/components/php_page_export_window.phtml') ?>
@@ -15,14 +14,13 @@
     <tr>
       <th></th>
       <th>Name</th>
-      <th>&nbsp;</th>
       <th>Overwrite</th>
       <th>URI</th>
       <th>Label Width</th>
     </tr>
     <? foreach ($this->page->view->values as $view): ?>
       <tr>
-        <td><a class="btn btn-sm btn-outline-primary" href="<?= url_for('edit', $view['id']) ?>"><?= LABEL_EDIT ?></a></td>
+        <td><a class="btn btn-sm btn-outline-primary" href="<?= $this->urlActionFor('edit', $view['id']) ?>"><?= LABEL_EDIT ?></a></td>
         <td>
           <div><?= $this->linkControllerTag('view_item', 
             [
@@ -35,9 +33,6 @@
           ?>
         </div>
         <div><?= $view['label'] ?></div>
-      </td>
-      <td>
-        <a class="btn btn-outline-primary" href="<?= url_for('view_item_group/list', ['view_id' => $view['id']]) ?>">Group</a>
       </td>
       <td>
         <? if ($view['is_overwrite']): ?>
