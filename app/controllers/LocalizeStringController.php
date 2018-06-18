@@ -63,65 +63,16 @@ class LocalizeStringController extends ProjectController {
     * @return void
     */
     function action_import_from_model() {
-        if ($_REQUEST['model_id']) {
-            $models[] = DB::table('Model')->fetch($_REQUEST['model_id'])->value;
-        } else {
-            $models = $this->project->hasMany('Model')->values;
-        }
-        foreach ($models as $model) {
-            $attributes = DB::table('Attribute')
-                                    ->where("model_id = {$model['id']}")
-                                    ->all()
-                                    ->values;
-
-            $model_name = strtoupper($model['name']);
-            $posts['name'] = "LABEL_{$model_name}";
-            $posts['lang'] = 'ja';
-            $posts['project_id'] = $this->project->value['id'];
-            $label['ja'] = $model['label'];
-            $posts['label'] = json_encode($label);
-
-            $localize_string = DB::table('LocalizeString')
-                                       ->where("name = '{$posts['name']}'")
-                                       ->where("project_id = '{$posts['project_id']}'")
-                                       ->one();
-            if ($localize_string->value['id']) {
-                $localize_string->update($posts);
-            } else {
-                DB::table('LocalizeString')->insert($posts);
-            }
-
-            foreach ($attributes as $attribute) {
-
-                if (in_array($attribute['name'], Entity::$app_columns)) {
-
-                } else {
-                    if (mb_substr($attribute['name'], -3) != '_id') {
-                        $label['ja'] = $attribute['label'];
-
-                        $attribute_name = strtoupper($attribute['name']);
-                        $posts['name'] = "LABEL_{$model_name}_{$attribute_name}";
-                        $posts['lang'] = 'ja';
-                        $posts['project_id'] = $this->project->value['id'];
-                        $posts['label'] = json_encode($label);
-
-                        $localize_string = DB::table('LocalizeString')
-                                                   ->where("name = '{$posts['name']}'")
-                                                   ->where("project_id = '{$posts['project_id']}'")
-                                                   ->one();
-                        if ($localize_string->value['id']) {
-                            $localize_string->update($posts);
-                        } else {
-                            DB::table('LocalizeString')->insert($posts);
-                        }
-                    }
-                }
-            }
-        }
-
         if ($_REQUEST['user_project_setting_id']) {
             $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
-            $this->project->exportAttributeLabels();
+        }
+
+        if ($_REQUEST['model_id']) {
+            $model = DB::table('Model')->fetch($_REQUEST['model_id']);
+            LocalizeString::importByModel($model, $this->project);
+        } else {
+            $model = $this->project->hasMany('Model');
+            LocalizeString::importsByModel($model, $this->project);
         }
 
         if ($_REQUEST['redirect']) {

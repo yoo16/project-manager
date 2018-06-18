@@ -150,10 +150,13 @@ class ProjectController extends AppController {
         if (!isPost()) exit;
         $this->page = DB::table('Page')->fetch($this->posts['page_id']);
         $this->project = DB::table('Project')->fetch($this->posts['project_id']);
+        $this->model = DB::table('Model')->fetch($this->page->value['model_id']);
 
         $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($this->posts['user_project_setting_id']);
         $this->project->exportPHPController($this->page, $_REQUEST['is_overwrite']);
         $this->project->exportPHPView($this->page->value, $_REQUEST['is_overwrite']);
+
+        LocalizeString::importByModel($this->model, $this->project);
 
         $params['project_id'] = $this->project->value['id'];
         $this->redirect_to('page/list', $params);

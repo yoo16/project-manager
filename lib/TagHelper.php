@@ -248,9 +248,11 @@ class TagHelper {
         }
         $escape_columns = ['label', 'icon_name', 'http_params', 'is_use_selected', 'is_confirm', 'is_check_delete'];
 
-        foreach ($params as $key => $value) {
-            if (!in_array($key, $escape_columns)) {
-                $attributes[] = "{$key}=\"{$value}\"";
+        if (is_array($params)) {
+            foreach ($params as $key => $value) {
+                if (!in_array($key, $escape_columns)) {
+                    $attributes[] = "{$key}=\"{$value}\"";
+                }
             }
         }
         if ($attributes) $attribute = implode(' ', $attributes);

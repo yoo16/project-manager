@@ -8,7 +8,7 @@
 function undefineLabel($key, $value) {
     $tag = '';
     if (!defined($key)) {
-        $tag = undefineLabelTag();
+        $tag = undefineLabelTag($key, $value);
     }
     if (defined($key)) {
         $tag.= $value;

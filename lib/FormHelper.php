@@ -6,9 +6,23 @@
  */
 
 class FormHelper {
-    //TODO except columns
-    static $except_columns = ['csv', 'model', 'label', 'where', 'wheres', 'order', 'select_columns', 'value', 'values', 'label_separate', 'unselect', 'unselct_label', 'unselct_value'];
-    static $radio_except_columns = ['csv', 'model', 'label', 'where', 'wheres', 'order', 'select_columns', 'values', 'label_separate', 'unselect', 'unselct_label', 'unselct_value'];
+    static $radio_columns = ['value'];
+
+    static $except_columns = ['csv',
+                              'model',
+                              'label',
+                              'where',
+                              'wheres',
+                              'order',
+                              'select_columns',
+                              'value',
+                              'values',
+                              'label_separate',
+                              'unselect',
+                              'unselct_label',
+                              'unselct_value',
+                              'effective-digit'
+                            ];
 
     static $http_tag_columns = ['id', 'class'];
 
@@ -284,9 +298,11 @@ class FormHelper {
      * @return string
      */
     static function radioTag($attributes = null) {
-        foreach (self::$radio_except_columns as $except_column) {
-            if ($attributes[$except_column]) {
-                unset($attributes[$except_column]); 
+        foreach (self::$except_columns as $except_column) {
+            if (!in_array($except_column, self::$radio_columns)) {
+                if ($attributes[$except_column]) {
+                    unset($attributes[$except_column]); 
+                }
             }
         }
         $attributes['type'] = 'radio';
@@ -551,31 +567,40 @@ class FormHelper {
         return $tag;
     }
 
-
     /**
      * input(radio)タグ
      *
-     * @param Array $params
+     * @param array $params
      * @param Object $selected
-     * @return String
+     * @return string
      */
     static function radio($params, $selected = null) {
         $values = self::values($params);
         if (!is_array($values)) return;
 
         $value_key = isset($params['value']) ? $params['value'] : 'value';
-
-        $attributes['name'] = $params['name'];
         foreach ($values as $value) {
-            $attributes['value'] = $value[$value_key];
-            $attributes['checked'] = self::checkedTag($attributes['value'], $selected);
-            $attributes['id'] = "{$attributes['name']}_{$attributes['value']}";
+            $params['value'] = $value[$value_key];
+            $params['checked'] = self::checkedTag($params['value'], $selected);
+            $params['id'] = "{$params['name']}_{$params['value']}";
+            $tag.= self::radioTag($params, $value);
 
-            $tag.= self::radioTag($attributes);
-
-            $label = self::convertLabel($value, $params);
-            $tag.= "<label class=\"radio inline\" for=\"{$attributes['id']}\">{$input_tag}&nbsp;{$label}</label>&nbsp;\n";
+            $label_params['id'] = $attributes['id'];
+            $label_params['label'] = $label = self::convertLabel($value, $params);
+            $tag.= FormHelper::label($label_params);
         }
+        return $tag;
+    }
+
+    /**
+     * input(radio)タグ
+     *
+     * @param array $params
+     * @param Object $selected
+     * @return string
+     */
+    static function label($params) {
+        $tag.= "<label class=\"radio inline\" for=\"{$params['id']}\">{$params['label']}</label>&nbsp;\n";
         return $tag;
     }
 
@@ -621,9 +646,9 @@ class FormHelper {
     /**
      * チェックボックス（複数）
      *
-     * @param Array $params
+     * @param array $params
      * @param Object $seleted
-     * @return String
+     * @return string
      */
     function multiCheckbox($params, $selected=null, $value_key=null, $label_key=null, $values=null) {
         $params = self::checkParams($params, $selected, $value_key, $label_key, $values);
@@ -673,7 +698,7 @@ class FormHelper {
      * @return string
      */
     static function attribute($params) {
-        if (!is_array($params)) return;
+        if (!$params) return;
         foreach ($params as $key => $param) {
             if (is_array($param)) $param = implode(' ', $param);
             if (isset($param)) $attributes[] = "{$key}=\"{$param}\"";
@@ -691,12 +716,13 @@ class FormHelper {
      * @return string
      */
     static function link($action, $params = null) {
-        $attribute = self::attribute($params);
+        $attribute = FormHelper::attribute($params);
         if (substr($action, 0, 1) == '#') {
             $href = '#';
         } else {
             $href = TagHelper::urlFor($action, $query);
         }
+        $label = $params['label'];
         $tag = "<a href=\"{$href}\" {$attribute}>{$label}</a>\n";
         return $tag;
     }
@@ -709,8 +735,7 @@ class FormHelper {
      * @return string
      */
     static function linkButton($action, $id = null, $params = null) {
-        if (!is_array($params)) return;
-        if (!$params['class']) $params['class'] = 'btn btn-outline-primary';
+        if (is_array($params) && !$params['class']) $params['class'] = 'btn btn-outline-primary';
         $controller = $GLOBALS['controller'];
         if ($controller) {
             $tag = $controller->linkTag($controller->name, $action, $id, $params);
@@ -813,11 +838,18 @@ class FormHelper {
         //if (!$params['class']) $params['class'] = 'col-4';
         //$params['class'].= " form-control";
 
-        if ($value && $params['date-formatter']) {
-            $value = date($params['date-formatter'], strtotime($value));
-        }
-        if (isset($value) && is_numeric($params['number-format'])) {
-            $value = number_format($value, $params['number-format']);
+        if (isset($value)) {
+            if ($params['date-formatter']) {
+                $value = date($params['date-formatter'], strtotime($value));
+            }
+            if (is_numeric($value)) {
+                if ($params['number-formatter']) {
+                    $value = sprintf($params['number-formatter'], $value);
+                } else if (is_numeric($params['effective-digit'])) {
+                    $formatter = "%.{$params['effective-digit']}f";
+                    $value = sprintf($formatter, $value);
+                }
+            }
         }
 
         $tag = self::input($params, $name, $value);

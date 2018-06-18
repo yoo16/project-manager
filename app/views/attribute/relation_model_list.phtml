@@ -11,16 +11,16 @@
 <? endif ?>
 
 <table class="table table-sm">
-  <? foreach ($this->project->model->values as $model): ?>
+  <? foreach ($this->project->model->values as $model->value): ?>
   <tr>
     <td>
-    <?= FormHelper::link('#relation-window', null,
+    <?= FormHelper::link('#relation-window',
         [
-        'label' => $model['name'],
+        'label' => $model->value['name'],
         'class' => 'pw-app', 
         'pw-controller' => 'attribute',
         'pw-action' => 'relation_attribute_list', 
-        'fk_model_id' => $model['id'], 
+        'fk_model_id' => $model->value['id'], 
         'attribute_id' => $this->attribute->value['id'], 
         ]) ?>
       </td>

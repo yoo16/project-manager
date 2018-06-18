@@ -45,6 +45,8 @@ class _<?= $values['model']['class_name'] ?> extends PgsqlEntity {
                                   'class_name' => '<?= FileManager::phpClassNameFromEntityName($foreign['foreign_relname']) ?>',
                                   'foreign_table' => '<?= $foreign['foreign_relname'] ?>',
                                   'foreign_column' => '<?= $foreign['foreign_attname'] ?>',
+                                  'cascade_update_type' => '<?= $foreign['confupdtype'] ?>',
+                                  'cascade_delete_type' => '<?= $foreign['confdeltype'] ?>',
                                   ],
 <? endforeach ?>
     );

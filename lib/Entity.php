@@ -61,6 +61,20 @@ class Entity {
     }
 
     /**
+     * set id
+     * 
+     * @param  string $id
+     * @return Entity
+     */
+    public function setId($id) {
+        if ($id > 0) {
+            $this->value[$this->id_column] = $id;
+            $this->id = $id;
+        }
+        return $this;
+    }
+
+    /**
      * set id column
      * 
      * @param  string $column
@@ -187,6 +201,26 @@ class Entity {
      * @param
      * @return void
      */
+    public function oldValueToValue() {
+        if ($this->columns) {
+            foreach ($this->columns as $column_name => $column) {
+                if ($column['old_name'] && $column_name != $column['old_name']) {
+                    $this->value[$column_name] = $this->value[$column['old_name']];
+                    //if ($column['old_name'] != $this->id_column) {
+                        unset($this->value[$column['old_name']]);
+                    //}
+                }
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * convert value from old value
+     * 
+     * @param
+     * @return void
+     */
     public function convertValueFromOldValue() {
         if ($this->columns) {
             foreach ($this->columns as $column_name => $column) {
@@ -200,21 +234,17 @@ class Entity {
     /**
      * save
      * 
-     * @param
-     * @return Entity
+     * @param  array $posts
+     * @param  integer $id
+     * @return PgsqlEntity
      */
-    public function save() {
-        if ($this->before_save() !== false) {
-            if ($this->isNew()) {
-                return $this->insert();
-            } else {
-                $changes = $this->changes();
-                if (count($changes) > 0) {
-                    return $this->update();
-                } else {
-                    if (defined('DEBUG') && DEBUG) error_log("<UPDATE> {$this->name}:{$this->id} has no changes");
-                }
-            }
+    public function save($posts, $id = null)
+    {
+        if ($id) $this->fetch($id);
+        if ($this->id > 0) {
+            $this->update($posts);
+        } else {
+            $this->insert($posts);
         }
         return $this;
     }
@@ -395,10 +425,10 @@ class Entity {
      * @return int
      */
     private function castInt($value) {
-        if (is_numeric($value)) {
-            if (is_int($value)) return $value;
-            return (int) $value;
-        }
+        if (is_int($value)) return $value;
+        $value = $this->castNumber($value);
+        if (!is_numeric($value)) return;
+        return (int) $value;
     }
 
     /**
@@ -408,10 +438,10 @@ class Entity {
      * @return float
      */
     private function castFloat($value) {
-        if (is_numeric($value)) {
-            if (is_float($value)) return $value;
-            return (float) $value;
-        }
+        if (is_float($value)) return $value;
+        $value = $this->castNumber($value);
+        if (!is_numeric($value)) return;
+        return (float) $value;
     }
 
     /**
@@ -421,10 +451,23 @@ class Entity {
      * @return double
      */
     private function castDouble($value) {
-        if (is_numeric($value)) {
-            if (is_double($value)) return $value;
-            return (double) $value;
+        if (is_double($value)) return $value;
+        $value = $this->castNumber($value);
+        if (!is_numeric($value)) return;
+        return (double) $value;
+    }
+
+    /**
+     * cast Number
+     *
+     * @return void
+     */
+    private function castNumber($value) {
+        if (is_numeric(strpos($value, ','))) {
+            $value = str_replace(',', '', $value);
         }
+        if (!is_numeric($value)) return;
+        return $value;
     }
 
     /**
@@ -1025,6 +1068,27 @@ class Entity {
             $rows[] = $row;
         }
         return $rows;
+    }
+
+    /**
+     * ids
+     *
+     * @param array $conditions
+     * @return void
+     */
+    function ids($key_column, $value_column) {
+        return $this->all()->idsForOldId($key_column, $value_column);
+    }
+
+    /**
+     * ids for old DB id key
+     *
+     * @return array
+     */
+    function idsForOldId($key = 'old_id', $value = 'id') {
+        if (!$this->values) return;
+        $ids = array_column($this->values, $value, $key);
+        return $ids;
     }
 
 }

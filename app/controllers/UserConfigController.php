@@ -21,7 +21,6 @@ class UserConfigController extends AppController {
 
     function action_list() {
         $user_config = DB::table('UserConfig')->all();
-        var_dump($user_config->values);
     }
 
     function action_new() {

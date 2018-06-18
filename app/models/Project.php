@@ -129,7 +129,6 @@ class Project extends _Project {
 
         $model_path = Model::projectFilePath($this->user_project_setting->value, $model->value);
 
-
         if (!file_exists($model_path)) {
             $model_template_path = Model::templateFilePath();
             $contents = FileManager::bufferFileContetns($model_template_path, $values);

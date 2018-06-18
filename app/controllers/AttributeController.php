@@ -273,6 +273,11 @@ class AttributeController extends ModelController {
         $this->redirect_to('list');
     }
 
+    /**
+     * relation model list
+     *
+     * @return void
+     */
     function action_relation_model_list() {
         $this->layout = null;
 
@@ -282,7 +287,6 @@ class AttributeController extends ModelController {
             $this->fk_attribute = DB::table('Attribute')->fetch($this->attribute->value['fk_attribute_id']);
             $this->fk_model = DB::table('Model')->fetch($this->fk_attribute->value['model_id']);
         }
-
         $this->project->bindMany('Model');
     }
 

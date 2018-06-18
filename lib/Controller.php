@@ -187,6 +187,12 @@ class Controller extends RuntimeException {
         return $params;
     }
 
+    /**
+     * bind pw request params
+     *
+     * @param array $params
+     * @return void
+     */
     static function bindPwRequestParams($params) {
         $request_url = parse_url($request);
         if (isset($request_url['query'])) {
@@ -554,30 +560,35 @@ class Controller extends RuntimeException {
     /**
      * redirect
      * 
+     * @param  string $controller
+     * @param  mix $id
      * @param  array $params
-     * @param  array $options
      * @return void
      */
-    function redirectTo($params, $options = null) {
-        $this->_performed_render = true;
-
-        if (strpos($params, '://')) {
-            $url = $params;
+    function redirectTo($action, $id = null, $params = null) {
+        if (strpos($action, '/') > 0) {
+            $actions = explode('/', $action);
+            $controller = $actions[0];
+            $action = $actions[1];
+        }
+        if (is_array($id)) {
+            $params = $id;
+            $id = null;
+        }
+        if ($controller) {
+            $url = $this->urlFor($controller, $action, $id, $params);
         } else {
-            //TODO
-            $url = $this->url_for($params, $options);
-            if (!strpos($url, '://')) $url = $this->base . $url;
-            if (SID) $url .= ((strpos($url, '?')) ? '&' : '?' ) . SID;
+            $params['id'] = $id;
+            $url = $this->urlActionFor($action, $params);
         }
         if (defined('DEBUG') && DEBUG) error_log("<REDIRECT> {$url}");
         header("Location: {$url}");
         exit;
     }
 
+     //TODO: remove
     /**
      * url for params
-     *
-     * TODO: remove
      * 
      * @param  array $url_params
      * @param  array $options
@@ -638,8 +649,8 @@ class Controller extends RuntimeException {
      */
     function linkTag($controller, $action = null, $id = null, $params = null) {
         if ($params['is_use_selected']) $params['class'].= FormHelper::linkActive($controller, $this->name);
-        $params['href'] = $this->urlFor($controller, $action, $id, $params['http_params']);
-
+        $href = $this->urlFor($controller, $action, $id, $params['http_params']);
+        if (!$params || is_array($params)) $params['href'] = $href;
         $tag = TagHelper::aTag($params);
         return $tag;
     }
@@ -701,7 +712,7 @@ class Controller extends RuntimeException {
 
         if (isset($http_params) && is_array($http_params)) {
             $url_params = http_build_query($http_params);
-            $url = "{$url}?{$url_params}";
+            if ($url_params) $url = "{$url}?{$url_params}";
         }
         return $url;
     }
@@ -746,7 +757,7 @@ class Controller extends RuntimeException {
 
         if (isset($http_params) && is_array($http_params)) {
             $url_params = http_build_query($http_params);
-            $url = "{$url}?{$url_params}";
+            if ($url_params) $url = "{$url}?{$url_params}";
         }
         return $url;
     }
@@ -951,12 +962,13 @@ class Controller extends RuntimeException {
     }
 
     /**
-     * add session error
+     * add session errors
      *
      * @param  array $errors
      * @return void
      */
     function addError($key, $values) {
+        $errors = AppSession::getWithKey('errors', $this->name);
         $errors[$key] = $values;
         AppSession::setWithKey('errors', $this->name, $errors);
     }

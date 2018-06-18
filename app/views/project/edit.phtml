@@ -1,26 +1,7 @@
 <? include('_header.phtml') ?>
-
     <form action="<?= url_for('update', $this->params['id']) ?>" method="post">
 
-        <table class="table">
-            <tr>
-            <th class="form-group row">
-                ProjectPath
-            </th>
-            <td>
-                <?= $this->user_project_setting->formInput('name', ['class' => 'form-control']) ?>
-            </td>
-            </tr>
-        </table>
-
-        <?= FormHelper::submit(LABEL_UPDATE) ?>
-        <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK])?>
-    </form>
-    <?= $this->project->formDelete() ?>
-
-    <form action="<?= url_for('update', $this->params['id']) ?>" method="post">
-
-        <table class="table">
+        <table class="table table-list">
             <tr>
                 <th>
                     <?= FormHelper::formLabel('Name', ['class' => 'col-2']) ?>
@@ -28,7 +9,8 @@
                 <td>
                     <?= $this->project->formInput('name', ['class' => 'form-control']) ?>
                 </td>
-
+            </tr>
+            <tr>
                 <th>
                     <?= FormHelper::formLabel('Database', ['class' => 'col-2']) ?>
                 </th>
@@ -41,4 +23,5 @@
 
         <?= FormHelper::submit(LABEL_UPDATE) ?>
         <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
-</form>
+    </form>
+<?= $this->project->formDelete() ?>

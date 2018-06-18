@@ -290,7 +290,8 @@ class FtpLite
         if (!$this->is_login) return;
         ftp_pasv($this->connect, true);
         $this->is_success_download = ftp_get($this->connect, $file_path, $remote_path, $upload_mode);
-        //ftp_close($this->connect);
+        dump($this->host);
+        dump($remote_path);
 
         $this->changeMod($file_path);
         return $this;

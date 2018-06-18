@@ -11,7 +11,7 @@ class PageController extends ProjectController {
     var $name = 'page';
 
    /**
-    * 事前処理
+    * 
     *
     * @access public
     * @param String $action
