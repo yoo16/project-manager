@@ -124,25 +124,4 @@ class LangController extends AppController {
         $this->redirect_to('index');
     }
 
-   /**
-    * sort order
-    *
-    * @param
-    * @return void
-    */
-    function action_sort_order() {
-        $this->lang = DB::table('Lang')->all();
-    }
-
-   /**
-    * update sort order
-    *
-    * @param
-    * @return void
-    */
-    function action_update_sort() {
-        if (!isPost()) exit;
-        DB::table('Lang')->updateSortOrder($_REQUEST['sort_order']);
-    }
-
 }

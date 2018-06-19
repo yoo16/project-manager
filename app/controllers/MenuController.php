@@ -119,27 +119,4 @@ class MenuController extends AppController {
         $this->redirect_to('edit', $this->params['id']);
     }
 
-   /**
-    * delete
-    *
-    * @param
-    * @return void
-    */
-    function action_delete() {
-        if (!isPost()) exit;
-        DB::table('Menu')->delete($this->params['id']);
-        $this->redirect_to('index');
-    }
-
-   /**
-    * update sort order
-    *
-    * @param
-    * @return void
-    */
-    function action_update_sort() {
-        $this->updatSort('Menu');
-        exit;
-    }
-
 }

@@ -437,6 +437,7 @@ class PgsqlEntity extends Entity
      * create constraint SQL
      * 
      * @param PgsqlEntity $model
+     * @param array $cascades
      * @return string
      */
     public function constraintSql($model)
@@ -1558,10 +1559,15 @@ class PgsqlEntity extends Entity
     function updateSortOrder($sort_orders)
     {
         if (is_array($sort_orders)) {
-            foreach ($sort_orders as $id => $sort_order) {
+            $this->idIndex()->select([$this->id_column, 'sort_order'])->all();
+            $class_name = get_class($this);
+            foreach ($sort_orders as $sort_order => $id) {
                 if (is_numeric($id) && is_numeric($sort_order)) {
-                    $posts['sort_order'] = (int) $sort_order;
-                    $this->setId($id)->update($posts);
+                    $current_value = $this->values[$id];
+                    if ($current_value['sort_order'] != $sort_order) {
+                        $posts['sort_order'] = (int) $sort_order;
+                        DB::table($class_name)->update($posts, $id);
+                    }
                 }
             }
         }

@@ -132,33 +132,5 @@ class ApiParamController extends ApiController {
         $this->redirect_to('index');
     }
 
-   /**
-    * sort order
-    *
-    * @param
-    * @return void
-    */
-    function action_sort_order() {
-        if (!$this->api->value) $this->redirect_to('/');
-        $this->api_param = $this->api->relationMany('ApiParam')
-                                ->wheres($this->filters)
-                                ->all();
-    }
-
-   /**
-    * update sort order
-    *
-    * @param
-    * @return void
-    */
-    function action_update_sort() {
-        if (!isPost()) exit;
-        DB::table('ApiParam')->updateSortOrder($_REQUEST['sort_order']);
-
-        $results['is_success'] = true;
-        $results = json_encode($results);
-        echo($results);
-        exit;
-    }
 
 }

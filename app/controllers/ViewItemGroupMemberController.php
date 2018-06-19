@@ -132,33 +132,4 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
         $this->redirect_to('index');
     }
 
-   /**
-    * sort order
-    *
-    * @param
-    * @return void
-    */
-    function action_sort_order() {
-        if (!$this->view_item_group->value) $this->redirect_to('/');
-        $this->view_item_group_member = $this->view_item_group->relationMany('ViewItemGroupMember')
-                                ->wheres($this->filters)
-                                ->all();
-    }
-
-   /**
-    * update sort order
-    *
-    * @param
-    * @return void
-    */
-    function action_update_sort() {
-        if (!isPost()) exit;
-        DB::table('ViewItemGroupMember')->updateSortOrder($_REQUEST['sort_order']);
-
-        $results['is_success'] = true;
-        $results = json_encode($results);
-        echo($results);
-        exit;
-    }
-
 }

@@ -1,16 +1,16 @@
 <?php
+/**
+ * Controller 
+ *
+ * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
+ */
+
 require_once "PwSetting.php";
 
 PwSetting::load();
 Controller::loadLib();
 ApplicationLoader::autoloadModel();
 PwSetting::loadApplication();
-        
-/**
- * Controller 
- *
- * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
- */
 
 class Controller extends RuntimeException {
     static $routes = ['controller', 'action', 'id'];
@@ -21,7 +21,7 @@ class Controller extends RuntimeException {
     public $pw_layout = null;
     public $session_name = '';
     public $headers = [];
-    public $_performed_render = false;
+    public $performed_render = false;
     public $relative_base = '';
     public $pw_project_name = '';
     public $pw_controller = '';
@@ -110,7 +110,7 @@ class Controller extends RuntimeException {
     }
 
     /**
-     * className
+     * controller class name
      *
      * @param  string $name
      * @return string
@@ -121,7 +121,7 @@ class Controller extends RuntimeException {
     }
 
     /**
-     * className
+     * controller file path
      *
      * @param  string $name
      * @return string
@@ -227,7 +227,6 @@ class Controller extends RuntimeException {
                 if ($_REQUEST['lang'] && $_REQUEST['is_change_lang']) AppSession::set('lang', $_REQUEST['lang']);
                 $controller->lang = ApplicationLocalize::load($_REQUEST['lang']);
                 $controller->loadDefaultCsvOptions($_REQUEST['lang'], $_REQUEST['is_change_lang']);
-
                 $controller->run($params);
             } catch (Throwable $t) {
                 $errors = Controller::throwErrors($t);
@@ -257,7 +256,7 @@ class Controller extends RuntimeException {
      * @param  array  $params
      * @return void
      */
-    function run($params = array()) {
+    private function run($params = array()) {
         $GLOBALS['controller'] = $this;
 
         if ($_GET) $this->params = $_GET;
@@ -288,7 +287,7 @@ class Controller extends RuntimeException {
      * 
      * @return string
      */
-    public function pwLayout() {
+    private function pwLayout() {
         if ($this->with_layout) {
             if (is_string($this->layout)) {
                 $this->pw_layout = $this->layout;
@@ -305,7 +304,7 @@ class Controller extends RuntimeException {
      * @param string $action
      * @return void
      */
-    public function pwTemplate($action) {
+    private function pwTemplate($action) {
         if (substr($action, 0, 1) === '/') {
             $template = "views{$action}.phtml";
         } else {
@@ -320,7 +319,7 @@ class Controller extends RuntimeException {
      *
      * @return void
      */
-    function loadPwTemplate() {
+    private function loadPwTemplate() {
         $template = BASE_DIR."app/{$this->pw_template}";
 
         if (file_exists($template)) {
@@ -336,7 +335,7 @@ class Controller extends RuntimeException {
      * 
      * @return void
      */
-    function loadPwHeaders() {
+    private function loadPwHeaders() {
         header('Content-Type: ' . $this->contentType());
         if (isset($this->pw_headers)) {
             foreach ($this->pw_headers as $key => $value) {
@@ -351,8 +350,8 @@ class Controller extends RuntimeException {
      * @param  string $action
      * @return void
      */
-    function render($action) {
-        if ($this->_performed_render) return;
+    public function render($action) {
+        if ($this->performed_render) return;
         $this->before_rendering($action, $this->with_layout);
         $template = $this->pwTemplate($action);
 
@@ -381,7 +380,7 @@ class Controller extends RuntimeException {
             $this->loadPwTemplate();
             echo($this->content_for_layout);
         }
-        $this->_performed_render = true;
+        $this->performed_render = true;
     }
 
     /**
@@ -431,14 +430,14 @@ class Controller extends RuntimeException {
      * @param  string $text
      * @return void
      */
-    function renderText($text) {
-        if ($this->_performed_render) return;
+    public function renderText($text) {
+        if ($this->performed_render) return;
 
         $length = strlen($text);
         header("Content-Length: {$length}");
         header("Content-Type: " . $this->contentType());
         echo $text;
-        $this->_performed_render = true;
+        $this->performed_render = true;
     }
 
     /**
@@ -448,15 +447,15 @@ class Controller extends RuntimeException {
      * @param  string $content_type
      * @return void
      */
-    function renderContents($contents, $content_type = null) {
-        if ($this->_performed_render) return;
+    public function renderContents($contents, $content_type = null) {
+        if ($this->performed_render) return;
         if (is_null($content_type)) $content_type = $this->contentType();
         $length = strlen($contents);
         header("Content-Disposition: inline");
         header("Content-Length: {$length}");
         header("Content-Type: {$content_type}");
         echo $contents;
-        $this->_performed_render = true;
+        $this->performed_render = true;
     }
 
     /**
@@ -466,15 +465,15 @@ class Controller extends RuntimeException {
      * @param  string $content_type
      * @return void
      */
-    function renderFile($file, $content_type) {
-        if ($this->_performed_render) return;
+    public function renderFile($file, $content_type) {
+        if ($this->performed_render) return;
         if (file_exists($file)) {
             $length = filesize($file);
             header("Content-Disposition: inline");
             header("Content-Length: {$length}");
             header("Content-Type: {$content_type}");
             readfile($file);
-            $this->_performed_render = true;
+            $this->performed_render = true;
         } else {
             trigger_error("File Not Found: {$file}", E_USER_NOTICE);
         }
@@ -488,8 +487,8 @@ class Controller extends RuntimeException {
      * @param  string $content_type
      * @return void
      */
-    function downloadFile($file, $file_name = null, $content_type = "application/octet-stream") {
-        if ($this->_performed_render) return;
+    public function downloadFile($file, $file_name = null, $content_type = "application/octet-stream") {
+        if ($this->performed_render) return;
         if (file_exists($file)) {
             if (is_null($file_name)) $file_name = basename($file);
             $length = filesize($file);
@@ -500,7 +499,7 @@ class Controller extends RuntimeException {
             header("Content-Length: {$length}");
             header("Content-Disposition: Attachment; filename=\"{$file_name}\""); 
             header("Content-type: {$content_type}; name=\"{$file_name}\"");
-            $this->_performed_render = true;
+            $this->performed_render = true;
         } else {
             trigger_error("File Not Found: {$file}", E_USER_NOTICE);
         }
@@ -514,8 +513,8 @@ class Controller extends RuntimeException {
      * @param  string $content_type
      * @return void
      */
-    function downloadContents($contents, $file_name, $content_type = "application/octet-stream") {
-        if ($this->_performed_render) return;
+    public function downloadContents($contents, $file_name, $content_type = "application/octet-stream") {
+        if ($this->performed_render) return;
 
         if (preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT']) || strpos($_SERVER['HTTP_USER_AGENT'], 'Trident')) {
             $file_name = mb_convert_encoding($file_name, 'SJIS', 'UTF-8');
@@ -529,9 +528,10 @@ class Controller extends RuntimeException {
         header("Content-type: {$content_type}; name=\"{$file_name}\"");
         echo($contents);
 
-        $this->_performed_render = true;
+        $this->performed_render = true;
     }
 
+    //TODO remove function
     /**
      * redirect
      *
@@ -542,7 +542,7 @@ class Controller extends RuntimeException {
      * @return void
      */
     function redirect_to($params, $options = null) {
-        $this->_performed_render = true;
+        $this->performed_render = true;
 
         if (strpos($params, '://')) {
             $url = $params;
@@ -586,7 +586,7 @@ class Controller extends RuntimeException {
         exit;
     }
 
-     //TODO: remove
+     //TODO: remove function
     /**
      * url for params
      * 
@@ -742,7 +742,7 @@ class Controller extends RuntimeException {
     }
 
     /**
-     * url for params
+     * url self for params
      *
      * @param  string $action
      * @param  string $id
@@ -768,7 +768,7 @@ class Controller extends RuntimeException {
      * @param  string $encofing
      * @return string
      */
-    function contentType($encoding = null) {
+    private function contentType($encoding = null) {
         if (!$encoding) {
             $encoding = mb_http_output();
             if ($encoding != 'UTF-8') {
@@ -785,7 +785,7 @@ class Controller extends RuntimeException {
      *
      * @return $string
      */
-    public function pwProjectName() {
+    private function pwProjectName() {
         $path = str_replace('public', '', $_SERVER['PHP_SELF']);
         $path = str_replace('dispatch.php', '', $path);
         $this->pw_project_name = str_replace('/', '', $path);
@@ -797,7 +797,7 @@ class Controller extends RuntimeException {
      *
      * @return string
      */
-    public function relativeBaseURL() {
+    private function relativeBaseURL() {
         $query = str_replace('?', '', $_SERVER['QUERY_STRING']);
         $count = substr_count($query, '/');
         for ($i = 0; $i < $count; $i++) {
@@ -805,7 +805,6 @@ class Controller extends RuntimeException {
         }
         return $this->relative_base;
     }
-
 
     /**
      * relative base url for QUERY_STRING
@@ -820,7 +819,6 @@ class Controller extends RuntimeException {
         }
         return $relative_base;
     }
-
 
     /**
      * base url for HTTPS & HTTP_HOST
@@ -851,7 +849,7 @@ class Controller extends RuntimeException {
      *
      * @return string
      */
-    public function pwController() {
+    private function pwController() {
         $this->pw_controller = $this->params['controller'];
         return $this->pw_controller;
     }
@@ -861,7 +859,7 @@ class Controller extends RuntimeException {
      *
      * @return string
      */
-    public function pwAction() {
+    private function pwAction() {
         $this->pw_action = $this->params['action'];
         if (!isset($this->pw_action) || $this->pw_action === '') {
             $this->pw_action = 'index';
@@ -877,14 +875,15 @@ class Controller extends RuntimeException {
      * @param string $action
      * @return string
      */
-    public function pwMethod($action) {
+    private function pwMethod($action) {
         if (method_exists($this, $action)) {
             $method = $action;
         } else if (method_exists($this, "action_{$action}")) {
             $method = "action_{$action}";
-        }
-        if (method_exists(new Controller(), $method)) {
-            $method = null;
+        } else if (method_exists(new Controller(), $method)) {
+            $method = $action;
+        } else if (method_exists(new Controller(), "action_{$action}")) {
+            $method = "action_{$action}";
         }
         return $method;
     }
@@ -909,11 +908,9 @@ class Controller extends RuntimeException {
         $this->class_name = get_class($this);
 
         $method = $this->pwMethod($this->pw_action);
-
         if (!empty($method)) {
             $this->before_action($this->pw_action);
-            if ($this->_performed_render) return;
-
+            if ($this->performed_render) return;
             try {
                 $this->$method();
             } catch (Throwable $t) {
@@ -1045,6 +1042,12 @@ class Controller extends RuntimeException {
         AppSession::flushWithKey($this->session_name);
     }
 
+    /**
+     * before action
+     *
+     * @param string $action
+     * @return void
+     */
     function before_action($action) {
         $this->loadRequestSession();
     } 
@@ -1053,9 +1056,18 @@ class Controller extends RuntimeException {
     function before_invocation() {}
 
     /**
+     * load Csv values
+     * 
+     * @return void
+     */
+    function loadDefaultCsvOptions($lang = null) {
+        $this->csv_options = ApplicationLocalize::loadCsvOptions($lang);
+    }
+
+    /**
      * check action
      * 
-     * @param String $redirect_action
+     * @param string $redirect_action
      * @return void
      */
     function checkEdit($redirect_action = 'new') {
@@ -1063,15 +1075,6 @@ class Controller extends RuntimeException {
             $this->redirect_to($redirect_action);
             exit;
         }
-    }
-
-    /**
-     * load Csv values
-     * 
-     * @return void
-     */
-    function loadDefaultCsvOptions($lang = null) {
-        $this->csv_options = ApplicationLocalize::loadCsvOptions($lang);
     }
 
     /**
@@ -1128,15 +1131,34 @@ class Controller extends RuntimeException {
    /**
     * update sort order
     *
-    * @param string $model_name
+    * @param
     * @return void
     */
-    function updateSort($model_name) {
-        if (!$_REQUEST['sort_order']) exit;
-        
-        DB::table($model_name)->updateSortOrder($_REQUEST['sort_order']);
+    public function action_update_sort() {
+        if ($_REQUEST['model_name']) {
+            $this->updateSort($_REQUEST['model_name']);
+        }
+    }
 
-        $results['is_success'] = true;
+   /**
+    * update sort order
+    *
+    * @param string $model_name
+    * @param boolean $is_json
+    * @return void
+    */
+    function updateSort($model_name = null, $is_json = true) {
+        if (!$model_name) exit('Not found model_name');
+
+        if ($_REQUEST['sort_order']) $sort_order = $_REQUEST['sort_order'];
+        if (!$sort_order) exit('Not found sort_order');
+        
+        if (class_exists($model_name)) {
+            DB::table($model_name)->updateSortOrder($sort_order);
+            if ($is_json) {
+                $results['is_success'] = true;
+            }
+        }
         $results = json_encode($results);
         echo($results);
         exit;

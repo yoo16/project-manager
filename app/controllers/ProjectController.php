@@ -69,7 +69,6 @@ class ProjectController extends AppController {
                             ->all();
 
         $this->project = DB::table('Project')
-                            ->order('name')
                             ->all()
                             ->bindById('Database');
     }

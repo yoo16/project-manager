@@ -144,28 +144,6 @@ class ViewController extends ProjectController {
         $this->redirect_to('index');
     }
 
-   /**
-    * ソート画面
-    *
-    * @param
-    * @return void
-    */
-    function action_sort_order() {
-
-    }
-
-   /**
-    * ソート更新
-    *
-    * @param
-    * @return void
-    */
-    function action_update_sort() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            DB::table('View')->updateSortOrder($_REQUEST['sort_order']);
-        }
-    }
-
     function action_change_overwrite() {
         $view = DB::table('View')->fetch($this->params['id']);
         if ($view->value['id']) {

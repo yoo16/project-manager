@@ -19,6 +19,9 @@ var PwController = function() {
     this.urlPost = function(url, params, callback, data_format = 'html') {
         post(url, params, callback, format);
     }
+    this.projectUrl = function() {
+        return projectUrl();
+    }
 
     $(document).on('click', '.pw-app', function() {
         var name = $(this).attr('pw-controller');
@@ -30,6 +33,21 @@ var PwController = function() {
         var controller_name = controllerClassName(name);
         if (controller_name in window) {
             var controller = new window[controller_name]();
+            if (action in controller) {
+                controller[action](this);
+            }
+        }
+    }); 
+
+    $(document).on('click', '.pw-lib', function() {
+        var lib_name = $(this).attr('pw-lib');
+        if (!lib_name) return;
+
+        var action = $(this).attr('pw-action');
+        if (!action) return;
+
+        if (lib_name in window) {
+            var controller = new window[lib_name]();
             if (action in controller) {
                 controller[action](this);
             }

@@ -160,20 +160,4 @@ class PageFilterController extends PageController {
         $this->page_filter = $this->page->relationMany('PageFilter')->all();
     }
 
-   /**
-    * update sort order
-    *
-    * @param
-    * @return void
-    */
-    function action_update_sort() {
-        if (!isPost()) exit;
-        DB::table('PageFilter')->updateSortOrder($_REQUEST['sort_order']);
-
-        $results['is_success'] = true;
-        $results = json_encode($results);
-        echo($results);
-        exit;
-    }
-
 }
