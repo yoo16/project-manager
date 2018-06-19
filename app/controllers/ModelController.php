@@ -53,61 +53,6 @@ class ModelController extends ProjectController {
                             ->bindValuesArray($this->pg_classes, 'pg_class', 'name');
     }
 
-    function action_constraints() {
-        $database = $this->project->belongsTo('Database');
-        $pgsql = $database->pgsql();
-        $pg_classes = $pgsql->pgClasses();
-        foreach ($pg_classes as $pg_class) {
-            $this->pg_constraints[] = $pgsql->pgForeignConstraints($pg_class['pg_class_id']);
-        }
-    }
-
-    function action_values() {
-        $this->model = DB::table('model')->fetch($this->params['id']);
-        $this->attribute = $this->model->hasMany('Attribute');
-
-        foreach ($this->attribute->values as $attribute) {
-            if ($attribute['fk_attribute_id']) {
-                $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
-                if ($fk_attribute->value) {
-                    $model = DB::table('Model')->fetch($fk_attribute->value['model_id']);
-                    if ($model->value) {
-                        $this->fk_models[$attribute['name']] = $model->value;
-                    }
-                }
-            }
-        }
-
-        $database = $this->project->belongsTo('Database');
-
-        $this->pg_class = $database->pgsql()->pgClassArray($this->model->value['pg_class_id']);
-
-        $this->values = $database->pgsql()
-                                 ->table($this->model->value['name'])
-                                 ->all()
-                                 ->values;
-    }
-
-    function action_add_value() {
-        if (!isPost()) exit;
-
-        $posts = $this->posts['model'];
-
-        $this->model = DB::table('model')->fetch($this->params['id']);
-
-        $database = $this->project->belongsTo('Database');
-        $pgsql = $database->pgsql()->table($this->model->value['name'])->insert($posts);
-
-        if ($pgsql->sql_error) {
-            echo($pgsql->sql_error.PHP_EOL);
-            echo($pgsql->sql.PHP_EOL);
-            echo($pgsql->dbname.PHP_EOL);
-            echo($pgsql->host.PHP_EOL);
-            exit;
-        }
-        $this->redirect_to('values', $this->params['id']);
-    }
-
     function action_new() {
 
     }
@@ -599,5 +544,77 @@ class ModelController extends ProjectController {
             }
         }
         $this->redirect_to('list');
+    }
+
+
+    function action_constraints() {
+        $database = $this->project->belongsTo('Database');
+        $pgsql = $database->pgsql();
+        $pg_classes = $pgsql->pgClasses();
+        foreach ($pg_classes as $pg_class) {
+            $this->pg_constraints[] = $pgsql->pgForeignConstraints($pg_class['pg_class_id']);
+        }
+    }
+
+    function action_values() {
+        $this->model = DB::table('Model')->fetch($this->params['id']);
+        $this->attribute = $this->model->hasMany('Attribute');
+
+        foreach ($this->attribute->values as $attribute) {
+            if ($attribute['fk_attribute_id']) {
+                $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
+                if ($fk_attribute->value) {
+                    $model = DB::table('Model')->fetch($fk_attribute->value['model_id']);
+                    if ($model->value) {
+                        $this->fk_models[$attribute['name']] = $model->value;
+                    }
+                }
+            }
+        }
+
+        $database = $this->project->belongsTo('Database');
+
+        $this->pg_class = $database->pgsql()->pgClassArray($this->model->value['pg_class_id']);
+
+        $this->values = $database->pgsql()
+                                 ->table($this->model->value['name'])
+                                 ->all()
+                                 ->values;
+    }
+
+    function action_add_value() {
+        if (!isPost()) exit;
+
+        $posts = $this->posts['model'];
+
+        $this->model = DB::table('Model')->fetch($this->params['id']);
+
+        $database = $this->project->belongsTo('Database');
+        $pgsql = $database->pgsql()->table($this->model->value['name'])->insert($posts);
+
+        if ($pgsql->sql_error) {
+            echo($pgsql->sql_error.PHP_EOL);
+            echo($pgsql->sql.PHP_EOL);
+            echo($pgsql->dbname.PHP_EOL);
+            echo($pgsql->host.PHP_EOL);
+            exit;
+        }
+        $this->redirect_to('values', $this->params['id']);
+    }
+
+
+    /**
+     * delere_records
+     *
+     * @return void
+     */
+    function action_delere_records() {
+        $database = $this->project->belongsTo('Database');
+        $model = DB::table('Model')->fetch($this->params['id']);
+
+        if ($model->value['class_name']) {
+            $database->pgsql()->table($model->value['name'])->deleteRecords();
+        }
+        $this->redirectTo('values'); 
     }
 }

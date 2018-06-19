@@ -3946,4 +3946,48 @@ class PgsqlEntity extends Entity
 
     }
 
+
+    /**
+     * delete records and reset sequence
+     *
+     * @return 
+     */
+    function deleteRecords($is_drop_primary = false) {
+        $this->deletes();
+
+        if ($this->sql_error) {
+            echo($class_name).PHP_EOL;
+            echo($this->sql_error).PHP_EOL;
+            exit;
+        }
+        if ($this->errors) {
+            echo($class_name).PHP_EOL;
+            exit;
+        }
+
+        if ($is_drop_primary) {
+            $result = $this->deletePgPrimaryKey($this->name);
+            if (!$result) {
+                echo($class_name).PHP_EOL;
+                echo("Error: delete primary key").PHP_EOL;
+                exit;
+            }
+            $result = $this->addPgPrimaryKey($this->name);
+            if (!$result) {
+                echo($class_name).PHP_EOL;
+                echo("Error: add primary key").PHP_EOL;
+                exit;
+            }
+        }
+        $result = $this->resetSequence($this->name);
+        if (!$result) {
+            $sequence_name = PgsqlEntity::sequenceName($this->name);
+
+            echo($class_name).PHP_EOL;
+            echo($sequence_name).PHP_EOL;
+            echo("Error: reset sequence").PHP_EOL;
+            exit;
+        }
+    }
+
 }

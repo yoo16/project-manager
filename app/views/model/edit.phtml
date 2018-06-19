@@ -6,9 +6,23 @@
 
       <table class="table">
         <tr>
-          <th>Name</th>
+          <th>Table Name</th>
           <td>
             <?= $this->model->formInput('name', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
+
+        <tr>
+          <th>Model Class Name</th>
+          <td>
+            <?= $this->model->value['class_name'] ?>
+          </td>
+        </tr>
+
+        <tr>
+          <th>Entity Name</th>
+          <td>
+            <?= $this->model->value['entity_name'] ?>
           </td>
         </tr>
 
