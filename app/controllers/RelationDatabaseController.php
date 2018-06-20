@@ -43,7 +43,7 @@ class RelationDatabaseController extends ProjectController {
     }
 
     function action_list() {
-        $this->relation_database = DB::table('RelationDatabase')
+        $this->relation_database = DB::model('RelationDatabase')
                                         ->join('Database', 'id', 'old_database_id')
                                         ->join('Project', 'id', 'project_id')
                                         ->all();
@@ -54,13 +54,13 @@ class RelationDatabaseController extends ProjectController {
     }
 
     function action_edit() {
-        $this->relation_database = DB::table('RelationDatabase')->fetch($this->params['id']);
+        $this->relation_database = DB::model('RelationDatabase')->fetch($this->params['id']);
     }
 
     function action_add() {
         if (!isPost()) exit;
 
-        DB::table('RelationDatabase')->insert($this->posts['relation_database']);
+        DB::model('RelationDatabase')->insert($this->posts['relation_database']);
         $this->redirect_to('list');
     }
 
@@ -75,12 +75,12 @@ class RelationDatabaseController extends ProjectController {
     function action_delete() {
         if (!isPost()) exit;
 
-        DB::table('RelationDatabase')->delete($this->params['id']);
+        DB::model('RelationDatabase')->delete($this->params['id']);
         $this->redirect_to('list');
     }
 
     function action_update_old_table() {
-        $relation_database = DB::table('RelationDatabase')
+        $relation_database = DB::model('RelationDatabase')
                                         ->join('Database', 'id', 'old_database_id')
                                         ->join('Project', 'id', 'project_id')
                                         ->all();
@@ -102,7 +102,7 @@ class RelationDatabaseController extends ProjectController {
                     $table_name = FileManager::pluralToSingular($table_name);
                     $table_name = FileManager::singularToPlural($table_name);
 
-                    $model = DB::table('Model')
+                    $model = DB::model('Model')
                                             ->where("project_id = '{$this->project->value['id']}'")
                                             ->where("name = '{$table_name}'")
                                             ->one();
@@ -120,7 +120,7 @@ class RelationDatabaseController extends ProjectController {
     }
 
     function update_old() {
-        $relation_database = DB::table('RelationDatabase')
+        $relation_database = DB::model('RelationDatabase')
                                         ->join('Database', 'id', 'old_database_id')
                                         ->join('Project', 'id', 'project_id')
                                         ->all();
@@ -142,7 +142,7 @@ class RelationDatabaseController extends ProjectController {
                     $table_name = FileManager::pluralToSingular($table_name);
                     $table_name = FileManager::singularToPlural($table_name);
 
-                    $model = DB::table('Model')
+                    $model = DB::model('Model')
                                             ->where("project_id = '{$this->project->value['id']}'")
                                             ->where("name = '{$table_name}'")
                                             ->one();
@@ -158,7 +158,7 @@ class RelationDatabaseController extends ProjectController {
                             $columns = array_keys($pgsql->columns);
                             foreach ($pm_columns as $pm_column) {
                                 if (in_array($pm_column, $columns)) {
-                                    $attribute = DB::table('Attribute')
+                                    $attribute = DB::model('Attribute')
                                                         ->where("model_id = '{$model->value['id']}'")
                                                         ->where("name = '{$pm_column}'")
                                                         ->one();
@@ -183,7 +183,7 @@ class RelationDatabaseController extends ProjectController {
         $models = $this->project->hasMany('Model')->values;
 
         foreach ($models as $model) {
-            $attributes = DB::table('Attribute')
+            $attributes = DB::model('Attribute')
                                 ->where("model_id = {$model['id']}")
                                 ->all()
                                 ->values;

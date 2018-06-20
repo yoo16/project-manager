@@ -19,7 +19,7 @@ class PageModelController extends ProjectController {
     */
     function before_action($action) {
         parent::before_action($action);
-        $this->page = DB::table('Page')->requestSession();
+        $this->page = DB::model('Page')->requestSession();
 
     }
 
@@ -57,7 +57,7 @@ class PageModelController extends ProjectController {
                                 ->wheres($this->filters)
                                 ->all();
 
-        $this->model = DB::table('Model')->idIndex()->all();
+        $this->model = DB::model('Model')->idIndex()->all();
         
     }
 
@@ -68,7 +68,7 @@ class PageModelController extends ProjectController {
     * @return void
     */
     function action_new() {
-        $this->page_model = DB::table('PageModel')->init()->takeValues($this->posts['page_model']);
+        $this->page_model = DB::model('PageModel')->init()->takeValues($this->posts['page_model']);
     }
 
    /**
@@ -80,7 +80,7 @@ class PageModelController extends ProjectController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->page_model = DB::table('PageModel')
+        $this->page_model = DB::model('PageModel')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['page_model']);
     }
@@ -94,7 +94,7 @@ class PageModelController extends ProjectController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["page_model"];
-        $page_model = DB::table('PageModel')->insert($posts);
+        $page_model = DB::model('PageModel')->insert($posts);
 
         if ($page_model->errors) {
             $this->redirect_to('new');
@@ -112,7 +112,7 @@ class PageModelController extends ProjectController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["page_model"];
-        $page_model = DB::table('PageModel')->update($posts, $this->params['id']);
+        $page_model = DB::model('PageModel')->update($posts, $this->params['id']);
 
         if ($page_model->errors) {
             $this->redirect_to('edit', $this->params['id']);
@@ -129,7 +129,7 @@ class PageModelController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('PageModel')->delete($this->params['id']);
+        DB::model('PageModel')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 

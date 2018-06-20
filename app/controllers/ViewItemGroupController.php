@@ -20,7 +20,7 @@ class ViewItemGroupController extends ViewController {
     */
     function before_action($action) {
         parent::before_action($action);
-        $this->view = DB::table('View')->requestSession();
+        $this->view = DB::model('View')->requestSession();
 
     }
 
@@ -65,7 +65,7 @@ class ViewItemGroupController extends ViewController {
     * @return void
     */
     function action_new() {
-        $this->view_item_group = DB::table('ViewItemGroup')->init()->takeValues($this->posts['view_item_group']);
+        $this->view_item_group = DB::model('ViewItemGroup')->init()->takeValues($this->posts['view_item_group']);
     }
 
    /**
@@ -77,7 +77,7 @@ class ViewItemGroupController extends ViewController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->view_item_group = DB::table('ViewItemGroup')
+        $this->view_item_group = DB::model('ViewItemGroup')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['view_item_group']);
     }
@@ -91,7 +91,7 @@ class ViewItemGroupController extends ViewController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["view_item_group"];
-        $view_item_group = DB::table('ViewItemGroup')->insert($posts);
+        $view_item_group = DB::model('ViewItemGroup')->insert($posts);
 
         if ($view_item_group->errors) {
             $this->redirect_to('new');
@@ -109,7 +109,7 @@ class ViewItemGroupController extends ViewController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["view_item_group"];
-        $view_item_group = $view_item_group = DB::table('ViewItemGroup')->update($posts, $this->params['id']);
+        $view_item_group = $view_item_group = DB::model('ViewItemGroup')->update($posts, $this->params['id']);
 
         if ($view_item_group->errors) {
             $this->redirect_to('edit', $this->params['id']);
@@ -126,7 +126,7 @@ class ViewItemGroupController extends ViewController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('ViewItemGroup')->delete($this->params['id']);
+        DB::model('ViewItemGroup')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 

@@ -16,7 +16,7 @@ class TagHelper {
         $url = '';
         if (isset($GLOBALS['controller'])) {
             $controller = $GLOBALS['controller'];
-            if ($controller->relative_base) {
+            if (isset($controller->relative_base)) {
                 $url = $controller->relative_base;
             } else if (is_array($controller)) {
                 $url = $controller['relative_base'];

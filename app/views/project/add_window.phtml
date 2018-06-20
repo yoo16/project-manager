@@ -12,12 +12,12 @@
         <div class="modal-body">
           <div class="form-group row">
             <label for="" class="col-3 col-form-label">Name</label>
-            <?= DB::table('Project')->formInput('name') ?>
+            <?= DB::model('Project')->formInput('name') ?>
           </div>
 
           <div class="form-group row">
             <label for="" class="col-3 col-form-label">Database</label>
-            <?= DB::table('Project')->formSelect('database_id', ['values' => $this->database->values, 'value' => 'id', 'label' => 'name', 'class' => 'form-control col-8']) ?>
+            <?= DB::model('Project')->formSelect('database_id', ['values' => $this->database->values, 'value' => 'id', 'label' => 'name', 'class' => 'form-control col-8']) ?>
           </div>
 
         </div>

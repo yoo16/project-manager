@@ -377,7 +377,7 @@ class FormHelper {
             $lang = AppSession::get('lang');
             $values = CsvLite::options($params['csv'], $lang);
         } else if (isset($params['model']) && $params['model']) {
-            $instance = DB::table($params['model']);
+            $instance = DB::model($params['model']);
 
             if (isset($params['select_columns'])) $instance->select($params['select_columns']);
             if (isset($params['where'])) $instance->where($params['where']);

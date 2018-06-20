@@ -51,7 +51,7 @@ class MenuController extends AppController {
     * @return void
     */
     function action_list() {
-        $this->menu = DB::table('Menu')->all();
+        $this->menu = DB::model('Menu')->all();
 
                 
     }
@@ -63,7 +63,7 @@ class MenuController extends AppController {
     * @return void
     */
     function action_new() {
-        $this->menu = DB::table('Menu')->init()->takeValues($this->posts['menu']);
+        $this->menu = DB::model('Menu')->init()->takeValues($this->posts['menu']);
     }
 
    /**
@@ -75,7 +75,7 @@ class MenuController extends AppController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->menu = DB::table('Menu')
+        $this->menu = DB::model('Menu')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['menu']);
     }
@@ -89,7 +89,7 @@ class MenuController extends AppController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["menu"];
-        $menu = DB::table('Menu')->insert($posts);
+        $menu = DB::model('Menu')->insert($posts);
 
         if ($menu->errors) {
             $errors['menus'] = $menu->errors;
@@ -110,7 +110,7 @@ class MenuController extends AppController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["menu"];
-        $menu = DB::table('Menu')->update($posts, $this->params['id']);
+        $menu = DB::model('Menu')->update($posts, $this->params['id']);
 
         if ($menu->errors) {
             $errors['menus'] = $menu->errors;

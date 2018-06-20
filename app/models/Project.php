@@ -85,7 +85,7 @@ class Project extends _Project {
 
         $relation_database = $this->hasMany('RelationDatabase')->all();
         foreach ($relation_database->values as $relation_database) {
-            $old_database = DB::table('Database')->fetch($relation_database['old_database_id']);
+            $old_database = DB::model('Database')->fetch($relation_database['old_database_id']);
             $old_pgsqls[$old_database->value['id']] = $old_database->pgsql();
         }
 
@@ -116,7 +116,7 @@ class Project extends _Project {
         $values['model'] = $model->value;
         $values['attribute'] = $attribute->values;
         
-        $values['old_id_column'] = DB::table('Attribute')
+        $values['old_id_column'] = DB::model('Attribute')
                                         ->where("model_id = '{$model->value['id']}'")
                                         ->where("name = 'old_id'")
                                         ->one()
@@ -184,17 +184,17 @@ class Project extends _Project {
         $values = null;
         $values['page'] = $page;
         if ($page->value['model_id']) {
-            $model = DB::table('Model')->fetch($page->value['model_id']);
+            $model = DB::model('Model')->fetch($page->value['model_id']);
             $model->attribute = $model->hasMany('Attribute');
             $values['model'] = $model;
         }
 
         if ($page->value['parent_page_id']) {
-            $page->parent = DB::table('Page')->fetch($page->value['parent_page_id']);
+            $page->parent = DB::model('Page')->fetch($page->value['parent_page_id']);
             $values['page'] = $page;
         }
         $page_model = $page->relationMany('PageModel')->join('Model', 'id', 'model_id')->all();
-        $values['page_filter'] = DB::table('PageFilter')->where("page_id = {$page->value['id']}")->all();
+        $values['page_filter'] = DB::model('PageFilter')->where("page_id = {$page->value['id']}")->all();
 
         $page_path = Page::projectFilePath($this->user_project_setting, $page);
 
@@ -216,12 +216,12 @@ class Project extends _Project {
         $values['pages'] = $pages;
         $values['page'] = $page;
         if ($page['model_id']) {
-            $model = DB::table('Model')->fetch($page['model_id']);
+            $model = DB::model('Model')->fetch($page['model_id']);
             $values['model'] = $model->value;
             $values['attribute'] = $model->relationMany('Attribute')->idIndex()->all()->values;
         }
 
-        $views = DB::table('Page')->fetch($page['id'])->hasMany('View')->values;
+        $views = DB::model('Page')->fetch($page['id'])->hasMany('View')->values;
 
         if ($views) {
             //TODO header contents
@@ -233,7 +233,7 @@ class Project extends _Project {
             foreach ($views as $view) {
                 $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
                 if (!file_exists($view_path) || ($is_overwrite && $view['is_overwrite'])) {
-                    $view['view_item'] = DB::table('View')->fetch($view['id'])
+                    $view['view_item'] = DB::model('View')->fetch($view['id'])
                                                           ->relationMany('ViewItem')
                                                           ->order('sort_order')
                                                           ->all()
@@ -271,12 +271,12 @@ class Project extends _Project {
         $values['pages'] = $pages;
         $values['page'] = $page;
         if ($page['model_id']) {
-            $model = DB::table('Model')->fetch($page['model_id']);
+            $model = DB::model('Model')->fetch($page['model_id']);
             $values['model'] = $model->value;
             $values['attribute'] = $model->relationMany('Attribute')->idIndex()->all()->values;
         }
 
-        $views = DB::table('Page')->fetch($page['id'])->hasMany('View')->values;
+        $views = DB::model('Page')->fetch($page['id'])->hasMany('View')->values;
 
         $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
 
@@ -299,7 +299,7 @@ class Project extends _Project {
         $records = $this->relationMany('Record')->all()->values;
         if ($records) {
             foreach ($records as $record) {
-                $record_items = DB::table('RecordItem')
+                $record_items = DB::model('RecordItem')
                                                 ->where("record_id = {$record['id']}")
                                                 ->all()
                                                 ->values;

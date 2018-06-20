@@ -19,7 +19,7 @@ class ApiParamController extends ApiController {
     */
     function before_action($action) {
         parent::before_action($action);
-        $this->api = DB::table('Api')->requestSession();
+        $this->api = DB::model('Api')->requestSession();
 
     }
 
@@ -67,7 +67,7 @@ class ApiParamController extends ApiController {
     * @return void
     */
     function action_new() {
-        $this->api_param = DB::table('ApiParam')->init()->takeValues($this->posts['api_param']);
+        $this->api_param = DB::model('ApiParam')->init()->takeValues($this->posts['api_param']);
     }
 
    /**
@@ -79,7 +79,7 @@ class ApiParamController extends ApiController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->api_param = DB::table('ApiParam')
+        $this->api_param = DB::model('ApiParam')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['api_param']);
     }
@@ -93,7 +93,7 @@ class ApiParamController extends ApiController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["api_param"];
-        $api_param = DB::table('ApiParam')->insert($posts);
+        $api_param = DB::model('ApiParam')->insert($posts);
 
         if ($api_param->errors) {
             $this->redirect_to('new');
@@ -111,7 +111,7 @@ class ApiParamController extends ApiController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["api_param"];
-        $api_param = DB::table('ApiParam')->update($posts, $this->params['id']);
+        $api_param = DB::model('ApiParam')->update($posts, $this->params['id']);
 
         if ($api_param->errors) {
             $this->redirect_to('edit', $this->params['id']);
@@ -128,7 +128,7 @@ class ApiParamController extends ApiController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('ApiParam')->delete($this->params['id']);
+        DB::model('ApiParam')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 

@@ -58,7 +58,7 @@ class ModelController extends ProjectController {
     }
 
     function action_edit() {
-        $this->model = DB::table('Model')->fetch($this->params['id']);
+        $this->model = DB::model('Model')->fetch($this->params['id']);
     }
 
     function action_add() {
@@ -101,7 +101,7 @@ class ModelController extends ProjectController {
             $posts['entity_name'] = FileManager::pluralToSingular($pg_class['relname']);
             $posts['class_name'] = FileManager::phpClassName($posts['entity_name']);
 
-            $model = DB::table('Model')->insert($posts);
+            $model = DB::model('Model')->insert($posts);
 
             $attribute = new Attribute();
             $attribute->importByModel($model->value, $this->database);
@@ -119,7 +119,7 @@ class ModelController extends ProjectController {
         $posts['class_name'] = FileManager::phpClassName($posts['entity_name']);
         $posts['project_id'] = $this->project->value['id'];
 
-        $model = DB::table('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->params['id']);
         if ($model->value) {
             $pgsql = $this->database->pgsql();
 
@@ -144,7 +144,7 @@ class ModelController extends ProjectController {
     }
 
     function action_duplicate() {
-        $model = DB::table('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->params['id']);
         if ($model->value['id']) {
             $attribute = $model->relationMany('Attribute')->all();
 
@@ -153,7 +153,7 @@ class ModelController extends ProjectController {
             unset($posts['id']);
             unset($posts['pg_class_id']);
 
-            $new_model = DB::table('Model')->insert($posts);
+            $new_model = DB::model('Model')->insert($posts);
             if ($new_model->error) {
                 echo("Error: create new model {$posts['name']}").PHP_EOL;
                 echo("{$new_model->error}").PHP_EOL;
@@ -167,7 +167,7 @@ class ModelController extends ProjectController {
                 unset($value['id']);
                 unset($value['attrelid']);
                 unset($value['attnum']);
-                $new_attribute = DB::table('Attribute')->insert($value);
+                $new_attribute = DB::model('Attribute')->insert($value);
 
                 if ($new_attribute->sql_error) {
                     var_dump($new_attribute->sql_error);
@@ -190,13 +190,13 @@ class ModelController extends ProjectController {
     function action_delete() {
         if (!isPost()) exit;
 
-        $model = DB::table('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->params['id']);
         if ($model->value['id']) {
 
             $attribute = $model->relationMany('Attribute')->all();
             if ($attribute->values) {
                 foreach ($attribute->values as $attribute_value) {
-                    $attribute = DB::table('Attribute')->fetch($attribute_value['id']);
+                    $attribute = DB::model('Attribute')->fetch($attribute_value['id']);
                     if ($attribute->value['id'] && $attribute->value['attnum']) {
                         $pgsql = $this->database->pgsql();
                         $pgsql->dropColumn($model->value['name'], $attribute->value['name']);
@@ -206,12 +206,12 @@ class ModelController extends ProjectController {
             }
 
             if (!$database->value['is_lock']) {
-                $database = DB::table('Database')->fetch($this->database->value['id']);
+                $database = DB::model('Database')->fetch($this->database->value['id']);
                 $pgsql = $database->pgsql();
                 $results = $pgsql->dropTable($model->value['name']);
             }
 
-            $model = DB::table('Model')->delete($model->value['id']);
+            $model = DB::model('Model')->delete($model->value['id']);
             
             if ($model->errors) {
                 $this->flash['errors'] = $model->errors;
@@ -226,7 +226,7 @@ class ModelController extends ProjectController {
     function action_lock() {
         if ($this->database->value['id']) {
             $posts['is_lock'] = true;
-            $model = DB::table('Model')
+            $model = DB::model('Model')
                             ->where("database_id = {$this->database->value['id']}")
                             ->updates($posts);
         }
@@ -236,9 +236,9 @@ class ModelController extends ProjectController {
     function action_add_table() {
         if (!isPost()) exit;
 
-        $model = DB::table('Model')->fetch($_REQUEST['model_id']);
+        $model = DB::model('Model')->fetch($_REQUEST['model_id']);
 
-        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $table_name = $model['name'];
 
         if ($database && $table_name) {
@@ -258,10 +258,10 @@ class ModelController extends ProjectController {
     function action_old_table_list() {
         $this->layout = null;
 
-        $this->model = DB::table('Model')->fetch($_REQUEST['model_id']);
+        $this->model = DB::model('Model')->fetch($_REQUEST['model_id']);
 
         $pgsql = new PgsqlEntity();
-        $relation_database = DB::table('RelationDatabase')
+        $relation_database = DB::model('RelationDatabase')
                                 ->join('Database', 'id', 'old_database_id')
                                 ->join('Project', 'id', 'project_id')
                                 ->all();
@@ -277,7 +277,7 @@ class ModelController extends ProjectController {
     function action_update_old_table() {
         $posts['old_name'] = $this->posts['old_name'];
 
-        DB::table('Model')->fetch($_REQUEST['model_id'])->update($posts);
+        DB::model('Model')->fetch($_REQUEST['model_id'])->update($posts);
         $this->redirect_to('relation_database/diff_model');
     }
 
@@ -292,16 +292,16 @@ class ModelController extends ProjectController {
             $pg_foreign_constraints = $pgsql->pgForeignConstraints($model['pg_class_id']);
             if ($pg_foreign_constraints) {
                 foreach ($pg_foreign_constraints as $pg_foreign_constraint) {
-                    $attribute = DB::table('Attribute')->where("model_id = {$model['id']}")
+                    $attribute = DB::model('Attribute')->where("model_id = {$model['id']}")
                                                        ->where("name = '{$pg_foreign_constraint['attname']}'")
                                                        ->where("fk_attribute_id IS NULL OR fk_attribute_id = 0")
                                                        ->one();
                     if ($attribute->id) {
-                        $fk_model = DB::table('Model')->where("name = '{$pg_foreign_constraint['foreign_relname']}'")
+                        $fk_model = DB::model('Model')->where("name = '{$pg_foreign_constraint['foreign_relname']}'")
                                                       ->one()
                                                       ->value;
 
-                        $fk_attribute = DB::table('Attribute')->where("model_id = {$fk_model['id']}")
+                        $fk_attribute = DB::model('Attribute')->where("model_id = {$fk_model['id']}")
                                                        ->where("name = 'id'")
                                                        ->one()
                                                        ->value;
@@ -327,7 +327,7 @@ class ModelController extends ProjectController {
 
                 if ($pg_class) {
                     $model_values['pg_class_id'] = $pg_class['pg_class_id'];
-                    $model = DB::table('Model')->update($model_values, $model_values['id']);
+                    $model = DB::model('Model')->update($model_values, $model_values['id']);
 
                     $attribute = new Attribute();
                     $attribute->importByModel($model_values, $this->database);
@@ -341,7 +341,7 @@ class ModelController extends ProjectController {
     function action_sync_model() {
         if (!$this->database->value['id']) $this->redirect_to('project/');
 
-        $model = DB::table('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->params['id']);
         if ($model->value) {
             $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
             $pg_class = $pgsql_entity->pgClassByRelname($model->value['name']);
@@ -358,7 +358,7 @@ class ModelController extends ProjectController {
 
     //TODO Model
     function syncDB($model) {
-        $model = DB::table('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->params['id']);
         if ($model->value['id']) {
             $attribute = $model->relationMany('Attribute')->all();
 
@@ -386,18 +386,18 @@ class ModelController extends ProjectController {
     function action_delete_require_columns() {
         $model = $this->project->hasMany('Model');
 
-        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $columns = array_keys(Model::$required_columns);
 
         $pgsql = $database->pgsql();
         if ($model->values) {
             foreach ($model->values as $model_value) {
-                $model = DB::table('Model')->fetch($model_value['id']);
+                $model = DB::model('Model')->fetch($model_value['id']);
                 $attribute = $model->hasMany('Attribute');
 
                 foreach ($attribute->values as $attribute_value) {
                     if (in_array($attribute_value['name'], $columns)) {
-                        DB::table('Attribute')->delete($attribute_value['id']);
+                        DB::model('Attribute')->delete($attribute_value['id']);
                     }
                 }
             }
@@ -411,11 +411,11 @@ class ModelController extends ProjectController {
     function action_add_require_columns() {
         $model = $this->project->hasMany('Model');
 
-        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $add_columns = array_keys(Model::$required_columns);
         if ($model->values) {
             foreach ($model->values as $model_value) {
-                $model = DB::table('Model')->fetch($model_value['id']);
+                $model = DB::model('Model')->fetch($model_value['id']);
                 $attribute = $model->hasMany('Attribute');
 
                 foreach ($attribute->values as $attribute_value) {
@@ -439,7 +439,7 @@ class ModelController extends ProjectController {
     function action_update_comments() {
         $model = $this->project->hasMany('Model');
 
-        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();
 
         if ($model->values) {
@@ -460,14 +460,14 @@ class ModelController extends ProjectController {
     function action_restore_comments_from_another_db() {
         $model = $this->project->hasMany('Model');
 
-        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();
 
         if (!$_REQUEST['from_database_id']) {
             echo('Not found from_database_id').PHP_EOL;
             exit;
         }
-        $from_database = DB::table('Database')->fetch($_REQUEST['from_database_id']);
+        $from_database = DB::model('Database')->fetch($_REQUEST['from_database_id']);
         if (!$from_database->value) {
             echo('Not found from_database').PHP_EOL;
             exit;
@@ -485,7 +485,7 @@ class ModelController extends ProjectController {
 
                 $column_comments = $from_pgsql->columnCommentArray($model_value['name']);
 
-                $model = DB::table('Model')->fetch($model_value['id']);
+                $model = DB::model('Model')->fetch($model_value['id']);
                 $attribute = $model->hasMany('Attribute');
 
                 foreach ($attribute->values as $attribute_value) {
@@ -494,7 +494,7 @@ class ModelController extends ProjectController {
                     $pgsql->updateColumnComment($model_value['name'], $attribute_value['name'], $column_comment);
 
                     $posts['label'] = $column_comment;
-                    $result = DB::table('Attribute')->update($posts, $attribute_value['id']);
+                    $result = DB::model('Attribute')->update($posts, $attribute_value['id']);
                 }
             }
         }
@@ -502,7 +502,7 @@ class ModelController extends ProjectController {
     }
 
     function rebuild_fk_attributes() {
-        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();
 
         $model = $this->project->relationMany('Model')->all();
@@ -511,24 +511,24 @@ class ModelController extends ProjectController {
             $foreigns = $pgsql->pgForeignConstraints($model_value['pg_class_id']);
 
             foreach ($foreigns as $foreign) {
-                $attribute = DB::table('Attribute')
+                $attribute = DB::model('Attribute')
                                     ->where("model_id = {$model_value['id']}")
                                     ->where("name = '{$foreign['attname']}'")
                                     ->one();
 
-                $fk_model = DB::table('Model')
+                $fk_model = DB::model('Model')
                                     ->where("pg_class_id = {$foreign['foreign_class_id']}")
                                     ->one();
 
                 if ($attribute->value && $fk_model->value) {
-                    $fk_attribute = DB::table('Attribute')
+                    $fk_attribute = DB::model('Attribute')
                                     ->where("model_id = '{$fk_model->value['id']}'")
                                     ->where("name = '{$foreign['foreign_attname']}'")
                                     ->one();
 
                     if ($fk_attribute->value) {
                         $posts['fk_attribute_id'] = $fk_attribute->value['id'];
-                        DB::table('Attribute')->update($posts, $attribute->value['id']);
+                        DB::model('Attribute')->update($posts, $attribute->value['id']);
                         if ($attribute->sql_error) {
                             echo($attribute->sql_error).PHP_EOL;
                             exit;
@@ -557,14 +557,14 @@ class ModelController extends ProjectController {
     }
 
     function action_values() {
-        $this->model = DB::table('Model')->fetch($this->params['id']);
+        $this->model = DB::model('Model')->fetch($this->params['id']);
         $this->attribute = $this->model->hasMany('Attribute');
 
         foreach ($this->attribute->values as $attribute) {
             if ($attribute['fk_attribute_id']) {
-                $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
+                $fk_attribute = DB::model('Attribute')->fetch($attribute['fk_attribute_id']);
                 if ($fk_attribute->value) {
-                    $model = DB::table('Model')->fetch($fk_attribute->value['model_id']);
+                    $model = DB::model('Model')->fetch($fk_attribute->value['model_id']);
                     if ($model->value) {
                         $this->fk_models[$attribute['name']] = $model->value;
                     }
@@ -587,7 +587,7 @@ class ModelController extends ProjectController {
 
         $posts = $this->posts['model'];
 
-        $this->model = DB::table('Model')->fetch($this->params['id']);
+        $this->model = DB::model('Model')->fetch($this->params['id']);
 
         $database = $this->project->belongsTo('Database');
         $pgsql = $database->pgsql()->table($this->model->value['name'])->insert($posts);
@@ -610,7 +610,7 @@ class ModelController extends ProjectController {
      */
     function action_delere_records() {
         $database = $this->project->belongsTo('Database');
-        $model = DB::table('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->params['id']);
 
         if ($model->value['class_name']) {
             $database->pgsql()->table($model->value['name'])->deleteRecords();

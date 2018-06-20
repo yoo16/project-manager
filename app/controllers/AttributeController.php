@@ -21,7 +21,7 @@ class AttributeController extends ModelController {
         if (!$this->project->value) {
             $this->redirect_to('project/list');
         }
-        $this->model = DB::table('Model')->requestSession();
+        $this->model = DB::model('Model')->requestSession();
 
         if ($this->model->value) {
             $this->page = $this->model->relationMany('Page')->one();
@@ -43,7 +43,7 @@ class AttributeController extends ModelController {
     }
 
     function action_list() {
-        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();
 
         $pg_class = $pgsql->pgClassByRelname($this->model->value['name']);
@@ -51,7 +51,7 @@ class AttributeController extends ModelController {
 
         $this->pg_attributes = $pgsql->attributeArray($this->model->value['name']); 
 
-        $this->attribute = DB::table('Attribute')
+        $this->attribute = DB::model('Attribute')
                                 ->where("model_id = {$this->model->value['id']}")
                                 ->order('name', 'asc')
                                 ->all()
@@ -64,7 +64,7 @@ class AttributeController extends ModelController {
     }
 
     function edit() {
-        $this->attribute = DB::table('Attribute')
+        $this->attribute = DB::model('Attribute')
                         ->fetch($this->params['id'])
                         ->takeValues($this->session['posts']);
 
@@ -95,7 +95,7 @@ class AttributeController extends ModelController {
         $posts['pg_class_id'] = $pg_class['pg_class_id'];
         $posts['attrelid'] = $pg_attribute['attrelid'];
         $posts['attnum'] = $pg_attribute['attnum'];
-        $attribute = DB::table('Attribute')->insert($posts);
+        $attribute = DB::model('Attribute')->insert($posts);
 
         $this->redirect_to('list');
     }
@@ -104,7 +104,7 @@ class AttributeController extends ModelController {
         if (!isPost()) exit;
 
         $posts = $this->posts['attribute'];
-        $attribute = DB::table('Attribute')->fetch($this->params['id']);
+        $attribute = DB::model('Attribute')->fetch($this->params['id']);
 
         $pgsql = $this->database->pgsql();
         $pg_attribute = $pgsql->pgAttributeByAttnum($this->model->value['pg_class_id'], $attribute->value['attnum']);
@@ -132,8 +132,8 @@ class AttributeController extends ModelController {
 
             //delete action
             if ($attribute->value['delete_action'] != $posts['delete_action']) {
-                $fk_attribute = DB::table('Attribute')->fetch($attribute->value['fk_attribute_id']);
-                $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']);
+                $fk_attribute = DB::model('Attribute')->fetch($attribute->value['fk_attribute_id']);
+                $fk_model = DB::model('Model')->fetch($fk_attribute->value['model_id']);
 
                 if ($fk_attribute->value && $fk_model->value) {
                     $constraint = $pgsql->pgConstraintByAttnum($this->model->value['pg_class_id'], $attribute->value['attnum'] ,'f');
@@ -156,7 +156,7 @@ class AttributeController extends ModelController {
             }
 
             if ($posts['type'] != 'varchar') $posts['length'] = null;                
-            $attribute = DB::table('Attribute')->update($posts, $this->params['id']);
+            $attribute = DB::model('Attribute')->update($posts, $this->params['id']);
         }
 
         if ($attribute->errors) {
@@ -168,7 +168,7 @@ class AttributeController extends ModelController {
 
     function action_delete() {
         if (!isPost()) exit;
-        $attribute = DB::table('Attribute')->fetch($this->params['id']);
+        $attribute = DB::model('Attribute')->fetch($this->params['id']);
         if ($attribute->value['id'] && $attribute->value['attnum']) {
             $pgsql = $this->database->pgsql();
             $result = $pgsql->dropColumn($this->model->value['name'], $attribute->value['name']);
@@ -186,9 +186,9 @@ class AttributeController extends ModelController {
 
     function add_table() {
         if (!isPost()) exit;
-        $model = DB::table('Model')->fetch($_REQUEST['model_id']);
+        $model = DB::model('Model')->fetch($_REQUEST['model_id']);
 
-        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $table_name = $_REQUEST['table_name'];
 
         if ($database && $table_name) {
@@ -201,11 +201,11 @@ class AttributeController extends ModelController {
     function add_column() {
         if (!isPost()) exit;
 
-        $attribute = DB::table('Attribute')->fetch($this->params['id']);
-        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $attribute = DB::model('Attribute')->fetch($this->params['id']);
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
 
         if ($database->value && $attribute->value) {
-            $model = DB::table('Model')->fetch($attribute->value['model_id']);
+            $model = DB::model('Model')->fetch($attribute->value['model_id']);
             $pgsql = $database->pgsql(); 
 
             $options['type'] = $attribute->value['type'];
@@ -220,7 +220,7 @@ class AttributeController extends ModelController {
                 $posts['attnum'] = $pg_attribute['attnum'];
                 $posts['type'] = $pg_attribute['udt_name'];
 
-                DB::table('Attribute')->update($posts, $attribute->value['id']);
+                DB::model('Attribute')->update($posts, $attribute->value['id']);
             }
         }
         $this->redirect_to('list');
@@ -230,7 +230,7 @@ class AttributeController extends ModelController {
     function action_update_label() {
         if (!isPost()) exit;
         $posts = $this->posts['attribute'];
-        $attribute = DB::table('Attribute')->update($posts, $this->params['id']);
+        $attribute = DB::model('Attribute')->update($posts, $this->params['id']);
 
         $pgsql = $this->database->pgsql();
         $pg_class = $pgsql->pgClassById($this->model->value['pg_class_id']);
@@ -240,7 +240,7 @@ class AttributeController extends ModelController {
     }
 
     function action_change_required() {
-        $attribute = DB::table('Attribute')->fetch($this->params['id']);
+        $attribute = DB::model('Attribute')->fetch($this->params['id']);
         if ($attribute->value['id'] && $attribute->value['attnum']) {
             $posts['is_required'] = !$attribute->value['is_required'];
             $attribute->update($posts);
@@ -255,8 +255,8 @@ class AttributeController extends ModelController {
 
     function action_rename_constraint() {
         if (!isPost()) exit;
-        $database = DB::table('Database')->fetch($this->posts['database_id']);
-        $model = DB::table('Model')->fetch($this->posts['model_id']);
+        $database = DB::model('Database')->fetch($this->posts['database_id']);
+        $model = DB::model('Model')->fetch($this->posts['model_id']);
 
         $pgsql = $database->pgsql();
         $results = $pgsql->renamePgConstraint($model->value['name'], $this->posts['constraint_name'], $this->posts['new_constraint_name']);
@@ -265,8 +265,8 @@ class AttributeController extends ModelController {
 
     function action_delete_constraint() {
         if (!isPost()) exit;
-        $database = DB::table('Database')->fetch($this->posts['database_id']);
-        $model = DB::table('Model')->fetch($this->posts['model_id']);
+        $database = DB::model('Database')->fetch($this->posts['database_id']);
+        $model = DB::model('Model')->fetch($this->posts['model_id']);
 
         $pgsql = $database->pgsql();        
         $pgsql->removePgConstraint($model->value['name'], $this->posts['constraint_name']);
@@ -281,11 +281,11 @@ class AttributeController extends ModelController {
     function action_relation_model_list() {
         $this->layout = null;
 
-        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
+        $this->attribute = DB::model('Attribute')->fetch($_REQUEST['attribute_id']);
 
         if ($this->attribute->value['fk_attribute_id']) {
-            $this->fk_attribute = DB::table('Attribute')->fetch($this->attribute->value['fk_attribute_id']);
-            $this->fk_model = DB::table('Model')->fetch($this->fk_attribute->value['model_id']);
+            $this->fk_attribute = DB::model('Attribute')->fetch($this->attribute->value['fk_attribute_id']);
+            $this->fk_model = DB::model('Model')->fetch($this->fk_attribute->value['model_id']);
         }
         $this->project->bindMany('Model');
     }
@@ -293,8 +293,8 @@ class AttributeController extends ModelController {
     function action_relation_attribute_list() {
         $this->layout = null;
 
-        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
-        $this->fk_model = DB::table('Model')->fetch($_REQUEST['fk_model_id']);
+        $this->attribute = DB::model('Attribute')->fetch($_REQUEST['attribute_id']);
+        $this->fk_model = DB::model('Model')->fetch($_REQUEST['fk_model_id']);
 
         
         if ($this->fk_model->value['id']) {
@@ -302,21 +302,21 @@ class AttributeController extends ModelController {
         }
 
         if ($this->attribute->value['fk_attribute_id']) {
-            $this->fk_attribute = DB::table('Attribute')->fetch($this->attribute->value['fk_attribute_id']);
+            $this->fk_attribute = DB::model('Attribute')->fetch($this->attribute->value['fk_attribute_id']);
         }
     }
 
     function action_update_relation() {
         if (!isPost()) exit;
 
-        $fk_attribute = DB::table('Attribute')->fetch($_REQUEST['fk_attribute_id']);
-        $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']);
+        $fk_attribute = DB::model('Attribute')->fetch($_REQUEST['fk_attribute_id']);
+        $fk_model = DB::model('Model')->fetch($fk_attribute->value['model_id']);
 
-        $attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
-        $model = DB::table('Model')->fetch($attribute->value['model_id']);
+        $attribute = DB::model('Attribute')->fetch($_REQUEST['attribute_id']);
+        $model = DB::model('Model')->fetch($attribute->value['model_id']);
 
         if ($fk_attribute->value['id'] && $attribute->value['id']) {
-            $database = DB::table('Database')->fetch($this->project->value['database_id']);
+            $database = DB::model('Database')->fetch($this->project->value['database_id']);
 
             $pgsql = $database->pgsql();  
 
@@ -348,7 +348,7 @@ class AttributeController extends ModelController {
      */
     function action_remove_relation() {
         if (!isPost()) exit;
-        $attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
+        $attribute = DB::model('Attribute')->fetch($_REQUEST['attribute_id']);
 
         if ($attribute->value['id']) {
             $posts['fk_attribute_id'] = null;
@@ -369,7 +369,7 @@ class AttributeController extends ModelController {
      * @return void
      */
     function action_remove_primary_key() {
-        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
 
         $pgsql = $database->pgsql(); 
         $pg_class = $pgsql->pgClassByRelname($this->model->value['name']);
@@ -386,7 +386,7 @@ class AttributeController extends ModelController {
     function action_unique_attribute_list() {
         $this->layout = null;
 
-        $this->model = DB::table('Model')->fetch($_REQUEST['model_id']);
+        $this->model = DB::model('Model')->fetch($_REQUEST['model_id']);
         if ($this->model->value['id']) {
             $this->model->bindMany('Attribute');
         }
@@ -400,14 +400,14 @@ class AttributeController extends ModelController {
     function action_add_unique() {
         if (!isPost()) exit;
 
-        $model = DB::table('Model')->fetch($_REQUEST['model_id'])->value;
+        $model = DB::model('Model')->fetch($_REQUEST['model_id'])->value;
 
         foreach ($_REQUEST['attribute_id'] as $attribute_id => $selected) {
             if ($selected) {
-                $column_names[] = DB::table('Attribute')->fetch($attribute_id)->value['name'];
+                $column_names[] = DB::model('Attribute')->fetch($attribute_id)->value['name'];
             }
         }
-        $database = DB::table('Database')->fetch($this->project->value['database_id']);
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
 
         $pgsql = $database->pgsql();
         $pgsql->addPgUnique($model['name'], $column_names);
@@ -418,10 +418,10 @@ class AttributeController extends ModelController {
     function action_old_attribute_list() {
         $this->layout = null;
 
-        $this->model = DB::table('Model')->fetch($_REQUEST['model_id']);
-        $this->attribute = DB::table('Attribute')->fetch($_REQUEST['attribute_id']);
+        $this->model = DB::model('Model')->fetch($_REQUEST['model_id']);
+        $this->attribute = DB::model('Attribute')->fetch($_REQUEST['attribute_id']);
 
-        $relation_database = DB::table('RelationDatabase')
+        $relation_database = DB::model('RelationDatabase')
                                         ->join('Database', 'id', 'old_database_id')
                                         ->join('Project', 'id', 'project_id')
                                         ->all();
@@ -442,13 +442,13 @@ class AttributeController extends ModelController {
     function action_update_old_name() {
         $posts['old_name'] = $this->posts['old_name'];
 
-        DB::table('Attribute')->fetch($_REQUEST['attribute_id'])->update($posts);
+        DB::model('Attribute')->fetch($_REQUEST['attribute_id'])->update($posts);
         $this->redirect_to('relation_database/diff_model');
     }
 
     function action_delete_old_name() {
         $posts['old_name'] = '';
-        DB::table('Attribute')->fetch($this->params['id'])->update($posts);
+        DB::model('Attribute')->fetch($this->params['id'])->update($posts);
         $this->redirect_to('edit', $this->params['id']);
     }
 
@@ -458,7 +458,7 @@ class AttributeController extends ModelController {
             $this->redirect_to('project/');
         }
 
-        $model = DB::table('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->params['id']);
 
         if ($model->value['id']) {
             $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
@@ -466,7 +466,7 @@ class AttributeController extends ModelController {
 
             if ($pg_class) {
                 $model_values['pg_class_id'] = $pg_class['pg_class_id'];
-                $model = DB::table('Model')->update($model_values, $model->value['id']);
+                $model = DB::model('Model')->update($model_values, $model->value['id']);
             } else {
                 $this->syncDB($model);
             }
@@ -484,10 +484,10 @@ class AttributeController extends ModelController {
             $this->redirect_to('project/');
         }
 
-        $attribute = DB::table('Attribute')->fetch($this->params['id']);
+        $attribute = DB::model('Attribute')->fetch($this->params['id']);
 
         if ($attribute->value['id']) {
-            $model = DB::table('Model')->fetch($attribute->value['model_id']);
+            $model = DB::model('Model')->fetch($attribute->value['model_id']);
 
             $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
             $pg_attribute = $pgsql_entity->pgAttributeByColumn($model->value['name'], $attribute->value['name']);
@@ -507,7 +507,7 @@ class AttributeController extends ModelController {
                 $value['is_primary_key'] = ($pg_attribute['is_primary_key'] == 't');
                 $value['is_required'] = ($pg_attribute['attnotnull'] == 't');
 
-                $attribute = DB::table('Attribute')->update($value, $attribute->value['id']);
+                $attribute = DB::model('Attribute')->update($value, $attribute->value['id']);
             }
         }
 

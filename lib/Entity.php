@@ -864,7 +864,7 @@ class Entity {
         if (!$this->values) return $this;
 
         //TODO join SQL?
-        $model = DB::table($model_name)->idIndex()->all();
+        $model = DB::model($model_name)->idIndex()->all();
         if (!$model->values) return $this;
         if (!$value_key) $value_key = "{$model->entity_name}_id";
 

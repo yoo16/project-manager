@@ -52,7 +52,7 @@ class PageController extends ProjectController {
     }
 
     function action_new() {
-        $this->page = DB::table('Page')->takeValues($this->session['posts']);
+        $this->page = DB::model('Page')->takeValues($this->session['posts']);
 
         $this->forms['is_overwrite']['name'] = 'page[is_overwrite]';
         $this->forms['is_overwrite']['value'] = true;
@@ -60,10 +60,10 @@ class PageController extends ProjectController {
     }
 
     function action_edit() {
-        $this->page = DB::table('Page')->fetch($this->params['id']);
+        $this->page = DB::model('Page')->fetch($this->params['id']);
 
         if ($this->page->value['model_id']) {
-            $this->model = DB::table('Model')->fetch($this->page->value['model_id']);
+            $this->model = DB::model('Model')->fetch($this->page->value['model_id']);
         }
 
         $this->forms['is_overwrite']['name'] = 'page[is_overwrite]';
@@ -76,7 +76,7 @@ class PageController extends ProjectController {
         $posts = $this->posts['page'];
         $posts['class_name'] = $posts['name'];
 
-        $page = DB::table('Page')->insert($posts);
+        $page = DB::model('Page')->insert($posts);
 
 
         if ($page->errors) {
@@ -88,7 +88,7 @@ class PageController extends ProjectController {
 
     function action_update() {
         if (!isPost()) exit;
-        $page = DB::table('Page')->update($this->posts['page'], $this->params['id']);
+        $page = DB::model('Page')->update($this->posts['page'], $this->params['id']);
 
         if ($page->errors) {
             $this->flash['errors'] = $page->errors;
@@ -105,12 +105,12 @@ class PageController extends ProjectController {
 
     function action_duplicate() {
         //TODO Entity function?
-        $page = DB::table('Page')->fetch($this->params['id']);
+        $page = DB::model('Page')->fetch($this->params['id']);
         $posts = $page->value;
         $posts['name'] = "{$page->value['name']}_copy";
         unset($posts['id']);
 
-        $page = DB::table('Page')->insert($posts);
+        $page = DB::model('Page')->insert($posts);
 
         if ($page->errors) {
             $this->flash['errors'] = $page->errors;
@@ -125,7 +125,7 @@ class PageController extends ProjectController {
 
     function action_delete() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $page = DB::table('Page')->delete($this->params['id']);
+            $page = DB::model('Page')->delete($this->params['id']);
             if ($page->errors) {
                 $this->flash['errors'] = $page->errors;
                 $this->redirect_to('edit', $this->params['id']);
@@ -147,25 +147,25 @@ class PageController extends ProjectController {
             $posts['entity_name'] = $model['entity_name'];
             $posts['extends_class_name'] = '';
 
-            $page = DB::table('Page')
+            $page = DB::model('Page')
                 ->where("project_id = {$this->project->value['id']}")
                 ->where("name = '{$model['class_name']}'")
                 ->one()
                 ->value;
 
             if (!$page['id']) {
-                $page = DB::table('Page')->insert($posts)->value;
+                $page = DB::model('Page')->insert($posts)->value;
             }
 
             if ($page['id']) {
-                DB::table('View')->generateDefaultActions($page);
+                DB::model('View')->generateDefaultActions($page);
             }
         }
         $this->redirect_to('list');
     }
 
     function action_create_page_from_model() {
-        $model = DB::table('Model')->fetch($_REQUEST['model_id'])->value;
+        $model = DB::model('Model')->fetch($_REQUEST['model_id'])->value;
 
         if ($this->project->value['id'] && $model['id']) {
             $posts['model_id'] = $model['id'];
@@ -177,18 +177,18 @@ class PageController extends ProjectController {
             $posts['extends_class_name'] = '';
             $posts['is_overwrite'] = true;
 
-            $page = DB::table('Page')
+            $page = DB::model('Page')
                 ->where("project_id = {$this->project->value['id']}")
                 ->where("name = '{$model['class_name']}'")
                 ->one()
                 ->value;
 
             if (!$page['id']) {
-                $page = DB::table('Page')->insert($posts)->value;
+                $page = DB::model('Page')->insert($posts)->value;
             }
 
             if ($page['id']) {
-                DB::table('View')->generateDefaultActions($page);
+                DB::model('View')->generateDefaultActions($page);
             }
         }
 
@@ -196,7 +196,7 @@ class PageController extends ProjectController {
     }
 
     function action_change_overwrite() {
-        $page = DB::table('Page')->fetch($this->params['id']);
+        $page = DB::model('Page')->fetch($this->params['id']);
         if ($page->value['id']) {
             $posts['is_overwrite'] = !$page->value['is_overwrite'];
             $page->update($posts);
@@ -209,7 +209,7 @@ class PageController extends ProjectController {
 
         foreach ($page->values as $page_value) {
             $posts['is_overwrite'] = false;
-            $page = DB::table('Page')->update($posts, $page_value['id']);
+            $page = DB::model('Page')->update($posts, $page_value['id']);
         }
         $this->redirect_to('list');
     }

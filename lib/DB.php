@@ -10,10 +10,9 @@ class DB {
     function __construct($params=null) {
     }
 
+    //TODO remove function, must use 'model()'
    /**
     * table
-    *
-    * TODO: param is table_name ?
     *
     * @param string name
     * @return Class

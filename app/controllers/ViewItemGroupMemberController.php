@@ -19,7 +19,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     */
     function before_action($action) {
         parent::before_action($action);
-        $this->view_item_group = DB::table('ViewItemGroup')->requestSession();
+        $this->view_item_group = DB::model('ViewItemGroup')->requestSession();
 
     }
 
@@ -67,7 +67,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     * @return void
     */
     function action_new() {
-        $this->view_item_group_member = DB::table('ViewItemGroupMember')->init()->takeValues($this->posts['view_item_group_member']);
+        $this->view_item_group_member = DB::model('ViewItemGroupMember')->init()->takeValues($this->posts['view_item_group_member']);
     }
 
    /**
@@ -79,7 +79,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->view_item_group_member = DB::table('ViewItemGroupMember')
+        $this->view_item_group_member = DB::model('ViewItemGroupMember')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['view_item_group_member']);
     }
@@ -93,7 +93,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["view_item_group_member"];
-        $view_item_group_member = DB::table('ViewItemGroupMember')->insert($posts);
+        $view_item_group_member = DB::model('ViewItemGroupMember')->insert($posts);
 
         if ($view_item_group_member->errors) {
             $this->redirect_to('new');
@@ -111,7 +111,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["view_item_group_member"];
-        $view_item_group_member = DB::table('ViewItemGroupMember')->update($posts, $this->params['id']);
+        $view_item_group_member = DB::model('ViewItemGroupMember')->update($posts, $this->params['id']);
 
         if ($view_item_group_member->errors) {
             $this->redirect_to('edit', $this->params['id']);
@@ -128,7 +128,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('ViewItemGroupMember')->delete($this->params['id']);
+        DB::model('ViewItemGroupMember')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 

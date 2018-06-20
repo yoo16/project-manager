@@ -51,7 +51,7 @@ class LangController extends AppController {
     * @return void
     */
     function action_list() {
-        $this->lang = DB::table('Lang')->all();
+        $this->lang = DB::model('Lang')->all();
     }
 
    /**
@@ -61,7 +61,7 @@ class LangController extends AppController {
     * @return void
     */
     function action_new() {
-        $this->lang = DB::table('Lang')->takeValues($this->session['posts']);
+        $this->lang = DB::model('Lang')->takeValues($this->session['posts']);
     }
 
    /**
@@ -71,7 +71,7 @@ class LangController extends AppController {
     * @return void
     */
     function action_edit() {
-        $this->lang = DB::table('Lang')
+        $this->lang = DB::model('Lang')
                     ->fetch($this->params['id'])
                     ->takeValues($this->session['posts']);
     }
@@ -85,7 +85,7 @@ class LangController extends AppController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["lang"];
-        DB::table('Lang')->insert($posts);
+        DB::model('Lang')->insert($posts);
 
         if ($lang->errors) {
             $this->redirect_to('new');
@@ -103,7 +103,7 @@ class LangController extends AppController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["lang"];
-        $lang = DB::table('Lang')->update($posts, $this->params['id']);
+        $lang = DB::model('Lang')->update($posts, $this->params['id']);
 
         if ($lang->errors) {
             $this->redirect_to('edit', $this->params['id']);
@@ -120,7 +120,7 @@ class LangController extends AppController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('Lang')->delete($this->params['id']);
+        DB::model('Lang')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 

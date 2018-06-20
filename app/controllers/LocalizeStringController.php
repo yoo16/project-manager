@@ -51,7 +51,7 @@ class LocalizeStringController extends ProjectController {
     * @return void
     */
     function action_export() {
-        $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
         $this->project->exportAttributeLabels();
         $this->redirect_to('localize_string/list');
     }
@@ -64,11 +64,11 @@ class LocalizeStringController extends ProjectController {
     */
     function action_import_from_model() {
         if ($_REQUEST['user_project_setting_id']) {
-            $this->project->user_project_setting = DB::table('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+            $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
         }
 
         if ($_REQUEST['model_id']) {
-            $model = DB::table('Model')->fetch($_REQUEST['model_id']);
+            $model = DB::model('Model')->fetch($_REQUEST['model_id']);
             LocalizeString::importByModel($model, $this->project);
         } else {
             $model = $this->project->hasMany('Model');
@@ -95,7 +95,7 @@ class LocalizeStringController extends ProjectController {
             $csv->to_encode = 'UTF-8';
             $csv_values = $csv->results();
 
-            $localize_string = DB::table('LocalizeString')->where("project_id = {$this->project->value['id']}")
+            $localize_string = DB::model('LocalizeString')->where("project_id = {$this->project->value['id']}")
                                                           ->all();
 
             foreach ($csv_values as $csv_value) {
@@ -135,7 +135,7 @@ class LocalizeStringController extends ProjectController {
 
             foreach ($search_words as $search_word) {
                 if (strpos($localize_string['name'], $search_word)) {
-                    DB::table('LocalizeString')->delete($localize_string['id']);
+                    DB::model('LocalizeString')->delete($localize_string['id']);
                 }
             }
         }
@@ -149,11 +149,11 @@ class LocalizeStringController extends ProjectController {
     * @return void
     */
     function action_list() {
-        $this->localize_string = DB::table('LocalizeString')
+        $this->localize_string = DB::model('LocalizeString')
                                     ->where("project_id = {$this->project->value['id']}")
                                     ->order('name')
                                     ->all();
-        $this->lang = DB::table('Lang')->all();
+        $this->lang = DB::model('Lang')->all();
     }
 
    /**
@@ -163,8 +163,8 @@ class LocalizeStringController extends ProjectController {
     * @return void
     */
     function action_new() {
-        $this->localize_string = DB::table('LocalizeString')->takeValues($this->session['posts']);
-        $this->lang = DB::table('Lang')->all();
+        $this->localize_string = DB::model('LocalizeString')->takeValues($this->session['posts']);
+        $this->lang = DB::model('Lang')->all();
     }
 
    /**
@@ -174,13 +174,13 @@ class LocalizeStringController extends ProjectController {
     * @return void
     */
     function action_edit() {
-        $this->localize_string = DB::table('LocalizeString')
+        $this->localize_string = DB::model('LocalizeString')
                     ->fetch($this->params['id'])
                     ->takeValues($this->session['posts']);
         //TODO entity
         $this->localize_string->value['label'] = json_decode($this->localize_string->value['label'], true);
 
-        $this->lang = DB::table('Lang')->all();
+        $this->lang = DB::model('Lang')->all();
     }
 
    /**
@@ -194,7 +194,7 @@ class LocalizeStringController extends ProjectController {
         $posts = $this->posts["localize_string"];
         $posts['label'] = json_encode($posts['label']);
 
-        $localize_string = DB::table('LocalizeString')->insert($posts);
+        $localize_string = DB::model('LocalizeString')->insert($posts);
 
         if ($localize_string->errors) {
             $this->redirect_to('new');
@@ -214,7 +214,7 @@ class LocalizeStringController extends ProjectController {
         $posts = $this->posts["localize_string"];
         $posts['label'] = json_encode($posts['label']);
 
-        $localize_string = DB::table('LocalizeString')->update($posts, $this->params['id']);
+        $localize_string = DB::model('LocalizeString')->update($posts, $this->params['id']);
 
         if ($localize_string->errors) {
             $this->redirect_to('edit', $this->params['id']);
@@ -230,7 +230,7 @@ class LocalizeStringController extends ProjectController {
     * @return void
     */
     function action_duplicate() {
-        $localize_string = DB::table('LocalizeString')->fetch($this->params['id']);
+        $localize_string = DB::model('LocalizeString')->fetch($this->params['id']);
 
         if ($localize_string->value) {
             $posts = $localize_string->value;
@@ -253,7 +253,7 @@ class LocalizeStringController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('LocalizeString')->delete($this->params['id']);
+        DB::model('LocalizeString')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 

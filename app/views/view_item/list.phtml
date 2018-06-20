@@ -62,7 +62,7 @@
               <div>
                 <? if ($view_item['link_param_id_attribute_id']): ?>
                   id =
-                  <?= DB::table('Attribute')->fetch($view_item['link_param_id_attribute_id'])->value['name'] ?>
+                  <?= DB::model('Attribute')->fetch($view_item['link_param_id_attribute_id'])->value['name'] ?>
                   <? endif ?>
               </div>
             </td>
@@ -98,14 +98,14 @@
             </td>
             <td>
               <? if ($view_item['where_model_id']): ?>
-                <?= DB::table('Model')->fetch($view_item['where_model_id'])->value['name'] ?> -> id
+                <?= DB::model('Model')->fetch($view_item['where_model_id'])->value['name'] ?> -> id
                 <? endif ?>
 
                   <? if ($view_item['form_model_id']): ?>
                     =
-                    <?= DB::table('Model')->fetch($view_item['form_model_id'])->value['entity_name'] ?>
+                    <?= DB::model('Model')->fetch($view_item['form_model_id'])->value['entity_name'] ?>
                     <? if ($view_item['where_attribute_id']): ?>.
-                      <?= DB::table('Attribute')->fetch($view_item['where_attribute_id'])->value['name'] ?>
+                      <?= DB::model('Attribute')->fetch($view_item['where_attribute_id'])->value['name'] ?>
                       <? endif ?>
                         <? endif ?>
 

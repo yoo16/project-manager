@@ -70,7 +70,7 @@ class Attribute extends _Attribute {
 
         if (!$pg_attributes) return;
         foreach ($pg_attributes as $pg_attribute) {
-            $attribute = DB::table('Attribute')
+            $attribute = DB::model('Attribute')
                                 ->where("model_id = '{$model['id']}'")
                                 ->where("name = '{$pg_attribute['attname']}'")
                                 ->one();
@@ -88,9 +88,9 @@ class Attribute extends _Attribute {
 
             if ($pg_attribute['attnum'] > 0) {
                 if ($attribute->value['id']) {
-                    $attribute = DB::table('Attribute')->update($value, $attribute->value['id']);
+                    $attribute = DB::model('Attribute')->update($value, $attribute->value['id']);
                 } else {
-                    $attribute = DB::table('Attribute')->insert($value);
+                    $attribute = DB::model('Attribute')->insert($value);
                 }
             }
         }
@@ -105,14 +105,14 @@ class Attribute extends _Attribute {
     function deleteUnrelatedByModel($model_array) {
         if (!$model_array['id']) return;
 
-        $model = DB::table('Model')->fetch($model_array['id']);
+        $model = DB::model('Model')->fetch($model_array['id']);
         $attributes = $model->hasMany('Attribute')->values;
         if (!$attributes) return;
         foreach ($attributes as $attribute) {
             if ($attribute['attnum'] > 0) {
 
             } else {
-                $attribute = DB::table('Attribute')->delete($attribute['id']);
+                $attribute = DB::model('Attribute')->delete($attribute['id']);
             }
         }
     }
@@ -142,7 +142,7 @@ class Attribute extends _Attribute {
         $posts['attnum'] = $pg_attribute['attnum'];
         $posts['type'] = $pg_attribute['udt_name'];
 
-        $attribute = DB::table('Attribute')->insert($posts);
+        $attribute = DB::model('Attribute')->insert($posts);
         return $attribute;
     }
 
@@ -158,7 +158,7 @@ class Attribute extends _Attribute {
         $posts['type'] = $type;
         $pgsql = $database->pgsql();
         $pgsql->changeColumnType($model['name'], $pg_attribute['attname'], $posts);
-        DB::table('Attribute')->update($posts, $attribute['id']);
+        DB::model('Attribute')->update($posts, $attribute['id']);
     }
 
     static function changeSerialInt8($database, $model, $attribute) {

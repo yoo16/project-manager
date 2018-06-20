@@ -51,7 +51,7 @@ class PublicLocalizeStringController extends AppController {
     * @return void
     */
     function action_list() {
-        $this->public_localize_string = DB::table('PublicLocalizeString')
+        $this->public_localize_string = DB::model('PublicLocalizeString')
                                 ->filter($this->filters)
                                 ->all();
 
@@ -65,7 +65,7 @@ class PublicLocalizeStringController extends AppController {
     * @return void
     */
     function action_new() {
-        $this->public_localize_string = DB::table('PublicLocalizeString')->init()->takeValues($this->posts['public_localize_string']);
+        $this->public_localize_string = DB::model('PublicLocalizeString')->init()->takeValues($this->posts['public_localize_string']);
     }
 
    /**
@@ -77,7 +77,7 @@ class PublicLocalizeStringController extends AppController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->public_localize_string = DB::table('PublicLocalizeString')
+        $this->public_localize_string = DB::model('PublicLocalizeString')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['public_localize_string']);
     }
@@ -91,7 +91,7 @@ class PublicLocalizeStringController extends AppController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["public_localize_string"];
-        $public_localize_string = DB::table('PublicLocalizeString')->insert($posts);
+        $public_localize_string = DB::model('PublicLocalizeString')->insert($posts);
 
         if ($public_localize_string->errors) {
             $errors['public_localize_strings'] = $public_localize_string->errors;
@@ -112,7 +112,7 @@ class PublicLocalizeStringController extends AppController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["public_localize_string"];
-        $public_localize_string = DB::table('PublicLocalizeString')->update($posts, $this->params['id']);
+        $public_localize_string = DB::model('PublicLocalizeString')->update($posts, $this->params['id']);
 
         if ($public_localize_string->errors) {
             $errors['public_localize_strings'] = $public_localize_string->errors;
@@ -129,7 +129,7 @@ class PublicLocalizeStringController extends AppController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('PublicLocalizeString')->delete($this->params['id']);
+        DB::model('PublicLocalizeString')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 

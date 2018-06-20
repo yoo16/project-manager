@@ -20,8 +20,8 @@ class ViewItemController extends ProjectController {
     function before_action($action) {
         parent::before_action($action);
 
-        $this->page = DB::table('Page')->requestSession();
-        $this->view = DB::table('View')->requestSession();
+        $this->page = DB::model('Page')->requestSession();
+        $this->view = DB::model('View')->requestSession();
 
         if (!$this->project || !$this->page || !$this->view) {
             $this->redirect_to('view/');
@@ -103,7 +103,7 @@ class ViewItemController extends ProjectController {
     * @return void
     */
     function action_new() {
-        $this->view_item = DB::table('ViewItem')->takeValues($this->session['posts']);
+        $this->view_item = DB::model('ViewItem')->takeValues($this->session['posts']);
     }
 
    /**
@@ -113,12 +113,12 @@ class ViewItemController extends ProjectController {
     * @return void
     */
     function action_edit() {
-        $this->view_item = DB::table('ViewItem')
+        $this->view_item = DB::model('ViewItem')
                     ->fetch($this->params['id'])
                     ->takeValues($this->session['posts']);
 
         if ($this->view_item->value['attribute_id']) {
-            $this->attribute = DB::table('Attribute')->fetch($this->view_item->value['attribute_id']);
+            $this->attribute = DB::model('Attribute')->fetch($this->view_item->value['attribute_id']);
         }
     }
 
@@ -127,7 +127,7 @@ class ViewItemController extends ProjectController {
         $posts = $this->session['posts'] = $_REQUEST["view_item"];
         $posts['view_id'] = $this->view->value['id'];
 
-        $attribute = DB::table('Attribute')->fetch($posts['attribute_id']);
+        $attribute = DB::model('Attribute')->fetch($posts['attribute_id']);
         $posts['label'] = $attribute->value['label'];
 
         if ($attribute->value['csv']) {
@@ -138,7 +138,7 @@ class ViewItemController extends ProjectController {
             $posts['form_type'] = 'radio';
         }
    
-        $view_item = DB::table('ViewItem')->insert($posts);
+        $view_item = DB::model('ViewItem')->insert($posts);
 
         if ($view_item->errors) {
             var_dump($view_item->sql);
@@ -159,7 +159,7 @@ class ViewItemController extends ProjectController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->session['posts'] = $_REQUEST["view_item"];
-        DB::table('ViewItem')->insert($posts);
+        DB::model('ViewItem')->insert($posts);
 
         if ($view_item->errors) {
             $this->redirect_to('new');
@@ -185,7 +185,7 @@ class ViewItemController extends ProjectController {
 
         foreach ($attribute->values as $attribute) {
             if (!in_array($attribute['name'], Entity::$app_columns)) {
-                $view_item = DB::table('ViewItem')
+                $view_item = DB::model('ViewItem')
                             ->where("view_id = {$this->view->value['id']}")
                             ->where("attribute_id = {$attribute['id']}")
                             ->one();
@@ -204,7 +204,7 @@ class ViewItemController extends ProjectController {
                     //TODO define label
                     //$posts['label'] = $attribute['label'];
 
-                    DB::table('ViewItem')->insert($posts);
+                    DB::model('ViewItem')->insert($posts);
                 }
             }
         }
@@ -222,7 +222,7 @@ class ViewItemController extends ProjectController {
         $view_item = $this->view->relationMany('ViewItem')->all();
 
         foreach ($view_item->values as $view_item) {
-            DB::table('ViewItem')->delete($view_item['id']);
+            DB::model('ViewItem')->delete($view_item['id']);
         }
         $this->redirect_to('list');
     }
@@ -236,7 +236,7 @@ class ViewItemController extends ProjectController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->session['posts'] = $_REQUEST["view_item"];
-        $view_item = DB::table('ViewItem')->update($posts, $this->params['id']);
+        $view_item = DB::model('ViewItem')->update($posts, $this->params['id']);
 
         $this->redirect_to('edit', $this->params['id']);
     }
@@ -249,7 +249,7 @@ class ViewItemController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('ViewItem')->delete($this->params['id']);
+        DB::model('ViewItem')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 
@@ -262,9 +262,9 @@ class ViewItemController extends ProjectController {
     function action_update_labels() {
         $view_item = $this->view->relationMany('ViewItem')->all();
         foreach ($view_item->values as $value) {
-            $attribute = DB::table('ViewItem')->fetch($value['attribute_id']);
+            $attribute = DB::model('ViewItem')->fetch($value['attribute_id']);
             $posts['label'] = $attribute->value['label'];
-            DB::table('ViewItem')->update($posts, $value['id']);
+            DB::model('ViewItem')->update($posts, $value['id']);
         }
         $this->redirect_to('list');
     }
@@ -278,12 +278,12 @@ class ViewItemController extends ProjectController {
     function action_update_view_item_group() {
         if (!isPost()) exit;
         $posts = $_REQUEST["view_item_group_member"];
-        $view_item_group_member = DB::table('ViewItemGroupMember')
+        $view_item_group_member = DB::model('ViewItemGroupMember')
                             ->where("view_item_group_id = {$posts['view_item_group_id']}")
                             ->where("view_item_id = {$posts['view_item_id']}")
                             ->one();
         if (!$view_item_group_member->value) {
-            $view_item_group_member = DB::table('ViewItemGroupMember')->insert($posts);
+            $view_item_group_member = DB::model('ViewItemGroupMember')->insert($posts);
         }
         $this->redirect_to('list');
     }

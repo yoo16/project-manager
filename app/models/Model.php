@@ -39,7 +39,7 @@ class Model extends _Model {
     static function checkForeignKey($project) {
         if (!$project->value) return;
 
-        $database = DB::table('Database')->fetch($project->value['database_id']);
+        $database = DB::model('Database')->fetch($project->value['database_id']);
 
         if (!$database->value) return;
 
@@ -51,7 +51,7 @@ class Model extends _Model {
             foreach ($model->values as $model) {
                 $pgsql->removePgConstraints($model['name'], 'f');
 
-                $attributes = DB::table('Attribute')->where("model_id = {$model['id']}")
+                $attributes = DB::model('Attribute')->where("model_id = {$model['id']}")
                                                    ->all()
                                                    ->values;
                 foreach ($attributes as $attribute) {
@@ -59,13 +59,13 @@ class Model extends _Model {
                         $foreign_table_name = Entity::foreignTableByColumnName($attribute['name']);
                         $foreign_pg_class = $pgsql->pgClassByRelname($foreign_table_name);
 
-                        $fk_model = DB::table('Model')
+                        $fk_model = DB::model('Model')
                                                     ->where("pg_class_id = {$foreign_pg_class['pg_class_id']}")
                                                     ->where("project_id = {$project->value['id']}")
                                                     ->one();
 
                         if ($fk_model->value) {
-                            $fk_attribute = DB::table('Attribute')
+                            $fk_attribute = DB::model('Attribute')
                                                     ->where("name = '{$fk_model->id_column}'")
                                                     ->where("model_id = {$model['id']}")
                                                     ->one();
@@ -83,7 +83,7 @@ class Model extends _Model {
                                     if ($results) {
                                         $posts = null;
                                         $posts['fk_attribute_id'] = $fk_attribute->value['id'];
-                                        DB::table('Attribute')->update($posts, $attribute['id']);
+                                        DB::model('Attribute')->update($posts, $attribute['id']);
                                     }
                                 }
                             }
@@ -103,7 +103,7 @@ class Model extends _Model {
     static function checkForeignKeyForAttribute($project) {
         if (!$project->value) return;
 
-        $database = DB::table('Database')->fetch($project->value['database_id']);
+        $database = DB::model('Database')->fetch($project->value['database_id']);
 
         if (!$database->value) return;
 
@@ -112,7 +112,7 @@ class Model extends _Model {
 
         if ($model->values) {
             foreach ($model->values as $model) {
-                $attributes = DB::table('Attribute')->where("model_id = {$model['id']}")
+                $attributes = DB::model('Attribute')->where("model_id = {$model['id']}")
                                                    ->all()
                                                    ->values;
                 foreach ($attributes as $attribute) {
@@ -128,8 +128,8 @@ class Model extends _Model {
                         }
 
                         if (!$foreign_keys[$attribute['name']]) {
-                            $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
-                            $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']);
+                            $fk_attribute = DB::model('Attribute')->fetch($attribute['fk_attribute_id']);
+                            $fk_model = DB::model('Model')->fetch($fk_attribute->value['model_id']);
 
                             if ($fk_model->value) {
 
@@ -155,7 +155,7 @@ class Model extends _Model {
                                         if ($results) {
                                             $posts = null;
                                             $posts['fk_attribute_id'] = $fk_attribute->value['id'];
-                                            DB::table('Attribute')->update($posts, $attribute['id']);
+                                            DB::model('Attribute')->update($posts, $attribute['id']);
                                         }
                                     }
                                 }
@@ -177,7 +177,7 @@ class Model extends _Model {
     static function updateForeignKey($project) {
         if (!$project->value) return;
 
-        $database = DB::table('Database')->fetch($project->value['database_id']);
+        $database = DB::model('Database')->fetch($project->value['database_id']);
 
         if (!$database->value) return;
 
@@ -189,16 +189,16 @@ class Model extends _Model {
                 $pg_constraints = $pgsql->pgForeignConstraints($model['pg_class_id']);
 
                 foreach ($pg_constraints as $pg_constraint) {
-                    $attribute = DB::table('Attribute')
+                    $attribute = DB::model('Attribute')
                                                 ->where("model_id = {$model['id']}")
                                                 ->where("name = '{$pg_constraint['attname']}'")
                                                 ->one();
                     if ($attribute->value) {
-                        $fk_model = DB::table('Model')->where("project_id = {$project->value['id']}")
+                        $fk_model = DB::model('Model')->where("project_id = {$project->value['id']}")
                                                       ->where("name = '{$pg_constraint['foreign_relname']}'")
                                                       ->one();
 
-                        $fk_attribute = DB::table('Attribute')->where("model_id = {$fk_model->value['id']}")
+                        $fk_attribute = DB::model('Attribute')->where("model_id = {$fk_model->value['id']}")
                                                       ->where("name = '{$pg_constraint['foreign_attname']}'")
                                                       ->one();
 
@@ -206,7 +206,7 @@ class Model extends _Model {
                             $posts['fk_attribute_id'] = $fk_attribute->value['id'];
                             $posts['update_action'] = $pg_constraint['confupdtype'];
                             $posts['delete_action'] = $pg_constraint['confdeltype'];
-                            DB::table('Attribute')->update($posts, $attribute->value['id']);
+                            DB::model('Attribute')->update($posts, $attribute->value['id']);
                         }
                     }
                 }
@@ -224,7 +224,7 @@ class Model extends _Model {
     static function updateComments($project, $columns) {
         if (!$project->value) return;
 
-        $database = DB::table('Database')->fetch($project->value['database_id']);
+        $database = DB::model('Database')->fetch($project->value['database_id']);
 
         if (!$database->value) return;
 
@@ -234,7 +234,7 @@ class Model extends _Model {
         
         if ($model->values) {
             foreach ($model->values as $model) {
-                $attributes = DB::table('Attribute')->where("model_id = {$model['id']}")
+                $attributes = DB::model('Attribute')->where("model_id = {$model['id']}")
                                                    ->all()
                                                    ->values;
                                                    
@@ -247,7 +247,7 @@ class Model extends _Model {
                             if ($results) {
                                 $posts = null;
                                 $posts['label'] = $comment;
-                                DB::table('Attribute')->update($posts, $attribute['id']);
+                                DB::model('Attribute')->update($posts, $attribute['id']);
                             }
                         }
                     }

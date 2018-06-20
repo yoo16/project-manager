@@ -100,7 +100,7 @@
                   <? if ($this->page->value['where_model_id']): ?>
                     =
                     <?= $this->model->value['name'] ?>.
-                    <?= DB::table('Model')->fetch($this->page->value['where_model_id'])->value['entity_name'] ?>_id
+                    <?= DB::model('Model')->fetch($this->page->value['where_model_id'])->value['entity_name'] ?>_id
                     <? endif ?>
                 </td>
               </tr>

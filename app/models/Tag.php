@@ -22,8 +22,8 @@ class Tag {
         $entity = '$values'."['{$attribute['name']}']";
 
         if ($attribute['fk_attribute_id']) {
-            $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
-            $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']); 
+            $fk_attribute = DB::model('Attribute')->fetch($attribute['fk_attribute_id']);
+            $fk_model = DB::model('Model')->fetch($fk_attribute->value['model_id']); 
 
             if ($fk_model->value) $tag = '$this->'.$fk_model->value["entity_name"]."->values[{$entity}]['{$view_item['label_column']}']";
         } else if ($view_item['csv']) {
@@ -72,14 +72,14 @@ class Tag {
             $label = "FormHelper::activeLabelTag({$entity})";
         } else if ($view_item['localize_string_id']) {
             //TODO
-            $localize_string = DB::table('LocalizeString')->fetch($view_item['localize_string_id']);
+            $localize_string = DB::model('LocalizeString')->fetch($view_item['localize_string_id']);
             $label = $localize_string->value['name'];
         } else {
             $label = $entity;
         }
 
         if ($view_item['link_param_id_attribute_id']) {
-            $link_param_id_attribute = DB::table('Attribute')->fetch($view_item['link_param_id_attribute_id']);
+            $link_param_id_attribute = DB::model('Attribute')->fetch($view_item['link_param_id_attribute_id']);
 
             $key_name = 'id';
             $value_name = "\$values['{$link_param_id_attribute->value['name']}']";
@@ -182,20 +182,20 @@ class Tag {
         if ($view_item['csv']) {
             $params = "['csv' => '{$view_item['csv']}', 'unselect' => true]";
         } else if ($view_item['form_model_id']) {
-            $fk_model = DB::table('Model')->fetch($view_item['form_model_id']); 
+            $fk_model = DB::model('Model')->fetch($view_item['form_model_id']); 
         } else if ($attribute['fk_attribute_id']) {
-            $fk_attribute = DB::table('Attribute')->fetch($attribute['fk_attribute_id']);
-            $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']); 
+            $fk_attribute = DB::model('Attribute')->fetch($attribute['fk_attribute_id']);
+            $fk_model = DB::model('Model')->fetch($fk_attribute->value['model_id']); 
         }
 
         //where
         if ($view_item['where_model_id']) {
-            $where_model = DB::table('Model')->fetch($view_item['where_model_id']); 
+            $where_model = DB::model('Model')->fetch($view_item['where_model_id']); 
             $where_column = "{$where_model->value["entity_name"]}_id";
             $where_value = '{$this->'.$where_model->value["entity_name"]."->value['id']}";
             $where = "'where' => \"{$where_column} = {$where_value}\",";
         } else if ($view_item['where_attribute_id']) {
-            $where_attribute = DB::table('Attribute')->fetch($view_item['where_attribute_id']); 
+            $where_attribute = DB::model('Attribute')->fetch($view_item['where_attribute_id']); 
             $where_column = $where_attribute->value["name"];
             $where_value = '{$this->'.$model["entity_name"]."->value['{$where_attribute->value['name']}']}";
             $where = "'where' => \"{$where_column} = {$where_value}\",";
@@ -265,7 +265,7 @@ class Tag {
             foreach ($page_model->values as $page_model_value) {
                 if ($page_model_value['is_request_session']) {
                     $instance = '$this->'.$page_model_value['entity_name'];
-                    $tag = "{$instance} = DB::table('{$page_model_value['class_name']}')->requestSession();";
+                    $tag = "{$instance} = DB::model('{$page_model_value['class_name']}')->requestSession();";
                     echo($tag).PHP_EOL;
                 }
             }
@@ -275,7 +275,7 @@ class Tag {
     function pageFilters($page_filter) {
         if ($page_filter->values) {
             foreach ($page_filter->values as $value) {
-                $attribute = DB::table('Attribute')->fetch($value['attribute_id']);
+                $attribute = DB::model('Attribute')->fetch($value['attribute_id']);
                 $eq = '=';
                 if ($value['eq']) $eq = $value['eq'];
                 if ($attribute->value) $filters[] = "'{$attribute->value['name']}' => ['value' => '{$value['value']}', 'eq' => '{$eq}']";
@@ -313,7 +313,7 @@ class Tag {
             }
         }
         if ($page->value['where_model_id']) {
-            $parent_model = DB::table('Model')->fetch($page->value['where_model_id']);
+            $parent_model = DB::model('Model')->fetch($page->value['where_model_id']);
 
             $parent_instance = '$this->'.$parent_model->value['entity_name'];
             $relation_many = "{$parent_instance}->relationMany";
@@ -322,7 +322,7 @@ class Tag {
             $tag = "if (!{$parent_instance}->value) {$redirect};".PHP_EOL;
             $tag.= "        {$instance} = {$relation_many}('{$model->value['class_name']}')";
         } else {
-            $tag = "{$instance} = DB::table('{$model->value['class_name']}')";
+            $tag = "{$instance} = DB::model('{$model->value['class_name']}')";
         }
 
         if ($order) $tag.= "{$return_space}{$order}";
@@ -341,7 +341,7 @@ class Tag {
             foreach ($page_model->values as $page_model_value) {
                 if ($page_model_value['is_fetch_list_values']) {
                     $instance = '$this->'.$page_model_value['model_entity_name'];
-                    $tag = "{$instance} = DB::table('{$page_model_value['model_class_name']}')->idIndex()->all();";
+                    $tag = "{$instance} = DB::model('{$page_model_value['model_class_name']}')->idIndex()->all();";
                     echo($tag).PHP_EOL;
                 }
             }

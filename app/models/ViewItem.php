@@ -22,15 +22,15 @@ class ViewItem extends _ViewItem {
 
     static function hiddenValue($view_item) {
         if ($view_item['attribute_id']) {
-            $attribute = DB::table('Attribute')->fetch($view_item['attribute_id']);
+            $attribute = DB::model('Attribute')->fetch($view_item['attribute_id']);
 
             if ($attribute->value['fk_attribute_id']) {
-                $fk_attribute = DB::table('Attribute')->fetch($attribute->value['fk_attribute_id']);
-                $fk_model = DB::table('Model')->fetch($fk_attribute->value['model_id']);
+                $fk_attribute = DB::model('Attribute')->fetch($attribute->value['fk_attribute_id']);
+                $fk_model = DB::model('Model')->fetch($fk_attribute->value['model_id']);
 
                 if (!$fk_attribute->value) {
-                    $view = DB::table('View')->fetch($view_item['view_id']);
-                    $page = DB::table('Page')->fetch($view->value['page_id']);
+                    $view = DB::model('View')->fetch($view_item['view_id']);
+                    $page = DB::model('Page')->fetch($view->value['page_id']);
                     var_dump($attribute->value['fk_attribute_id']);
                     var_dump($attribute->value['name']);
                     var_dump($view->value['name']);

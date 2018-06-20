@@ -61,7 +61,7 @@ class DocumentController extends ProjectController {
     }
 
     function action_attribute_list() {
-        $this->model = DB::table('Model')
+        $this->model = DB::model('Model')
                             ->fetch($_REQUEST['model_id']);
 
         $this->attribute = $this->model
@@ -71,14 +71,14 @@ class DocumentController extends ProjectController {
     }
 
     function action_edit() {
-        $this->model = DB::table('Model')->fetch($this->params['id']);
+        $this->model = DB::model('Model')->fetch($this->params['id']);
     }
 
     function action_update_model() {
         if (!isPost()) exit;
 
         $posts = $this->posts['model'];
-        $model = DB::table('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->params['id']);
         if ($model->value) {
             if ($model->value['label'] != $posts['label']) {
                 $results = $this->database->pgsql()->updateTableComment($model->value['name'], $posts['label']);
@@ -102,7 +102,7 @@ class DocumentController extends ProjectController {
         $pg_class = $pgsql->pgClassById($this->model->value['pg_class_id']);
         $pgsql->updateColumnComment($pg_class['relname'], $attribute->value['name'], $posts['label']);
 
-        $attribute = DB::table('Attribute')->update($posts, $this->params['id']);
+        $attribute = DB::model('Attribute')->update($posts, $this->params['id']);
 
         $params['model_id'] = $attribute->value['model_id'];
         $this->redirect_to('attribute_list', $params);
@@ -119,15 +119,15 @@ class DocumentController extends ProjectController {
         $this->page = $this->project->relationMany('Page')->all();
 
         foreach ($this->page->values as $page_index => $page) {
-            $this->view = DB::table('View')->where("page_id = {$page['id']}")->all();
+            $this->view = DB::model('View')->where("page_id = {$page['id']}")->all();
             foreach ($this->view->values as $view_index => $view) {
-                $view['view_item'] = DB::table('ViewItem')->where("view_id = {$view['id']}")->all()->values;
+                $view['view_item'] = DB::model('ViewItem')->where("view_id = {$view['id']}")->all()->values;
                 $page['view'][] = $view;
             }
             $this->pages[] = $page;
         }
 
-        $this->attributes = DB::table('Attribute')
+        $this->attributes = DB::model('Attribute')
                                 ->join('Model', 'id', 'model_id')
                                 ->where("models.project_id = {$this->project->value['id']}")
                                 ->idIndex()
@@ -137,7 +137,7 @@ class DocumentController extends ProjectController {
     }
 
     function _getPhpDocuments() {
-        $user_project_setting = DB::table('UserProjectSetting');
+        $user_project_setting = DB::model('UserProjectSetting');
         $user_project_setting->where("project_id = {$this->project->value['id']}")->all();
 
         $user_project_setting->value = $user_project_setting->values[0];

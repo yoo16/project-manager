@@ -15,14 +15,14 @@ if (!$project_name) {
     echo("{$msg}").PHP_EOL;
     exit;
 }
-$project = DB::table('Project')
+$project = DB::model('Project')
                 ->where("name = '{$project_name}'")
                 ->one();
 
 $file_path = EXCEL_EXPORT_DIR."{$project_name}.xlsx";
 
 if (!$is_not_export) {
-    $database = DB::table('Database')
+    $database = DB::model('Database')
                 ->fetch($project->value['database_id'])
                 ->exportDatabase($file_path);
 }

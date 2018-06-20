@@ -20,8 +20,8 @@ class ViewController extends ProjectController {
     function before_action($action) {
         parent::before_action($action);
 
-        $this->page = DB::table('Page')->requestSession();
-        $this->model = DB::table('Model')->belongsTo($this->page, 'model_id');
+        $this->page = DB::model('Page')->requestSession();
+        $this->model = DB::model('Model')->belongsTo($this->page, 'model_id');
 
         if (!$this->project->value || !$this->page->value) {
             $this->redirect_to('page/');
@@ -69,7 +69,7 @@ class ViewController extends ProjectController {
     * @return void
     */
     function action_new() {
-        $this->view = DB::table('View')
+        $this->view = DB::model('View')
                     ->takeValues($this->session['posts']);
 
         $this->forms['is_overwrite']['name'] = 'view[is_overwrite]';
@@ -84,7 +84,7 @@ class ViewController extends ProjectController {
     * @return void
     */
     function action_edit() {
-        $this->view = DB::table('View')
+        $this->view = DB::model('View')
                     ->fetch($this->params['id'])
                     ->takeValues($this->session['posts']);
 
@@ -103,7 +103,7 @@ class ViewController extends ProjectController {
         if (!isPost()) exit;
         $posts = $this->posts['view'];
 
-        $view = DB::table('View')->insert($posts);
+        $view = DB::model('View')->insert($posts);
 
 
         if ($view->errors) {
@@ -120,7 +120,7 @@ class ViewController extends ProjectController {
     * @return void
     */
     function action_update() {
-        $project = DB::table('View')
+        $project = DB::model('View')
                         ->fetch($this->params['id'])
                         ->post()
                         ->update();
@@ -139,13 +139,13 @@ class ViewController extends ProjectController {
     */
     function action_delete() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            DB::table('View')->delete($this->params['id']);
+            DB::model('View')->delete($this->params['id']);
         }
         $this->redirect_to('index');
     }
 
     function action_change_overwrite() {
-        $view = DB::table('View')->fetch($this->params['id']);
+        $view = DB::model('View')->fetch($this->params['id']);
         if ($view->value['id']) {
             $posts['is_overwrite'] = !$view->value['is_overwrite'];
             $view->update($posts);

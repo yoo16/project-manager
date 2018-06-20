@@ -19,7 +19,7 @@ class MenuItemController extends MenuController {
     */
     function before_action($action) {
         parent::before_action($action);
-        $this->menu = DB::table('Menu')->requestSession();
+        $this->menu = DB::model('Menu')->requestSession();
 
     }
 
@@ -52,7 +52,7 @@ class MenuItemController extends MenuController {
     * @return void
     */
     function action_list() {
-        $this->menu_item = DB::table('MenuItem')->all();
+        $this->menu_item = DB::model('MenuItem')->all();
 
                 
     }
@@ -64,7 +64,7 @@ class MenuItemController extends MenuController {
     * @return void
     */
     function action_new() {
-        $this->menu_item = DB::table('MenuItem')->init()->takeValues($this->posts['menu_item']);
+        $this->menu_item = DB::model('MenuItem')->init()->takeValues($this->posts['menu_item']);
     }
 
    /**
@@ -76,7 +76,7 @@ class MenuItemController extends MenuController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->menu_item = DB::table('MenuItem')
+        $this->menu_item = DB::model('MenuItem')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['menu_item']);
     }
@@ -90,7 +90,7 @@ class MenuItemController extends MenuController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["menu_item"];
-        $menu_item = DB::table('MenuItem')->insert($posts);
+        $menu_item = DB::model('MenuItem')->insert($posts);
         if ($menu_item->errors) {
             $errors['menu_items'] = $menu_item->errors;
             $this->setErrors($errors);
@@ -110,7 +110,7 @@ class MenuItemController extends MenuController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["menu_item"];
-        $menu_item = DB::table('MenuItem')->update($posts, $this->params['id']);
+        $menu_item = DB::model('MenuItem')->update($posts, $this->params['id']);
 
         if ($menu_item->errors) {
             $errors['menu_items'] = $menu_item->errors;
@@ -127,7 +127,7 @@ class MenuItemController extends MenuController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('MenuItem')->delete($this->params['id']);
+        DB::model('MenuItem')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 

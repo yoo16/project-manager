@@ -19,7 +19,7 @@ class ApiController extends ProjectController {
     */
     function before_action($action) {
         parent::before_action($action);
-        $this->project = DB::table('Project')->requestSession();
+        $this->project = DB::model('Project')->requestSession();
 
     }
 
@@ -67,7 +67,7 @@ class ApiController extends ProjectController {
     * @return void
     */
     function action_new() {
-        $this->api = DB::table('Api')->init()->takeValues($this->posts['api']);
+        $this->api = DB::model('Api')->init()->takeValues($this->posts['api']);
     }
 
    /**
@@ -79,7 +79,7 @@ class ApiController extends ProjectController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->api = DB::table('Api')
+        $this->api = DB::model('Api')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['api']);
     }
@@ -93,7 +93,7 @@ class ApiController extends ProjectController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["api"];
-        $api = DB::table('Api')->insert($posts);
+        $api = DB::model('Api')->insert($posts);
 
         if ($api->errors) {
             $this->redirect_to('new');
@@ -111,7 +111,7 @@ class ApiController extends ProjectController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["api"];
-        $api = DB::table('Api')->update($posts, $this->params['id']);
+        $api = DB::model('Api')->update($posts, $this->params['id']);
 
         if ($api->errors) {
             $this->redirect_to('edit', $this->params['id']);
@@ -128,7 +128,7 @@ class ApiController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('Api')->delete($this->params['id']);
+        DB::model('Api')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 

@@ -51,7 +51,7 @@ class UserController extends AppController {
     * @return void
     */
     function action_list() {
-        $this->user = DB::table('User')->all();
+        $this->user = DB::model('User')->all();
 
                 
     }
@@ -63,7 +63,7 @@ class UserController extends AppController {
     * @return void
     */
     function action_new() {
-        $this->user = DB::table('User')->init()->takeValues($this->posts['user']);
+        $this->user = DB::model('User')->init()->takeValues($this->posts['user']);
     }
 
    /**
@@ -75,7 +75,7 @@ class UserController extends AppController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->user = DB::table('User')
+        $this->user = DB::model('User')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['user']);
     }
@@ -89,7 +89,7 @@ class UserController extends AppController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["user"];
-        $user = DB::table('User')->insert($posts);
+        $user = DB::model('User')->insert($posts);
 
         if ($user->errors) {
             $errors['users'] = $user->errors;
@@ -110,7 +110,7 @@ class UserController extends AppController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["user"];
-        $user = DB::table('User')->update($posts, $this->params['id']);
+        $user = DB::model('User')->update($posts, $this->params['id']);
 
         if ($user->errors) {
             $errors['users'] = $user->errors;
@@ -127,7 +127,7 @@ class UserController extends AppController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('User')->delete($this->params['id']);
+        DB::model('User')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 

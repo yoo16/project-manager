@@ -81,7 +81,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     */
     function action_new() {
 <? if ($model = $values['model']): ?>
-        $this-><?= $model->value['entity_name'] ?> = DB::table('<?= $model->value['class_name'] ?>')->init()->takeValues($this->posts['<?= $model->value['entity_name'] ?>']);
+        $this-><?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->init()->takeValues($this->posts['<?= $model->value['entity_name'] ?>']);
 <? endif ?>
     }
 
@@ -95,7 +95,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
 <? if ($model = $values['model']): ?>
         $this->checkEdit();
 
-        $this-><?= $model->value['entity_name'] ?> = DB::table('<?= $model->value['class_name'] ?>')
+        $this-><?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['<?= $model->value['entity_name'] ?>']);
 <? endif ?>
@@ -111,7 +111,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
         if (!isPost()) exit;
 <? if ($model = $values['model']): ?>
         $posts = $this->posts["<?= $model->value['entity_name'] ?>"];
-        $<?= $model->value['entity_name'] ?> = DB::table('<?= $model->value['class_name'] ?>')->insert($posts);
+        $<?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->insert($posts);
 
         if ($<?= $model->value['entity_name'] ?>->errors) {
             $this->addError('<?= $model->value['name'] ?>', $<?= $model->value['entity_name'] ?>->errors);
@@ -133,7 +133,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
         if (!isPost()) exit;
 <? if ($model = $values['model']): ?>
         $posts = $this->posts["<?= $model->value['entity_name'] ?>"];
-        $<?= $model->value['entity_name'] ?> = DB::table('<?= $model->value['class_name'] ?>')->update($posts, $this->params['id']);
+        $<?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->update($posts, $this->params['id']);
 
         if ($<?= $model->value['entity_name'] ?>->errors) {
             $errors['<?= $model->value['name'] ?>'] = $<?= $model->value['entity_name'] ?>->errors;
@@ -152,7 +152,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     function action_delete() {
         if (!isPost()) exit;
 <? if ($values['model']): ?>
-        DB::table('<?= $model->value['class_name'] ?>')->delete($this->params['id']);
+        DB::model('<?= $model->value['class_name'] ?>')->delete($this->params['id']);
 <? endif ?>
         $this->redirect_to('index');
     }

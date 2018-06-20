@@ -19,7 +19,7 @@ class RecordItemController extends RecordController {
     */
     function before_action($action) {
         parent::before_action($action);
-        $this->record = DB::table('Record')->requestSession();
+        $this->record = DB::model('Record')->requestSession();
 
     }
 
@@ -67,7 +67,7 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_new() {
-        $this->record_item = DB::table('RecordItem')->init()->takeValues($this->posts['record_item']);
+        $this->record_item = DB::model('RecordItem')->init()->takeValues($this->posts['record_item']);
     }
 
    /**
@@ -79,7 +79,7 @@ class RecordItemController extends RecordController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->record_item = DB::table('RecordItem')
+        $this->record_item = DB::model('RecordItem')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['record_item']);
     }
@@ -93,7 +93,7 @@ class RecordItemController extends RecordController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["record_item"];
-        $record_item = DB::table('RecordItem')->insert($posts);
+        $record_item = DB::model('RecordItem')->insert($posts);
 
         if ($record_item->errors) {
             $this->redirect_to('new');
@@ -111,7 +111,7 @@ class RecordItemController extends RecordController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["record_item"];
-        $record_item = DB::table('RecordItem')->update($posts, $this->params['id']);
+        $record_item = DB::model('RecordItem')->update($posts, $this->params['id']);
 
         if ($record_item->errors) {
             $this->redirect_to('edit', $this->params['id']);
@@ -128,7 +128,7 @@ class RecordItemController extends RecordController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('RecordItem')->delete($this->params['id']);
+        DB::model('RecordItem')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 
@@ -140,13 +140,13 @@ class RecordItemController extends RecordController {
     */
     function batch_add() {
         if ($_REQUEST['record_id'] && $_REQUEST['count']) {
-            $record = DB::table('Record')->fetch($_REQUEST['record_id']);
+            $record = DB::model('Record')->fetch($_REQUEST['record_id']);
             if ($record->value) {
                 for ($i = 0; $i < $_REQUEST['count']; $i++) {
                     $posts['record_id'] = $record->value['id'];
                     $posts['key'] = $i + 1;
                     $posts['value'] = $i + 1;
-                    $record_item = DB::table('RecordItem')->insert($posts);
+                    $record_item = DB::model('RecordItem')->insert($posts);
                 }
             }
         }

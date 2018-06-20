@@ -22,7 +22,7 @@ class View extends _View {
         if (!$page) return;
 
         foreach (View::$default_actions as $action) {
-            $view = DB::table('View')
+            $view = DB::model('View')
                      ->where("page_id = {$page['id']}")
                      ->where("name = '{$action['name']}'")
                      ->one();

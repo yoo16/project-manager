@@ -27,7 +27,7 @@ class Database extends _Database {
     
     function myList() {
         $database_name = DB_NAME;
-        $database = DB::table('Database')->where("name != '{$database_name}'")
+        $database = DB::model('Database')->where("name != '{$database_name}'")
                                          ->limit(1)
                                          ->all();
         return $database->values;
@@ -96,7 +96,7 @@ class Database extends _Database {
         foreach ($pg_classes as $index => $pg_class) {
             $is_numbering = PgsqlEntity::isNumberingName($pg_class['relname']);
             if (!$is_numbering) {
-                $model = DB::table('Model')->where("name = '{$pg_class['relname']}'")->one();
+                $model = DB::model('Model')->where("name = '{$pg_class['relname']}'")->one();
                 $pg_classes[$index]['model'] = $model;
 
                 $row++;

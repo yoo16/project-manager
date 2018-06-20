@@ -9,7 +9,7 @@ class DatabaseController extends AppController {
         parent::before_action($action);
 
         $this->pm_pgsql = new PgsqlEntity();
-        $this->database = DB::table('Database')->requestSession();
+        $this->database = DB::model('Database')->requestSession();
     }
 
     function index() {
@@ -25,17 +25,17 @@ class DatabaseController extends AppController {
     }
 
     function action_list() {
-        $this->database = DB::table('database')->all();
+        $this->database = DB::model('database')->all();
 
         $this->pg_databases = $this->pm_pgsql->pgDatabases();
     }
 
     function action_new() {
-        $this->database = DB::table('Database')->takeValues($this->session['posts']);
+        $this->database = DB::model('Database')->takeValues($this->session['posts']);
     }
 
     function action_edit() {
-        $this->database = DB::table('Database')->fetch($this->params['id'])
+        $this->database = DB::model('Database')->fetch($this->params['id'])
                                                ->takeValues($this->session['posts']);
 
     }
@@ -43,7 +43,7 @@ class DatabaseController extends AppController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts['database'];
-        $database = DB::table('Database')->insert($posts);
+        $database = DB::model('Database')->insert($posts);
 
         $this->flash['results'] = $database->pgsql()->createDatabase();
 
@@ -58,14 +58,14 @@ class DatabaseController extends AppController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts['database'];
-        $database = DB::table('Database')->update($posts, $this->params['id']);
+        $database = DB::model('Database')->update($posts, $this->params['id']);
 
         $this->redirect_to('list');
     }
 
 
     function action_export_db() {
-        $database = DB::table('Database')
+        $database = DB::model('Database')
                             ->fetch($this->database->value['id'])
                             ->exportDatabase();
 
@@ -81,9 +81,9 @@ class DatabaseController extends AppController {
         //     exit;
         // }
         //TODO delete
-        $database = DB::table('Database')->fetch($this->params['id']);
+        $database = DB::model('Database')->fetch($this->params['id']);
         if ($database->value) {
-            DB::table('Database')->delete($this->params['id']);
+            DB::model('Database')->delete($this->params['id']);
         }
 
         $this->redirect_to('database/');
@@ -117,7 +117,7 @@ class DatabaseController extends AppController {
             exit;
         }
 
-        $database = DB::table('Database')
+        $database = DB::model('Database')
                                 ->where("name = '{$_REQUEST['database_name']}'")
                                 ->where("hostname = '{$host}'")
                                 ->one();
@@ -127,7 +127,7 @@ class DatabaseController extends AppController {
             $posts['hostname'] = $host;
             $posts['port'] = $this->pm_pgsql->port;
 
-            DB::table('Database')->insert($posts);
+            DB::model('Database')->insert($posts);
         }
 
         $this->redirect_to('database/');

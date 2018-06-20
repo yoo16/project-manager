@@ -20,7 +20,7 @@ class PageFilterController extends PageController {
     */
     function before_action($action) {
         parent::before_action($action);
-        $this->page = DB::table('Page')->requestSession();
+        $this->page = DB::model('Page')->requestSession();
 
     }
 
@@ -66,14 +66,14 @@ class PageFilterController extends PageController {
     * @return void
     */
     function action_new() {
-        $this->page_filter = DB::table('PageFilter')->init()->takeValues($this->posts['page_filter']);
+        $this->page_filter = DB::model('PageFilter')->init()->takeValues($this->posts['page_filter']);
 
         if ($this->page->value['model_id']) {
-            $this->model = DB::table('Model')->fetch("{$this->page->value['model_id']}");
+            $this->model = DB::model('Model')->fetch("{$this->page->value['model_id']}");
         } else if ($this->page->value['parent_page_id']) {
-            $this->parent_page = DB::table('Page')->fetch("{$this->page->value['parent_page_id']}");
+            $this->parent_page = DB::model('Page')->fetch("{$this->page->value['parent_page_id']}");
             if ($this->parent_page->value['model_id']) {
-                $this->model = DB::table('Model')->fetch("{$this->parent_page->value['model_id']}");
+                $this->model = DB::model('Model')->fetch("{$this->parent_page->value['model_id']}");
             }
         }
     }
@@ -87,16 +87,16 @@ class PageFilterController extends PageController {
     function action_edit() {
         $this->checkEdit();
 
-        $this->page_filter = DB::table('PageFilter')
+        $this->page_filter = DB::model('PageFilter')
                     ->fetch($this->params['id'])
                     ->takeValues($this->posts['page_filter']);
 
         if ($this->page->value['model_id']) {
-            $this->model = DB::table('Model')->fetch("{$this->page->value['model_id']}");
+            $this->model = DB::model('Model')->fetch("{$this->page->value['model_id']}");
         } else if ($this->page->value['parent_page_id']) {
-            $this->parent_page = DB::table('Page')->fetch("{$this->page->value['parent_page_id']}");
+            $this->parent_page = DB::model('Page')->fetch("{$this->page->value['parent_page_id']}");
             if ($this->parent_page->value['model_id']) {
-                $this->model = DB::table('Model')->fetch("{$this->parent_page->value['model_id']}");
+                $this->model = DB::model('Model')->fetch("{$this->parent_page->value['model_id']}");
             }
         }
     }
@@ -110,7 +110,7 @@ class PageFilterController extends PageController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->posts["page_filter"];
-        $page_filter = DB::table('PageFilter')->insert($posts);
+        $page_filter = DB::model('PageFilter')->insert($posts);
 
         if ($page_filter->errors) {
             $this->redirect_to('new');
@@ -128,7 +128,7 @@ class PageFilterController extends PageController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->posts["page_filter"];
-        $page_filter = $page_filter = DB::table('PageFilter')->update($posts, $this->params['id']);
+        $page_filter = $page_filter = DB::model('PageFilter')->update($posts, $this->params['id']);
 
         if ($page_filter->errors) {
             $this->redirect_to('edit', $this->params['id']);
@@ -145,7 +145,7 @@ class PageFilterController extends PageController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::table('PageFilter')->delete($this->params['id']);
+        DB::model('PageFilter')->delete($this->params['id']);
         $this->redirect_to('index');
     }
 

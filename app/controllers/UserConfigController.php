@@ -20,11 +20,11 @@ class UserConfigController extends AppController {
     }
 
     function action_list() {
-        $user_config = DB::table('UserConfig')->all();
+        $user_config = DB::model('UserConfig')->all();
     }
 
     function action_new() {
-        DB::table('UserConfig')->init();
+        DB::model('UserConfig')->init();
     }
 
     function edit() {

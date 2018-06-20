@@ -45,7 +45,7 @@ class LocalizeString extends _LocalizeString {
      */
     function importByModel($model) {
         if (!$model->value) return;
-        $attribute = DB::table('Attribute')->where("model_id = {$model->value['id']}")->all();
+        $attribute = DB::model('Attribute')->where("model_id = {$model->value['id']}")->all();
 
         $model_name = strtoupper($model->value['name']);
         $posts['name'] = "LABEL_{$model_name}";
@@ -54,14 +54,14 @@ class LocalizeString extends _LocalizeString {
         $label['ja'] = $model->value['label'];
         $posts['label'] = json_encode($label);
 
-        $localize_string = DB::table('LocalizeString')
+        $localize_string = DB::model('LocalizeString')
                                     ->where("name = '{$posts['name']}'")
                                     ->where("project_id = '{$posts['project_id']}'")
                                     ->one();
         if ($localize_string->value['id']) {
             $localize_string->update($posts);
         } else {
-            DB::table('LocalizeString')->insert($posts);
+            DB::model('LocalizeString')->insert($posts);
         }
 
         foreach ($attribute->values as $attribute->value) {
@@ -76,14 +76,14 @@ class LocalizeString extends _LocalizeString {
                     $posts['lang'] = 'ja';
                     $posts['project_id'] = $model->value['project_id'];
                     $posts['label'] = json_encode($label);
-                    $localize_string = DB::table('LocalizeString')
+                    $localize_string = DB::model('LocalizeString')
                                                 ->where("name = '{$posts['name']}'")
                                                 ->where("project_id = '{$posts['project_id']}'")
                                                 ->one();
                     if ($localize_string->value['id']) {
                         $localize_string->update($posts);
                     } else {
-                        DB::table('LocalizeString')->insert($posts);
+                        DB::model('LocalizeString')->insert($posts);
                     }
                 }
             }

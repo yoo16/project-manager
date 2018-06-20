@@ -183,7 +183,7 @@ class Controller extends RuntimeException {
                 }
             }
         } 
-        if ($_REQUEST['id']) $params['id'] = $_REQUEST['id'];
+        if (isset($_REQUEST['id'])) $params['id'] = $_REQUEST['id'];
         return $params;
     }
 
@@ -224,9 +224,15 @@ class Controller extends RuntimeException {
         if ($controller) {
             try {
                 session_start();
-                if ($_REQUEST['lang'] && $_REQUEST['is_change_lang']) AppSession::set('lang', $_REQUEST['lang']);
-                $controller->lang = ApplicationLocalize::load($_REQUEST['lang']);
-                $controller->loadDefaultCsvOptions($_REQUEST['lang'], $_REQUEST['is_change_lang']);
+                $lang = '';
+                $is_change_lang = false;
+
+                if (isset($_REQUEST['lang'])) $lang = $_REQUEST['lang'];
+                if (isset($_REQUEST['is_change_lang'])) $is_change_lang = $_REQUEST['is_change_lang'];
+                
+                if ($lang && $is_change_lang) AppSession::set('lang', $lang);
+                $controller->lang = ApplicationLocalize::load($lang = $lang);
+                $controller->loadDefaultCsvOptions($lang, $is_change_lang);
                 $controller->run($params);
             } catch (Throwable $t) {
                 $errors = Controller::throwErrors($t);
@@ -405,10 +411,10 @@ class Controller extends RuntimeException {
      * @return void
      */
     static function renderError($errors, $is_continue = true) {
-        if (!$GLOBALS['controller']) {
+        if (!isset($GLOBALS['controller'])) {
             $GLOBALS['controller']['relative_base'] = Controller::relativeBaseURLForStatic();
         }
-
+        if (!$errors) return;
         $error_layout = BASE_DIR."app/views/layouts/error.phtml";
         if (file_exists($error_layout)) {
             include $error_layout;
@@ -417,9 +423,9 @@ class Controller extends RuntimeException {
         if (file_exists($error_template)) {
             ob_start();
             include $error_template;
-            $error_contents = ob_get_contents();
+            $content_for_layout = ob_get_contents();
             ob_end_clean();
-            echo($error_contents);
+            echo($content_for_layout);
         }
         if (!$is_continue) exit;
     }
@@ -812,6 +818,7 @@ class Controller extends RuntimeException {
      * @return string
      */
     static function relativeBaseURLForStatic() {
+        $relative_base = '';
         $query = str_replace('?', '', $_SERVER['QUERY_STRING']);
         $count = substr_count($query, '/');
         for ($i = 0; $i < $count; $i++) {
@@ -876,15 +883,18 @@ class Controller extends RuntimeException {
      * @return string
      */
     private function pwMethod($action) {
+        if (!$action) return;
+        $method = '';
         if (method_exists($this, $action)) {
             $method = $action;
         } else if (method_exists($this, "action_{$action}")) {
             $method = "action_{$action}";
-        } else if (method_exists(new Controller(), $method)) {
+        } else if (method_exists(new Controller(), $action)) {
             $method = $action;
         } else if (method_exists(new Controller(), "action_{$action}")) {
             $method = "action_{$action}";
         }
+        $this->pw_method = $method;
         return $method;
     }
 
@@ -1159,9 +1169,11 @@ class Controller extends RuntimeException {
                 $results['is_success'] = true;
             }
         }
-        $results = json_encode($results);
-        echo($results);
-        exit;
+        if ($is_json) {
+            $results = json_encode($results);
+            echo($results);
+            exit;
+        }
     }
     
     /**
@@ -1186,5 +1198,14 @@ class Controller extends RuntimeException {
         $json = json_encode($values);
         echo ($json);
         exit;
+    }
+
+    /**
+     * check POST method
+     *
+     * @return boolean
+     */
+    function isRequestPost() {
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') exit;
     }
 }
