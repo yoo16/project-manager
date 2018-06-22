@@ -670,9 +670,8 @@ class PgsqlEntity extends Entity
     public function dropTable($table_name)
     {
         if (!$table_name) return;
-
-        $sql = "DROP TABLE \"{$table_name}\";";
-        return $this->query($sql);
+        $this->sql = "DROP TABLE \"{$table_name}\";";
+        return $this->query($this->sql);
     }
 
     /**
@@ -821,6 +820,8 @@ class PgsqlEntity extends Entity
     function fetchRows($sql)
     {
         if ($rs = $this->query($sql)) {
+            //$this->values_index_column_type = 'timestamp';
+            //$this->values_index_column = 'created_at';
             $rows = pg_fetch_all($rs);
             if ($this->is_cast && $this->columns) $rows = $this->castRows($rows);
             return $rows;
@@ -1540,7 +1541,6 @@ class PgsqlEntity extends Entity
             $value = implode(', ', $sql_values);
             $values[] = "\n({$value})";
         }
-
         $column = implode(', ', $model_columns);
         $value = implode(', ', $values);
 
@@ -1572,11 +1572,13 @@ class PgsqlEntity extends Entity
         if (is_array($sort_orders)) {
             $this->idIndex()->select([$this->id_column, 'sort_order'])->all();
             $class_name = get_class($this);
-            foreach ($sort_orders as $sort_order => $id) {
-                if (is_numeric($id) && is_numeric($sort_order)) {
+            foreach ($sort_orders as $sort_order) {
+                $id = $sort_order['id'];
+                $order = $sort_order['order'];
+                if (is_numeric($id) && is_numeric($order)) {
                     $current_value = $this->values[$id];
-                    if ($current_value['sort_order'] != $sort_order) {
-                        $posts['sort_order'] = (int) $sort_order;
+                    if ($current_value['sort_order'] != $order) {
+                        $posts['sort_order'] = (int) $order;
                         $class = DB::model($class_name)->update($posts, $id);
                     }
                 }
@@ -2522,6 +2524,8 @@ class PgsqlEntity extends Entity
 
         $sql = "INSERT INTO {$this->table_name} ({$column}) VALUES ({$value});";
         $sql.= "SELECT lastval();";
+        //TODO remove SELECT lastval()
+        //TODO add RETURNING id
         return $sql;
     }
 

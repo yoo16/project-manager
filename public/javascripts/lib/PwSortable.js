@@ -16,17 +16,33 @@ var PwSortable = function() {
     this.sortable_table_tr_selector = '';
     this.sort_orders = {};
     this.model_name = '';
+    this.before_rows;
 
-    this.edit = function(dom) {
-        if (pw_sortable.is_show_sortable) return;
-
-        $('.pw-sortable-control').show();
+    this.init = function() {
         pw_sortable.is_show_sortable = true;
-
+        sort_order = 1;
         pw_sortable.sortable_table_id = $(pw_sortable).attr('table-id');
         if (!pw_sortable.sortable_table_id) pw_sortable.sortable_table_id = 'sortable-table';
         pw_sortable.sortable_selector = '#' + pw_sortable.sortable_table_id + ' tbody';
         pw_sortable.sortable_table_tr_selector = pw_sortable.sortable_selector + ' tr';
+
+        pw_sortable.before_rows = $(pw_sortable.sortable_table_tr_selector);
+        $.each(pw_sortable.before_rows, function(index, row) {
+            $(row).attr('order', index);
+        });
+    }
+    this.reset = function(dom) {
+        if (pw_sortable.before_rows) {
+            $(pw_sortable.sortable_selector).html(pw_sortable.before_rows);
+        }
+        pw_sortable.close(dom);
+    }
+    this.edit = function(dom) {
+        if (pw_sortable.is_show_sortable) return;
+
+        this.init();
+
+        $('.pw-sortable-control').show();
 
         $(pw_sortable.sortable_selector).sortable({
             cursor: 'move',
@@ -42,6 +58,7 @@ var PwSortable = function() {
                 pw_sortable.sort_orders = $(pw_sortable.sortable_selector).sortable('toArray');
             }
         });
+        pw_sortable.before_orders = $(pw_sortable.sortable_selector).sortable('toArray');
         pw_sortable.showControl(dom);
     }
     this.showControl = function(dom) {
@@ -56,7 +73,6 @@ var PwSortable = function() {
 
         $(pw_sortable.sortable_table_tr_selector).map(function() {
             row_id = $(this).attr('id');
-            console.log(row_id);
             var sortable_control_tag = '<td class="sortable-control" nowrap="nowrap" row-id="' + row_id + '"></td>';
             $(this).prepend(sortable_control_tag);
         });
@@ -71,8 +87,15 @@ var PwSortable = function() {
     this.update_sort = function(dom) {
         if (!pw_sortable.sort_orders) return;
         
+        var params = {};
+        var sort_order = [];
+        $.each(pw_sortable.sort_orders, function(index, id) {
+            sort_order.push({id: id, order: index});
+        });
+        params.sort_order = sort_order;
+        //params.sort_order = pw_sortable.sort_orders;
+
         var table_id = '#' + pw_sortable.sortable_table_id;
-        var params = {sort_order: pw_sortable.sort_orders};
         if ($(table_id).attr('model-name')) {
             params.model_name = $(table_id).attr('model-name');
         }
@@ -81,7 +104,7 @@ var PwSortable = function() {
         pw_app.post(dom, params, callback);
     
         function callback(data) {
-            $(pw_sortable.sortable_selector).sortable('refresh');
+            pw_sortable.before_rows = null;
             pw_sortable.is_show_sortable = false;
             pw_sortable.close(dom);
             hideLoading();
@@ -95,7 +118,7 @@ var PwSortable = function() {
             pw_sortable.sort_orders = $(pw_sortable.sortable_selector).sortable('toArray');
         }
     }
-    this.bottom = function() {
+    this.bottom = function(dom) {
         var last_tr = $(pw_sortable.sortable_table_tr_selector).last();
         if (last_tr) {
             var row = $(dom).closest('tr');

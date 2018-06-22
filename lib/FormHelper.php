@@ -716,13 +716,12 @@ class FormHelper {
      * @return string
      */
     static function link($action, $params = null) {
-        $attribute = FormHelper::attribute($params);
+        $attribute = self::attribute($params);
         if (substr($action, 0, 1) == '#') {
             $href = '#';
         } else {
             $href = TagHelper::urlFor($action, $query);
         }
-        $label = $params['label'];
         $tag = "<a href=\"{$href}\" {$attribute}>{$label}</a>\n";
         return $tag;
     }

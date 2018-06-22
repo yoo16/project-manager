@@ -29,6 +29,11 @@ class Controller extends RuntimeException {
     public $pw_method = '';
     public $session_request_columns;
     public $csv_options;
+    public $escape_auth_actions = array('login', 'logout', 'auth');
+    public $auth_controller = '';
+    public $auth_model = '';
+    public $auth_top_controller = '';
+    public $is_pw_auth = false;
 
     static $libs = [
         'Helper',
@@ -236,7 +241,7 @@ class Controller extends RuntimeException {
                 $controller->run($params);
             } catch (Throwable $t) {
                 $errors = Controller::throwErrors($t);
-                Controller::renderError($errors);
+                $controller->renderError($errors);
             } catch (Error $e) {
                 var_dump($e);
             } catch (Exception $e) {
@@ -252,7 +257,7 @@ class Controller extends RuntimeException {
             $errors['controller'] = $params['controller'];
             $errors['signature'] = $_SERVER['SERVER_SIGNATURE'];
 
-            Controller::renderError($errors);
+            $controller->renderError($errors);
         }
     }
 
@@ -278,7 +283,7 @@ class Controller extends RuntimeException {
             $this->_invoke();
         } catch (Throwable $t) {
             $errors = Controller::throwErrors($t);
-            Controller::renderError($errors);
+            $this->renderError($errors);
         } catch (Error $e) {
             var_dump($e);
         } catch (Exception $e) {
@@ -373,7 +378,7 @@ class Controller extends RuntimeException {
                 $this->loadPwTemplate();
             } catch (Throwable $t) {
                 $errors = Controller::throwErrors($t);
-                Controller::renderError($errors);
+                $this->renderError($errors);
             } catch (Error $e) {
                 var_dump($e);
             } catch (Exception $e) {
@@ -410,7 +415,7 @@ class Controller extends RuntimeException {
      * @param  array $errors
      * @return void
      */
-    static function renderError($errors, $is_continue = true) {
+    function renderError($errors, $is_continue = true) {
         if (!isset($GLOBALS['controller'])) {
             $GLOBALS['controller']['relative_base'] = Controller::relativeBaseURLForStatic();
         }
@@ -925,7 +930,7 @@ class Controller extends RuntimeException {
                 $this->$method();
             } catch (Throwable $t) {
                 $errors = Controller::throwErrors($t);
-                Controller::renderError($errors);
+                $this->renderError($errors);
             } catch (Error $e) {
                 var_dump($e);
             } catch (Exception $e) {
@@ -945,7 +950,7 @@ class Controller extends RuntimeException {
             $errors['action'] = $this->pw_action;
             $errors['params'] = $this->params;
             $errors['signature'] = $_SERVER['SERVER_SIGNATURE'];
-            Controller::renderError($errors);
+            $this->renderError($errors);
         }
     }
 
@@ -1060,6 +1065,7 @@ class Controller extends RuntimeException {
      */
     function before_action($action) {
         $this->loadRequestSession();
+        if ($this->auth_controller) $this->checkAuth($action);
     } 
 
     function before_rendering() {}
@@ -1134,7 +1140,7 @@ class Controller extends RuntimeException {
     */
     function changeBoolean($model_name, $column, $id_column = 'id') {
         if (isset($this->params[$id_column])) {
-            DB::table($model_name)->reverseBool($this->params[$id_column], $column);
+            DB::model($model_name)->reverseBool($this->params[$id_column], $column);
         }
     }
 
@@ -1145,8 +1151,9 @@ class Controller extends RuntimeException {
     * @return void
     */
     public function action_update_sort() {
-        if ($_REQUEST['model_name']) {
-            $this->updateSort($_REQUEST['model_name']);
+        if (!$this->is_pw_auth) return;
+        if ($_POST['model_name']) {
+            $this->updateSort($_POST['model_name']);
         }
     }
 
@@ -1160,11 +1167,11 @@ class Controller extends RuntimeException {
     function updateSort($model_name = null, $is_json = true) {
         if (!$model_name) exit('Not found model_name');
 
-        if ($_REQUEST['sort_order']) $sort_order = $_REQUEST['sort_order'];
+        if ($_POST['sort_order']) $sort_order = $_POST['sort_order'];
         if (!$sort_order) exit('Not found sort_order');
         
         if (class_exists($model_name)) {
-            DB::table($model_name)->updateSortOrder($sort_order);
+            DB::model($model_name)->updateSortOrder($sort_order);
             if ($is_json) {
                 $results['is_success'] = true;
             }
@@ -1208,4 +1215,97 @@ class Controller extends RuntimeException {
     function isRequestPost() {
         if ($_SERVER['REQUEST_METHOD'] != 'POST') exit;
     }
+
+    /**
+     * check auth
+     * 
+     * @param  string $action
+     * @return void
+     */
+    function checkAuth($action) {
+        if (!$this->auth_controller) return;
+        if (!in_array($action, $this->escape_auth_actions)) {
+            $model = AppSession::getWithKey('pw_auth', $this->auth_controller);
+            if ($model->value['id']) {
+                $this->is_pw_auth = true;
+            } else {
+                if ($this->auth_controller) {
+                    $uri = "{$this->auth_controller}/login";
+                } else {
+                    $uri = 'login';
+                }
+                $this->redirectTo($uri);
+                return;
+            }
+        }
+    }
+
+    /**
+     * auth
+     *
+     * @return void
+     */
+    function auth() {
+        if (!$this->auth_controller) return;
+        if (!$this->auth_model) return;
+        if (class_exists($this->auth_model)) {
+            $model = DB::model($this->auth_model)->auth();
+            if ($model->value) {
+                $this->redirectAuthTop();
+            } else {
+                $this->redirectAuthLogin();
+            }
+        }
+        exit;
+    }
+
+   /**
+    * login
+    *
+    * @param
+    * @return void
+    */ 
+    function action_login() {
+        $this->layout = 'login';
+    }
+
+   /**
+    * logout
+    *
+    * @param
+    * @return void
+    */ 
+    function action_logout() {
+        AppSession::flush();
+        $uri = "{$this->auth_controller}/login";
+        $this->redirectTo($uri);
+        exit;
+    }
+
+    /**
+     * redirectAuthTop
+     *
+     * @return void
+     */
+    function redirectAuthLogin() {
+        if ($this->auth_controller) {
+            $uri = "{$this->auth_controller}/login";
+        } else {
+            $uri = 'login';
+        }
+        $this->redirectTo($uri);
+        exit;
+    }
+
+    /**
+     * redirectAuthTop
+     *
+     * @return void
+     */
+    function redirectAuthTop() {
+        $uri = "{$this->auth_top_controller}/";
+        $this->redirectTo($uri);
+        exit;
+    }
+
 }

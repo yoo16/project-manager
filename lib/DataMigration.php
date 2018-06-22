@@ -36,10 +36,12 @@ class DataMigration {
                 if ($foreign['is_search']) $search_columns[] = $column;
             }
         }
+
         $ids = DB::model($class_name)->where('old_db', $old_db_info['dbname'])->ids('old_id', 'id');
         foreach ($old->values as $old->value) {
-            $old_id = $old->value['id'];
+            $old_id = $old->value[$old_id_column];
             $posts = $old->oldValueToValue()->value;
+            $old_posts = $posts;
 
             $posts['old_db'] = $old_db_info['dbname'];
             $posts['old_id'] = $old_id;
@@ -71,10 +73,15 @@ class DataMigration {
             if ($posts['old_db']) {
                 $new = DB::model($class_name)->save($posts, $id);
                 if ($new->sql_error) {
-                    $errors['model_name'] = $class_name;
-                    $errors['sql'] = $new->sql;
-                    $errors['sql'] = $new->sql;
-                    DB::model('MigrateError')->insert($errors);
+
+                    if (class_exists('MigrateError')) {
+                        $errors['datetime'] = date('Y-m-d H:i');
+                        $errors['model_name'] = $class_name;
+                        $errors['old_db'] = $old_db_info['dbname'];
+                        $errors['sql'] = $new->sql;
+                        $errors['contents'] = $new->sql_error;
+                        DB::table('MigrateError')->inserts($errors);
+                    }
                 }
             }
         }

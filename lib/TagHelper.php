@@ -10,7 +10,7 @@ class TagHelper {
     /**
      * base url
      *
-     * @return String
+     * @return string
      */
     static function baseUrl() {
         $url = '';
@@ -28,9 +28,9 @@ class TagHelper {
     /**
     * urlFor
     *
-    * @param String $action
-    * @param Integer $id
-    * @param params $params
+    * @param string $action
+    * @param integer $id
+    * @param array $params
     * @return string
     */
     static function urlFor($action = null, $id = null, $params = null) {
@@ -42,7 +42,7 @@ class TagHelper {
     /**
      * image url
      * 
-     * @return String
+     * @return string
      */
     static function image($image_name, $image_dir = 'images') {
         $base = $GLOBALS['controller']->base;
@@ -53,7 +53,7 @@ class TagHelper {
     /**
      * fileUrl
      * 
-     * @return String
+     * @return string
      */
     static function fileUrl($dir_name, $name, $ext) {
         $base = TagHelper::baseUrl();
@@ -65,7 +65,7 @@ class TagHelper {
     /**
      * serialUrl
      * 
-     * @return String
+     * @return string
      */
     static function serialUrl($url) {
         $serial = time();
@@ -76,7 +76,7 @@ class TagHelper {
     /**
      * base tag
      * 
-     * @return String
+     * @return string
      */
     static function base() {
         $controller = $GLOBALS['controller'];
@@ -88,10 +88,10 @@ class TagHelper {
     /**
      * javascript tag
      * 
-     * @param  String $name
-     * @param  String $dir_name
-     * @param  String $ext
-     * @return String
+     * @param  string $name
+     * @param  string $dir_name
+     * @param  string $ext
+     * @return string
      */
     static function javascript($name, $dir_name = 'javascripts', $ext = 'js') {
         if (!$name) return;
@@ -102,10 +102,10 @@ class TagHelper {
     /**
      * javascript controller tag
      * 
-     * @param  String $name
-     * @param  String $dir_name
-     * @param  String $ext
-     * @return String
+     * @param  string $name
+     * @param  string $dir_name
+     * @param  string $ext
+     * @return string
      */
     static function javascriptController($name, $dir_name = 'javascripts/controllers', $ext = 'js') {
         if (!$name) return;
@@ -120,11 +120,11 @@ class TagHelper {
     /**
      * stylesheet controller tag
      * 
-     * @param  String $name
-     * @param  Array $attributes
-     * @param  String $dir_name
-     * @param  String $ext
-     * @return String
+     * @param  string $name
+     * @param  array $attributes
+     * @param  string $dir_name
+     * @param  string $ext
+     * @return string
      */
     static function stylesheet($name, $attributes = null, $dir_name = 'stylesheets', $ext = 'css') {
         $attributes['href'] = TagHelper::fileUrl($dir_name, $name, $ext);
@@ -136,11 +136,11 @@ class TagHelper {
     /**
      * print stylesheet controller tag
      * 
-     * @param  String $name
-     * @param  Array $attributes
-     * @param  String $dir_name
-     * @param  String $ext
-     * @return String
+     * @param  string $name
+     * @param  array $attributes
+     * @param  string $dir_name
+     * @param  string $ext
+     * @return string
      */
     static function stylesheetPrint($name, $attributes = null, $dir_name = 'stylesheets', $ext = 'css') {
         if (!$name) return;
@@ -154,11 +154,8 @@ class TagHelper {
     /**
      * meta content_type
      * 
-     * @param  String $name
-     * @param  Array $attributes
-     * @param  String $dir_name
-     * @param  String $ext
-     * @return String
+     * @param  string $content_type
+     * @return string
      */
     static function metaContentType($content_type = '') {
         if (!$content_type && $GLOBALS['controller']) $content_type = $GLOBALS['controller']->content_type();
@@ -168,11 +165,7 @@ class TagHelper {
     /**
      * meta content_type
      * 
-     * @param  String $name
-     * @param  Array $attributes
-     * @param  String $dir_name
-     * @param  String $ext
-     * @return String
+     * @return string
      */
     static function metaJavascript() {
         return "<meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\">\n";
@@ -181,11 +174,7 @@ class TagHelper {
     /**
      * meta Stylesheet
      * 
-     * @param  String $name
-     * @param  Array $attributes
-     * @param  String $dir_name
-     * @param  String $ext
-     * @return String
+     * @return string
      */
     static function metaStylesheet() {
         return "<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">\n";
@@ -194,8 +183,8 @@ class TagHelper {
     /**
     * display color
     *
-    * @param  String $color
-    * @return String
+    * @param  string $color
+    * @return string
     */
     static function color($color) {
         if ($color) {
@@ -210,9 +199,9 @@ class TagHelper {
     *
     *  plot
     *
-    * @param  String $x
-    * @param  String $y
-    * @return String
+    * @param  string $x
+    * @param  string $y
+    * @return string
     */
     static function plot($x, $y) {
         $value = "({$x}, {$y})";
@@ -224,8 +213,8 @@ class TagHelper {
      *
      * TODO Class
      *
-     * @param  String $color
-     * @return String
+     * @param  string $color
+     * @return string
      */
     static function convertColorForSharp($color) {
         if ($color) {
@@ -238,8 +227,8 @@ class TagHelper {
     /**
      * icon tag
      * 
-     * @param  Array $params
-     * @return String
+     * @param  array $params
+     * @return string
      */
     static function aTag($params) {
         if ($params['is_use_selected']) {
@@ -265,8 +254,8 @@ class TagHelper {
     /**
      * icon tag
      * 
-     * @param  String $name
-     * @return String
+     * @param  string $name
+     * @return string
      */
     static function iconTag($name) {
         if ($name) {
@@ -283,11 +272,23 @@ class TagHelper {
      * @param string $selected
      * @return string
      */
-    static function clasActive($key, $selected = null) {
+    static function classActive($key, $selected = null) {
         if ($key == $selected) {
             $tag.=' active';
         }
         return $tag;
     }
 
+    /**
+     * pw project name
+     *
+     * @param string $name
+     * @return void
+     */
+    static function pwProjectName($name) {
+        $tag.= '<script type="text/javascript">';
+        $tag.= "var pw_project_name = '{$name}'";
+        $tag.= '</script>';
+        return $tag;
+    }
 }
