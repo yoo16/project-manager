@@ -310,6 +310,41 @@ class DateManager {
         return $this->to_at;
     }
 
+
+    /**
+     * interval datetime
+     *
+     * @param string $date_at
+     * @param integer $interval
+     * @return string
+     **/
+    static function intervalDatetime($date_at, $interval, $unit = 'day') {
+        if ($date_at && is_numeric($interval)) {
+            $interval = "{$interval} {$unit}";
+            $format = self::datetimeFormatForLang(LOCALE);
+            return date($format, strtotime($interval, strtotime($date_at)));
+        }
+    }
+
+    /**
+     * datetime format for lang
+     *
+     * @param string $lang
+     * @param integer $interval
+     * @return string
+     **/
+    static function datetimeFormatForLang($lang = 'ja', $has_time = true) {
+        if ($has_time) $time = ' H:i';
+        $formats['ja'] = 'Y/m/d';
+        $formats['en'] = 'd M Y';
+        $format = $formats[$lang];
+
+        if (!$format) $format = "Y/m/d{$time}";
+        $format = "{$format}{$time}";
+
+        return $format;
+    }
+
     /**
      * convert array to string
      *

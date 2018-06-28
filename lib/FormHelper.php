@@ -36,10 +36,11 @@ class FormHelper {
     static function select($params, $selected=null) {
         if (!$params) return;
         if (!isset($params['class'])) $params['class'] = 'form-control';
-
         $tag = self::selectOptions($params, $selected);
-
         if ($tag) $tag = self::selectTag($tag, $params);
+
+        $controller = $GLOBALS['controller'];
+        if ($controller->pw_sid) $tag.= "\n<input type=\"hidden\" name=\"pw_sid\" value=\"{$controller->pw_sid}\">";
         return $tag;
     }
 
@@ -325,8 +326,8 @@ class FormHelper {
     /**
      * optionタグ（時間）
      *
-     * @param Array $params
-     * @return String
+     * @param array $params
+     * @return string
      */
     static function optionHours($params) {
         if ($params['selected']) {
@@ -988,7 +989,8 @@ class FormHelper {
         } else {
             $tag = "<span class=\"btn btn-sm btn-outline-primary btn-sm action-loading\">{$invalid_label}</span>";
         }
-        $href = url_for($action, $params);
+        $controller = $GLOBALS['controller'];
+        $href = Controller::url($controller->name, $action, null, $params);
         $tag = "<a href=\"{$href}\">{$tag}</a>";
         return $tag;
     }

@@ -120,13 +120,14 @@ class Entity {
      * @param  string $request_column
      * @return Entity
      */
-    public function requestSession($request_column = null) {
-        if (!$request_column) $request_column = "{$this->entity_name}_id";
+    public function requestSession($sid = 0) {
+        if (!(defined('IS_USE_PW_SID') && IS_USE_PW_SID)) $sid = 0;
+        $request_column = "{$this->entity_name}_id";
         if (isset($_REQUEST[$request_column])) {
             $this->fetch($_REQUEST[$request_column]);
-            AppSession::set($this->entity_name, $this);
+            AppSession::set($this->entity_name, $this, $sid);
         }
-        return AppSession::get($this->entity_name);
+        return AppSession::get($this->entity_name, null, $sid);
     }
 
     /**
@@ -318,7 +319,7 @@ class Entity {
     public function takeValues($values) {
         if (!$values) return $this;
         foreach ($this->columns as $column_name => $value) {
-            if (isset($values[$column_name])) {
+            if (array_key_exists($column_name, $values)) {
                 $column = $this->columns[$column_name];
                 $type = $column['type'];
                 $this->value[$column_name] = $this->cast($type, $values[$column_name]);

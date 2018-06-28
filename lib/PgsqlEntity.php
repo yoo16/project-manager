@@ -1520,9 +1520,9 @@ class PgsqlEntity extends Entity
     }
 
     /**
-     * レコード複数挿入、更新
+     * inserts
      *
-     * @return Bool
+     * @return PgsqlEntity
      */
     function inserts($rows)
     {
@@ -1546,11 +1546,12 @@ class PgsqlEntity extends Entity
 
         $sql = "INSERT INTO {$this->table_name} ({$column}) VALUES {$value}";
         $result = $this->query($sql);
+
         return $this;
     }
 
     /**
-     * inserts
+     * pg insert
      * 
      * @param  array $posts
      * @return PgsqlEntity
@@ -2042,9 +2043,9 @@ class PgsqlEntity extends Entity
     {
         if (is_null($value)) {
             return "NULL";
-        } elseif (is_bool($value)) {
+        } else if (is_bool($value)) {
             return ($value) ? 'TRUE' : 'FALSE';
-        } elseif (is_array($value)) {
+        } else if (is_array($value)) {
             return "'" . pg_escape_string(json_encode($value)) . "'";
         } else {
             return "'" . pg_escape_string($value) . "'";

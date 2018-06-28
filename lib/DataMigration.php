@@ -73,14 +73,13 @@ class DataMigration {
             if ($posts['old_db']) {
                 $new = DB::model($class_name)->save($posts, $id);
                 if ($new->sql_error) {
-
                     if (class_exists('MigrateError')) {
                         $errors['datetime'] = date('Y-m-d H:i');
                         $errors['model_name'] = $class_name;
                         $errors['old_db'] = $old_db_info['dbname'];
                         $errors['sql'] = $new->sql;
                         $errors['contents'] = $new->sql_error;
-                        DB::table('MigrateError')->inserts($errors);
+                        DB::table('MigrateError')->insert($errors);
                     }
                 }
             }

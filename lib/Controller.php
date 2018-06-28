@@ -15,6 +15,7 @@ PwSetting::loadApplication();
 class Controller extends RuntimeException {
     static $routes = ['controller', 'action', 'id'];
 
+    public $pw_sid;
     public $lang = 'ja';
     public $name;
     public $with_layout = true;
@@ -274,6 +275,7 @@ class Controller extends RuntimeException {
         if (isset($params['controller'])) $this->params['controller'] = $params['controller'];
         if (isset($params['action'])) $this->params['action'] = $params['action'];
         if (isset($params['id'])) $this->params['id'] = $params['id'];
+        if (defined('IS_USE_PW_SID') && IS_USE_PW_SID && isset($_REQUEST['pw_sid'])) $this->pw_sid = $_REQUEST['pw_sid'];
 
         $this->loadPosts();
         $this->errors = $this->getErrors();
@@ -548,23 +550,24 @@ class Controller extends RuntimeException {
      *
      * TODO: remove
      * 
-     * @param  array $params
-     * @param  array $options
+     * @param  string $controller_action
+     * @param  string $id
      * @return void
      */
-    function redirect_to($params, $options = null) {
-        $this->performed_render = true;
+    function redirect_to($controller_action, $id = null) {
+        // $this->performed_render = true;
 
-        if (strpos($params, '://')) {
-            $url = $params;
-        } else {
-            $url = $this->url_for($params, $options);
-            if (!strpos($url, '://')) $url = $this->base . $url;
-            if (SID) $url .= ((strpos($url, '?')) ? '&' : '?' ) . SID;
-        }
-        if (defined('DEBUG') && DEBUG) error_log("<REDIRECT> {$url}");
-        header("Location: {$url}");
-        exit;
+        // if (strpos($params, '://')) {
+        //     $url = $params;
+        // } else {
+        //     $url = $this->url_for($params, $options);
+        //     if (!strpos($url, '://')) $url = $this->base . $url;
+        //     if (SID) $url .= ((strpos($url, '?')) ? '&' : '?' ) . SID;
+        // }
+        // if (defined('DEBUG') && DEBUG) error_log("<REDIRECT> {$url}");
+        // header("Location: {$url}");
+        // exit;
+        $this->redirectTo($controller_action, $id);
     }
 
 
@@ -585,6 +588,9 @@ class Controller extends RuntimeException {
         if (is_array($id)) {
             $params = $id;
             $id = null;
+        }
+        if (defined('IS_USE_PW_SID') && IS_USE_PW_SID) {
+            if ($this->pw_sid) $params['pw_sid'] = $this->pw_sid;
         }
         if ($controller) {
             $url = $this->urlFor($controller, $action, $id, $params);
@@ -713,14 +719,42 @@ class Controller extends RuntimeException {
      * @param  string $action
      * @param  string $id
      * @param  array $http_params
+     * @param  integer $pw_sid
+     * @return string
+     */
+    static function url($controller, $action = null, $id = null, $http_params = null) {
+        $controller_class = $GLOBALS['controller'];
+        $url = $controller_class->base;
+        if ($controller) $url.= "{$controller}/";
+        if ($action) $url.= "{$action}/";
+        if ($action && $id) $url.= "{$id}";
+        if (defined('IS_USE_PW_SID') && IS_USE_PW_SID) {
+            if ($controller_class->pw_sid > 0) $http_params['pw_sid'] = $controller_class->pw_sid;
+        }
+        if (isset($http_params) && is_array($http_params)) {
+            $url_params = http_build_query($http_params);
+            if ($url_params) $url = "{$url}?{$url_params}";
+        }
+        return $url;
+    }
+
+    /**
+     * url for params
+     *
+     * @param  string $controller
+     * @param  string $action
+     * @param  string $id
+     * @param  array $http_params
      * @return string
      */
     function urlFor($controller, $action = null, $id = null, $http_params = null) {
         $url = $this->base;
-        $url.= "{$controller}/";
-        if ($action) $url.= "{$action}";
-        if ($action && $id) $url.= "/{$id}";
-
+        if ($controller) $url.= "{$controller}/";
+        if ($action) $url.= "{$action}/";
+        if ($action && $id) $url.= "{$id}";
+        if (defined('IS_USE_PW_SID') && IS_USE_PW_SID) {
+            if ($this->pw_sid > 0) $http_params['pw_sid'] = $this->pw_sid;
+        }
         if (isset($http_params) && is_array($http_params)) {
             $url_params = http_build_query($http_params);
             if ($url_params) $url = "{$url}?{$url_params}";
@@ -766,6 +800,9 @@ class Controller extends RuntimeException {
         if ($action) $url.= "{$action}";
         if ($action && $id) $url.= "/{$id}";
 
+        if (defined('IS_USE_PW_SID') && IS_USE_PW_SID) {
+            if ($this->pw_id > 0) $http_params['pw_sid'] = $this->pw_sid;
+        }
         if (isset($http_params) && is_array($http_params)) {
             $url_params = http_build_query($http_params);
             if ($url_params) $url = "{$url}?{$url_params}";
@@ -1064,7 +1101,7 @@ class Controller extends RuntimeException {
      * @return void
      */
     function before_action($action) {
-        $this->loadRequestSession();
+        $this->loadRequestSession($this->pw_sid);
         if ($this->auth_controller) $this->checkAuth($action);
     } 
 

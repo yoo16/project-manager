@@ -27,7 +27,7 @@ class AppSession {
    /**
     * get
     *
-    * @param String $key
+    * @param string $key
     * @param object $default_value
     * @param int $sid
     * @return object
