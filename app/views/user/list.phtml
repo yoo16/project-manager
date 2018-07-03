@@ -16,7 +16,7 @@
 
   <? if ($this->user->values): ?>
   <? foreach ($this->user->values as $values): ?>
-  <tr id="<?= $values['id'] ?>">
+  <tr row-id="<?= $values['id'] ?>">
     <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
     <td><?= $values['login_name'] ?></td>
   </tr>

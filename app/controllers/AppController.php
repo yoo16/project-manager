@@ -13,6 +13,8 @@ class AppController extends Controller {
     var $title = HTML_TITLE;
     var $csv_options = array();
     var $layout = 'root';
+    //TODO
+    var $is_pw_auth = true;
 
     function before_action($action = null) {
         $pgsql_entity = new PgsqlEntity();

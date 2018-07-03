@@ -18,7 +18,7 @@
 
   <? if ($this->record_item->values): ?>
     <? foreach ($this->record_item->values as $values): ?>
-      <tr id="<?= $values['id'] ?>">
+      <tr row-id="<?= $values['id'] ?>">
         <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT, 'class' => 'btn btn-outline-primary']) ?></td>
         <td><?= $values['key'] ?></td>
         <td><?= $values['value'] ?></td>

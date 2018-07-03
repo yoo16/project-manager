@@ -29,7 +29,7 @@
 
         <? if (is_array($this->project->values)): ?>
           <? foreach ($this->project->values as $project->value): ?>
-            <tr id="<?= $project->value['id']?>" order="<?= $project->value['sort_order']?>">
+            <tr row-id="<?= $project->value['id']?>" order="<?= $project->value['sort_order']?>">
               <td>
                 <?= FormHelper::linkButton('edit', $project->value['id'], ['label' => LABEL_EDIT]) ?>
               </td>

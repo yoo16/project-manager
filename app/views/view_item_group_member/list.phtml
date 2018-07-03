@@ -18,7 +18,7 @@
 
   <? if ($this->view_item_group_member->values): ?>
   <? foreach ($this->view_item_group_member->values as $values): ?>
-  <tr id="<?= $values['id'] ?>">
+  <tr row-id="<?= $values['id'] ?>">
     <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
     <td><?= $this->view_item_group->values[$values['view_item_group_id']][''] ?></td>
     <td><?= $this->view_item->values[$values['view_item_id']][''] ?></td>

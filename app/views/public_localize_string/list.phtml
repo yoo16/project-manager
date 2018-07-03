@@ -17,7 +17,7 @@
 
   <? if ($this->public_localize_string->values): ?>
   <? foreach ($this->public_localize_string->values as $values): ?>
-  <tr id="<?= $values['id'] ?>">
+  <tr row-id="<?= $values['id'] ?>">
     <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
     <td><?= $values['label'] ?></td>
     <td><?= $values['name'] ?></td>

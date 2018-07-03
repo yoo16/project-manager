@@ -1,7 +1,7 @@
 /**
  * @author  Yohei Yoshikawa
  *
- * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
+ * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
 'use strict';
@@ -13,11 +13,12 @@ $(document).ready(function(){
 });
 
 var PwController = function() {
-    this.post = function(dom, params, callback, data_format = 'html') {
+    this.post = function(dom, params, callback, data_format) {
+        console.log(params);
         post(postUrl(dom), params, callback, data_format);
     }
-    this.urlPost = function(url, params, callback, data_format = 'html') {
-        post(url, params, callback, format);
+    this.urlPost = function(url, params, callback, data_format) {
+        post(url, params, callback, data_format);
     }
     this.projectUrl = function() {
         return projectUrl();
@@ -125,7 +126,8 @@ var PwController = function() {
     * @param String data_type
     * @return void
     **/
-    function post(url, params, callback, data_type = 'html') {
+    function post(url, params, callback, data_type) {
+        if (!data_type) data_type = 'html';
         $.ajax({
             type: 'POST',
             cache: false,

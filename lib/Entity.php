@@ -2,7 +2,7 @@
 /**
  * Entity 
  *
- * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
+ * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
 class Entity {
@@ -56,7 +56,7 @@ class Entity {
         $this->value = null;
         $this->id = null;
         $this->id_index = false;
-        $this->posts = null;
+        $this->pw_posts = null;
         $this->session = null;
         $this->limit = null;
         $this->values_index_column = null;
@@ -177,8 +177,8 @@ class Entity {
      */
     public function post() {
         if (!isPost()) exit('Not POST method');
-        if ($this->posts = $_POST[$this->entity_name]) {
-            $this->takeValues($this->posts);
+        if ($this->pw_posts = $_POST[$this->entity_name]) {
+            $this->takeValues($this->pw_posts);
         }
         return $this;
     }
@@ -1058,7 +1058,7 @@ class Entity {
     /**
      * values by column
      * 
-     * @param  string $column [description]
+     * @param  string $column
      * @return array
      */
     function valuesByColumn($column = 'id') {

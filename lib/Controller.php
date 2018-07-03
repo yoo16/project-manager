@@ -2,7 +2,7 @@
 /**
  * Controller 
  *
- * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
+ * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
 require_once "PwSetting.php";
@@ -271,10 +271,10 @@ class Controller extends RuntimeException {
     private function run($params = array()) {
         $GLOBALS['controller'] = $this;
 
-        if ($_GET) $this->params = $_GET;
-        if (isset($params['controller'])) $this->params['controller'] = $params['controller'];
-        if (isset($params['action'])) $this->params['action'] = $params['action'];
-        if (isset($params['id'])) $this->params['id'] = $params['id'];
+        if ($_GET) $this->pw_params = $_GET;
+        if (isset($params['controller'])) $this->pw_params['controller'] = $params['controller'];
+        if (isset($params['action'])) $this->pw_params['action'] = $params['action'];
+        if (isset($params['id'])) $this->pw_params['id'] = $params['id'];
         if (defined('IS_USE_PW_SID') && IS_USE_PW_SID && isset($_REQUEST['pw_sid'])) $this->pw_sid = $_REQUEST['pw_sid'];
 
         $this->loadPosts();
@@ -899,7 +899,7 @@ class Controller extends RuntimeException {
      * @return string
      */
     private function pwController() {
-        $this->pw_controller = $this->params['controller'];
+        $this->pw_controller = $this->pw_params['controller'];
         return $this->pw_controller;
     }
 
@@ -909,7 +909,7 @@ class Controller extends RuntimeException {
      * @return string
      */
     private function pwAction() {
-        $this->pw_action = $this->params['action'];
+        $this->pw_action = $this->pw_params['action'];
         if (!isset($this->pw_action) || $this->pw_action === '') {
             $this->pw_action = 'index';
         } else if ($pos = strpos($this->pw_action, '.')) {
@@ -985,7 +985,7 @@ class Controller extends RuntimeException {
             $errors['request'] = $_SERVER['REQUEST_URI'];
             $errors['controller'] = $this->name;
             $errors['action'] = $this->pw_action;
-            $errors['params'] = $this->params;
+            $errors['params'] = $this->pw_params;
             $errors['signature'] = $_SERVER['SERVER_SIGNATURE'];
             $this->renderError($errors);
         }
@@ -997,8 +997,17 @@ class Controller extends RuntimeException {
      * @return void
      */
     function loadPosts() {
-        if ($_POST) AppSession::set('posts', $_POST);
-        $this->posts = AppSession::get('posts');
+        if ($_POST) AppSession::set('pw_posts', $_POST);
+        $this->pw_posts = AppSession::get('pw_posts');
+    }
+
+    /**
+     * clear $_POST
+     *
+     * @return void
+     */
+    function clearPwPosts() {
+        AppSession::clear('pw_posts');
     }
 
     /**
@@ -1007,7 +1016,7 @@ class Controller extends RuntimeException {
      * @return void
      */
     function clearPosts() {
-        $this->clearSessions('posts');
+        $this->clearSessions('pw_posts');
     }
 
     /**
@@ -1124,7 +1133,7 @@ class Controller extends RuntimeException {
      * @return void
      */
     function checkEdit($redirect_action = 'new') {
-        if (!$this->params['id']) {
+        if (!$this->pw_params['id']) {
             $this->redirect_to($redirect_action);
             exit;
         }
@@ -1176,8 +1185,8 @@ class Controller extends RuntimeException {
     * @return void
     */
     function changeBoolean($model_name, $column, $id_column = 'id') {
-        if (isset($this->params[$id_column])) {
-            DB::model($model_name)->reverseBool($this->params[$id_column], $column);
+        if (isset($this->pw_params[$id_column])) {
+            DB::model($model_name)->reverseBool($this->pw_params[$id_column], $column);
         }
     }
 
@@ -1265,6 +1274,7 @@ class Controller extends RuntimeException {
             $model = AppSession::getWithKey('pw_auth', $this->auth_controller);
             if ($model->value['id']) {
                 $this->is_pw_auth = true;
+                $this->auth_staff = $model;
             } else {
                 if ($this->auth_controller) {
                     $uri = "{$this->auth_controller}/login";

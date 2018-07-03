@@ -18,7 +18,7 @@
 
   <? if ($this->user_project_setting->values): ?>
   <? foreach ($this->user_project_setting->values as $values): ?>
-  <tr id="<?= $values['id'] ?>">
+  <tr row-id="<?= $values['id'] ?>">
     <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
     <td><?= $this->user->values[$values['user_id']][''] ?></td>
     <td><?= $values['project_path'] ?></td>

@@ -79,7 +79,7 @@ class DataMigration {
                         $errors['old_db'] = $old_db_info['dbname'];
                         $errors['sql'] = $new->sql;
                         $errors['contents'] = $new->sql_error;
-                        DB::table('MigrateError')->insert($errors);
+                        DB::model('MigrateError')->insert($errors);
                     }
                 }
             }

@@ -31,7 +31,7 @@
     <? if ($this->view->view_item->values): ?>
       <tbody>
         <? foreach ($this->view->view_item->values as $view_item): ?>
-          <tr id="<?= $view_item['id'] ?>">
+          <tr row-id="<?= $view_item['id'] ?>">
             <td>
               <?= $this->linkTag($this->pw_controller, 'edit', $view_item['id'],
             [

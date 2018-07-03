@@ -3,7 +3,7 @@
 /**
  * PgsqlEntity 
  *
- * @copyright  Copyright (c) 2017 Yohei Yoshikawa (http://yoo-s.com/)
+ * @copyright  Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 require_once 'Entity.php';
 
@@ -1376,13 +1376,12 @@ class PgsqlEntity extends Entity
             $this->addError('save', 'error');
             return $this;
         }
-        if ($result = $this->fetchResult($sql)) {
-            $this->id = (int)$result;
+        if ($this->id = $this->fetchResult($sql)) {
             $this->value[$this->id_column] = $this->id;
         } else {
-            //TODO session
             $this->addError('save', 'error');
         }
+        if (!$this->errors) AppSession::clear('pw_posts');
         return $this;
     }
 
@@ -1412,6 +1411,7 @@ class PgsqlEntity extends Entity
 
         $result = $this->query($sql);
         if ($result === false) $this->addError('save', 'error');
+        if (!$this->errors) AppSession::clear('pw_posts');
         return $this;
     }
 
@@ -2523,8 +2523,8 @@ class PgsqlEntity extends Entity
         $column = implode(',', $columns);
         $value = implode(',', $values);
 
-        $sql = "INSERT INTO {$this->table_name} ({$column}) VALUES ({$value});";
-        $sql.= "SELECT lastval();";
+        $sql = "INSERT INTO {$this->table_name} ({$column}) VALUES ({$value}) RETURNING {$this->id_column};";
+        //$sql.= "SELECT lastval();";
         //TODO remove SELECT lastval()
         //TODO add RETURNING id
         return $sql;
@@ -2594,11 +2594,12 @@ class PgsqlEntity extends Entity
     /**
      * set upsert constraint
      * 
+     * @param string $upsert_constraint
      * @return PgsqlEntity
      */
-    public function setUpsertConstraint($constraint_name)
+    public function setUpsertConstraint($upsert_constraint)
     {
-        $this->upsert_constraint = $constraint_name;
+        $this->upsert_constraint = $upsert_constraint;
         return $this;
     }
 
@@ -2609,16 +2610,13 @@ class PgsqlEntity extends Entity
      */
     private function upsertSql()
     {
-        if (!$this->columns) {
-            $msg = 'Not found columns';
-            //dump($msg);
-            //return;
-        }
+        if (!$this->columns) return;
         if (!$this->upsert_constraint) {
             $msg = 'Not found upsert constraint key!';
-            //dump($msg);
-            //return;
+            dump($msg);
+            return;
         }
+
         //insert
         foreach ($this->columns as $key => $type) {
             $value = $this->sqlValue($this->value[$key]);
@@ -2632,13 +2630,9 @@ class PgsqlEntity extends Entity
 
         //update
         foreach ($this->value as $key => $value) {
-            if ($key) {
-                if (is_bool($value)) {
-                    $value = ($value === true) ? 'TRUE' : 'FALSE';
-                    $set_values[] = "{$key} = {$value}";
-                } else {
-                    $set_values[] = "{$key} = '{$value}'";
-                }
+            if (isset($this->columns[$key])) {
+                $value = $this->sqlValue($value);
+                $set_values[] = "{$key} = {$value}";
             }
         }
         if (isset($this->columns['updated_at'])) $set_values[] = "updated_at = current_timestamp";

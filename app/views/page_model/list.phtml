@@ -29,7 +29,7 @@
 
     <? if ($this->page_model->values): ?>
       <? foreach ($this->page_model->values as $values): ?>
-        <tr id="<?= $values['id'] ?>">
+        <tr row-id="<?= $values['id'] ?>">
           <td>
             <?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?>
           </td>

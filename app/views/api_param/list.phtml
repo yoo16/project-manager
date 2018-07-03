@@ -19,7 +19,7 @@
 
   <? if ($this->api_param->values): ?>
   <? foreach ($this->api_param->values as $values): ?>
-  <tr id="<?= $values['id'] ?>">
+  <tr row-id="<?= $values['id'] ?>">
     <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
     <td><?= $values['name'] ?></td>
     <td><?= $values['type'] ?></td>
