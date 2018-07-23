@@ -1,31 +1,28 @@
 <?php
 /**
- * ApiParam 
+ * ApiGroup 
  * 
- * @create  2017-11-07 18:03:16 
+ * @create  2018-07-23 15:12:21 
  */
 
 //namespace project_manager;
 
 require_once 'PgsqlEntity.php';
 
-class _ApiParam extends PgsqlEntity {
+class _ApiGroup extends PgsqlEntity {
 
     public $id_column = 'id';
-    public $name = 'api_params';
-    public $entity_name = 'api_param';
+    public $name = 'api_groups';
+    public $entity_name = 'api_group';
 
     public $columns = array(
-        'api_action_id' => array('type' => 'int4', 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
-        'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
-        'note' => array('type' => 'text', 'default' => ''),
+        'name' => array('type' => 'varchar', 'length' => 64),
         'sort_order' => array('type' => 'int4'),
-        'type' => array('type' => 'varchar', 'length' => 16),
         'updated_at' => array('type' => 'timestamp'),
     );
 
-    public $primary_key = 'api_params_pkey';
+    public $primary_key = 'api_groups_pkey';
 
 
 

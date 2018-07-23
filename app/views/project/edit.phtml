@@ -1,5 +1,5 @@
 <? include('_header.phtml') ?>
-    <form action="<?= url_for('update', $this->params['id']) ?>" method="post">
+    <form action="<?= url_for('update', $this->pw_params['id']) ?>" method="post">
 
         <table class="table table-list">
             <tr>
@@ -24,4 +24,4 @@
         <?= FormHelper::submit(LABEL_UPDATE) ?>
         <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
     </form>
-<?= $this->project->formDelete() ?>
+<?= $this->project->confirmDelete() ?>

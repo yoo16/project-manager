@@ -864,6 +864,7 @@ class FileManager {
      * @return void
      */
     static function threadExec($path, $params = null) {
+        dump($path);
         if (file_exists($path)) {
             if ($params) {
                 foreach ($params as $key => $param) {

@@ -1,3 +1,5 @@
+<? include('_header.phtml') ?>
+
 <div class="card">
   <h3 class="card-header">Model</h3>
   <div class="card-block">
@@ -68,6 +70,6 @@
       <?= FormHelper::linkButton('cancel', null, ['label' => LABEL_BACK]) ?>
     </form>
 
-    <?= $this->model->formDelete() ?>
+    <?= $this->model->confirmDelete() ?>
   </div>
 </div>

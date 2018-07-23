@@ -66,7 +66,7 @@ class PageFilterController extends PageController {
     * @return void
     */
     function action_new() {
-        $this->page_filter = DB::model('PageFilter')->init()->takeValues($this->posts['page_filter']);
+        $this->page_filter = DB::model('PageFilter')->init()->takeValues($this->pw_posts['page_filter']);
 
         if ($this->page->value['model_id']) {
             $this->model = DB::model('Model')->fetch("{$this->page->value['model_id']}");
@@ -88,8 +88,8 @@ class PageFilterController extends PageController {
         $this->checkEdit();
 
         $this->page_filter = DB::model('PageFilter')
-                    ->fetch($this->params['id'])
-                    ->takeValues($this->posts['page_filter']);
+                    ->fetch($this->pw_params['id'])
+                    ->takeValues($this->pw_posts['page_filter']);
 
         if ($this->page->value['model_id']) {
             $this->model = DB::model('Model')->fetch("{$this->page->value['model_id']}");
@@ -109,7 +109,7 @@ class PageFilterController extends PageController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["page_filter"];
+        $posts = $this->pw_posts["page_filter"];
         $page_filter = DB::model('PageFilter')->insert($posts);
 
         if ($page_filter->errors) {
@@ -127,11 +127,11 @@ class PageFilterController extends PageController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["page_filter"];
-        $page_filter = $page_filter = DB::model('PageFilter')->update($posts, $this->params['id']);
+        $posts = $this->pw_posts["page_filter"];
+        $page_filter = $page_filter = DB::model('PageFilter')->update($posts, $this->pw_params['id']);
 
         if ($page_filter->errors) {
-            $this->redirect_to('edit', $this->params['id']);
+            $this->redirect_to('edit', $this->pw_params['id']);
         } else {
             $this->redirect_to('index');
         }
@@ -145,7 +145,7 @@ class PageFilterController extends PageController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('PageFilter')->delete($this->params['id']);
+        DB::model('PageFilter')->delete($this->pw_params['id']);
         $this->redirect_to('index');
     }
 

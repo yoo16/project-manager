@@ -65,7 +65,7 @@ class PublicLocalizeStringController extends AppController {
     * @return void
     */
     function action_new() {
-        $this->public_localize_string = DB::model('PublicLocalizeString')->init()->takeValues($this->posts['public_localize_string']);
+        $this->public_localize_string = DB::model('PublicLocalizeString')->init()->takeValues($this->pw_posts['public_localize_string']);
     }
 
    /**
@@ -78,8 +78,8 @@ class PublicLocalizeStringController extends AppController {
         $this->checkEdit();
 
         $this->public_localize_string = DB::model('PublicLocalizeString')
-                    ->fetch($this->params['id'])
-                    ->takeValues($this->posts['public_localize_string']);
+                    ->fetch($this->pw_params['id'])
+                    ->takeValues($this->pw_posts['public_localize_string']);
     }
 
    /**
@@ -90,7 +90,7 @@ class PublicLocalizeStringController extends AppController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["public_localize_string"];
+        $posts = $this->pw_posts["public_localize_string"];
         $public_localize_string = DB::model('PublicLocalizeString')->insert($posts);
 
         if ($public_localize_string->errors) {
@@ -111,14 +111,14 @@ class PublicLocalizeStringController extends AppController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["public_localize_string"];
-        $public_localize_string = DB::model('PublicLocalizeString')->update($posts, $this->params['id']);
+        $posts = $this->pw_posts["public_localize_string"];
+        $public_localize_string = DB::model('PublicLocalizeString')->update($posts, $this->pw_params['id']);
 
         if ($public_localize_string->errors) {
             $errors['public_localize_strings'] = $public_localize_string->errors;
             $this->setErrors($errors);
         }
-        $this->redirect_to('edit', $this->params['id']);
+        $this->redirect_to('edit', $this->pw_params['id']);
     }
 
    /**
@@ -129,7 +129,7 @@ class PublicLocalizeStringController extends AppController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('PublicLocalizeString')->delete($this->params['id']);
+        DB::model('PublicLocalizeString')->delete($this->pw_params['id']);
         $this->redirect_to('index');
     }
 

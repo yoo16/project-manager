@@ -1,28 +1,34 @@
 <? include('_header.phtml') ?>
-<? include('add_window.phtml') ?>
+  <? include('add_window.phtml') ?>
 
-<? include('views/components/php_page_export_window.phtml') ?>
+    <? include('views/components/php_page_export_window.phtml') ?>
 
-<div class="pt-3">
-  <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
-  <?= $this->linkControllerTag('page', ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-  <?= FormHelper::linkModal('#php-page-export-window', 'PHP Export', ['class' => 'btn btn-sm btn-success']) ?>
-</div>
+      <div class="pt-3">
+        <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
+        <?= $this->linkControllerTag('page', ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
+        <a class="btn btn-outline-primary" href="<?= url_for('page_model/', array('page_id' => $this->page->value['id'])) ?>">Model Requests</a>
+        <?= FormHelper::linkModal('#php-page-export-window', 'PHP Export', ['class' => 'btn btn-sm btn-success']) ?>
+      </div>
 
-<? if ($this->page->view->values): ?>
-  <table class="table">
-    <tr>
-      <th></th>
-      <th>Name</th>
-      <th>Overwrite</th>
-      <th>URI</th>
-      <th>Label Width</th>
-    </tr>
-    <? foreach ($this->page->view->values as $view): ?>
-      <tr>
-        <td><a class="btn btn-sm btn-outline-primary" href="<?= $this->urlActionFor('edit', $view['id']) ?>"><?= LABEL_EDIT ?></a></td>
-        <td>
-          <div><?= $this->linkControllerTag('view_item', 
+      <? if ($this->page->view->values): ?>
+        <table class="table">
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Overwrite</th>
+            <th>URI</th>
+            <th>Label Width</th>
+          </tr>
+          <? foreach ($this->page->view->values as $view): ?>
+            <tr>
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="<?= $this->urlActionFor('edit', $view['id']) ?>">
+                  <?= LABEL_EDIT ?>
+                </a>
+              </td>
+              <td>
+                <div>
+                  <?= $this->linkControllerTag('view_item', 
             [
               'label' => $view['name'],
               'http_params' => [
@@ -31,19 +37,37 @@
             ]
           )
           ?>
-        </div>
-        <div><?= $view['label'] ?></div>
-      </td>
-      <td>
-        <? if ($view['is_overwrite']): ?>
-          <?= FormHelper::link('change_overwrite', 'overwrite', $view['id'], ['class' => 'badge badge-danger']) ?>
-        <? else: ?>
-          <?= FormHelper::link('change_overwrite', 'off', $view['id'], ['class' => 'badge badge-default']) ?>
+                </div>
+                <div>
+                  <?= $view['label'] ?>
+                </div>
+              </td>
+              <td>
+                <? if ($view['is_overwrite']): ?>
+                  <?= $this->linkActionTag('change_overwrite', $view['id'],
+          [
+            'label' => 'overwrite',
+            'class' => 'badge badge-danger'
+          ])
+          ?>
+                  <? else: ?>
+                    <?= $this->linkActionTag('change_overwrite', $view['id'], 
+          [
+            'label' => 'off',
+            'class' => 'badge badge-default'
+          ]
+          )
+        ?>
+                    <? endif ?>
+              </td>
+              <td>
+                <?= $this->page->value['entity_name'] ?>/
+                <?= $view['name'] ?>
+              </td>
+              <td>
+                <?= $view['label_width'] ?>
+              </td>
+            </tr>
+            <? endforeach ?>
+        </table>
         <? endif ?>
-      </td>
-      <td><?= $this->page->value['entity_name'] ?>/<?= $view['name'] ?></td>
-      <td><?= $view['label_width'] ?></td>
-    </tr>
-  <? endforeach ?> 
-</table>
-<? endif ?>

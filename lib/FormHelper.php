@@ -33,7 +33,7 @@ class FormHelper {
      * @param string $selected
      * @return string
      */
-    static function select($params, $selected=null) {
+    static function select($params, $selected = null) {
         if (!$params) return;
         if (!isset($params['class'])) $params['class'] = 'form-control';
         $tag = self::selectOptions($params, $selected);
@@ -396,11 +396,11 @@ class FormHelper {
     /**
      * optionタグ
      *
-     * @param Array $params
-     * @param Object $selected
-     * @return String
+     * @param array $params
+     * @param object $selected
+     * @return string
      */
-    static function selectOptions($params, $selected=null) {
+    static function selectOptions($params, $selected = null) {
         $values = self::values($params);
         if (!is_array($values)) return;
 
@@ -723,6 +723,7 @@ class FormHelper {
         } else {
             $href = TagHelper::urlFor($action, $query);
         }
+        $label = $params['label'];
         $tag = "<a href=\"{$href}\" {$attribute}>{$label}</a>\n";
         return $tag;
     }

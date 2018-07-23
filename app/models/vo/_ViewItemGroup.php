@@ -30,6 +30,8 @@ class _ViewItemGroup extends PgsqlEntity {
                                   'class_name' => 'View',
                                   'foreign_table' => 'views',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
     );
 

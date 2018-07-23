@@ -3,7 +3,7 @@
     <h3 class="card-header">Page</h3>
     <div class="card-block">
 
-      <form action="<?= url_for('update', $this->page->value['id']) ?>" method="post">
+      <form action="<?= $this->urlSelfFor('update', $this->page->value['id']) ?>" method="post">
 
         <table class="table">
           <tr>
@@ -72,14 +72,14 @@
                 <th>Parent Page</th>
                 <td>
                   <?= $this->page->formSelect('parent_page_id', 
-[
-'unselect' => true,
-'label' => ['name'],
-'model' => 'Page',
-'where' => "project_id = {$this->project->value['id']}",
-'order' => 'name',
-]
-) ?>
+                    [
+                    'unselect' => true,
+                    'label' => ['name'],
+                    'model' => 'Page',
+                    'where' => "project_id = {$this->project->value['id']}",
+                    'order' => 'name',
+                    ]
+                    ) ?>
                 </td>
               </tr>
 
@@ -88,15 +88,15 @@
                 <th>Relation model for list values</th>
                 <td>
                   <?= $this->page->formSelect('where_model_id', 
-[
-'unselect' => true,
-'label_separate' => '-',
-'label' => ['name'],
-'model' => 'Model',
-'where' => "project_id = {$this->project->value['id']}",
-'order' => 'name',
-]
-) ?> .id
+                    [
+                    'unselect' => true,
+                    'label_separate' => '-',
+                    'label' => ['name'],
+                    'model' => 'Model',
+                    'where' => "project_id = {$this->project->value['id']}",
+                    'order' => 'name',
+                    ]
+                    ) ?> .id
                   <? if ($this->page->value['where_model_id']): ?>
                     =
                     <?= $this->model->value['name'] ?>.
@@ -125,13 +125,9 @@
               <tr>
 
         </table>
-
+        <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
+        <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
       </form>
-
-      <button class="btn btn-primary" type="submit">
-        <?= LABEL_UPDATE ?>
-      </button>
-      <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
-      <?= $this->page->formDelete() ?>
+      <?= $this->page->confirmDelete() ?>
     </div>
 </div>

@@ -64,7 +64,7 @@ class MenuItemController extends MenuController {
     * @return void
     */
     function action_new() {
-        $this->menu_item = DB::model('MenuItem')->init()->takeValues($this->posts['menu_item']);
+        $this->menu_item = DB::model('MenuItem')->init()->takeValues($this->pw_posts['menu_item']);
     }
 
    /**
@@ -77,8 +77,8 @@ class MenuItemController extends MenuController {
         $this->checkEdit();
 
         $this->menu_item = DB::model('MenuItem')
-                    ->fetch($this->params['id'])
-                    ->takeValues($this->posts['menu_item']);
+                    ->fetch($this->pw_params['id'])
+                    ->takeValues($this->pw_posts['menu_item']);
     }
 
    /**
@@ -89,7 +89,7 @@ class MenuItemController extends MenuController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["menu_item"];
+        $posts = $this->pw_posts["menu_item"];
         $menu_item = DB::model('MenuItem')->insert($posts);
         if ($menu_item->errors) {
             $errors['menu_items'] = $menu_item->errors;
@@ -109,14 +109,14 @@ class MenuItemController extends MenuController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["menu_item"];
-        $menu_item = DB::model('MenuItem')->update($posts, $this->params['id']);
+        $posts = $this->pw_posts["menu_item"];
+        $menu_item = DB::model('MenuItem')->update($posts, $this->pw_params['id']);
 
         if ($menu_item->errors) {
             $errors['menu_items'] = $menu_item->errors;
             $this->setErrors($errors);
         }
-        $this->redirect_to('edit', $this->params['id']);
+        $this->redirect_to('edit', $this->pw_params['id']);
     }
 
    /**
@@ -127,7 +127,7 @@ class MenuItemController extends MenuController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('MenuItem')->delete($this->params['id']);
+        DB::model('MenuItem')->delete($this->pw_params['id']);
         $this->redirect_to('index');
     }
 

@@ -1,5 +1,16 @@
 <? include('_header.phtml') ?>
 
+<div class="alert alert-success">
+  <h3>Model Request</h3>
+  <ul>
+    <li>If you add model, requestSession() is written in Controller file's before_action().</li>
+    <li>ex) $this->user = DB::model('User')->requestSession();</li>
+    <li>When requestSession() is executed, you get automatically model by model id or PHP session.</li>
+    <li>1) $this->user = DB::model('User')->fetch($_GET['user_id'])</li>
+    <li>2) $this->user = $_SESSION[APP_NAME]['user']</li>
+  </ul>
+</div>
+
   <div class="pt-3">
     <?= FormHelper::linkButton('new', null, ['class' => 'btn btn-primary', 'label' => LABEL_ADD]) ?>
     <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table">

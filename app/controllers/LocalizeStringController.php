@@ -175,7 +175,7 @@ class LocalizeStringController extends ProjectController {
     */
     function action_edit() {
         $this->localize_string = DB::model('LocalizeString')
-                    ->fetch($this->params['id'])
+                    ->fetch($this->pw_params['id'])
                     ->takeValues($this->session['posts']);
         //TODO entity
         $this->localize_string->value['label'] = json_decode($this->localize_string->value['label'], true);
@@ -191,7 +191,7 @@ class LocalizeStringController extends ProjectController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["localize_string"];
+        $posts = $this->pw_posts["localize_string"];
         $posts['label'] = json_encode($posts['label']);
 
         $localize_string = DB::model('LocalizeString')->insert($posts);
@@ -211,13 +211,13 @@ class LocalizeStringController extends ProjectController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["localize_string"];
+        $posts = $this->pw_posts["localize_string"];
         $posts['label'] = json_encode($posts['label']);
 
-        $localize_string = DB::model('LocalizeString')->update($posts, $this->params['id']);
+        $localize_string = DB::model('LocalizeString')->update($posts, $this->pw_params['id']);
 
         if ($localize_string->errors) {
-            $this->redirect_to('edit', $this->params['id']);
+            $this->redirect_to('edit', $this->pw_params['id']);
         } else {
             $this->redirect_to('index');
         }
@@ -230,7 +230,7 @@ class LocalizeStringController extends ProjectController {
     * @return void
     */
     function action_duplicate() {
-        $localize_string = DB::model('LocalizeString')->fetch($this->params['id']);
+        $localize_string = DB::model('LocalizeString')->fetch($this->pw_params['id']);
 
         if ($localize_string->value) {
             $posts = $localize_string->value;
@@ -253,7 +253,7 @@ class LocalizeStringController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('LocalizeString')->delete($this->params['id']);
+        DB::model('LocalizeString')->delete($this->pw_params['id']);
         $this->redirect_to('index');
     }
 

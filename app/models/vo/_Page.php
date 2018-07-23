@@ -40,24 +40,32 @@ class _Page extends PgsqlEntity {
                                   'class_name' => 'Model',
                                   'foreign_table' => 'models',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
             'pages_parent_page_id_fkey' => [
                                   'column' => 'parent_page_id',
                                   'class_name' => 'Page',
                                   'foreign_table' => 'pages',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
             'pages_project_id_fkey' => [
                                   'column' => 'project_id',
                                   'class_name' => 'Project',
                                   'foreign_table' => 'projects',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
             'pages_where_model_id_fkey' => [
                                   'column' => 'where_model_id',
                                   'class_name' => 'Model',
                                   'foreign_table' => 'models',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
     );
 

@@ -24,7 +24,7 @@
   </div>
   <div class="">
     <input class="btn btn-outline-primary" type="submit" value="<?= LABEL_UPDATE ?>">
-    <a class="btn btn-outline-primary" href="<?= url_for('columns', $this->params) ?>"><?= LABEL_BACK ?></a>
+    <a class="btn btn-outline-primary" href="<?= url_for('columns', $this->pw_params) ?>"><?= LABEL_BACK ?></a>
     <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
     <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
     <input type="hidden" name="old_column_name" value="<?= $this->pg_attribute['column_name'] ?>">

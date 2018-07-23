@@ -1,7 +1,7 @@
 <? include('_header.phtml') ?>
-<form action="<?= url_for('update', $this->params['id']) ?>" method="post">
+<form action="<?= url_for('update', $this->pw_params['id']) ?>" method="post">
 
 <? include('form.phtml') ?>
 </form>
 
-<?= $this->view_item_group->formDelete() ?>
+<?= $this->view_item_group->confirmDelete() ?>

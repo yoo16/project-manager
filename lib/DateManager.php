@@ -30,6 +30,14 @@ class DateManager {
         $this->setEndAt($this->to_at);
     }
 
+    static function instance($from_at, $to_at)
+    {
+        $date = new DateManager();
+        $date->setToAt($to_at);
+        $date->setFromAt($from_at);
+        return $date;
+    }
+
     /**
      * loadRequest
      * 
@@ -38,6 +46,15 @@ class DateManager {
     function loadRequest() {
         $this->requestFrom();
         $this->requestTo();
+    }
+
+    /**
+     * set today interval
+     *
+     */
+    function setTodayInterval($interval_string) {
+        $to_at = date('Y-m-d H:00');
+        $this->setIntervalByToAt($to_at, $interval_string);
     }
 
     /**
@@ -109,13 +126,13 @@ class DateManager {
     }
 
     /**
-     * initOnedayInterval
+     * initDayInterval
      *
      * @param string $start_at
      * @param string $end_at
      * @param integer $days
      */
-    function initOnedayInterval($start_at, $end_at, $days = 1) {
+    function initDayInterval($start_at, $end_at, $days = 1) {
         $this->setStartAt($start_at);
         $this->setEndAt($end_at);
 

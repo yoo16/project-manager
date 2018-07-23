@@ -4,7 +4,7 @@
     <div class="modal-content" style="width:50rem; margin-left: -10rem;">
 
       <div class="modal-header">
-        <h5 class="modal-title">PHP Export</h5>
+        <h5 class="modal-title">Export</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -45,7 +45,13 @@
 
         <? if ($this->model->value): ?>
         <form action="<?= $this->urlFor('project', 'export_php_model') ?>" method="post">
-          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP model?">Model</button>
+          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP model?">PHP Model</button>
+          <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
+          <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+        </form>
+
+        <form action="<?= $this->urlFor('project', 'export_python_model') ?>" method="post">
+          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Python model?">Python Model</button>
           <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
           <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
         </form>

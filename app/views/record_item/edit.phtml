@@ -1,7 +1,7 @@
 <? include('_header.phtml') ?>
 <div class="card">
 
-  <form action="<?= url_for('update', $this->params['id']) ?>" method="post">
+  <form action="<?= url_for('update', $this->pw_params['id']) ?>" method="post">
 
     <div class="card-header">
       <h4></h4>
@@ -20,7 +20,7 @@
 
   <div class="card-footer">
     <div class="text-left">
-      <?= $this->record_item->formDelete() ?>    </div>
+      <?= $this->record_item->confirmDelete() ?>    </div>
   </div>
 
 </div>

@@ -1,5 +1,5 @@
 <h3>Model</h3> 
-<a href="<%=url_for('export_model', $this->params['id']) %>" onClick="return confirmPHPmodelOutput();">PHP Export</a>
+<a href="<%=url_for('export_model', $this->pw_params['id']) %>" onClick="return confirmPHPmodelOutput();">PHP Export</a>
 <table>
   <tr>
     <th><a href="<%=url_for('model/new', array('database_id' => $this->database['id'])) %>"><img src="<%=image('/btn_add.gif') %>" alt="新規追加" /></a></th>

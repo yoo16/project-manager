@@ -30,12 +30,16 @@ class _RelationDatabase extends PgsqlEntity {
                                   'class_name' => 'Database',
                                   'foreign_table' => 'databases',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
             'relation_databases_project_id_fkey' => [
                                   'column' => 'project_id',
                                   'class_name' => 'Project',
                                   'foreign_table' => 'projects',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
     );
 

@@ -1,0 +1,51 @@
+from lib.pgsql import Pgsql
+
+class _<?= $values['model']['class_name'] ?>(Pgsql):
+
+<? if ($values['model']['id_column_name']): ?>
+    id_column = '<?=  $values['model']["id_column_name"] ?>'
+<? else: ?>
+    id_column = 'id'
+<? endif ?>
+    name = '<?= $values['model']['name'] ?>'
+    table_name = '<?= $values['model']['name'] ?>'
+    entity_name = '<?= $values['model']['entity_name']?>'
+
+<? if ($values['attribute']): ?>
+    columns = {
+<? foreach ($values['attribute'] as $attribute): ?>
+<? if ($attribute['name'] != 'id'): ?>
+        <?= Model::pythonPropertyForTemplate($attribute) ?>,
+<? endif ?>
+<? endforeach ?>
+    }
+<? endif ?>
+
+<? if ($values['primary']): ?>
+    primary_key = '<?= $values['primary'] ?>'
+<? endif ?>
+<? if ($values['foreign']): ?>
+    foreigns = {
+<? foreach ($values['foreign'] as $conname => $foreign): ?>
+        '<?= $conname ?>': {
+            'column': '<?= $foreign['attname'] ?>',
+            'class_name': '<?= FileManager::phpClassNameFromEntityName($foreign['foreign_relname']) ?>',
+            'foreign_table': '<?= $foreign['foreign_relname'] ?>',
+            'foreign_column': '<?= $foreign['foreign_attname'] ?>',
+            'cascade_update_type': '<?= $foreign['confupdtype'] ?>',
+            'cascade_delete_type': '<?= $foreign['confdeltype'] ?>',
+        },
+<? endforeach ?>
+    }
+<? endif ?>
+
+<? if ($values['unique']): ?>
+    unique: {
+<? foreach ($values['unique'] as $conname => $uniques): ?>
+            '<?= $conname ?>': {<? foreach ($uniques as $unique): ?>'<?= $unique['attname'] ?>',<? endforeach ?>},
+<? endforeach ?>
+    }
+<? endif ?>
+    def __init__(self):
+        super().__init__()
+        return

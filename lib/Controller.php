@@ -521,27 +521,17 @@ class Controller extends RuntimeException {
     /**
      * downloadCotents
      * 
-     * @param  string $contents
      * @param  string $file_name
-     * @param  string $content_type
+     * @param  string $contents
      * @return void
      */
-    public function downloadContents($contents, $file_name, $content_type = "application/octet-stream") {
-        if ($this->performed_render) return;
-
-        if (preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT']) || strpos($_SERVER['HTTP_USER_AGENT'], 'Trident')) {
-            $file_name = mb_convert_encoding($file_name, 'SJIS', 'UTF-8');
-        }
-
-        //$length = strlen($contents);
-        //header("Content-Length: {$length}");
-        header('Cache-Control: public');
-        header('Pragma: public');
+    public function downloadContents($file_name, $contents) {
+        if (FileManager::isIE()) $file_name = mb_convert_encoding($file_name, 'SJIS', 'UTF-8');
+        header("Content-type: application/octet-stream; name=\"{$file_name}\"");
         header("Content-Disposition: Attachment; filename=\"{$file_name}\""); 
-        header("Content-type: {$content_type}; name=\"{$file_name}\"");
-        echo($contents);
-
-        $this->performed_render = true;
+        header('Pragma: private');
+        header('Cache-control: private, must-revalidate');
+        exit;
     }
 
     //TODO remove function
@@ -555,18 +545,6 @@ class Controller extends RuntimeException {
      * @return void
      */
     function redirect_to($controller_action, $id = null) {
-        // $this->performed_render = true;
-
-        // if (strpos($params, '://')) {
-        //     $url = $params;
-        // } else {
-        //     $url = $this->url_for($params, $options);
-        //     if (!strpos($url, '://')) $url = $this->base . $url;
-        //     if (SID) $url .= ((strpos($url, '?')) ? '&' : '?' ) . SID;
-        // }
-        // if (defined('DEBUG') && DEBUG) error_log("<REDIRECT> {$url}");
-        // header("Location: {$url}");
-        // exit;
         $this->redirectTo($controller_action, $id);
     }
 
@@ -1354,5 +1332,25 @@ class Controller extends RuntimeException {
         $this->redirectTo($uri);
         exit;
     }
+
+    /**
+     * url By Params
+     *
+     * @param string $controller
+     * @param string $action
+     * @param array $params
+     * @return string
+     */
+    function urlByParams($controller, $action = null, $params = null)
+    {
+        $url = "{$this->base}{$controller}/";
+        if ($action) $url.= $action;
+        if ($params) {
+            $param = http_build_query($params);
+            $url .= "?{$param}";
+        }
+        return $url;
+    }
+
 
 }

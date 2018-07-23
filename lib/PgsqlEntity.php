@@ -820,8 +820,6 @@ class PgsqlEntity extends Entity
     function fetchRows($sql)
     {
         if ($rs = $this->query($sql)) {
-            //$this->values_index_column_type = 'timestamp';
-            //$this->values_index_column = 'created_at';
             $rows = pg_fetch_all($rs);
             if ($this->is_cast && $this->columns) $rows = $this->castRows($rows);
             return $rows;
@@ -845,6 +843,7 @@ class PgsqlEntity extends Entity
                 $row = pg_fetch_assoc($rs);
             }
             $this->value = $this->castRow($row);
+            $this->initLimit();
             return $this->value;
         } else {
             return;
@@ -1037,7 +1036,7 @@ class PgsqlEntity extends Entity
      */
     public function relationMany($class_name, $foreign_key = null, $value_key = null)
     {
-        if (!class_exists($class_name)) exit('hasMany class_name: not found '.$class_name);
+        if (!class_exists($class_name)) exit('relation class_name: not found '.$class_name);
         if (!$foreign_key) $foreign_key = "{$this->entity_name}_id";
         if (!$value_key) $value_key = $this->id_column;
         $relation = DB::model($class_name);
@@ -1058,15 +1057,8 @@ class PgsqlEntity extends Entity
      */
     public function relationOne($class_name, $foreign_key = null, $value_key = null)
     {
-        if (!class_exists($class_name)) exit('hasMany class_name: not found '.$class_name);
-        if (!$foreign_key) $foreign_key = "{$this->entity_name}_id";
-        if (!$value_key) $value_key = $this->id_column;
-        $relation = DB::model($class_name);
-
-        if (is_null($this->value)) return $relation;
-        $value = $this->value[$value_key];
-        if (is_null($value)) return $relation;
-        return $relation->where($foreign_key, $value)->one();
+        $relation = $this->relation($class_name, $foreign_key, $value_key);
+        return $relation->one();
     }
 
     /**
@@ -1080,7 +1072,7 @@ class PgsqlEntity extends Entity
      */
     public function hasManyThrough($class_name, $through_class_name, $foreign_key = null, $value_key = null)
     {
-        if (!class_exists($class_name)) exit('hasMany class_name: not found '.$class_name);
+        if (!class_exists($class_name)) exit('relation class_name: not found '.$class_name);
         $relation = DB::model($class_name);
 
         if (!class_exists($through_class_name)) exit('hasMany: not found '.$through_class_name);
@@ -1104,8 +1096,10 @@ class PgsqlEntity extends Entity
      */
     public function belongsTo($class_name, $foreign_key = null, $value_key = null)
     {
-        if (!class_exists($class_name)) exit('hasMany class_name: not found '.$class_name);
-        $relation = DB::model($class_name);
+        if (!class_exists($class_name)) {
+            exit('relation class_name: not found '.$class_name);
+        }
+        $relation = DB::Model($class_name);
 
         if (!$foreign_key) $foreign_key = $relation->id_column;
         if (!$value_key) $value_key = "{$relation->entity_name}_id";
@@ -1163,6 +1157,7 @@ class PgsqlEntity extends Entity
     public function one()
     {
         $sql = $this->selectSql();
+        $this->limit(1);
         $this->fetchRow($sql);
 
         $this->id = $this->value[$this->id_column];
@@ -1760,9 +1755,24 @@ class PgsqlEntity extends Entity
     public function whereIn($column, $values)
     {
         if (!$column) return $this;
-        $condition = PgsqlEntity::whereInConditoin($column, $values);
+        foreach ($values as $value) {
+            $_values[] = $this->sqlValue($value);
+        }
+        $condition = PgsqlEntity::whereInConditionSQL($column, $_values);
         $this->where($condition);
         return $this;
+    }
+
+    /**
+     * where in condition
+     *
+     * @param string $column
+     * @return void
+     */
+    function whereInCondition($column) {
+        $ids = $this->valuesByColumn($column);
+        $condition = PgsqlEntity::whereInConditionSQL($column, $ids);
+        return $condition;
     }
 
     /**
@@ -1772,7 +1782,7 @@ class PgsqlEntity extends Entity
      * @param  array $values
      * @return string
      */
-    static function whereInConditoin($column, $values)
+    static function whereInConditionSQL($column, $values)
     {
         if (is_array($values)) {
             $value = implode(', ', $values);
@@ -1886,12 +1896,22 @@ class PgsqlEntity extends Entity
     /**
      * initWhere
      * 
-     * @param  string $condition
      * @return PgsqlEntity
      */
     public function initWhere()
     {
         $this->conditions = null;
+        return $this;
+    }
+
+    /**
+     * initWhere
+     * 
+     * @return PgsqlEntity
+     */
+    public function initLimit()
+    {
+        $this->limit = null;
         return $this;
     }
 
@@ -2039,7 +2059,7 @@ class PgsqlEntity extends Entity
      * @param  Object $value
      * @return string
      */
-    private function sqlValue($value, $type = null)
+    public function sqlValue($value, $type = null)
     {
         if (is_null($value)) {
             return "NULL";
@@ -3921,13 +3941,13 @@ class PgsqlEntity extends Entity
     }
 
     /**
-     * [oldDbInfoByOldHost description]
-     * @return [type] [description]
+     * old db info by old host
+     * 
+     * @return string
      */
     static function oldDbInfoByOldHost($old_host, $old_db)
     {
         if (!defined('OLD_DB_INFO')) return;
-
         $old_db_infos = OLD_DB_INFO;
         foreach ($old_db_infos as $key => $_old_db_infos) {
             foreach ($_old_db_infos as $system => $old_db_info) {
@@ -3936,7 +3956,6 @@ class PgsqlEntity extends Entity
                 }
             }
         }
-
     }
 
     /**

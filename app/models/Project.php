@@ -92,7 +92,7 @@ class Project extends _Project {
         if ($this->model->values) {
             foreach ($this->model->values as $model) {
                 $this->model->value = $model;
-                $this->exportpHPModel($pgsql, $this->model);
+                $this->exportPHPModel($pgsql, $this->model);
             }
         }
     }
@@ -135,11 +135,75 @@ class Project extends _Project {
             file_put_contents($model_path, $contents);
         }
 
-
         $vo_model_path = Model::projectVoFilePath($this->user_project_setting->value, $model->value);
         $vo_model_template_path = Model::voTemplateFilePath();
         $contents = FileManager::bufferFileContetns($vo_model_template_path, $values);
         file_put_contents($vo_model_path, $contents);
+    }
+
+    /**
+     * export php
+     * @return bool
+     */
+    function exportPythonModels($pgsql) {
+        //model
+        $this->bindMany('Model');
+
+        $relation_database = $this->hasMany('RelationDatabase')->all();
+        foreach ($relation_database->values as $relation_database) {
+            $old_database = DB::model('Database')->fetch($relation_database['old_database_id']);
+            $old_pgsqls[$old_database->value['id']] = $old_database->pgsql();
+        }
+
+        if ($this->model->values) {
+            foreach ($this->model->values as $model) {
+                $this->model->value = $model;
+                $this->exportPythonModel($pgsql, $this->model);
+            }
+        }
+    }
+
+    /**
+     * export php model
+     * 
+     * @param Model $model
+     * @return bool
+     */
+    function exportPythonModel($pgsql, $model) {
+        $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
+
+        $values = null;
+        $values['project'] = $this->value;
+        
+        $attribute = $model->relationMany('Attribute')
+                           ->order('name')
+                           ->all();
+
+        $values['model'] = $model->value;
+        $values['attribute'] = $attribute->values;
+        
+        $values['old_id_column'] = DB::model('Attribute')
+                                        ->where("model_id = '{$model->value['id']}'")
+                                        ->where("name = 'old_id'")
+                                        ->one()
+                                        ->value['old_name'];
+
+        $pg_constraints = $this->pgConstraintValues($pg_class);
+        $values['unique'] = $pg_constraints['unique'];
+        $values['foreign'] = $pg_constraints['foreign'];
+        $values['primary'] = $pg_constraints['primary'];
+
+        $model_path = Model::projectPythonFilePath($this->user_project_setting->value, $model->value);
+        if (!file_exists($model_path)) {
+            $model_template_path = Model::pythonTemplateFilePath();
+            $contents = FileManager::bufferFileContetns($model_template_path, $values);
+            file_put_contents($model_path, $contents);
+        }
+
+        $python_vo_model_path = Model::projectPythonVoFilePath($this->user_project_setting->value, $model->value);
+        $python_vo_model_template_path = Model::pythonVoTemplateFilePath();
+        $contents = FileManager::bufferFileContetns($python_vo_model_template_path, $values);
+        file_put_contents($python_vo_model_path, $contents);
     }
 
     //controllers

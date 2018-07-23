@@ -14,7 +14,7 @@ class PageController extends ProjectController {
     * 
     *
     * @access public
-    * @param String $action
+    * @param string $action
     * @return void
     */ 
     function before_action($action) {
@@ -60,7 +60,7 @@ class PageController extends ProjectController {
     }
 
     function action_edit() {
-        $this->page = DB::model('Page')->fetch($this->params['id']);
+        $this->page = DB::model('Page')->fetch($this->pw_params['id']);
 
         if ($this->page->value['model_id']) {
             $this->model = DB::model('Model')->fetch($this->page->value['model_id']);
@@ -73,7 +73,7 @@ class PageController extends ProjectController {
 
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts['page'];
+        $posts = $this->pw_posts['page'];
         $posts['class_name'] = $posts['name'];
 
         $page = DB::model('Page')->insert($posts);
@@ -88,11 +88,11 @@ class PageController extends ProjectController {
 
     function action_update() {
         if (!isPost()) exit;
-        $page = DB::model('Page')->update($this->posts['page'], $this->params['id']);
+        $page = DB::model('Page')->update($this->pw_posts['page'], $this->pw_params['id']);
 
         if ($page->errors) {
             $this->flash['errors'] = $page->errors;
-            var_dump($this->posts['page']);
+            var_dump($this->pw_posts['page']);
             var_dump($page->errors);
             var_dump($page->sql_error);
             var_dump($page->sql);
@@ -100,12 +100,12 @@ class PageController extends ProjectController {
         } else {
             unset($this->session['posts']);
         }
-        $this->redirect_to('edit', $this->params['id']);
+        $this->redirect_to('edit', $this->pw_params['id']);
     }
 
     function action_duplicate() {
         //TODO Entity function?
-        $page = DB::model('Page')->fetch($this->params['id']);
+        $page = DB::model('Page')->fetch($this->pw_params['id']);
         $posts = $page->value;
         $posts['name'] = "{$page->value['name']}_copy";
         unset($posts['id']);
@@ -114,7 +114,7 @@ class PageController extends ProjectController {
 
         if ($page->errors) {
             $this->flash['errors'] = $page->errors;
-            var_dump($this->posts['page']);
+            var_dump($this->pw_posts['page']);
             var_dump($page->errors);
             var_dump($page->sql_error);
             var_dump($page->sql);
@@ -125,10 +125,10 @@ class PageController extends ProjectController {
 
     function action_delete() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $page = DB::model('Page')->delete($this->params['id']);
+            $page = DB::model('Page')->delete($this->pw_params['id']);
             if ($page->errors) {
                 $this->flash['errors'] = $page->errors;
-                $this->redirect_to('edit', $this->params['id']);
+                $this->redirect_to('edit', $this->pw_params['id']);
             } else {
                 $this->redirect_to('index');
             }
@@ -196,7 +196,7 @@ class PageController extends ProjectController {
     }
 
     function action_change_overwrite() {
-        $page = DB::model('Page')->fetch($this->params['id']);
+        $page = DB::model('Page')->fetch($this->pw_params['id']);
         if ($page->value['id']) {
             $posts['is_overwrite'] = !$page->value['is_overwrite'];
             $page->update($posts);

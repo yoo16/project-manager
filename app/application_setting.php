@@ -10,5 +10,6 @@
     define('PHP_WORK_GIT_URL', 'https://github.com/yoo16/php-work.git');
 
     define('EXT_PHP', '.php');
+    define('EXT_PYTHON', '.py');
     define('EXT_HTML', '.html');
     define('EXT_TEMPLATE', '.phtml');

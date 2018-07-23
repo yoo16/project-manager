@@ -32,6 +32,8 @@ class _RecordItem extends PgsqlEntity {
                                   'class_name' => 'Record',
                                   'foreign_table' => 'records',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'c',
                                   ],
     );
 

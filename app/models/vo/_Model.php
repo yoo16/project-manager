@@ -44,6 +44,8 @@ class _Model extends PgsqlEntity {
                                   'class_name' => 'Project',
                                   'foreign_table' => 'projects',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'c',
                                   ],
     );
 

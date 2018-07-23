@@ -24,7 +24,7 @@ class Page extends _Page {
     /**
      * class name
      * 
-     * @param array $page
+     * @param Page $page
      * @return string
      */
     static function className($page) {

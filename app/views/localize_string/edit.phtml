@@ -1,9 +1,9 @@
 <? include('_header.phtml') ?>
-<form action="<?= url_for('update', $this->params['id']) ?>" method="post">
+<form action="<?= url_for('update', $this->pw_params['id']) ?>" method="post">
 
   <table class="table">
     <tr>
-      <th>名称</th>
+      <th>坝称</th>
       <td><?= $this->localize_string->formInput('name') ?></td>
     </tr>
 
@@ -21,4 +21,4 @@
   
 </form>
 
-<?= $this->localize_string->formDelete() ?>
+<?= $this->localize_string->confirmDelete() ?>

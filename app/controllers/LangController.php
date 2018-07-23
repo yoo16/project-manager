@@ -72,7 +72,7 @@ class LangController extends AppController {
     */
     function action_edit() {
         $this->lang = DB::model('Lang')
-                    ->fetch($this->params['id'])
+                    ->fetch($this->pw_params['id'])
                     ->takeValues($this->session['posts']);
     }
 
@@ -84,7 +84,7 @@ class LangController extends AppController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["lang"];
+        $posts = $this->pw_posts["lang"];
         DB::model('Lang')->insert($posts);
 
         if ($lang->errors) {
@@ -102,11 +102,11 @@ class LangController extends AppController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["lang"];
-        $lang = DB::model('Lang')->update($posts, $this->params['id']);
+        $posts = $this->pw_posts["lang"];
+        $lang = DB::model('Lang')->update($posts, $this->pw_params['id']);
 
         if ($lang->errors) {
-            $this->redirect_to('edit', $this->params['id']);
+            $this->redirect_to('edit', $this->pw_params['id']);
         } else {
             $this->redirect_to('index');
         }
@@ -120,7 +120,7 @@ class LangController extends AppController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('Lang')->delete($this->params['id']);
+        DB::model('Lang')->delete($this->pw_params['id']);
         $this->redirect_to('index');
     }
 

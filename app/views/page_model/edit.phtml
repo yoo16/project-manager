@@ -1,26 +1,22 @@
 <? include('_header.phtml') ?>
-<div class="card">
+  <form action="<?= url_for('update', $this->pw_params['id']) ?>" method="post">
+    <div class="card">
 
-  <form action="<?= url_for('update', $this->params['id']) ?>" method="post">
+      <div class="card-header">
+        <h4></h4>
+      </div>
 
-    <div class="card-header">
-      <h4></h4>
-      <div class="text-left">
-        <?= FormHelper::submit(LABEL_SAVE) ?>
-        <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
+      <div class="card-block">
+
+        <? include('form.phtml') ?>
+      </div>
+
+      <div class="card-footer">
+        <div class="text-left">
+          <?= FormHelper::submit(LABEL_SAVE) ?>
+          <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
+          <?= $this->page_model->confirmDelete() ?>
+        </div>
       </div>
     </div>
-
-    <div class="card-block">
-
-      <? include('form.phtml') ?>
-    </div>
-
   </form>
-
-  <div class="card-footer">
-    <div class="text-left">
-      <?= $this->page_model->formDelete() ?>    </div>
-  </div>
-
-</div>

@@ -3,7 +3,7 @@
 <? include('add_window.phtml') ?>
 
 <div class="pt-3">
-  <form action="<?= url_for('import_from_models') ?>" method="post">
+  <form action="<?= $this->urlActionFor('import_from_models') ?>" method="post">
     <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
     <?= FormHelper::submit(LABEL_IMPORT, ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you import from Models?']) ?>
     <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
@@ -16,11 +16,9 @@
       <th></th>
       <th>Page Controller</th>
       <th></th>
-      <th></th>
-      <th></th>
       <th nowrap="nowrap">
         Overwrite
-        <a href="<?= url_for('all_off_overwrite') ?>" class="btn btn-outline-primary btn-sm confirm-dialog" message="Do you turn off overwriting?">off</a>
+        <a href="<?= $this->urlActionFor('all_off_overwrite') ?>" class="btn btn-outline-primary btn-sm confirm-dialog" message="Do you turn off overwriting?">off</a>
       </th>
       <th>Model / Entity Name</th>
       <th></th>
@@ -33,7 +31,7 @@
         <td><?= FormHelper::linkButton('edit', $page['id'], ['label' => LABEL_EDIT]) ?></td>
         <td>
           <div>
-            <a class="" href="<?= url_for('view/', array('page_id' => $page['id'])) ?>"><?= $page['name'] ?></a>
+            <a class="" href="<?= $this->urlControllerFor('view', ['page_id' => $page['id']]) ?>"><?= $page['name'] ?></a>
             <div>
               <?= Page::className($page) ?>
             </div>
@@ -42,14 +40,12 @@
             <?= $page['label'] ?>
           </div>
         </td>
-        <td><a class="btn btn-outline-primary" href="<?= url_for('attribute/', array('model_id' => $page['model_id'])) ?>">Model</a></td>
-        <td><a class="btn btn-outline-primary" href="<?= url_for('page_filter/', array('page_id' => $page['id'])) ?>">Filter</a></td>
-        <td><a class="btn btn-outline-primary" href="<?= url_for('page_model/', array('page_id' => $page['id'])) ?>">Request</a></td>
+        <td><a class="btn btn-outline-primary" href="<?= $this->urlControllerFor('page_model', ['page_id' => $page['id']]) ?>">Model Request</a></td>
         <td>
           <? if ($page['is_overwrite']): ?>
-            <?= FormHelper::link('change_overwrite', 'overwrite', $page['id'], ['class' => 'badge badge-danger']) ?>
+            <?= $this->linkActionTag('change_overwrite', $page['id'], ['label' => 'overwrite', 'class' => 'badge badge-danger']) ?>
           <? else: ?>
-            <?= FormHelper::link('change_overwrite', 'off', $page['id'], ['class' => 'badge badge-default']) ?>
+            <?= $this->linkActionTag('change_overwrite', $page['id'], ['label' => 'off', 'class' => 'badge badge-default']) ?>
           <? endif ?>
         </td>
         <td>
@@ -57,7 +53,7 @@
           <div><? if ($page['model_id']): ?><?= $page['model']['name'] ?><? endif ?></div>
         </td>
 
-        <td><a class="btn btn-outline-primary" href="<?= url_for('duplicate', $page['id']) ?>"><?= LABEL_DUPLICATE ?></a></td>
+        <td><a class="btn btn-outline-primary confirm-dialog" message="Do you duplicate page?" href="<?= $this->urlSelfFor('duplicate', $page['id']) ?>"><?= LABEL_DUPLICATE ?></a></td>
       </tr>
     <? endforeach ?> 
   <? endif ?>

@@ -36,7 +36,7 @@ class DocumentController extends ProjectController {
     }
 
     function action_index() {
-        $this->type = $this->params['type'];
+        $this->type = $this->pw_params['type'];
         if (!$this->type) $this->type = 'php';
         if ($this->type == 'db') {
             $this->database_documents = $this->_getModelDocuments();
@@ -71,14 +71,14 @@ class DocumentController extends ProjectController {
     }
 
     function action_edit() {
-        $this->model = DB::model('Model')->fetch($this->params['id']);
+        $this->model = DB::model('Model')->fetch($this->pw_params['id']);
     }
 
     function action_update_model() {
         if (!isPost()) exit;
 
-        $posts = $this->posts['model'];
-        $model = DB::model('Model')->fetch($this->params['id']);
+        $posts = $this->pw_posts['model'];
+        $model = DB::model('Model')->fetch($this->pw_params['id']);
         if ($model->value) {
             if ($model->value['label'] != $posts['label']) {
                 $results = $this->database->pgsql()->updateTableComment($model->value['name'], $posts['label']);
@@ -96,13 +96,13 @@ class DocumentController extends ProjectController {
 
     function action_update_attribute() {
         if (!isPost()) exit;
-        $posts = $this->posts['attribute'];
+        $posts = $this->pw_posts['attribute'];
 
         $pgsql = $this->database->pgsql();
         $pg_class = $pgsql->pgClassById($this->model->value['pg_class_id']);
         $pgsql->updateColumnComment($pg_class['relname'], $attribute->value['name'], $posts['label']);
 
-        $attribute = DB::model('Attribute')->update($posts, $this->params['id']);
+        $attribute = DB::model('Attribute')->update($posts, $this->pw_params['id']);
 
         $params['model_id'] = $attribute->value['model_id'];
         $this->redirect_to('attribute_list', $params);

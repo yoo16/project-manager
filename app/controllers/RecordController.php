@@ -66,7 +66,7 @@ class RecordController extends ProjectController {
     * @return void
     */
     function action_new() {
-        $this->record = DB::model('Record')->init()->takeValues($this->posts['record']);
+        $this->record = DB::model('Record')->init()->takeValues($this->pw_posts['record']);
     }
 
    /**
@@ -79,8 +79,8 @@ class RecordController extends ProjectController {
         $this->checkEdit();
 
         $this->record = DB::model('Record')
-                    ->fetch($this->params['id'])
-                    ->takeValues($this->posts['record']);
+                    ->fetch($this->pw_params['id'])
+                    ->takeValues($this->pw_posts['record']);
     }
 
    /**
@@ -91,7 +91,7 @@ class RecordController extends ProjectController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["record"];
+        $posts = $this->pw_posts["record"];
         $record = DB::model('Record')->insert($posts);
 
         if ($record->errors) {
@@ -109,11 +109,11 @@ class RecordController extends ProjectController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["record"];
-        $record = DB::model('Record')->update($posts, $this->params['id']);
+        $posts = $this->pw_posts["record"];
+        $record = DB::model('Record')->update($posts, $this->pw_params['id']);
 
         if ($record->errors) {
-            $this->redirect_to('edit', $this->params['id']);
+            $this->redirect_to('edit', $this->pw_params['id']);
         } else {
             $this->redirect_to('index');
         }
@@ -127,7 +127,7 @@ class RecordController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('Record')->delete($this->params['id']);
+        DB::model('Record')->delete($this->pw_params['id']);
         $this->redirect_to('index');
     }
 

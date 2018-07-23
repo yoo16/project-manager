@@ -58,7 +58,7 @@ class ModelController extends ProjectController {
     }
 
     function action_edit() {
-        $this->model = DB::model('Model')->fetch($this->params['id']);
+        $this->model = DB::model('Model')->fetch($this->pw_params['id']);
     }
 
     function action_add() {
@@ -66,7 +66,7 @@ class ModelController extends ProjectController {
 
         if (!$this->database->value) $this->redirect_to('list');
 
-        $posts = $this->posts['model'];
+        $posts = $this->pw_posts['model'];
 
         if ($this->database && $posts['name']) {
             $columns = Model::$required_columns;
@@ -119,7 +119,7 @@ class ModelController extends ProjectController {
         $posts['class_name'] = FileManager::phpClassName($posts['entity_name']);
         $posts['project_id'] = $this->project->value['id'];
 
-        $model = DB::model('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->pw_params['id']);
         if ($model->value) {
             $pgsql = $this->database->pgsql();
 
@@ -140,11 +140,11 @@ class ModelController extends ProjectController {
         } else {
             unset($this->session['posts']);
         }
-        $this->redirect_to('edit', $this->params['id']);
+        $this->redirect_to('edit', $this->pw_params['id']);
     }
 
     function action_duplicate() {
-        $model = DB::model('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->pw_params['id']);
         if ($model->value['id']) {
             $attribute = $model->relationMany('Attribute')->all();
 
@@ -190,7 +190,7 @@ class ModelController extends ProjectController {
     function action_delete() {
         if (!isPost()) exit;
 
-        $model = DB::model('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->pw_params['id']);
         if ($model->value['id']) {
 
             $attribute = $model->relationMany('Attribute')->all();
@@ -216,7 +216,7 @@ class ModelController extends ProjectController {
             if ($model->errors) {
                 $this->flash['errors'] = $model->errors;
 
-                $this->redirect_to('edit', $this->params['id']);
+                $this->redirect_to('edit', $this->pw_params['id']);
                 exit;
             }
         }
@@ -275,7 +275,7 @@ class ModelController extends ProjectController {
     }
 
     function action_update_old_table() {
-        $posts['old_name'] = $this->posts['old_name'];
+        $posts['old_name'] = $this->pw_posts['old_name'];
 
         DB::model('Model')->fetch($_REQUEST['model_id'])->update($posts);
         $this->redirect_to('relation_database/diff_model');
@@ -341,7 +341,7 @@ class ModelController extends ProjectController {
     function action_sync_model() {
         if (!$this->database->value['id']) $this->redirect_to('project/');
 
-        $model = DB::model('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->pw_params['id']);
         if ($model->value) {
             $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
             $pg_class = $pgsql_entity->pgClassByRelname($model->value['name']);
@@ -358,7 +358,7 @@ class ModelController extends ProjectController {
 
     //TODO Model
     function syncDB($model) {
-        $model = DB::model('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->pw_params['id']);
         if ($model->value['id']) {
             $attribute = $model->relationMany('Attribute')->all();
 
@@ -557,7 +557,7 @@ class ModelController extends ProjectController {
     }
 
     function action_values() {
-        $this->model = DB::model('Model')->fetch($this->params['id']);
+        $this->model = DB::model('Model')->fetch($this->pw_params['id']);
         $this->attribute = $this->model->hasMany('Attribute');
 
         foreach ($this->attribute->values as $attribute) {
@@ -585,9 +585,9 @@ class ModelController extends ProjectController {
     function action_add_value() {
         if (!isPost()) exit;
 
-        $posts = $this->posts['model'];
+        $posts = $this->pw_posts['model'];
 
-        $this->model = DB::model('Model')->fetch($this->params['id']);
+        $this->model = DB::model('Model')->fetch($this->pw_params['id']);
 
         $database = $this->project->belongsTo('Database');
         $pgsql = $database->pgsql()->table($this->model->value['name'])->insert($posts);
@@ -599,7 +599,7 @@ class ModelController extends ProjectController {
             echo($pgsql->host.PHP_EOL);
             exit;
         }
-        $this->redirect_to('values', $this->params['id']);
+        $this->redirect_to('values', $this->pw_params['id']);
     }
 
 
@@ -610,7 +610,7 @@ class ModelController extends ProjectController {
      */
     function action_delere_records() {
         $database = $this->project->belongsTo('Database');
-        $model = DB::model('Model')->fetch($this->params['id']);
+        $model = DB::model('Model')->fetch($this->pw_params['id']);
 
         if ($model->value['class_name']) {
             $database->pgsql()->table($model->value['name'])->deleteRecords();

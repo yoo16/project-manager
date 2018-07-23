@@ -42,7 +42,7 @@
 
                     <div class="form-inline">
                       <form action="<?=url_for('project/export_php_models') ?>" method="post">
-                        <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">Model</button>
+                        <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">PHP Model</button>
                         <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
                         <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
                       </form>
@@ -67,7 +67,7 @@
                         <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
                         <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
                       </form>
-
+                      &nbsp;
                       <? if (defined('IS_DEVELOPER') && IS_DEVELOPER): ?>
                         &nbsp;
                         <form action="<?=url_for('project/export_php_view_edit') ?>" method="post">
@@ -76,6 +76,12 @@
                           <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
                         </form>
                       <? endif ?>
+                      <form action="<?=url_for('project/export_python_models') ?>" method="post">
+                        <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Python Models?">Python Model</button>
+                        <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+                        <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+                      </form>
+                      &nbsp;
                     </div>
                   <? endif ?>
                 <? endif ?>

@@ -1,35 +1,36 @@
 <?php
 /**
- * LocalizeString 
+ * ApiAction 
  * 
- * @create  2017-10-03 00:56:54 
+ * @create  2018-07-23 15:25:24 
  */
 
 //namespace project_manager;
 
 require_once 'PgsqlEntity.php';
 
-class _LocalizeString extends PgsqlEntity {
+class _ApiAction extends PgsqlEntity {
 
     public $id_column = 'id';
-    public $name = 'localize_strings';
-    public $entity_name = 'localize_string';
+    public $name = 'api_actions';
+    public $entity_name = 'api_action';
 
     public $columns = array(
+        'api_id' => array('type' => 'int4', 'is_required' => true),
         'created_at' => array('type' => 'timestamp'),
-        'label' => array('type' => 'text'),
+        'label' => array('type' => 'varchar', 'length' => 256),
         'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
-        'project_id' => array('type' => 'int4', 'is_required' => true),
+        'note' => array('type' => 'text'),
         'sort_order' => array('type' => 'int4'),
         'updated_at' => array('type' => 'timestamp'),
     );
 
-    public $primary_key = 'localize_strings_pkey';
+    public $primary_key = 'api_actions_pkey';
     public $foreign = array(
-            'localize_strings_project_id_id_fkey' => [
-                                  'column' => 'project_id',
-                                  'class_name' => 'Project',
-                                  'foreign_table' => 'projects',
+            'api_actions_api_id_fkey' => [
+                                  'column' => 'api_id',
+                                  'class_name' => 'Api',
+                                  'foreign_table' => 'apis',
                                   'foreign_column' => 'id',
                                   'cascade_update_type' => 'a',
                                   'cascade_delete_type' => 'a',
@@ -37,9 +38,9 @@ class _LocalizeString extends PgsqlEntity {
     );
 
     public $unique = array(
-            'localize_strings_name_project_id_key' => [
-                        'project_id',
+            'api_actions_name_api_id_key' => [
                         'name',
+                        'api_id',
                         ],
     );
 

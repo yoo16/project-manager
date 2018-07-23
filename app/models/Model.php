@@ -307,6 +307,42 @@ class Model extends _Model {
     }
 
     /**
+     * project python path
+     * 
+     * @param array $user_project_setting
+     * @param array $model
+     * @return string
+     */
+    static function projectPythonFilePath($user_project_setting, $model) {
+        if (!$user_project_setting) return;
+        if (!$model['name']) return;
+        if (!file_exists($user_project_setting['project_path'])) return;
+
+        $name = $model['entity_name'];
+        $file_name = $name.EXT_PYTHON;
+        $path = $user_project_setting['project_path']."app/python3/models/{$file_name}";
+        return $path;
+    }
+
+    /**
+     * project python path
+     * 
+     * @param array $user_project_setting
+     * @param array $model
+     * @return string
+     */
+    static function projectPythonVoFilePath($user_project_setting, $model) {
+        if (!$user_project_setting) return;
+        if (!$model['name']) return;
+        if (!file_exists($user_project_setting['project_path'])) return;
+
+        $name = $model['entity_name'];
+        $file_name = $name.EXT_PYTHON;
+        $path = $user_project_setting['project_path']."app/python3/models/vo/{$file_name}";
+        return $path;
+    }
+
+    /**
      * local path
      * 
      * @param array $model
@@ -323,8 +359,30 @@ class Model extends _Model {
      * @param array $model
      * @return string
      */
+    static function pythonTemplateFilePath() {
+        $path = TEMPLATE_DIR.'models/python.phtml';
+        return $path;
+    }
+
+    /**
+     * local path
+     * 
+     * @param array $model
+     * @return string
+     */
     static function voTemplateFilePath() {
         $path = TEMPLATE_DIR.'models/php_vo.phtml';
+        return $path;
+    }
+
+    /**
+     * local path
+     * 
+     * @param array $model
+     * @return string
+     */
+    static function pythonVoTemplateFilePath() {
+        $path = TEMPLATE_DIR.'models/python_vo.phtml';
         return $path;
     }
 
@@ -363,6 +421,44 @@ class Model extends _Model {
         $propaty = implode(', ', $propaties);
 
         $value = "'{$attribute['name']}' => array({$propaty})";
+        return $value;
+    }
+
+    /**
+     * columns property for Vo Model Template
+     * 
+     * @param array $attribute
+     * @return string
+     */
+    static function pythonPropertyForTemplate($attribute) {
+        $propaties[] = "'type': '{$attribute['type']}'";
+        if ($attribute['length'] > 0) $propaties[] = "'length': {$attribute['length']}";
+
+        if (!self::$required_columns[$attribute['name']] && $attribute['is_required']) {
+            $propaties[] = "'is_required': True";
+        }
+        if ($attribute['old_name']) {
+            $propaties[] = "'old_name': '{$attribute['old_name']}'";
+        }
+        if (isset($attribute['default_value'])) {
+            if (in_array($attribute['type'], PgsqlEntity::$number_types)) {
+                if (is_numeric($attribute['default_value'])) {
+                    $propaties[] = "'default': {$attribute['default_value']}";
+                }
+            } else if ($attribute['type'] == 'bool') {
+                if ($attribute['default_value'] == 't') {
+                    $propaties[] = "'default': True";
+                } else if ($attribute['default_value'] == 'f') {
+                    $propaties[] = "'default': False";
+                }
+            } else {
+                $propaties[] = "'default': '{$attribute['default_value']}'";
+            }
+        }
+
+        $propaty = implode(', ', $propaties);
+
+        $value = "'{$attribute['name']}': {{$propaty}}";
         return $value;
     }
 

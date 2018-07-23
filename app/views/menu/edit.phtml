@@ -1,5 +1,5 @@
 <? include('_header.phtml') ?>
-<form action="<?= $this->urlSelfFor('update', $this->params['id']) ?>" method="post">
+<form action="<?= $this->urlSelfFor('update', $this->pw_params['id']) ?>" method="post">
 
   <div class="card">
 
@@ -24,7 +24,7 @@
   <div class="card-footer">
     <div class="text-left">
 
-      <?= $this->menu->formDelete() ?>
+      <?= $this->menu->confirmDelete() ?>
     </div>
   </div>
 </div>

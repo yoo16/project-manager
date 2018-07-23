@@ -1,31 +1,48 @@
 <? include('_header.phtml') ?>
 
-<div class="pt-3">
-  <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
-  <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table"><?= LABEL_SORT_ORDER ?></a>
+  <div class="pt-3">
+    <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
+    <a href="#" class="btn btn-outline-primary change-sortable" rel="list-table">
+      <?= LABEL_SORT_ORDER ?>
+    </a>
 
-  <a href="#" class="btn btn-primary update-sortable" controller="api"><?= LABEL_UPDATE ?></a>
-</div>
+    <a href="#" class="btn btn-primary update-sortable" controller="api">
+      <?= LABEL_UPDATE ?>
+    </a>
+  </div>
 
-<table id="list-table" class="table">
-  <thead class="thead-default">
-    <tr>
-      <th>&nbsp;</th>
-      <th><?= LABEL_APIS_NAME ?></th>
-            <th><?= LABEL_APIS_LABEL ?></th>
-            <th><?= LABEL_APIS_NOTE ?></th>
-          </tr>
-  </thead>
+  <table id="list-table" class="table">
+    <thead class="thead-default">
+      <tr>
+        <th>&nbsp;</th>
+        <th>
+          <?= LABEL_APIS_NAME ?>
+        </th>
+        <th>
+          <?= LABEL_APIS_LABEL ?>
+        </th>
+        <th>
+          <?= LABEL_APIS_NOTE ?>
+        </th>
+      </tr>
+    </thead>
 
-  <? if ($this->api->values): ?>
-  <? foreach ($this->api->values as $values): ?>
-  <tr row-id="<?= $values['id'] ?>">
-    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-    <td><?= $values['name'] ?></td>
-    <td><?= $values['label'] ?></td>
-    <td><?= $values['note'] ?></td>
-  </tr>
-  <? endforeach ?>
-  <? endif ?>
-
+    <? if ($this->api->values): ?>
+      <? foreach ($this->api->values as $values): ?>
+        <tr row-id="<?= $values['id'] ?>">
+          <td>
+            <?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?>
+          </td>
+          <td>
+            <?= $values['name'] ?>
+          </td>
+          <td>
+            <?= $values['label'] ?>
+          </td>
+          <td>
+            <?= $values['note'] ?>
+          </td>
+        </tr>
+        <? endforeach ?>
+          <? endif ?>
 </table>

@@ -39,7 +39,7 @@ class AppController extends Controller {
      * @return void
      */
     function checkEdit($redirect_action = 'new') {
-        if (!$this->params['id']) {
+        if (!$this->pw_params['id']) {
             $this->redirect_to($redirect_action);
             exit;
         }

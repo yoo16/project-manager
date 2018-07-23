@@ -65,7 +65,7 @@ class ViewItemGroupController extends ViewController {
     * @return void
     */
     function action_new() {
-        $this->view_item_group = DB::model('ViewItemGroup')->init()->takeValues($this->posts['view_item_group']);
+        $this->view_item_group = DB::model('ViewItemGroup')->init()->takeValues($this->pw_posts['view_item_group']);
     }
 
    /**
@@ -78,8 +78,8 @@ class ViewItemGroupController extends ViewController {
         $this->checkEdit();
 
         $this->view_item_group = DB::model('ViewItemGroup')
-                    ->fetch($this->params['id'])
-                    ->takeValues($this->posts['view_item_group']);
+                    ->fetch($this->pw_params['id'])
+                    ->takeValues($this->pw_posts['view_item_group']);
     }
 
    /**
@@ -90,7 +90,7 @@ class ViewItemGroupController extends ViewController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["view_item_group"];
+        $posts = $this->pw_posts["view_item_group"];
         $view_item_group = DB::model('ViewItemGroup')->insert($posts);
 
         if ($view_item_group->errors) {
@@ -108,11 +108,11 @@ class ViewItemGroupController extends ViewController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["view_item_group"];
-        $view_item_group = $view_item_group = DB::model('ViewItemGroup')->update($posts, $this->params['id']);
+        $posts = $this->pw_posts["view_item_group"];
+        $view_item_group = $view_item_group = DB::model('ViewItemGroup')->update($posts, $this->pw_params['id']);
 
         if ($view_item_group->errors) {
-            $this->redirect_to('edit', $this->params['id']);
+            $this->redirect_to('edit', $this->pw_params['id']);
         } else {
             $this->redirect_to('index');
         }
@@ -126,7 +126,7 @@ class ViewItemGroupController extends ViewController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('ViewItemGroup')->delete($this->params['id']);
+        DB::model('ViewItemGroup')->delete($this->pw_params['id']);
         $this->redirect_to('index');
     }
 

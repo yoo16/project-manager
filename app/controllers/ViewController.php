@@ -21,7 +21,7 @@ class ViewController extends ProjectController {
         parent::before_action($action);
 
         $this->page = DB::model('Page')->requestSession();
-        $this->model = DB::model('Model')->belongsTo($this->page, 'model_id');
+        $this->model = DB::model('Model')->belongsTo('Page');
 
         if (!$this->project->value || !$this->page->value) {
             $this->redirect_to('page/');
@@ -85,7 +85,7 @@ class ViewController extends ProjectController {
     */
     function action_edit() {
         $this->view = DB::model('View')
-                    ->fetch($this->params['id'])
+                    ->fetch($this->pw_params['id'])
                     ->takeValues($this->session['posts']);
 
         $this->forms['is_overwrite']['name'] = 'view[is_overwrite]';
@@ -101,7 +101,7 @@ class ViewController extends ProjectController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts['view'];
+        $posts = $this->pw_posts['view'];
 
         $view = DB::model('View')->insert($posts);
 
@@ -121,7 +121,7 @@ class ViewController extends ProjectController {
     */
     function action_update() {
         $project = DB::model('View')
-                        ->fetch($this->params['id'])
+                        ->fetch($this->pw_params['id'])
                         ->post()
                         ->update();
 
@@ -139,13 +139,13 @@ class ViewController extends ProjectController {
     */
     function action_delete() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            DB::model('View')->delete($this->params['id']);
+            DB::model('View')->delete($this->pw_params['id']);
         }
         $this->redirect_to('index');
     }
 
     function action_change_overwrite() {
-        $view = DB::model('View')->fetch($this->params['id']);
+        $view = DB::model('View')->fetch($this->pw_params['id']);
         if ($view->value['id']) {
             $posts['is_overwrite'] = !$view->value['is_overwrite'];
             $view->update($posts);

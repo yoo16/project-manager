@@ -48,6 +48,8 @@ class _Attribute extends PgsqlEntity {
                                   'class_name' => 'Model',
                                   'foreign_table' => 'models',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
     );
 

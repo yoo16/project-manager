@@ -33,12 +33,16 @@ class _PageModel extends PgsqlEntity {
                                   'class_name' => 'Model',
                                   'foreign_table' => 'models',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
             'page_models_page_id_fkey' => [
                                   'column' => 'page_id',
                                   'class_name' => 'Page',
                                   'foreign_table' => 'pages',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
     );
 

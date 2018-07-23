@@ -16,6 +16,7 @@ class _Api extends PgsqlEntity {
     public $entity_name = 'api';
 
     public $columns = array(
+        'api_group_id' => array('type' => 'int4'),
         'created_at' => array('type' => 'timestamp'),
         'label' => array('type' => 'varchar', 'length' => 256),
         'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
@@ -32,6 +33,16 @@ class _Api extends PgsqlEntity {
                                   'class_name' => 'Project',
                                   'foreign_table' => 'projects',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
+                                  ],
+            'apis_api_group_id_fkey' => [
+                                  'column' => 'api_group_id',
+                                  'class_name' => 'ApiGroup',
+                                  'foreign_table' => 'api_groups',
+                                  'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
     );
 

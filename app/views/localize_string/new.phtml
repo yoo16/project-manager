@@ -3,7 +3,7 @@
 
   <table class="table">
     <tr>
-      <th>名称</th>
+      <th>坝称</th>
       <td><?= $this->localize_string->formInput('name') ?></td>
     </tr>
 
@@ -22,4 +22,4 @@
   <input type="hidden" name="localize_string[project_id]" value="<?= $this->project->value['id'] ?>">
 </form>
 
-  <?= $this->localize_string->formDelete() ?>
+  <?= $this->localize_string->confirmDelete() ?>

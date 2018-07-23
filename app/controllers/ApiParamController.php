@@ -67,7 +67,7 @@ class ApiParamController extends ApiController {
     * @return void
     */
     function action_new() {
-        $this->api_param = DB::model('ApiParam')->init()->takeValues($this->posts['api_param']);
+        $this->api_param = DB::model('ApiParam')->init()->takeValues($this->pw_posts['api_param']);
     }
 
    /**
@@ -80,8 +80,8 @@ class ApiParamController extends ApiController {
         $this->checkEdit();
 
         $this->api_param = DB::model('ApiParam')
-                    ->fetch($this->params['id'])
-                    ->takeValues($this->posts['api_param']);
+                    ->fetch($this->pw_params['id'])
+                    ->takeValues($this->pw_posts['api_param']);
     }
 
    /**
@@ -92,7 +92,7 @@ class ApiParamController extends ApiController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["api_param"];
+        $posts = $this->pw_posts["api_param"];
         $api_param = DB::model('ApiParam')->insert($posts);
 
         if ($api_param->errors) {
@@ -110,11 +110,11 @@ class ApiParamController extends ApiController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["api_param"];
-        $api_param = DB::model('ApiParam')->update($posts, $this->params['id']);
+        $posts = $this->pw_posts["api_param"];
+        $api_param = DB::model('ApiParam')->update($posts, $this->pw_params['id']);
 
         if ($api_param->errors) {
-            $this->redirect_to('edit', $this->params['id']);
+            $this->redirect_to('edit', $this->pw_params['id']);
         } else {
             $this->redirect_to('index');
         }
@@ -128,7 +128,7 @@ class ApiParamController extends ApiController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('ApiParam')->delete($this->params['id']);
+        DB::model('ApiParam')->delete($this->pw_params['id']);
         $this->redirect_to('index');
     }
 

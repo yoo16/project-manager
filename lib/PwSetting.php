@@ -21,6 +21,17 @@ class PwSetting {
     }
 
     /**
+     * ini log
+     *
+     * @return void
+     */
+    static function iniLog() {
+        $path = ini_get('error_log');
+        $cmd = "chmod 666 {$path}";
+        exec($cmd);
+    }
+
+    /**
      * loadBasePath
      * 
      * @return 
@@ -134,6 +145,7 @@ class PwSetting {
         PwSetting::loadBasePath();
         PwSetting::loadHostSetting();
         PwSetting::loadDBSetting();
+        PwSetting::iniLog();
     }
 
 }

@@ -54,20 +54,20 @@ class RelationDatabaseController extends ProjectController {
     }
 
     function action_edit() {
-        $this->relation_database = DB::model('RelationDatabase')->fetch($this->params['id']);
+        $this->relation_database = DB::model('RelationDatabase')->fetch($this->pw_params['id']);
     }
 
     function action_add() {
         if (!isPost()) exit;
 
-        DB::model('RelationDatabase')->insert($this->posts['relation_database']);
+        DB::model('RelationDatabase')->insert($this->pw_posts['relation_database']);
         $this->redirect_to('list');
     }
 
     function action_update() {
         if (!isPost()) exit;
 
-        $posts = $this->posts['posts'];
+        $posts = $this->pw_posts['posts'];
 
         $this->redirect_to('list');
     }
@@ -75,7 +75,7 @@ class RelationDatabaseController extends ProjectController {
     function action_delete() {
         if (!isPost()) exit;
 
-        DB::model('RelationDatabase')->delete($this->params['id']);
+        DB::model('RelationDatabase')->delete($this->pw_params['id']);
         $this->redirect_to('list');
     }
 

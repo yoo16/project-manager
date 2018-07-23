@@ -1,6 +1,6 @@
 <?= "<? include('_header.phtml') ?>" ?>
 
-<form action="<? Tag::init()->php('$this->urlSelfFor(\'update\', $this->params[\'id\'])') ?>" method="post">
+<form action="<? Tag::init()->php('$this->urlSelfFor(\'update\', $this->pw_params[\'id\'])') ?>" method="post">
 
   <div class="card">
 
@@ -28,7 +28,7 @@
   <div class="card-footer">
     <div class="text-left">
 
-      <? Tag::init()->php('$this->'."{$values['model']['entity_name']}".'->formDelete()') ?>
+      <? Tag::init()->php('$this->'."{$values['model']['entity_name']}".'->confirmDelete()') ?>
 
     </div>
   </div>

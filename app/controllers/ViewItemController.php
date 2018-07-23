@@ -114,7 +114,7 @@ class ViewItemController extends ProjectController {
     */
     function action_edit() {
         $this->view_item = DB::model('ViewItem')
-                    ->fetch($this->params['id'])
+                    ->fetch($this->pw_params['id'])
                     ->takeValues($this->session['posts']);
 
         if ($this->view_item->value['attribute_id']) {
@@ -236,9 +236,9 @@ class ViewItemController extends ProjectController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->session['posts'] = $_REQUEST["view_item"];
-        $view_item = DB::model('ViewItem')->update($posts, $this->params['id']);
+        $view_item = DB::model('ViewItem')->update($posts, $this->pw_params['id']);
 
-        $this->redirect_to('edit', $this->params['id']);
+        $this->redirect_to('edit', $this->pw_params['id']);
     }
 
    /**
@@ -249,7 +249,7 @@ class ViewItemController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('ViewItem')->delete($this->params['id']);
+        DB::model('ViewItem')->delete($this->pw_params['id']);
         $this->redirect_to('index');
     }
 

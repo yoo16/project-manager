@@ -32,12 +32,16 @@ class _PageFilter extends PgsqlEntity {
                                   'class_name' => 'Attribute',
                                   'foreign_table' => 'attributes',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
             'page_filters_page_id_fkey' => [
                                   'column' => 'page_id',
                                   'class_name' => 'Page',
                                   'foreign_table' => 'pages',
                                   'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'a',
                                   ],
     );
 

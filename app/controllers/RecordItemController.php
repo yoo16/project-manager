@@ -67,7 +67,7 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_new() {
-        $this->record_item = DB::model('RecordItem')->init()->takeValues($this->posts['record_item']);
+        $this->record_item = DB::model('RecordItem')->init()->takeValues($this->pw_posts['record_item']);
     }
 
    /**
@@ -80,8 +80,8 @@ class RecordItemController extends RecordController {
         $this->checkEdit();
 
         $this->record_item = DB::model('RecordItem')
-                    ->fetch($this->params['id'])
-                    ->takeValues($this->posts['record_item']);
+                    ->fetch($this->pw_params['id'])
+                    ->takeValues($this->pw_posts['record_item']);
     }
 
    /**
@@ -92,7 +92,7 @@ class RecordItemController extends RecordController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["record_item"];
+        $posts = $this->pw_posts["record_item"];
         $record_item = DB::model('RecordItem')->insert($posts);
 
         if ($record_item->errors) {
@@ -110,11 +110,11 @@ class RecordItemController extends RecordController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["record_item"];
-        $record_item = DB::model('RecordItem')->update($posts, $this->params['id']);
+        $posts = $this->pw_posts["record_item"];
+        $record_item = DB::model('RecordItem')->update($posts, $this->pw_params['id']);
 
         if ($record_item->errors) {
-            $this->redirect_to('edit', $this->params['id']);
+            $this->redirect_to('edit', $this->pw_params['id']);
         } else {
             $this->redirect_to('index');
         }
@@ -128,7 +128,7 @@ class RecordItemController extends RecordController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('RecordItem')->delete($this->params['id']);
+        DB::model('RecordItem')->delete($this->pw_params['id']);
         $this->redirect_to('index');
     }
 

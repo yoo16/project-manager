@@ -35,14 +35,14 @@ class DatabaseController extends AppController {
     }
 
     function action_edit() {
-        $this->database = DB::model('Database')->fetch($this->params['id'])
+        $this->database = DB::model('Database')->fetch($this->pw_params['id'])
                                                ->takeValues($this->session['posts']);
 
     }
 
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts['database'];
+        $posts = $this->pw_posts['database'];
         $database = DB::model('Database')->insert($posts);
 
         $this->flash['results'] = $database->pgsql()->createDatabase();
@@ -57,8 +57,8 @@ class DatabaseController extends AppController {
 
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts['database'];
-        $database = DB::model('Database')->update($posts, $this->params['id']);
+        $posts = $this->pw_posts['database'];
+        $database = DB::model('Database')->update($posts, $this->pw_params['id']);
 
         $this->redirect_to('list');
     }
@@ -81,9 +81,9 @@ class DatabaseController extends AppController {
         //     exit;
         // }
         //TODO delete
-        $database = DB::model('Database')->fetch($this->params['id']);
+        $database = DB::model('Database')->fetch($this->pw_params['id']);
         if ($database->value) {
-            DB::model('Database')->delete($this->params['id']);
+            DB::model('Database')->delete($this->pw_params['id']);
         }
 
         $this->redirect_to('database/');
@@ -144,8 +144,8 @@ class DatabaseController extends AppController {
     }
 
     function action_create_table() {
-        if ($this->database['id'] > 0 && $this->params['id']) {
-            $model = Model::_getValue($this->params['id']);
+        if ($this->database['id'] > 0 && $this->pw_params['id']) {
+            $model = Model::_getValue($this->pw_params['id']);
             $this->createTable($model);
             $this->flash['result'] = true;
             $this->redirect_to('model/list');

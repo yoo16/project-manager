@@ -3,11 +3,7 @@
   <h3><?= $this->page->value['label'] ?> : <?= $this->page->value['name'] ?></h3>
 
   <div>
-    <? if ($this->page->value['model_id']): ?>
-    <a class="btn btn-outline-primary" href="<?= url_for('attribute/', array('model_id' => $this->page->value['model_id'])) ?>">Model</a>
-    <? endif ?>
-    <a class="btn btn-outline-primary" href="<?= url_for('page_filter/', array('page_id' => $this->page->value['id'])) ?>">Filters</a>
-    <a class="btn btn-outline-primary" href="<?= url_for('page_model/', array('page_id' => $this->page->value['id'])) ?>">Requests</a>
-    <a class="btn btn-outline-primary" href="<?= url_for('view/', array('page_id' => $this->page->value['id'])) ?>">Page</a>
+    <a class="btn btn-outline-primary" href="<?= url_for('page_model/', array('page_id' => $this->page->value['id'])) ?>">Model Requests</a>
+    <a class="btn btn-outline-primary" href="<?= url_for('view/', array('page_id' => $this->page->value['id'])) ?>">View</a>
   </div>
 <? endif ?>

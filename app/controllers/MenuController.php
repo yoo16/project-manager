@@ -63,7 +63,7 @@ class MenuController extends AppController {
     * @return void
     */
     function action_new() {
-        $this->menu = DB::model('Menu')->init()->takeValues($this->posts['menu']);
+        $this->menu = DB::model('Menu')->init()->takeValues($this->pw_posts['menu']);
     }
 
    /**
@@ -76,8 +76,8 @@ class MenuController extends AppController {
         $this->checkEdit();
 
         $this->menu = DB::model('Menu')
-                    ->fetch($this->params['id'])
-                    ->takeValues($this->posts['menu']);
+                    ->fetch($this->pw_params['id'])
+                    ->takeValues($this->pw_posts['menu']);
     }
 
    /**
@@ -88,7 +88,7 @@ class MenuController extends AppController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->posts["menu"];
+        $posts = $this->pw_posts["menu"];
         $menu = DB::model('Menu')->insert($posts);
 
         if ($menu->errors) {
@@ -109,14 +109,14 @@ class MenuController extends AppController {
     */
     function action_update() {
         if (!isPost()) exit;
-        $posts = $this->posts["menu"];
-        $menu = DB::model('Menu')->update($posts, $this->params['id']);
+        $posts = $this->pw_posts["menu"];
+        $menu = DB::model('Menu')->update($posts, $this->pw_params['id']);
 
         if ($menu->errors) {
             $errors['menus'] = $menu->errors;
             $this->setErrors($errors);
         }
-        $this->redirect_to('edit', $this->params['id']);
+        $this->redirect_to('edit', $this->pw_params['id']);
     }
 
 }

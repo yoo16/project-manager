@@ -1,7 +1,7 @@
 <h3 class=""><?= $this->model->value['name'] ?> -> <?= $this->attribute->value['name'] ?></h3>
 
 <? if ($this->fk_attribute->value): ?>
-<form action="<?= url_for('remove_relation') ?>" method="post">
+<form action="<?= $this->urlActionFor('remove_relation') ?>" method="post">
   
   <?= $this->fk_model->value['name'] ?> -> <?= $this->fk_attribute->value['name'] ?>
 
@@ -11,16 +11,16 @@
 <? endif ?>
 
 <table class="table table-sm">
-  <? foreach ($this->project->model->values as $model->value): ?>
+  <? foreach ($this->relation_model->values as $relation_model->value): ?>
   <tr>
     <td>
     <?= FormHelper::link('#relation-window',
         [
-        'label' => $model->value['name'],
+        'label' => $relation_model->value['name'],
         'class' => 'pw-app', 
         'pw-controller' => 'attribute',
         'pw-action' => 'relation_attribute_list', 
-        'fk_model_id' => $model->value['id'], 
+        'fk_model_id' => $relation_model->value['id'], 
         'attribute_id' => $this->attribute->value['id'], 
         ]) ?>
       </td>
@@ -30,7 +30,7 @@
 <? if (!$this->attribute->value['fk_attribute_id']): ?>
 
 <? else: ?>
-<form action="<?= url_for('remove_relation') ?>" method="post">
+<form action="<?= $this->urlActionFor('remove_relation')?>" method="post">
   <input class="btn btn-sm btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
   <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
 </form>
