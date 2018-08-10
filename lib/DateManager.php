@@ -14,6 +14,12 @@ class DateManager {
     public $to_datetime;
     public $from_at;
     public $to_at;
+    public $start_at;
+    public $end_at;
+    public $start_datetime;
+    public $end_datetime;
+    public $start_date;
+    public $end_date;
 
     function __construct() {
     }
@@ -39,13 +45,54 @@ class DateManager {
     }
 
     /**
-     * loadRequest
-     * 
+     * set session
+     *
      * @return void
      */
-    function loadRequest() {
+    function clearAppSession($key = 'app_date') {
+        AppSession::clear($key);
+    }
+
+    /**
+     * set session
+     *
+     * @return void
+     */
+    function storeAppSession($key = 'app_date') {
+        AppSession::set($key, $this);
+    }
+
+    /**
+     * load session
+     *
+     * @return void
+     */
+    function loadAppSession($key = 'app_date') {
+        $pw_date = AppSession::get($key);
+        $this->setFromAt($pw_date->from_at);
+        $this->setToAt($pw_date->to_at);
+        $this->setStartAt($pw_date->start_at);
+        $this->setEndAt($pw_date->end_at);
+        return $pw_date;
+    }
+
+    /**
+     * loadRequest
+     * 
+     * @param string $key
+     * @return void
+     */
+    function loadRequest($is_session = false, $key = 'app_date') {
+        if ($is_session) $this->loadAppSession($key);
         $this->requestFrom();
         $this->requestTo();
+        if ($this->from_date && $this->to_date) {
+            if ($this->from_datetime > $this->to_datetime) {
+                $this->from_datetime = null;
+                $this->from_date = null;
+                $this->from_at = null;
+            }
+        }
     }
 
     /**
@@ -79,6 +126,39 @@ class DateManager {
         $this->end_at = $end_at;
         $this->end_datetime = strtotime($this->end_at);
         $this->end_date = DateManager::datetimeToNumber($this->end_at);
+    }
+
+    /**
+     * zero hour 
+     *
+     * @param string $date_string
+     * @return void
+     */
+    function zeroHour($date_string) {
+        if (!$date_string) return;
+        return date('Y-m-d 00:00', strtotime($date_string));
+    }
+
+    /**
+     * from_at is zero hour 
+     *
+     * @return void
+     */
+    function fromAtZeroHour() {
+        if (!$this->from_at) return;
+        $from_at = date('Y-m-d 00:00', strtotime($this->from_at));
+        $this->setFromAt($from_at);
+    }
+
+    /**
+     * to_at is zero hour 
+     *
+     * @return void
+     */
+    function toAtZeroHour() {
+        if (!$this->from_at) return;
+        $to_at = date('Y-m-d 00:00', strtotime($this->from_at));
+        $this->setToAt($to_at);
     }
 
     /**
@@ -170,6 +250,10 @@ class DateManager {
         if ($this->end_datetime && (!$this->to_datetime || $this->to_datetime > $this->end_datetime)) {
             $this->setToAt($this->end_at);
         }
+        $now = time();
+        if ($this->to_datetime > $now) {
+            $this->setToAt($now);
+        }
         return $this;
     }
 
@@ -202,11 +286,12 @@ class DateManager {
      *
      * @param integer $days
      */
-    function setIntervalDaysFromToAt($days) {
+    function setIntervalDaysFromToAt($days, $is_zero_hours = false) {
         if ($this->to_datetime && $days) {
             $formatter = "-{$days}days";
             $from_datetime = strtotime($formatter, $this->to_datetime);
             $this->setFromDatetime($from_datetime);
+            if ($is_zero_hours) $this->setFromAt(date('Y-m-d 00:00', $this->from_datetime));
         }
     }
 
@@ -270,8 +355,8 @@ class DateManager {
     /**
      * set interval by to_at
      *
-     * @param String $to_at
-     * @param String $interval_string
+     * @param string $to_at
+     * @param string $interval_string
      */
     function setIntervalByToAt($to_at, $interval_string) {
         $this->setToAt($to_at);
@@ -282,27 +367,42 @@ class DateManager {
     /**
      * interval fro to_date
      *
-     * @param Integer $interval
-     * @param String $unit
+     * @param integer $interval
+     * @param string $unit
+     * @param integer $limit_time
      */
-    function calculateDatetimes($interval, $unit) {
+    function calculateDatetimes($interval, $unit, $limit_time = null) {
         if ($this->from_datetime) {
             $this->datetimes = null;
             $interval_string = "+{$interval}{$unit}";
 
             $datetime = $this->from_datetime;
 
+            $now = time();
             while ($datetime < $this->to_datetime) {
-                $this->datetimes[] = $datetime;
-                $datetime = strtotime($interval_string, $datetime);
+                if ($limit_time && $datetime > $limit_time) {
+
+                } else {
+                    $this->datetimes[] = $datetime;
+                    $datetime = strtotime($interval_string, $datetime);
+                }
             }
         }
     }
 
     /**
+     * reverse datetimes
+     *
+     * @return void
+     */
+    function reverseDatetimes() {
+        $this->datetimes = array_reverse($this->datetimes);
+    }
+
+    /**
      * request FromDate
      * 
-     * @return String
+     * @return string
      */
     function requestFrom() {
         if ($_REQUEST['from_date']) {
@@ -316,7 +416,7 @@ class DateManager {
     /**
      * request ToDate
      * 
-     * @return String
+     * @return string
      */
     function requestTo() {
         if ($_REQUEST['to_date']) {

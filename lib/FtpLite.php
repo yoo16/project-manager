@@ -215,7 +215,7 @@ class FtpLite
      * ftpList
      *
      * @param String $path
-     * @return mix
+     * @return mixed
      */
     function ftpList($path)
     {
@@ -228,7 +228,7 @@ class FtpLite
      * ftpList
      *
      * @param String $path
-     * @return mix
+     * @return mixed
      */
     function ftpFileList($path)
     {
@@ -239,7 +239,7 @@ class FtpLite
      * ftpLatestList
      *
      * @param String $path
-     * @return mix
+     * @return mixed
      */
     function ftpLatestFileList($path, $search_fix = '.CSV')
     {
@@ -261,7 +261,7 @@ class FtpLite
      * ftpLatestList
      *
      * @param String $path
-     * @return mix
+     * @return mixed
      */
     function ftpLatestList($path, $search_fix = '.CSV')
     {

@@ -1,30 +1,31 @@
-<div class="row col-4">
-  <table class="table">
+
+<table class="table">
 
     <tr>
-      <th>
-        <?= LABEL_APIS_NAME ?>
-      </th>
+      <th><?= LABEL_APIS_NAME ?></th>
       <td>
-        <?= $this->api->formInput('name', ['class' => 'form-control']) ?>
+          <?= $this->api->formInput('name', ['class' => 'form-control']) ?>
       </td>
     </tr>
+
+
     <tr>
-      <th>
-        <?= LABEL_APIS_LABEL ?>
-      </th>
+      <th><?= LABEL_APIS_LABEL ?></th>
       <td>
-        <?= $this->api->formInput('label', ['class' => 'form-control']) ?>
+          <?= $this->api->formInput('label', ['class' => 'form-control']) ?>
       </td>
     </tr>
+
+
+
+
     <tr>
-      <th>
-        <?= LABEL_APIS_NOTE ?>
-      </th>
+      <th><?= LABEL_APIS_NOTE ?></th>
       <td>
-        <?= $this->api->formTextarea('note', ['class' => 'form-control']) ?>
+          <?= $this->api->formTextarea('note') ?>
       </td>
     </tr>
-  </table>
-</div>
-<input type="hidden" name="api[project_id]" value="<?= $this->project->value['id'] ?>">
+
+</table>
+
+          <input type="hidden" name="api[project_id]" value="<?= $this->project->value['id'] ?>">    

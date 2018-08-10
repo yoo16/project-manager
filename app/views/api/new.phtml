@@ -1,20 +1,19 @@
 <? include('_header.phtml') ?>
-<div class="card">
+<form action="<?= $this->urlSelfFor('add') ?>" method="post">
+  <div class="card">
 
-  <form action="<?= url_for('add') ?>" method="post">
+    <div class="card-block">
 
-    <div class="card-header">
+      <? include('form.phtml') ?>      
+    </div>
+
+    <div class="card-footer">
       <h4></h4>
       <div class="text-left">
+        
         <?= FormHelper::submit(LABEL_SAVE) ?>
         <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
       </div>
     </div>
-
-    <div class="card-block">
-      <? include('form.phtml') ?>
-    </div>
-
-  </form>
-
-</div>
+  </div>
+</form>

@@ -552,8 +552,8 @@ class Controller extends RuntimeException {
     /**
      * redirect
      * 
-     * @param  string $controller
-     * @param  mix $id
+     * @param  string $action
+     * @param  mixed $id
      * @param  array $params
      * @return void
      */
@@ -573,8 +573,7 @@ class Controller extends RuntimeException {
         if ($controller) {
             $url = $this->urlFor($controller, $action, $id, $params);
         } else {
-            $params['id'] = $id;
-            $url = $this->urlActionFor($action, $params);
+            $url = $this->urlSelfFor($action, $id, $params);
         }
         if (defined('DEBUG') && DEBUG) error_log("<REDIRECT> {$url}");
         header("Location: {$url}");
@@ -642,12 +641,55 @@ class Controller extends RuntimeException {
      * @param  array $params
      * @return string
      */
-    function linkTag($controller, $action = null, $id = null, $params = null) {
+    function link($controller, $action = null, $id = null, $params = null) {
         if ($params['is_use_selected']) $params['class'].= FormHelper::linkActive($controller, $this->name);
+        if ($params['is_use_action_selected']) $params['class'].= TagHelper::actionActive($controller, $action);
         $href = $this->urlFor($controller, $action, $id, $params['http_params']);
         if (!$params || is_array($params)) $params['href'] = $href;
-        $tag = TagHelper::aTag($params);
+        $tag = TagHelper::a($params);
         return $tag;
+    }
+
+    /**
+     * link tag for controller action id
+     *
+     * @param  string $controller
+     * @param  string $action
+     * @param  string $id
+     * @param  array $params
+     * @return string
+     */
+    function linkAction($action = null, $id = null, $params = null) {
+        if ($params['is_use_selected']) $params['class'].= FormHelper::linkActive($controller, $this->name);
+        $href = $this->urlFor($this->name, $action, $id, $params['http_params']);
+        if (!$params || is_array($params)) $params['href'] = $href;
+        $tag = TagHelper::a($params);
+        return $tag;
+    }
+
+    /**
+     * url action for params
+     *
+     * @param  string $action
+     * @param  array $http_params
+     * @return string
+     */
+    function urlAction($action, $http_params = null) {
+        $url = $this->urlFor($this->name, $action, null, $http_params);
+        return $url;
+    }
+
+    /**
+     * link tag for controller action id
+     *
+     * @param  string $controller
+     * @param  string $action
+     * @param  string $id
+     * @param  array $params
+     * @return string
+     */
+    function linkTag($controller, $action = null, $id = null, $params = null) {
+        return $this->link($controller, $action, $id, $params);
     }
 
     /**
@@ -664,7 +706,7 @@ class Controller extends RuntimeException {
         if ($params['is_use_selected']) $params['class'].= FormHelper::linkActive($controller, $this->name);
         $params['href'] = $this->urlFor($controller, $action, $id, $params['http_params']);
 
-        $tag = TagHelper::aTag($params);
+        $tag = TagHelper::a($params);
         return $tag;
     }
 
@@ -686,7 +728,7 @@ class Controller extends RuntimeException {
         }
         $params['href'] = $this->urlFor($controller, null, null, $params['http_params']);
 
-        $tag = TagHelper::aTag($params);
+        $tag = TagHelper::a($params);
         return $tag;
     }
 
@@ -953,9 +995,6 @@ class Controller extends RuntimeException {
             }
 
             $this->before_invocation($this->pw_action);
-            if (defined('DEBUG') && DEBUG) {
-                error_log("<INVOKED> {$this->pw_controller}/{$this->pw_action}");
-            }
             $this->render($this->pw_action);
         } else {
             $errors['type'] = '404 Not Found';
@@ -1352,5 +1391,18 @@ class Controller extends RuntimeException {
         return $url;
     }
 
+    /**
+     * url for href
+     *
+     * @param string $href
+     * @return void
+     */
+    function urlForNotParam($href)
+    {
+        $urls = explode('?', $href);
+        $urls = explode('#', $urls[0]);
+        $url = $urls[0];
+        return $url;
+    }
 
 }

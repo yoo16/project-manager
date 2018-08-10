@@ -9,8 +9,8 @@ require_once 'ProjectController.php';
 
 class ApiController extends ProjectController {
 
-    var $name = 'api';
-
+    public $name = 'api';
+    
    /**
     * before_action
     *
@@ -53,9 +53,7 @@ class ApiController extends ProjectController {
     */
     function action_list() {
         if (!$this->project->value) $this->redirect_to('/');
-        $this->api = $this->project->relationMany('Api')
-                                ->wheres($this->filters)
-                                ->all();
+        $this->api = $this->project->relationMany('Api')->all();
 
                 
     }
@@ -96,9 +94,11 @@ class ApiController extends ProjectController {
         $api = DB::model('Api')->insert($posts);
 
         if ($api->errors) {
-            $this->redirect_to('new');
+            $this->addError('apis', $api->errors);
+            $this->redirectTo('new');
+            exit;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo('index');
         }
     }
 
@@ -114,10 +114,10 @@ class ApiController extends ProjectController {
         $api = DB::model('Api')->update($posts, $this->pw_params['id']);
 
         if ($api->errors) {
-            $this->redirect_to('edit', $this->pw_params['id']);
-        } else {
-            $this->redirect_to('index');
+            $errors['apis'] = $api->errors;
+            $this->setErrors($errors);
         }
+        $this->redirect_to('edit', $this->pw_params['id']);
     }
 
    /**
@@ -130,6 +130,17 @@ class ApiController extends ProjectController {
         if (!isPost()) exit;
         DB::model('Api')->delete($this->pw_params['id']);
         $this->redirect_to('index');
+    }
+
+   /**
+    * update sort order
+    *
+    * @param
+    * @return void
+    */
+    function action_update_sort() {
+        $this->updatSort('Api');
+        exit;
     }
 
 }

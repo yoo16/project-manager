@@ -1,7 +1,7 @@
 /**
  * @author  Yohei Yoshikawa
  *
- * Copyright (c) 2018 Yohei Yoshikawa (http://yoo-s.com/)
+ * Copyright (c) 2018 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
 var pw_api;

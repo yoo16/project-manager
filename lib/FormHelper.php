@@ -27,7 +27,7 @@ class FormHelper {
     static $http_tag_columns = ['id', 'class'];
 
     /**
-     * selectタグ
+     * select tag
      *
      * @param array $params
      * @param string $selected
@@ -45,7 +45,7 @@ class FormHelper {
     }
 
     /**
-     * selectタグ(日付用)
+     * select tag for date
      *
      * @param array $params
      * @param string $seleted
@@ -301,9 +301,7 @@ class FormHelper {
     static function radioTag($attributes = null) {
         foreach (self::$except_columns as $except_column) {
             if (!in_array($except_column, self::$radio_columns)) {
-                if ($attributes[$except_column]) {
-                    unset($attributes[$except_column]); 
-                }
+                if ($attributes[$except_column]) unset($attributes[$except_column]);
             }
         }
         $attributes['type'] = 'radio';
@@ -381,7 +379,17 @@ class FormHelper {
             $instance = DB::model($params['model']);
 
             if (isset($params['select_columns'])) $instance->select($params['select_columns']);
-            if (isset($params['where'])) $instance->where($params['where']);
+            if (isset($params['where'])) {
+                if (is_array($params['where'])) {
+                    if ($params['where'][2]) {
+                        $instance->where($params['where'][0], $params['where'][1], $params['where'][2]);
+                    } else if ($params['where'][1]) {
+                        $instance->where($params['where'][0], $params['where'][1]);
+                    }
+                } else {
+                    $instance->where($params['where']);
+                }
+            }
             if (isset($params['wheres'])) $instance->wheres($params['wheres']);
             if (isset($params['order'])) $instance->order($params['order']);
             $instance->all();
@@ -586,7 +594,7 @@ class FormHelper {
             $params['id'] = "{$params['name']}_{$params['value']}";
             $tag.= self::radioTag($params, $value);
 
-            $label_params['id'] = $attributes['id'];
+            $label_params['id'] = $params['id'];
             $label_params['label'] = $label = self::convertLabel($value, $params);
             $tag.= FormHelper::label($label_params);
         }
@@ -718,13 +726,15 @@ class FormHelper {
      */
     static function link($action, $params = null) {
         $attribute = self::attribute($params);
-        if (substr($action, 0, 1) == '#') {
-            $href = '#';
+        if (!$action) {
+            $href = '';
+        } else if (substr($action, 0, 1) == '#') {
+            $href = $action;
         } else {
             $href = TagHelper::urlFor($action, $query);
         }
-        $label = $params['label'];
-        $tag = "<a href=\"{$href}\" {$attribute}>{$label}</a>\n";
+        if ($href) $params['href'] = $href;
+        $tag = TagHelper::a($params);
         return $tag;
     }
 
@@ -875,8 +885,8 @@ class FormHelper {
     /**
      * delete
      *
-     * @param Array $params
-     * @return String
+     * @param array $params
+     * @return string
      */
     static function delete($params = null) {
         if (!$params['class']) $params['class'] = 'btn btn-danger';
@@ -905,8 +915,8 @@ class FormHelper {
     /**
      * delete
      *
-     * @param Array $params
-     * @return String
+     * @param array $params
+     * @return string
      */
     static function confirmDelete($params = null) {
         if (!isset($params['label'])) $params['label'] = LABEL_DELETE;

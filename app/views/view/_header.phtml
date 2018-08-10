@@ -1,5 +1,10 @@
 <? include('views/components/project_header.phtml') ?>
 
 <div class="pt-3">
-<h4><?= Page::className($this->page) ?></h4>
+<h4>
+<?= Page::className($this->page) ?>
+<?= FormHelper::linkModal('#php-page-export-window', 'Export view', ['class' => 'btn btn-sm btn-success']) ?>
+</h4>
+
 </div>
+<? include('views/components/php_page_export_window.phtml') ?>

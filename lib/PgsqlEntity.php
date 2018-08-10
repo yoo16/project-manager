@@ -1096,10 +1096,8 @@ class PgsqlEntity extends Entity
      */
     public function belongsTo($class_name, $foreign_key = null, $value_key = null)
     {
-        if (!class_exists($class_name)) {
-            exit('relation class_name: not found '.$class_name);
-        }
-        $relation = DB::Model($class_name);
+        if (!class_exists($class_name)) exit('relation class_name: not found '.$class_name);
+        $relation = DB::model($class_name);
 
         if (!$foreign_key) $foreign_key = $relation->id_column;
         if (!$value_key) $value_key = "{$relation->entity_name}_id";
@@ -1720,7 +1718,7 @@ class PgsqlEntity extends Entity
     /**
      * where
      * 
-     * @param  object $condition
+     * @param  mixed $condition
      * @param  string $value
      * @param  string $eq
      * @return PgsqlEntity

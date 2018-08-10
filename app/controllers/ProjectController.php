@@ -64,11 +64,21 @@ class ProjectController extends AppController {
         $this->redirect_to('list');
     }
 
+    /**
+     * cancel
+     *
+     * @return void
+     */
     function action_cancel() {
         $this->clearSession();
         $this->redirect_to('index');
     }
 
+    /**
+     * list
+     *
+     * @return void
+     */
     function action_list() {
         $this->database = DB::model('Database')
                             ->all();
@@ -78,6 +88,11 @@ class ProjectController extends AppController {
                             ->bindById('Database');
     }
 
+    /**
+     * edit
+     *
+     * @return void
+     */
     function action_edit() {
         $this->project = DB::model('Project')
                         ->fetch($this->pw_params['id'])
@@ -95,6 +110,11 @@ class ProjectController extends AppController {
         }
     }
 
+    /**
+     * add
+     *
+     * @return void
+     */
     function action_add() {
         $project = DB::model('Project')
                         ->fetch($this->pw_params['id'])
@@ -107,16 +127,25 @@ class ProjectController extends AppController {
         $this->redirect_to('list');
     }
 
+    /**
+     * update
+     *
+     * @return void
+     */
     function action_update() {
         $project = DB::model('Project')->update($_REQUEST['project'], $this->pw_params['id']);
 
         if ($project->errors) {
-            var_dump($project->errors);
-            exit;
+            $this->addError('projects', $project->errors);
         }
         $this->redirect_to('edit', $this->pw_params['id']);
     }
 
+    /**
+     * delete
+     *
+     * @return void
+     */
     function action_delete() {
         if (!isPost()) exit;
 
@@ -129,6 +158,11 @@ class ProjectController extends AppController {
         }
     }
 
+    /**
+     * export php view
+     *
+     * @return void
+     */
     function action_export_php_view_edit() {
         if (!isPost()) exit;
         $this->page = DB::model('Page')->fetch($this->pw_posts['page_id']);
@@ -140,6 +174,11 @@ class ProjectController extends AppController {
         $this->redirect_to('page/list', $params);
     }
 
+    /**
+     * export php model & view & controller
+     *
+     * @return void
+     */
     function action_export_php() {
         if (!isPost()) exit;
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
@@ -150,6 +189,11 @@ class ProjectController extends AppController {
         $this->redirect_to('model/list', $params);
     }
 
+    /**
+     * export php view & controller
+     *
+     * @return void
+     */
     function action_export_php_page() {
         if (!isPost()) exit;
         $this->page = DB::model('Page')->fetch($this->pw_posts['page_id']);
@@ -162,8 +206,8 @@ class ProjectController extends AppController {
 
         LocalizeString::importByModel($this->model, $this->project);
 
-        $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('page/list', $params);
+        $params['page_id'] = $this->pw_posts['page_id'];
+        $this->redirect_to('view/', $params);
     }
 
     /**

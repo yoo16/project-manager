@@ -225,18 +225,17 @@ class TagHelper {
     }
 
     /**
-     * icon tag
+     * A tag
      * 
      * @param  array $params
      * @return string
      */
-    static function aTag($params) {
+    static function a($params) {
         if ($params['is_use_selected']) {
             if ($params['is_selected']) $params['class'].= ' active';
             if ($params['selected_key'] && $params['selected_key'] == $params['selected_value']) $params['class'].= ' active';
         }
         $escape_columns = ['label', 'icon_name', 'http_params', 'is_use_selected', 'is_confirm', 'is_check_delete'];
-
         if (is_array($params)) {
             foreach ($params as $key => $value) {
                 if (!in_array($key, $escape_columns)) {
@@ -289,6 +288,22 @@ class TagHelper {
         $tag.= '<script type="text/javascript">';
         $tag.= "var pw_project_name = '{$name}'";
         $tag.= '</script>';
+        return $tag;
+    }
+
+    /**
+     * label action active
+     *
+     * @param string $controller_name
+     * @param string $action_name
+     * @return string
+     */
+    static function actionActive($controller_name, $action_name) {
+        $controller = $GLOBALS['controller'];
+        if (!$controller) return;
+        if ($controller->pw_controller == $controller_name && $controller->pw_action == $action_name) {
+            $tag.=' active';
+        }
         return $tag;
     }
 }
