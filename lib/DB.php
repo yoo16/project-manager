@@ -7,18 +7,19 @@
 
 class DB {
 
-    function __construct($params=null) {
+    function __construct($params = null) {
     }
 
    /**
     * table
     *
-    * TODO: param is table_name ?
+    * Deprecated
     *
-    * @param string name
-    * @return Class
+    * @param string $name
+    * @return Entity
     */
     static function table($name) {
+        if (!class_exists($name)) exit;
         $instance = new $name();
         return $instance;
     }
@@ -26,10 +27,11 @@ class DB {
    /**
     * model
     *
-    * @param string name
-    * @return Class
+    * @param string $name
+    * @return Entity
     */
     static function model($name) {
+        if (!class_exists($name)) exit;
         $instance = new $name();
         return $instance;
     }

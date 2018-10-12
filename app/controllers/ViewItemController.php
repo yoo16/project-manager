@@ -36,7 +36,7 @@ class ViewItemController extends ProjectController {
     * @return void
     */
     function index() {
-        $this->clearPosts();
+        $this->clearPwPosts();
         $this->redirect_to('list');
     }
 
@@ -47,7 +47,7 @@ class ViewItemController extends ProjectController {
     * @return void
     */
     function action_cancel() {
-        $this->clearPosts();
+        $this->clearPwPosts();
         $this->redirect_to('list');
     }
 
@@ -175,8 +175,6 @@ class ViewItemController extends ProjectController {
     * @return void
     */
     function action_add_all() {
-        //if (!isPost()) exit;
-        //$view_item = $this->view->hasMany('ViewItem');
         $this->page->bindBelongsTo('Model');
         $attribute = $this->page->model
                                 ->relationMany('Attribute')
@@ -185,10 +183,10 @@ class ViewItemController extends ProjectController {
 
         foreach ($attribute->values as $attribute) {
             if (!in_array($attribute['name'], Entity::$app_columns)) {
-                $view_item = DB::model('ViewItem')
-                            ->where("view_id = {$this->view->value['id']}")
-                            ->where("attribute_id = {$attribute['id']}")
-                            ->one();
+                $view_item = DB::model('ViewItem');
+                $view_item->where('view_id', $this->view->value['id'])
+                          ->where('attribute_id', $attribute['id'])
+                          ->one();
 
                 $posts = null;
                 if (!$view_item->value['id']) {
@@ -218,7 +216,6 @@ class ViewItemController extends ProjectController {
     * @return void
     */
     function action_remove_all() {
-        //if (!isPost()) exit;
         $view_item = $this->view->relationMany('ViewItem')->all();
 
         foreach ($view_item->values as $view_item) {

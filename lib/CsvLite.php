@@ -8,7 +8,8 @@
 class CsvLite {
 
     public $id;
-    public $id_key='id';
+    public $id_key = 'id';
+    public $index_key = null;
     public $name;
     public $columns;
     public $labels;
@@ -35,6 +36,18 @@ class CsvLite {
         if (file_exists($file_path)) {
             $this->file_path = $file_path;
         }
+    }
+
+    /**
+     * csv
+     *
+     * @param string $csv_name
+     * @param string $lang
+     * @return CsvLite
+     */
+    static function file($csv_name, $lang = 'ja') {
+        $instance = new CsvLite($csv_name, $lang);
+        return $instance;
     }
 
     /**
@@ -257,12 +270,22 @@ class CsvLite {
     }
 
     /**
+     * all
+     *
+     * @return void
+     */
+    function all() {
+        $this->values = $this->_list();
+        return $this;
+    }
+
+    /**
      * _list
      *
      * @param array $columns
      * @return array
      **/
-    function _list($columns) {
+    function _list($columns = null) {
         $values = array();
         if (file_exists($this->file_path)) {
             $fp = fopen($this->file_path, "r");
@@ -296,23 +319,10 @@ class CsvLite {
      * @param array $conditions
      * @return array
      **/
-    function results($conditions=null) {
+    function results($conditions = null) {
         $values = $this->_readCsv();
         $values = $this->_sortOrder($values);
-
-        if (is_array($values)) {
-            if (self::$from_encode && self::$to_encode) {
-                foreach($values as $key => $_values) {
-                    foreach($_values as $column => $_value) {
-                        $_result[$column] = mb_convert_encoding($_value, self::$to_encode, self::$from_encode);
-                    }
-                    $results[] = $_result;
-                }
-            } else {
-                $results = $values;
-            }
-        }
-        return $results;
+        return $values;
     }
 
     /**
@@ -427,16 +437,15 @@ class CsvLite {
                     }
                     $value[$column] = $_value; 
                 }
-                $results[] = $value;
-                if ($value[$this->id_key] > 0) {
-                    $ids[] = $value[$this->id_key];
+                if ($this->index_key) {
+                    $index_value = $value[$this->index_key];
+                    $results[$index_value] = $value;
+                } else {
+                    $results[] = $value;
                 }
             }
             fclose($fp); 
         }
-
-        if (is_array($ids)) $max_id = max($ids);
-        $this->next_id = $max_id + 1;
         $this->values = $results;
         return $results;
     }
@@ -541,6 +550,17 @@ class CsvLite {
         $value.="\r\n";
         $value = mb_convert_encoding($value, $from_encode, $to_encode);
         return $value;
+    }
+
+    /**
+     * load Csv session values
+     * 
+     * @param  string $key
+     * @return array
+     */
+    static function loadSession($key) {
+        $csv_options = AppSession::getWithKey('app', 'csv_options');
+        return $csv_options[$key];
     }
 
 }

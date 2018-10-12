@@ -35,7 +35,7 @@ class MysqlEntity extends Entity {
     function query($sql) {
         $mysql = MysqlEntity::connection();
 		
-        if (defined('DEBUG') && DEBUG) error_log("<SQL> {$sql}");
+        if (defined('DEBUG') && DEBUG) error_log("SQL: {$sql}");
         return mysql_query($sql);
     }
     

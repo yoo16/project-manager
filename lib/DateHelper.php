@@ -83,10 +83,10 @@ class DateHelper {
     static function convertString($value) {
         preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2}) ?(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?/', $value, $m);
         if (checkdate($m[2], $m[3], $m[1])) {
-            return sprintf('%4d-%02d-%02d %02d:%02d:%02d', $m[1], $m[2], $m[3], $m[4], $m[5], $m[6]);
+            return sprintf('%4d/%02d/%02d %02d:%02d:%02d', $m[1], $m[2], $m[3], $m[4], $m[5], $m[6]);
         } else {
             $time = strtotime($value);
-            if ($time >= 0) return date('Y-m-d H:i:s', $time);
+            if ($time >= 0) return date('Y/m/d H:i:s', $time);
             return null;
         }
     }
@@ -107,7 +107,7 @@ class DateHelper {
             $minute = (int) $values['minute'];
             if (!$day) $day = 1;
             $time = mktime($hour, $minute, 0, $month, $day, $year);
-            $date = date('Y-m-d H:i', $time);
+            $date = date('Y/m/d H:i', $time);
         }
         return $date;
     }
@@ -125,7 +125,7 @@ class DateHelper {
             $date_str = preg_replace($pattern, $replacement, $number);
 
             $time = strtotime($date_str);    
-            $date = date("Y-m-d H:i", $time);
+            $date = date("Y/m/d H:i", $time);
             return $date;
         }
     }

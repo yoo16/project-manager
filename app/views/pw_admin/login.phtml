@@ -1,0 +1,16 @@
+<form class="form-signin" method="post" action="<?= $this->urlFor('pw_admin', 'auth') ?>">
+  <div class="card">
+    <div class="card-block">
+      <div>
+        <span id="reauth-email" class="reauth-email"></span>
+        <input type="text" id="inputEmail" class="form-control input" placeholder="<?= LABEL_LOGIN_NAME ?>" name="login_name" value="<?=$_POST['login_name'] ?>" autofocus>
+      </div>
+      <div>
+        <input type="password" class="form-control" placeholder="<?= LABEL_PASSWORD ?>" name="password">
+      </div>
+
+      <div>
+        <button class="btn btn-lg btn-primary action-loading" type="submit"><?= LABEL_LOGIN ?></button>
+      </div>
+    </div>
+  </form>

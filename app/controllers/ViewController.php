@@ -36,7 +36,7 @@ class ViewController extends ProjectController {
     * @return void
     */
     function index() {
-        $this->clearPosts();
+        $this->clearPwPosts();
         $this->redirect_to('list');
     }
 
@@ -48,7 +48,7 @@ class ViewController extends ProjectController {
     * @return void
     */
     function action_cancel() {
-        $this->clearPosts();
+        $this->clearPwPosts();
         $this->redirect_to('list');
     }
 
@@ -126,7 +126,7 @@ class ViewController extends ProjectController {
                         ->update();
 
         if (!$project->errors) {
-            $this->clearPosts();
+            $this->clearPwPosts();
         }
         $this->redirect_to('list');
     }

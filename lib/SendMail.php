@@ -15,25 +15,21 @@ class SendMail {
     public $type;
 
     /**
-     * コンストラクタ
+     * construct
      *
      * @param string $type
      * @return void
      **/
-    function SendMail($type) {
-        if (is_null($type)) exit('SendMail require type.');
-
+    function __construct($type = null) {
         $this->type = $type;
 
+        if (!defined('MAIL_SETTING_FILE')) exit("Not set 'MAIL_SETTING_FILE' in setting file.");
         $setting_file = MAIL_SETTING_FILE;
-        if (!defined('MAIL_SETTING_FILE')) {
-            exit("Not set 'MAIL_SETTING_FILE' in setting file.");
-        }
         $this->setting_file = $setting_file;
     }
 
     /**
-     * メール本文生成
+     * mail body
      *
      * @param array $values
      * @return string
@@ -53,7 +49,7 @@ class SendMail {
     }
 
     /**
-     * メール設定ファイルパス取得
+     * mail template path
      *
      * @return string
      **/
@@ -69,7 +65,7 @@ class SendMail {
     }
 
     /**
-     * メール設定ファイル判別
+     * has setting file
      *
      * @return array
      **/
@@ -81,7 +77,7 @@ class SendMail {
     }
 
     /**
-     * メール設定取得
+     * mail setting
      *
      * @param string $file
      * @return array
@@ -100,7 +96,7 @@ class SendMail {
 
 
     /**
-     * メール設定一覧取得
+     * mail settings
      *
      * @param string $file
      * @return array
@@ -113,18 +109,16 @@ class SendMail {
     }
 
     /**
-     * メール送信
+     * send
      *
      * @param array $values
      * @return boolean
      **/
-    function send($values) {
+    function send($values, $settings = null) {
         mb_language('Japanese');
         mb_internal_encoding('UTF-8');
 
-        $csv_lite = new CsvLite($this->setting_file);
-        $settings = $csv_lite->fetch($this->type);
-
+        //TODO settings
         $subject = ($values['subject']) ? $values['subject'] : $settings['subject'];
         $to = ($values['to']) ? $values['to'] : $settings['to'];
         if ($settings['bcc']) $bcc = $settings['bcc'];
@@ -134,9 +128,7 @@ class SendMail {
             $from = $values['from'];
         } else {
             $from = $settings['from'];
-            if ($settings['from_jp']) {
-                $from = mb_encode_mimeheader($settings['from_jp'])."<{$from}>";
-            }
+            if ($settings['from_jp']) $from = mb_encode_mimeheader($settings['from_jp'])."<{$from}>";
         }
 
         //body
@@ -204,7 +196,7 @@ class SendMail {
     }
 
     /**
-     * TOアドレス成形
+     * to address
      *
      * @param array $values
      * @return string
@@ -218,5 +210,21 @@ class SendMail {
         }
     }
 
+
+    /**
+     * convert mail address
+     *
+     * @param string $email
+     * @param string $name
+     * @return string
+     **/
+    function convertAddress($email, $name = null){
+        if ($name) {
+            $address = mb_encode_mimeheader($name)."<{$email}>";
+        } else {
+            $address = $email;
+        }
+        return $address;
+    }
+
 }
-?>

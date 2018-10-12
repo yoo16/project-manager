@@ -17,7 +17,10 @@ class FormHelper {
                               'select_columns',
                               'value',
                               'values',
+                              'label_convert_values',
+                              'label_unit',
                               'label_separate',
+                              'filter_values',
                               'unselect',
                               'unselct_label',
                               'unselct_value',
@@ -40,7 +43,6 @@ class FormHelper {
         if ($tag) $tag = self::selectTag($tag, $params);
 
         $controller = $GLOBALS['controller'];
-        if ($controller->pw_sid) $tag.= "\n<input type=\"hidden\" name=\"pw_sid\" value=\"{$controller->pw_sid}\">";
         return $tag;
     }
 
@@ -68,7 +70,7 @@ class FormHelper {
     }
 
     /**
-     * 日付ラベル
+     * label format
      *
      * @param string $formatter
      * @param string $type
@@ -125,7 +127,7 @@ class FormHelper {
     }
 
     /**
-     * selectタグ（月）
+     * select month
      *
      * @param array $params
      * @return string
@@ -137,7 +139,7 @@ class FormHelper {
     }
 
     /**
-     * selectタグ（日）
+     * select days
      *
      * @param array $params
      * @return string
@@ -149,7 +151,7 @@ class FormHelper {
     }
 
     /**
-     * selectタグ（時間）
+     * select hours
      *
      * @param array $params
      * @return string
@@ -166,7 +168,7 @@ class FormHelper {
     }
 
     /**
-     * selectタグ（時間：分）
+     * select time
      *
      * @param array $params
      * @return string
@@ -179,7 +181,7 @@ class FormHelper {
     }
 
     /**
-     * selectタグ（分）
+     * select minutes
      *
      * @param array $params
      * @return string
@@ -196,7 +198,7 @@ class FormHelper {
     }
 
     /**
-     * 日付選択値
+     * select date value
      *
      * @param array $selected
      * @return String
@@ -373,7 +375,7 @@ class FormHelper {
      */
     static function values($params) {
         if (isset($params['csv']) && $params['csv']) {
-            $lang = AppSession::get('lang');
+            $lang = AppSession::getWithKey('app', 'lang');
             $values = CsvLite::options($params['csv'], $lang);
         } else if (isset($params['model']) && $params['model']) {
             $instance = DB::model($params['model']);
@@ -398,6 +400,15 @@ class FormHelper {
         } else {
             $values = $params['values'];
         }
+
+        if ($values && is_array($params['filter_values']) && $params['value']) {
+            foreach ($values as $index => $value) {
+                $_value = $value[$params['value']];
+                if (in_array($_value, $params['filter_values'])) {
+                    unset($values[$index]);
+                }
+            }
+        }
         return $values;
     }
 
@@ -415,18 +426,20 @@ class FormHelper {
         $value_key = isset($params['value']) ? $params['value'] : 'value';
 
         $tag = self::unselectOption($params);
+
         foreach ($values as $value) {
             $attributes['value'] = $value[$value_key];
             $attributes['selected'] = self::selectedTag($attributes['value'], $selected);
 
             $label = self::convertLabel($value, $params);
+            if ($params['label_unit']) $label.= $params['label_unit'];
             $tag.= self::optionTag($label, $attributes);
         }
         return $tag;
     }
 
     /**
-     * 日付optionタグ
+     * date option
      *
      * @param array $params
      * @param string $selected
@@ -490,7 +503,7 @@ class FormHelper {
     }
 
     /**
-     * formアトリビュート
+     * select attribute
      *
      * @param array $params
      * @return string
@@ -511,12 +524,12 @@ class FormHelper {
     }
 
     /**
-     * paramsチェック
+     * check params
      *
-     * @param Array $params
-     * @param Object $selected
-     * @param Array $escape_columns
-     * @return String
+     * @param array $params
+     * @param object $selected
+     * @param array $escape_columns
+     * @return string
      */
     static function checkParams($params, $selected=null, $value_key=null, $label_key=null, $values=null) {
         if (isset($values)) $params['values'] = $values;
@@ -527,7 +540,7 @@ class FormHelper {
     }
         
     /**
-     * ラベル生成
+     * convert label
      * 
      * @param array $values
      * @param array $params
@@ -550,9 +563,9 @@ class FormHelper {
     /**
      * selectedTag
      *
-     * @param Object $value
-     * @param Object $seleted
-     * @return String
+     * @param object $value
+     * @param object $seleted
+     * @return string
      */
     static function selectedTag($value, $selected) {
         if (!is_null($selected) && $selected == $value) return 'selected';
@@ -561,9 +574,9 @@ class FormHelper {
     /**
      * checkedTag
      *
-     * @param Object $value
-     * @param Object $seleted
-     * @return String
+     * @param object $value
+     * @param object $seleted
+     * @return string
      */
     static function checkedTag($value, $selected) {
         if (is_bool($value) && (bool) $value == (bool) $selected) {
@@ -580,22 +593,28 @@ class FormHelper {
      * input(radio)タグ
      *
      * @param array $params
-     * @param Object $selected
+     * @param object $selected
      * @return string
      */
     static function radio($params, $selected = null) {
         $values = self::values($params);
         if (!is_array($values)) return;
+        if (isset($params['selected'])) $selected = $params['selected'];
 
         $value_key = isset($params['value']) ? $params['value'] : 'value';
         foreach ($values as $value) {
-            $params['value'] = $value[$value_key];
+            $params['value'] = $index = $value[$value_key];
             $params['checked'] = self::checkedTag($params['value'], $selected);
             $params['id'] = "{$params['name']}_{$params['value']}";
             $tag.= self::radioTag($params, $value);
 
             $label_params['id'] = $params['id'];
-            $label_params['label'] = $label = self::convertLabel($value, $params);
+            if (isset($params['label_convert_values'][$index])) {
+                $label_params['label'] = $params['label_convert_values'][$index];
+            } else {
+                $label_params['label'] = self::convertLabel($value, $params);
+                if ($params['label_unit']) $label_params['label'].= $params['label_unit'];
+            }
             $tag.= FormHelper::label($label_params);
         }
         return $tag;
@@ -605,7 +624,7 @@ class FormHelper {
      * input(radio)タグ
      *
      * @param array $params
-     * @param Object $selected
+     * @param object $selected
      * @return string
      */
     static function label($params) {
@@ -614,7 +633,7 @@ class FormHelper {
     }
 
     /**
-     * ラジオ（性別）
+     * gender radio
      *
      * @param array $params
      * @param string $seleted
@@ -629,7 +648,7 @@ class FormHelper {
     }
 
     /**
-     * チェックボックス（単一）
+     * checkbox
      *
      * @param array $params
      * @param object $seleted
@@ -653,10 +672,10 @@ class FormHelper {
     }
 
     /**
-     * チェックボックス（複数）
+     * muulti checkbox
      *
      * @param array $params
-     * @param Object $seleted
+     * @param object $seleted
      * @return string
      */
     function multiCheckbox($params, $selected=null, $value_key=null, $label_key=null, $values=null) {
@@ -815,7 +834,6 @@ class FormHelper {
         if (!$attributes['type']) $attributes['type'] = "text";
         if (isset($name)) $attributes['name'] = $name;
         if (isset($value)) $attributes['value'] = $value;
-
         $tag = self::singleTag('input', $attributes);
         return $tag;
     }
@@ -846,9 +864,6 @@ class FormHelper {
      */
     static function text($name, $value = null, $params = null) {
         $params['type'] = "text";
-        //if (!$params['class']) $params['class'] = 'col-4';
-        //$params['class'].= " form-control";
-
         if (isset($value)) {
             if ($params['date-formatter']) {
                 $value = date($params['date-formatter'], strtotime($value));
@@ -989,16 +1004,18 @@ class FormHelper {
     }
 
     /**
-    * label
+    * change label
     *
-    * @param Boolean $is_active
-    * @return String
+    * @param boolean $is_active
+    * @return string
     */ 
     static function changeActiveLabelTag($action, $params, $is_active, $valid_label = LABEL_TRUE, $invalid_label = LABEL_FALSE) {
         if ($is_active) {
-            $tag = "<span class=\"btn btn-sm btn-danger action-loading\">{$valid_label}</span>";
+            $icon_tag = TagHelper::iconTag('check');
+            $tag = "<span class=\"btn btn-sm btn-danger action-loading\">{$icon_tag}{$valid_label}</span>";
         } else {
-            $tag = "<span class=\"btn btn-sm btn-outline-primary btn-sm action-loading\">{$invalid_label}</span>";
+            $icon_tag = TagHelper::iconTag('times');
+            $tag = "<span class=\"btn btn-sm btn-outline-primary action-loading\">{$icon_tag}{$invalid_label}</span>";
         }
         $controller = $GLOBALS['controller'];
         $href = Controller::url($controller->name, $action, null, $params);

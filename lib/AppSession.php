@@ -20,6 +20,7 @@ class AppSession {
     * @return object
      **/ 
     static function load($key, $default_value = null, $sid = 0) {
+        if (!$sid) $sid = 0;
         if (isset($_REQUEST[$key])) AppSession::set($key, $_REQUEST[$key], $sid);
         return AppSession::get($key, $default_value, $sid);
     }
@@ -33,6 +34,7 @@ class AppSession {
     * @return object
     */
     static function get($key, $default_value = null, $sid = 0) {
+        if (!$sid) $sid = 0;
         $value = null;
         if (isset($_SESSION[APP_NAME][$sid][$key])) $value = $_SESSION[APP_NAME][$sid][$key];
         if (is_null($value)) $value = $default_value;
@@ -47,6 +49,7 @@ class AppSession {
     * @return void
     */
     static function set($key, $value, $sid = 0) {
+        if (!$sid) $sid = 0;
         $_SESSION[APP_NAME][$sid][$key] = $value;
     }
 
@@ -75,6 +78,7 @@ class AppSession {
     * @return void
     */
     static function setWithKey($session_key, $key, $value, $sid = 0) {
+        if (!$sid) $sid = 0;
         $_SESSION[APP_NAME][$sid][$session_key][$key] = $value;
     }
 
@@ -90,31 +94,34 @@ class AppSession {
    /**
     * clear session
     *
-    * @param String $key
-    * @param String $session_key
+    * @param string $key
+    * @param string $session_key
     * @return void
     */
     static function clear($key, $sid = 0) {
+        if (!$sid) $sid = 0;
         unset($_SESSION[APP_NAME][$sid][$key]);
     }
 
    /**
     * clear session
     *
-    * @param String $session_key
+    * @param string $session_key
     * @return void
     */
     static function clearWithKey($session_key, $key, $sid = 0) {
+        if (!$sid) $sid = 0;
         unset($_SESSION[APP_NAME][$sid][$session_key][$key]);
     }
 
    /**
     * clear session
     *
-    * @param String $session_key
+    * @param string $session_key
     * @return void
     */
     static function flushWithKey($session_key, $sid = 0) {
+        if (!$sid) $sid = 0;
         unset($_SESSION[APP_NAME][$sid][$session_key]);
     }
 

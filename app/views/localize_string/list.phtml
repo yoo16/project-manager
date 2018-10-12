@@ -7,7 +7,7 @@
 </div>
 <div>
   <form action="<?= url_for('csv_import'); ?>" method="post" enctype="multipart/form-data">
-    <input class="btn btn-primary" type="submit" value="<?= LABEL_CSV_IMPORT ?>">
+    <input class="btn btn-primary" type="submit" value="<?= LABEL_IMPORT ?>">
     <input type="file" name="file">
   </form>
 </div>
@@ -15,8 +15,8 @@
   <thead class="thead-default">
     <tr>
       <th>&nbsp;</th>
-      <th>坝称</th>
-      <th>言語</th>
+      <th><?= LABEL_VIEW_ITEMS_NAME ?></th>
+      <th><?= LABEL_VIEW_ITEMS_LANG ?><</th>
       <th>&nbsp;</th>
     </tr>
   </thead>

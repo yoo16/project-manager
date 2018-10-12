@@ -35,7 +35,8 @@ class TagHelper {
     */
     static function urlFor($action = null, $id = null, $params = null) {
         if ($controller = $GLOBALS['controller']) {
-            $controller->urlFor($controller->name, $action, $id, $params);
+            $url = $controller->urlFor($controller->name, $action, $id, $params);
+            return $url;
         }
     }
 
@@ -225,6 +226,27 @@ class TagHelper {
     }
 
     /**
+     * attribute
+     *
+     * @param string $params
+     * @return string
+     */
+    static function attribute($params) {
+        if (is_array($params)) {
+            $escape_columns = ['label', 'icon_name', 'http_params', 'is_use_selected', 'is_confirm', 'is_check_delete'];
+            foreach ($params as $key => $value) {
+                if (!in_array($key, $escape_columns)) {
+                    $attributes[] = "{$key}=\"{$value}\"";
+                }
+            }
+            if ($attributes) {
+                $attribute = implode(' ', $attributes);
+                return $attribute;
+            }
+        }
+    }
+
+    /**
      * A tag
      * 
      * @param  array $params
@@ -235,7 +257,30 @@ class TagHelper {
             if ($params['is_selected']) $params['class'].= ' active';
             if ($params['selected_key'] && $params['selected_key'] == $params['selected_value']) $params['class'].= ' active';
         }
-        $escape_columns = ['label', 'icon_name', 'http_params', 'is_use_selected', 'is_confirm', 'is_check_delete'];
+        if ($params['selected_controller'] && $params['selected_action']) {
+            $params['class'].= TagHelper::actionActive($params['selected_controller'], $params['selected_action']);
+        }
+        if ($params['menu_group']) {
+            $controller = $GLOBALS['controller'];
+            if ($controller && $controller->menu_group) {
+                $params['class'].= TagHelper::classActive($controller->menu_group, $params['menu_group']);
+            }
+        }
+
+        $attribute = TagHelper::attribute($params);
+        if (isset($params['icon_name'])) $icon_tag = TagHelper::iconTag($params['icon_name']);
+        $tag = "<a {$attribute}>{$icon_tag}{$params['label']}</a>";
+        return $tag;
+    }
+
+    /**
+     * img tag
+     * 
+     * @param  array $params
+     * @return string
+     */
+    static function img($params) {
+        $escape_columns = ['label', 'name'];
         if (is_array($params)) {
             foreach ($params as $key => $value) {
                 if (!in_array($key, $escape_columns)) {
@@ -244,11 +289,35 @@ class TagHelper {
             }
         }
         if ($attributes) $attribute = implode(' ', $attributes);
-
-        if (isset($params['icon_name'])) $icon_tag = TagHelper::iconTag($params['icon_name']);
-        $tag = "<a {$attribute}>{$icon_tag}{$params['label']}</a>";
+        $tag = "<img {$attribute}>";
         return $tag;
     }
+
+    /**
+    * reverse link
+    *
+    * @param string $controller
+    * @param string $action
+    * @param array $params
+    * @param boolean $is_active
+    * @return string
+    */ 
+    static function reverse($controller, $action, $params, $is_active) {
+        if ($params['label']) $labels = $params['label'];
+        if (!$labels['valid']) $labels['valid'] = LABEL_TRUE;
+        if (!$labels['invalid']) $labels['invalid'] = LABEL_FALSE;
+
+        if ($controller && $action) $params['href'] = Controller::url($controller, $action, null, $params['http_params']);
+
+        if ($is_active) {
+            $params['label'] = "<span class=\"btn btn-sm btn-danger\">{$labels['valid']}</span>";
+        } else {
+            $params['label'] = "<span class=\"btn btn-sm btn-outline-primary btn-sm\">{$labels['invalid']}</span>";
+        }
+        $tag = self::a($params);
+        return $tag;
+    }
+
 
     /**
      * icon tag
@@ -304,6 +373,149 @@ class TagHelper {
         if ($controller->pw_controller == $controller_name && $controller->pw_action == $action_name) {
             $tag.=' active';
         }
+        return $tag;
+    }
+
+    /**
+    * paginator
+    *
+    * @param array $params
+    * @return string
+    */ 
+    static function paginator($params) {
+        $offset = $params['offset'];
+        if (!$offset) $offset = 0;
+        $display_page_count = $params['display_page_count'];
+        $page_count = $params['page_count'];
+        if (!$display_page_count) $display_page_count = 10;
+
+        if ($offset + $display_page_count >= $page_count) {
+            $start = $offset - $display_page_count;
+            if ($page_count < $display_page_count) {
+                $pages = range(0, $page_count - 1);
+            } else {
+                $pages = range($offset - $display_page_count, $offset);
+            }
+        } else {
+            $pages = range($offset, $offset + $display_page_count);
+        }
+        if (!$pages) return;
+
+        if ($page_count > 1) {
+            //first
+            $icon_tag = self::iconTag('angle-right');
+            $params['offset'] = 0;
+            $params['label'] = self::iconTag('angle-double-left');
+            $params['class'] = ($offset == 0) ? ' disabled' : '';
+            $first_tag = self::paginatorLiTag($params);
+
+            //prev
+            $params['offset'] = $offset - 1;
+            $params['label'] = self::iconTag('angle-left');
+            $prev_tag = self::paginatorLiTag($params);
+
+            //next
+            $params['class'] = (($offset + 1) >= $page_count) ? ' disabled' : '';
+            $params['offset'] = $offset + 1;
+            $params['label'] = self::iconTag('angle-right');
+            $next_tag = self::paginatorLiTag($params);
+
+            //latest
+            $params['offset'] = $page_count - 1;
+            $params['label'] = self::iconTag('angle-double-right');
+            $latest_tag = self::paginatorLiTag($params);
+
+            foreach ($pages as $page) {
+                $label = $page + 1;
+
+                $params['label'] = $label;
+                $params['offset'] = $page;
+                $active = ($offset == $page) ? "active" : "";
+                $params['class'] = "{$params['li_class']} {$active}";
+                $page_tag.= self::paginatorLiTag($params);
+            }
+
+            $tag = "<ul class=\"{$params['ul_class']}\">{$first_tag}{$prev_tag}{$page_tag}{$next_tag}{$latest_tag}</ul>";
+            $tag = "<nav>{$tag}</nav>";
+        }
+        return $tag;
+    }
+
+    /**
+     * paginator li tag
+     *
+     * @param array $params
+     * @return string
+     */
+    static function paginatorLiTag($params)
+    {
+        $a_tag = self::paginatorATag($params);
+        $tag = "<li class=\"{$params['li_class']} {$params['class']}\">{$a_tag}</li>\n";
+        return $tag;
+    }
+
+    /**
+     * paginator a tag
+     *
+     * @param array $params
+     * @return string
+     */
+    static function paginatorATag($params)
+    {
+        if ($params['pw-controller']) {
+            $tag = self::paginatorAForPwJs($params);
+        } else {
+            $href = self::urlFor($params['action'], null, ['offset' => $params['offset']]);
+            $tag = self::a(['class' => $params['a_class'], 'href' => $href, 'label' => $params['label'], ]);
+        }
+        return $tag;
+    }
+
+    /**
+     * paginator a tag for PwApp
+     *
+     * @param array $params
+     * @return string
+     */
+    static function paginatorAForPwJs($params)
+    {
+        $tag = self::a([
+            'class' => $params['a_class'],
+            'label' => $params['label'],
+            'pw-controller' => $params['pw-controller'],
+            'pw-action' => $params['pw-action'],
+            'offset' => $params['offset'],
+        ]);
+        return $tag;
+    }
+
+    /**
+     * button
+     *
+     * @param array $params
+     * @return void
+     */
+    static function button($params)
+    {
+        $label = $params['label'];
+        $attribute = TagHelper::attribute($params);
+        if (!$params['class']) $params['class'] = 'btn btn-outline-primary';
+        if (isset($params['icon_name'])) $icon_tag = TagHelper::iconTag($params['icon_name']);
+        $tag = "<button {$attribute} class=\"{$params['class']}\">{$icon_tag}{$label}</button>";
+        return $tag;
+    }
+
+    /**
+     * close modal button
+     *
+     * @param array $params
+     * @return void
+     */
+    static function closeModalButton($params = null)
+    {
+        $label = LABEL_CLOSE;
+        $class = 'btn btn-outline-primary';
+        $tag = "<button type=\"button\" class=\"{$class}\" data-dismiss=\"modal\">{$label}</button>";
         return $tag;
     }
 }

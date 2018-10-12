@@ -19,10 +19,10 @@ class ApplicationLocalize {
     /**
      * load
      *
-     * @return String
+     * @return string
      **/
     static function load($lang = null) {
-        if (!$lang) $lang = AppSession::get('lang');
+        if (!$lang) $lang = AppSession::getWithKey('app', 'lang');
         if (!$lang) $lang = ApplicationLocalize::loadLocale();
         ApplicationLocalize::loadLocalizeFile($lang);
         return $lang;
@@ -31,11 +31,11 @@ class ApplicationLocalize {
     /**
      * lang
      * 
-     * @param  String $lang
-     * @return String
+     * @param  string $lang
+     * @return string
      */
     static function lang() {
-        $lang = AppSession::get('lang');
+        $lang = AppSession::getWithKey('app', 'lang');
         if (!$lang) $lang = ApplicationLocalize::loadLocale();
         return $lang;
     }
@@ -43,7 +43,7 @@ class ApplicationLocalize {
     /**
      * load localize file
      * 
-     * @param  String $lang
+     * @param  string $lang
      * @return void
      */
     static function loadLocalizeFile($lang) {
@@ -56,12 +56,13 @@ class ApplicationLocalize {
     /**
      * load Csv values
      * 
+     * @param  string $lang
+     * @return boolean $is_clear
      * @return array
      */
     static function loadCsvOptions($lang = null, $is_clear = false) {
         if ($is_clear) AppSession::clearWithKey('app', 'csv_options');
         $csv_options = AppSession::getWithKey('app', 'csv_options');
-        if ($csv_options) return $csv_options;
 
         if (!$lang) $lang = AppSession::get('lang');
         if (!$lang) $lang = 'ja';
@@ -78,8 +79,7 @@ class ApplicationLocalize {
     /**
      * default locale
      * 
-     * @param  String
-     * @return String 
+     * @return string 
      */
     static function defaultLocale() {
         if (defined('DEFAULT_LOCALE') && DEFAULT_LOCALE) {
@@ -98,7 +98,7 @@ class ApplicationLocalize {
      */
     static function requestLocale() {
         if ($_REQUEST['lang']) {
-            AppSession::set('lang', $_REQUEST['lang']);
+            AppSession::set('app', 'lang', $_REQUEST['lang']);
             ApplicationLocalize::claerLocaleValues();
         }
         $lang = AppSession::get('lang');
@@ -115,7 +115,7 @@ class ApplicationLocalize {
         ApplicationLocalize::requestLocale();
         if (!$lang) {
             $lang = ApplicationLocalize::defaultLocale();
-            AppSession::set('lang', $lang);
+            AppSession::setWithKey('app', 'lang', $lang);
         }
         return $lang;
     }

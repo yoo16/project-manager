@@ -30,9 +30,9 @@ class DateManager {
      * @return void
      */
     function init() {
-        $this->setFromAt(date('Y-m-d 00:00'));
+        $this->setFromAt(date('Y/m/d 00:00'));
         $this->setOneDay();
-        $this->setStartAt(date('Y-m-d 00:00'));
+        $this->setStartAt(date('Y/m/d 00:00'));
         $this->setEndAt($this->to_at);
     }
 
@@ -50,7 +50,8 @@ class DateManager {
      * @return void
      */
     function clearAppSession($key = 'app_date') {
-        AppSession::clear($key);
+        if (!$key) $key = 'app_date';
+        AppSession::clearWithKey($key, 'date');
     }
 
     /**
@@ -59,40 +60,63 @@ class DateManager {
      * @return void
      */
     function storeAppSession($key = 'app_date') {
-        AppSession::set($key, $this);
+        if (!$key) $key = 'app_date';
+        AppSession::setWithKey($key, 'date', $this);
     }
 
     /**
      * load session
      *
-     * @return void
+     * @return DateManager
      */
     function loadAppSession($key = 'app_date') {
-        $pw_date = AppSession::get($key);
-        $this->setFromAt($pw_date->from_at);
-        $this->setToAt($pw_date->to_at);
-        $this->setStartAt($pw_date->start_at);
-        $this->setEndAt($pw_date->end_at);
+        if (!$key) $key = 'app_date';
+        $pw_date = AppSession::getWithKey($key, 'date');
+        if ($pw_date) {
+            $this->setFromAt($pw_date->from_at);
+            $this->setToAt($pw_date->to_at);
+            $this->setStartAt($pw_date->start_at);
+            $this->setEndAt($pw_date->end_at);
+        }
         return $pw_date;
     }
 
     /**
      * loadRequest
      * 
-     * @param string $key
      * @return void
      */
-    function loadRequest($is_session = false, $key = 'app_date') {
-        if ($is_session) $this->loadAppSession($key);
+    function loadRequest() {
         $this->requestFrom();
         $this->requestTo();
-        if ($this->from_date && $this->to_date) {
-            if ($this->from_datetime > $this->to_datetime) {
-                $this->from_datetime = null;
-                $this->from_date = null;
-                $this->from_at = null;
-            }
+    }
+
+    /**
+     * request FromDate
+     * 
+     * @return string
+     */
+    function requestFrom() {
+        if ($_REQUEST['from_date']) {
+            $this->setFromDate($_REQUEST['from_date']);
+        } else if ($_REQUEST['from_at']) {
+            $this->setFromAt($_REQUEST['from_at']);
         }
+        return $this->from_at;
+    }
+
+    /**
+     * request ToDate
+     * 
+     * @return string
+     */
+    function requestTo() {
+        if ($_REQUEST['to_date']) {
+            $this->setToDate($_REQUEST['to_date']);
+        } else if ($_REQUEST['to_at']) {
+            $this->setToAt($_REQUEST['to_at']);
+        }
+        return $this->to_at;
     }
 
     /**
@@ -100,7 +124,7 @@ class DateManager {
      *
      */
     function setTodayInterval($interval_string) {
-        $to_at = date('Y-m-d H:00');
+        $to_at = date('Y/m/d H:00');
         $this->setIntervalByToAt($to_at, $interval_string);
     }
 
@@ -136,7 +160,7 @@ class DateManager {
      */
     function zeroHour($date_string) {
         if (!$date_string) return;
-        return date('Y-m-d 00:00', strtotime($date_string));
+        return date('Y/m/d 00:00', strtotime($date_string));
     }
 
     /**
@@ -146,7 +170,7 @@ class DateManager {
      */
     function fromAtZeroHour() {
         if (!$this->from_at) return;
-        $from_at = date('Y-m-d 00:00', strtotime($this->from_at));
+        $from_at = date('Y/m/d 00:00', strtotime($this->from_at));
         $this->setFromAt($from_at);
     }
 
@@ -157,8 +181,30 @@ class DateManager {
      */
     function toAtZeroHour() {
         if (!$this->from_at) return;
-        $to_at = date('Y-m-d 00:00', strtotime($this->from_at));
+        $to_at = date('Y/m/d 00:00', strtotime($this->from_at));
         $this->setToAt($to_at);
+    }
+
+    /**
+     * clear from date
+     *
+     * @return void
+     */
+    function clearFromDate() {
+        $this->from_at = null;
+        $this->from_datetime = null;
+        $this->from_date = null;
+    }
+
+    /**
+     * clear to date
+     *
+     * @return void
+     */
+    function clearToDate() {
+        $this->to_at = null;
+        $this->to_datetime = null;
+        $this->to_date = null;
     }
 
     /**
@@ -263,7 +309,7 @@ class DateManager {
      */
     function setOneDay() {
         if ($this->from_datetime) {
-            $from_at = date('Y-m-d 00:00', $this->from_datetime);
+            $from_at = date('Y/m/d 00:00', $this->from_datetime);
             $this->setIntervalByFromAt($from_at, '+1day');
         }
     }
@@ -275,65 +321,9 @@ class DateManager {
      */
     function setIntervalDays($days) {
         if ($this->from_datetime && $days) {
-            $from_at = date('Y-m-d 00:00', $this->from_datetime);
+            $from_at = date('Y/m/d 00:00', $this->from_datetime);
             $format = "{$days}day";
             $this->setIntervalByFromAt($from_at, $format);
-        }
-    }
-
-    /**
-     * set interval days from end_at
-     *
-     * @param integer $days
-     */
-    function setIntervalDaysFromToAt($days, $is_zero_hours = false) {
-        if ($this->to_datetime && $days) {
-            $formatter = "-{$days}days";
-            $from_datetime = strtotime($formatter, $this->to_datetime);
-            $this->setFromDatetime($from_datetime);
-            if ($is_zero_hours) $this->setFromAt(date('Y-m-d 00:00', $this->from_datetime));
-        }
-    }
-
-    /**
-     * set from_datetime
-     *
-     * @param string $from_datetime
-     */
-    function setFromDatetime($from_datetime) {
-        $this->from_datetime = $from_datetime;
-        $this->from_at = date('Y-m-d H:i', $from_datetime);
-        $this->from_date = DateManager::datetimeToNumber($this->from_at);
-    }
-
-    /**
-     * set to_datetime
-     *
-     * @param string $to_datetime
-     */
-    function setToDatetime($to_datetime) {
-        $this->to_datetime = $to_datetime;
-        $this->to_at = date('Y-m-d H:i', $to_datetime);
-        $this->to_date = DateManager::datetimeToNumber($this->to_at);
-    }
-
-    /**
-     * set interval values
-     *
-     * @param integer $interval
-     * @param string $unit
-     */
-    function setNextPrevDatesForFromDate($interval, $unit) {
-        if ($this->from_datetime) {
-            $interval_string = "-{$interval}{$unit}";
-            $this->prev_datetime = strtotime($interval_string, $this->from_datetime);
-            $this->prev_at = date('Y-m-d H:i', $this->prev_datetime);
-            $this->prev_date = DateManager::datetimeToNumber($this->prev_at);
-
-            $interval_string = "+{$interval}{$unit}";
-            $this->next_datetime = strtotime($interval_string, $this->from_datetime);
-            $this->next_at = date('Y-m-d H:i', $this->next_datetime);
-            $this->next_date = DateManager::datetimeToNumber($this->next_at);
         }
     }
 
@@ -362,6 +352,62 @@ class DateManager {
         $this->setToAt($to_at);
         $from_datetime = strtotime($interval_string, $this->to_datetime);
         $this->setFromDatetime($from_datetime);
+    }
+
+    /**
+     * set interval days from end_at
+     *
+     * @param integer $days
+     */
+    function setIntervalDaysFromToAt($days, $is_zero_hours = false) {
+        if ($this->to_datetime && $days) {
+            $formatter = "-{$days}days";
+            $from_datetime = strtotime($formatter, $this->to_datetime);
+            $this->setFromDatetime($from_datetime);
+            if ($is_zero_hours) $this->setFromAt(date('Y/m/d 00:00', $this->from_datetime));
+        }
+    }
+
+    /**
+     * set from_datetime
+     *
+     * @param string $from_datetime
+     */
+    function setFromDatetime($from_datetime) {
+        $this->from_datetime = $from_datetime;
+        $this->from_at = date('Y/m/d H:i', $from_datetime);
+        $this->from_date = DateManager::datetimeToNumber($this->from_at);
+    }
+
+    /**
+     * set to_datetime
+     *
+     * @param string $to_datetime
+     */
+    function setToDatetime($to_datetime) {
+        $this->to_datetime = $to_datetime;
+        $this->to_at = date('Y/m/d H:i', $to_datetime);
+        $this->to_date = DateManager::datetimeToNumber($this->to_at);
+    }
+
+    /**
+     * set interval values
+     *
+     * @param integer $interval
+     * @param string $unit
+     */
+    function setNextPrevDatesForFromDate($interval, $unit) {
+        if ($this->from_datetime) {
+            $interval_string = "-{$interval}{$unit}";
+            $this->prev_datetime = strtotime($interval_string, $this->from_datetime);
+            $this->prev_at = date('Y/m/d H:i', $this->prev_datetime);
+            $this->prev_date = DateManager::datetimeToNumber($this->prev_at);
+
+            $interval_string = "+{$interval}{$unit}";
+            $this->next_datetime = strtotime($interval_string, $this->from_datetime);
+            $this->next_at = date('Y/m/d H:i', $this->next_datetime);
+            $this->next_date = DateManager::datetimeToNumber($this->next_at);
+        }
     }
 
     /**
@@ -400,45 +446,18 @@ class DateManager {
     }
 
     /**
-     * request FromDate
-     * 
-     * @return string
-     */
-    function requestFrom() {
-        if ($_REQUEST['from_date']) {
-            $this->setFromDate($_REQUEST['from_date']);
-        } else if ($_REQUEST['from_at']) {
-            $this->setFromAt($_REQUEST['from_at']);
-        }
-        return $this->from_at;
-    }
-
-    /**
-     * request ToDate
-     * 
-     * @return string
-     */
-    function requestTo() {
-        if ($_REQUEST['to_date']) {
-            $this->setToDate($_REQUEST['to_date']);
-        } else if ($_REQUEST['to_at']) {
-            $this->setToAt($_REQUEST['to_at']);
-        }
-        return $this->to_at;
-    }
-
-
-    /**
      * interval datetime
      *
      * @param string $date_at
      * @param integer $interval
+     * @param string $unit
+     * @param string $locale
      * @return string
      **/
-    static function intervalDatetime($date_at, $interval, $unit = 'day') {
+    static function intervalDatetime($date_at, $interval, $unit = 'day', $locale = LOCALE) {
         if ($date_at && is_numeric($interval)) {
             $interval = "{$interval} {$unit}";
-            $format = self::datetimeFormatForLang(LOCALE);
+            $format = self::datetimeFormatForLang($locale);
             return date($format, strtotime($interval, strtotime($date_at)));
         }
     }
@@ -478,7 +497,7 @@ class DateManager {
             $minute = (int) $values['minute'];
             if (!$day) $day = 1;
             $time = mktime($hour, $minute, 0, $month, $day, $year);
-            $date = date('Y-m-d H:i', $time);
+            $date = date('Y/m/d H:i', $time);
         }
         return $date;
     }
@@ -496,7 +515,7 @@ class DateManager {
             $string = preg_replace($pattern, $replacement, $number);
 
             $time = strtotime($string);
-            $date = date("Y-m-d H:i", $time);
+            $date = date("Y/m/d H:i", $time);
             return $date;
         }
     }
@@ -514,7 +533,7 @@ class DateManager {
     }
 
     /**
-    * グラフ用日時
+    * graph label format
     *
     * @param int $datetime
     * @return string
@@ -529,6 +548,18 @@ class DateManager {
     }
     
     /**
+    * label format
+    *
+    * @param string $date_string
+    * @param string $formatter
+    * @return string
+    */
+    static function dateFormat($date_string, $formatter = 'Y/m/d H:i') {
+        $date = date($formatter, strtotime($date_string));
+        return $date;
+    }
+
+    /**
      * ten minutes
      *
      * @param string $date
@@ -538,7 +569,7 @@ class DateManager {
         $now_minute = date('i');
         $minute = floor($now_minute);
         $minute = sprintf("%02d", $minute);
-        $now = date("Y-m-d H:{$minute}");
+        $now = date("Y/m/d H:{$minute}");
         return $now;
     }
 

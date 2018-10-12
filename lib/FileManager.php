@@ -152,7 +152,7 @@ class FileManager {
                 $file_name = "{$date}.log";
             }
 
-            $now = date('Y-m-d H:i:s');
+            $now = date('Y/m/d H:i:s');
             $contents = "{$now}: {$content}\n";
             self::outputFile(LOG_DIR, $file_name, $contents, false, true);
         }
@@ -273,7 +273,7 @@ class FileManager {
 
                         if (file_exists($file['path'])) {
                             $file['createtime'] = filemtime($file['path']);
-                            $file['created_at'] = date('Y-m-d H:i:s', $file['createtime']);
+                            $file['created_at'] = date('Y/m/d H:i:s', $file['createtime']);
                         }
                         if ($file['createtime']) {
                             $create_times[] = $file['createtime'];
@@ -350,8 +350,6 @@ class FileManager {
     static function uploadImageExt($key='file') {
         $files = $_FILES[$key];
         $ext = self::getImageExt($files['type']);
-        dump($files);
-        dump($ext);
         return $ext;
     }
 
@@ -382,9 +380,6 @@ class FileManager {
     static function uploadImage($to_path, $key='file') {
         $files = $_FILES[$key];
         $from_path = $files['tmp_name'];
-        dump($files);
-        dump($from_path);
-        dump($to_path);
         if (file_exists($from_path) && is_file($from_path)) {
             self::removeFile($to_path);
             self::moveFile($files['tmp_name'], $to_path);
@@ -491,14 +486,8 @@ class FileManager {
     static function createDir($path, $chmod = '777') {
         if (!file_exists($path)) {
             if (defined('PHP_FUNCTION_MODE') && PHP_FUNCTION_MODE) {
-                $is_suceess = mkdir($path);
-                dump($path);
-                dump($is_suceess);
-
-                $is_success = chmod($path, 0777);
-                dump($path);
-                dump($is_suceess);
-                return $is_success;
+                mkdir($path);
+                return chmod($path, 0777);
             } else {
                 $cmd = "mkdir -p {$path}";
                 exec($cmd);
@@ -517,10 +506,7 @@ class FileManager {
     static function chmodFile($path) {
         if (file_exists($path)) {
             if (defined('PHP_FUNCTION_MODE') && PHP_FUNCTION_MODE) {
-                $is_success = chmod($path, 0777);
-                dump($path);
-                dump($is_suceess);
-                return $is_success;
+                return chmod($path, 0777);
             } else {
                 $cmd = "chmod 777 {$path}";
                 exec($cmd);
@@ -695,7 +681,7 @@ class FileManager {
 
                         if (file_exists($file['path'])) {
                             $file['createtime'] = filectime($file['path']);
-                            $file['created_at'] = date('Y-m-d H:i:s', $file['createtime']);
+                            $file['created_at'] = date('Y/m/d H:i:s', $file['createtime']);
                             $log = "{$file['file_name']}={$file['created_at']}";
                         }
                         if ($file['createtime']) {
@@ -703,7 +689,6 @@ class FileManager {
                         }
                         $files[] = $file;
                         $log = "{$file['file_name']}:{$file['created_at']}";
-                        dump($log);
                     }
                 }
 
@@ -864,7 +849,6 @@ class FileManager {
      * @return void
      */
     static function threadExec($path, $params = null) {
-        dump($path);
         if (file_exists($path)) {
             if ($params) {
                 foreach ($params as $key => $param) {

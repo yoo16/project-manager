@@ -44,7 +44,7 @@ class ProjectController extends AppController {
         AppSession::clear('attribute');
         AppSession::clear('page');
         AppSession::clear('view');
-        $this->clearPosts();
+        $this->clearPwPosts();
     }
 
     /**
@@ -122,7 +122,7 @@ class ProjectController extends AppController {
                         ->insert();
 
         if (!$project->errors) {
-            $this->clearPosts();
+            $this->clearPwPosts();
         }
         $this->redirect_to('list');
     }
@@ -153,7 +153,7 @@ class ProjectController extends AppController {
         if ($project->errors) {
             $this->redirect_to('edit', $this->pw_params['id']);
         } else {
-            $this->clearPosts();
+            $this->clearPwPosts();
             $this->redirect_to('index');
         }
     }
@@ -245,8 +245,8 @@ class ProjectController extends AppController {
 
         $this->project->exportPHPModel($pgsql, $this->model);
 
-        $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('model/list', $params);
+        $params['model_id'] = $this->model->value['id'];
+        $this->redirect_to('attribute/list', $params);
     }
 
     /**

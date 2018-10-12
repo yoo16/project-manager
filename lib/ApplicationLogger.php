@@ -42,11 +42,15 @@ class ApplicationLogger {
         return $path;
     }
 
+    /**
+     * log files
+     *
+     * @return void
+     */
     function logFiles() {
         $path = self::logDir()."*.log";
         foreach (glob($path) as $file_name) {
-            $path_info = pathinfo($file_name);
-            $files[] = $path_info['filename'];
+            $files[] = pathinfo($file_name);
         }
         return $files;
     }
@@ -111,7 +115,7 @@ class ApplicationLogger {
             $value = mb_substr($row, 1, 20); 
             $time = strtotime($value);
             $time = $time + (60 * 60 * 8);
-            $date = date('Y-m-d H:i', $time);
+            $date = date('Y/m/d H:i', $time);
             return $date;
         }
     }

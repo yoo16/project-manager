@@ -1,0 +1,34 @@
+<? include('_header.phtml') ?>
+
+<div class="modal fade" id="log-window">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h1 id="log_title" class="modal-title"></h1>
+      </div>
+
+      <div class="modal-body">
+        <div id="log-contents"></div>
+      </div>
+
+      <div class="modal-footer">
+        <div class="card-block text-right">
+          <a href="#" class="pw-lib btn btn-outline-primary" pw-lib="PwLog" pw-action="reload"><?= LABEL_RELOAD ?></a>
+          <a href="#" class="pw-lib btn btn-danger" pw-lib="PwLog" pw-action="delete" message="<?= MESSAGE_DELETE ?>"><?= LABEL_DELETE ?></a>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="log-list"></div>
+<div id="log-detail"></div>
+
+<script>
+  $(function () {
+    pw_log.loadList()
+  });
+</script>

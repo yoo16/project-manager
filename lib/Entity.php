@@ -117,17 +117,30 @@ class Entity {
     /**
      * requestSession
      * 
-     * @param  string $request_column
+     * @param  string $sid
+     * @param  string $multi_session_id
      * @return Entity
      */
-    public function requestSession($sid = 0) {
-        if (!(defined('IS_USE_PW_SID') && IS_USE_PW_SID)) $sid = 0;
+    public function requestSession($sid = 0, $multi_session_id = null) {
         $request_column = "{$this->entity_name}_id";
+        if ($this->session_name) {
+            $session_name = $this->session_name;
+        } else {
+            $session_name = $this->entity_name;
+        }
         if (isset($_REQUEST[$request_column])) {
             $this->fetch($_REQUEST[$request_column]);
-            AppSession::set($this->entity_name, $this, $sid);
+            if ($multi_session_id) {
+                AppSession::setWithKey($multi_session_id, $session_name, $this, $sid);
+            } else {
+                AppSession::set($session_name, $this, $sid);
+            }
         }
-        return AppSession::get($this->entity_name, null, $sid);
+        if ($multi_session_id) {
+            return AppSession::getWithKey($multi_session_id, $session_name, null, $sid);
+        } else {
+            return AppSession::get($session_name, null, $sid);
+        }
     }
 
     /**
@@ -303,7 +316,7 @@ class Entity {
      * setValue
      * 
      * @param  array $value
-     * @return Class
+     * @return Entity
      */
     public function setValue($value) {
         $this->value = $value;
@@ -311,10 +324,26 @@ class Entity {
     }
 
     /**
+     * setValue By id
+     * 
+     * @param  integer $id
+     * @return Entity
+     */
+    public function setValueById($id) {
+        if (!$this->values) return $this;
+        if ($value = $this->values[$id]) {
+            $this->value = $value;
+        } else {
+            $this->value = null;
+        }
+        return $this;
+    }
+
+    /**
      * takeValues
      * 
      * @param  array $values
-     * @return Class
+     * @return Entity
      */
     public function takeValues($values) {
         if (!$values) return $this;
@@ -323,6 +352,8 @@ class Entity {
                 $column = $this->columns[$column_name];
                 $type = $column['type'];
                 $this->value[$column_name] = $this->cast($type, $values[$column_name]);
+                // if (!in_array($column_name, self::$except_columns)) {
+                // }
             }
         }
         return $this;
@@ -772,6 +803,7 @@ class Entity {
     */
     function formSelect($column, $params = null) {
         if (!$column) return;
+        if ($this->values) $params['values'] = $this->values;
         if (!$params['name']) $params['name'] = "{$this->entity_name}[{$column}]";
         if ($params['model'] && !$params['value']) $params['value'] = $this->id_column;
         if ($params['value_column']) $params['value'] = $params['value_column'];
@@ -803,6 +835,7 @@ class Entity {
     */
     function formRadio($column, $params = null) {
         if (!$column) return;
+        if ($this->values) $params['values'] = $this->values;
         if (!$params['name']) $params['name'] = "{$this->entity_name}[{$column}]";
         if ($params['value_column']) $params['value'] = $params['value_column'];
         if ($params['model'] && !$params['value']) $params['value'] = $this->id_column;
@@ -820,6 +853,7 @@ class Entity {
     */
     function formCheckbox($column, $params = null) {
         if (!$column) return;
+        if ($this->values) $params['values'] = $this->values;
         if (!$params['name']) $params['name'] = "{$this->entity_name}[{$column}]";
         if ($params['value_column']) $params['value'] = $params['value_column'];
         $tag = FormHelper::checkbox($params, $this->value[$column]);
@@ -993,9 +1027,24 @@ class Entity {
      * @param string $key
      * @return Entity
      */
-    function valueFromValues($key) {
+    function valueForKey($key) {
         if (!$this->values) return $this;
         $this->value = $this->values[$key];
+        return $this;
+    }
+
+    /**
+     * relation value 
+     *
+     * @param Entity $instance
+     * @param string $key
+     * @return Entity
+     */
+    function valueForInstanceKey($instance, $key) {
+        if (!$this->values) return $this;
+        if (!$instance->value) return $this;
+        $index = $instance->value[$key];
+        $this->value = $this->values[$index];
         return $this;
     }
 
@@ -1184,9 +1233,9 @@ class Entity {
         }
         $this->one();
         //update login timestamp, remember session
-        if ($this->value && $this->atth_login_at_column) {
-            $this->rememberAuth();
-            $posts['login_at'] = date('Y-m-d H:i');
+        if ($this->value) $this->rememberAuth();
+        if ($this->value && $this->auth_login_at_column) {
+            $posts['login_at'] = date('Y/m/d H:i');
             $this->update($posts);
         }
         return $this;
@@ -1216,6 +1265,20 @@ class Entity {
     function convertHash($value, $hash_type) {
         $value = hash($hash_type, $value, false);
         return $value;
+    }
+
+    /**
+     * key values
+     *
+     * @return void
+     */
+    function keyValues($key_column, $value_column) {
+        if (!$this->values) return;
+        foreach ($this->values as $value) {
+            $key = $value[$key_column];
+            $values[$key] = $value[$value_column];
+        }
+        return $values;
     }
 
 }

@@ -11,6 +11,7 @@ class FtpLite
     public $connect = null;
     public $is_login = false;
     public $is_connect_error = false;
+    public $is_success_download = false;
     public $login_name = null;
     public $password = null;
     public $default_dir = null;
@@ -36,7 +37,7 @@ class FtpLite
 
     /**
      * set Host
-     * @param String $host
+     * @param string $host
      * @return FtpLite
      */
     function setHost($host)
@@ -47,7 +48,7 @@ class FtpLite
 
     /**
      * set login_name
-     * @param String $login_name
+     * @param string $login_name
      * @return FtpLite
      */
     function setLoginName($login_name)
@@ -58,7 +59,7 @@ class FtpLite
 
     /**
      * set password
-     * @param String $password
+     * @param string $password
      * @return FtpLite
      */
     function setPassword($password)
@@ -69,7 +70,7 @@ class FtpLite
 
     /**
      * set is_scp
-     * @param String $host
+     * @param boolean $is_scp
      * @return FtpLite
      */
     function setScp($is_scp)
@@ -81,7 +82,7 @@ class FtpLite
     /**
      * test connect
      *
-     * @return Bool
+     * @return boolean
      */
     function connectTest()
     {
@@ -96,7 +97,7 @@ class FtpLite
     /**
      * test ftp connect
      *
-     * @return Bool
+     * @return boolean
      */
     function ftpConnectTest()
     {
@@ -108,7 +109,7 @@ class FtpLite
     /**
      * test scp connect
      *
-     * @return Bool
+     * @return boolean
      */
     function scpConnectTest()
     {
@@ -120,9 +121,9 @@ class FtpLite
     /**
      * upload file
      * 
-     * @param  String $file_path
-     * @param  String $remote_dir
-     * @param  String $upload_mode
+     * @param  string $file_path
+     * @param  string $remote_dir
+     * @param  string $upload_mode
      * @return void
      */
     function uploadFile($file_path, $remote_dir, $upload_mode = FTP_BINARY)
@@ -137,9 +138,9 @@ class FtpLite
     /**
      * download file
      * 
-     * @param  String $file_path   [description]
-     * @param  String $remote_path [description]
-     * @param  String $upload_mode [description]
+     * @param  string $file_path   [description]
+     * @param  string $remote_path [description]
+     * @param  string $upload_mode [description]
      * @return void
      */
     function downloadFile($file_path, $remote_path, $upload_mode = FTP_BINARY)
@@ -160,7 +161,7 @@ class FtpLite
     {
         $this->is_connect_error = false;
         $this->connect = ftp_connect($this->host);
-        if ($this->connect) $this->is_connect_error = true;
+        if (!$this->connect) $this->is_connect_error = true;
         return $this;
     }
 
@@ -196,7 +197,7 @@ class FtpLite
     {
         $this->is_connect_error = false;
         $this->connect = ssh2_connect($this->host, $this->scp_port);
-        if ($this->connect) $this->is_connect_error = true;
+        if (!$this->connect) $this->is_connect_error = true;
         return $this;
     }
 
@@ -280,16 +281,18 @@ class FtpLite
     /**
      * ftp Download File
      * 
-     * @param  String $file_path
-     * @param  String $remote_path
-     * @param  String $upload_mode
+     * @param  string $file_path
+     * @param  string $remote_path
+     * @param  string $upload_mode
      * @return FtpLite
      */
     function ftpDownloadFile($file_path, $remote_path, $upload_mode = FTP_BINARY)
     {
-        if (!$this->is_login) return;
+        $this->is_success_download = false;
+        if (!$this->is_login) return $this;
         ftp_pasv($this->connect, true);
         $this->is_success_download = ftp_get($this->connect, $file_path, $remote_path, $upload_mode);
+
         dump($this->host);
         dump($remote_path);
 
@@ -300,13 +303,14 @@ class FtpLite
     /**
      * scp Download File
      * 
-     * @param  String $file_path
-     * @param  String $remote_path
+     * @param  string $file_path
+     * @param  string $remote_path
      * @return FtpLite
      */
     function scpDownloadFile($file_path, $remote_path)
     {
-        if (!$this->is_login) return;
+        $this->is_success_download = false;
+        if (!$this->is_login) return $this;
         $this->is_success_download = ssh2_scp_recv($this->connect, $remote_path, $file_path);
 
         $this->changeMod($file_path);
@@ -316,14 +320,14 @@ class FtpLite
     /**
      * ftp upload file
      * 
-     * @param  String $file_path
-     * @param  String $remote_dir
-     * @param  String $upload_mode
+     * @param  string $file_path
+     * @param  string $remote_dir
+     * @param  string $upload_mode
      * @return FtpLite
      */
     function ftpUploadFile($file_path, $remote_dir, $upload_mode = FTP_BINARY)
     {
-        if (!$this->is_login) return;
+        if (!$this->is_login) return $this;
         ftp_pasv($this->connect, true);
         if (file_exists($file_path)) {
             $this->is_success_upload = ftp_put($this->connect, $remote_dir, $file_path, $upload_mode);
@@ -335,8 +339,8 @@ class FtpLite
     /**
      * scp upload File
      * 
-     * @param  String $file_path
-     * @param  String $remote_path
+     * @param  string $file_path
+     * @param  string $remote_path
      * @return FtpLite
      */
     function scpUploadFile($file_path, $remote_dir)
@@ -351,6 +355,7 @@ class FtpLite
     /**
      * change mode
      * 
+     * @param  string $file_path
      * @return void
      */
     function changeMod($file_path)
