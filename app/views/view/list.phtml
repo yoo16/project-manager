@@ -19,7 +19,7 @@
 <? foreach ($this->page->view->values as $view): ?>
 <tr>
 <td>
-<a class="btn btn-sm btn-outline-primary" href="<?= $this->urlActionFor('edit', $view['id']) ?>">
+<a class="btn btn-sm btn-outline-primary" href="<?= $this->urlActionFor('edit', ['id' => $view['id']]) ?>">
 <?= LABEL_EDIT ?>
 </a>
 </td>

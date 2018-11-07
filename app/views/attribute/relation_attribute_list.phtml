@@ -3,7 +3,7 @@
   <?= FormHelper::link('#',
     [
       'label' => LABEL_BACK,
-      'class' => 'pw-app btn btn-sm btn-outline-primary', 
+      'class' => 'pw-click btn btn-sm btn-outline-primary', 
       'pw-controller' => 'attribute',
       'pw-action' => 'relation_model_list', 
       'attribute_id' => $this->attribute->value['id'], 
@@ -15,9 +15,9 @@
 
 <? if ($this->fk_attribute->value): ?>
   <form action="<?= $this->urlActionFor('remove_relation') ?>" method="post">
-    <?= $this->fk_model['name'] ?> -> <?= $this->fk_attribute['name'] ?>
+    <?= $this->fk_model->value['name'] ?> -> <?= $this->fk_attribute->value['name'] ?>
     <input class="btn btn-sm btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
-    <input type="hidden" name="attribute_id" value="<?= $this->attribute['id'] ?>">
+    <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
   </form>
 <? endif ?>
 

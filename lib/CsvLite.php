@@ -294,12 +294,18 @@ class CsvLite {
             if (!$this->columns) $this->columns = $columns;
             if (!is_array($this->columns)) return;
 
+            if ($this->from_encode && $this->to_encode) {
+                foreach ($this->columns as $index => $column) {
+                    $this->columns[$index] = mb_convert_encoding($column, $this->to_encode, $this->from_encode);
+                }
+            }
+
             while ($data = fgetcsv($fp, $this->buffer, ",")) {
-                foreach ($columns as $key => $column) {
+                foreach ($this->columns as $key => $column) {
                     $_value;
                     if ($data[$key]) {
-                        if (self::$from_encode && self::$to_encode) {
-                            $_value = mb_convert_encoding($data[$key], self::$to_encode, self::$from_encode);
+                        if ($this->from_encode && $this->to_encode) {
+                            $_value = mb_convert_encoding($data[$key], $this->to_encode, $this->from_encode);
                         } else {
                             $_value = $data[$key];
                         }

@@ -9,7 +9,7 @@ var pw_app;
 var pw_base_url = '';
 var pw_current_controller = '';
 var pw_current_action = '';
-var pw_loadin_selector = '#main';
+var pw_loading_selector = '#main';
 var pw_multi_sid = '';
 
 $.support.cors = true;
@@ -20,6 +20,13 @@ $(document).ready(function () {
     pw_app.multiSessionLink();
 });
 
+$(document).on('change', ':file', function () {
+    var input = $(this),
+      numFiles = input.get(0).files ? input.get(0).files.length : 1,
+      label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    input.parent().parent().next(':text').val(label);
+});
+
 var PwController = function () {
     this.multiSessionLink = function(fileName, content) {
         pw_multi_sid = $('#pw-multi-session-id').val();
@@ -27,6 +34,7 @@ var PwController = function () {
         if (!pw_multi_sid) return;
 
         jQuery('a').each(function() {
+            if ($(this).attr('is_not_pw_multi_sid')) return;
             var link = $(this).attr("href");
             if (link) {
                 if (link.indexOf('pw_multi_sid') > 0) {
@@ -93,11 +101,19 @@ var PwController = function () {
         value = JSON.parse(value);
         return value;
     }
-    this.showLoading = function() {
-        $(pw_loadin_selector).LoadingOverlay("show");
+    this.showLoading = function(selector) {
+        if (selector) {
+            $(selector).LoadingOverlay("show");
+        } else {
+            $(pw_loading_selector).LoadingOverlay("show");
+        }
     }
-    this.hideLoading = function() {
-        $(pw_loadin_selector).LoadingOverlay("hide");
+    this.hideLoading = function(selector) {
+        if (selector) {
+            $(selector).LoadingOverlay("hide");
+        } else {
+            $(pw_loading_selector).LoadingOverlay("hide");
+        }
     }
     this.checkImageLoading = function(class_name, count) {
         var displayed_count = 0;
@@ -116,6 +132,13 @@ var PwController = function () {
             } else {
                 pw_app.hideLoading();
             }
+        });
+    }
+    this.loadingDom = function(dom) {
+        pw_app.showLoading();
+        $(dom).on('load', function() {
+            pw_app.hideLoading();
+            $(dom).off('load');
         });
     }
     $(document).on('change', '.pw-change', function () {

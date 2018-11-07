@@ -1195,18 +1195,24 @@ class PgsqlEntity extends Entity
      * fetch
      * 
      * @param  int $id
-     * @param  array $conditions
      * @return PgsqlEntity
      */
-    public function fetch($id, $conditions = null)
+    public function fetch($id)
     {
-        $this->conditions = null;
         $this->orders = null;
         $this->values = null;
         $this->group_by_columns = null;
         if (!$id) return $this;
 
-        $this->where($this->id_column, $id)->wheres($conditions)->one(false);
+        $this->where('id', $id);
+
+        $sql = $this->selectSql();
+
+        $this->fetchRow($sql);
+
+        $this->id = $this->value[$this->id_column];
+        $this->before_value = $this->value;
+        $this->values = null;
         return $this;
     }
 
@@ -1698,6 +1704,7 @@ class PgsqlEntity extends Entity
     {
         if (is_numeric($id)) $this->id = (int)$id;
         if (is_numeric($this->id)) $this->initWhere()->where("{$this->id_column} = {$this->id}");
+        if (!is_numeric($this->id)) return $this;
 
         $sql = $this->deleteSql();
         $result = $this->query($sql);
@@ -1960,13 +1967,15 @@ class PgsqlEntity extends Entity
      * order
      * 
      * @param  string $column
-     * @param  string $option
+     * @param  string $optionn
+     * @param  string $column_type
      * @return PgsqlEntity
      */
-    public function order($column, $option = null)
+    public function order($column, $option = null, $column_type = null)
     {
         $value['column'] = $column;
         $value['option'] = $option;
+        $value['column_type'] = $column_type;
         $this->orders[$column] = $value;
         return $this;
     }
@@ -2025,8 +2034,9 @@ class PgsqlEntity extends Entity
         return $this;
     }
 
+    //TODO under construction
     /**
-     * select column
+     * select column for join
      * 
      * @param  string $model_name
      * @param  array $conditions
@@ -2040,10 +2050,12 @@ class PgsqlEntity extends Entity
 
         $join_class = DB::model($join_class_name);
 
+        //$join['join_class_name'] = $join_class_name;
+        $join['column'] = $column;
+        $join['join_column'] = $join_column;
         $join['join_class'] = $join_class;
         $join['join_name'] = $join_class->name;
         $join['join_entity_name'] = $join_class->entity_name;
-        //$join['condition'] = "{$join_class->name}.{$join_column} {$eq} {$this->table_name}.{$column}";
         $join['type'] = $type;
         $this->joins[] = $join;
         return $this;
@@ -2056,11 +2068,10 @@ class PgsqlEntity extends Entity
      * @param  string $join_column
      * @param  string $column
      * @param  string $class_name
-     * @param  string $eq
-     * @param  string $type
+     * @param  array $params
      * @return PgsqlEntity
      */
-    public function join($join_class_name, $join_column, $column, $class_name = null, $eq = '=', $type = 'LEFT')
+    public function join($join_class_name, $join_column, $column, $class_name = null, $params = null)
     {
         //TODO join conditions
         if (!$join_class_name) return $this;
@@ -2071,11 +2082,19 @@ class PgsqlEntity extends Entity
         $origin_class = DB::model($class_name);
         $join_class = DB::model($join_class_name);
 
-        $join['join_class'] = $join_class;
+        $join['eq'] = ($params['eq']) ? $params['eq'] : '='; 
+        $join['type'] = ($params['type']) ? $params['type'] : 'LEFT'; 
+
+        $join['origin_table_name'] = $origin_class->table_name;
+        $join['origin_column'] = $column;
+
+        $join['join_table_name'] = $join_class->table_name;
+        $join['join_column'] = $join_column;
+
         $join['join_name'] = $join_class->name;
+        $join['join_as_name'] = $params['join_as_name'];
         $join['join_entity_name'] = $join_class->entity_name;
-        $join['condition'] = "{$origin_class->table_name}.{$column} {$eq} {$join_class->table_name}.{$join_column}";
-        $join['type'] = $type;
+       
         $this->joins[] = $join;
         return $this;
     }
@@ -2134,7 +2153,23 @@ class PgsqlEntity extends Entity
         $sql = '';
         if (is_array($this->joins)) {
             foreach ($this->joins as $join) {
-                $joins[] = PHP_EOL . " {$join['type']} JOIN \"{$join['join_name']}\" ON {$join['condition']}";
+                $eq = $join['eq'];
+
+                $origin_table_name = $join['origin_table_name'];
+                $origin_column = $join['origin_column'];
+
+                $join_table_name = $join['join_table_name'];
+                $join_column = $join['join_column'];
+
+                if ($join['join_as_name']) {
+                    $join_name = "{$join_table_name} AS {$join['join_as_name']}";
+                    $condition = "{$origin_table_name}.{$origin_column} {$eq} {$join['join_as_name']}.{$join_column}";
+                } else {
+                    $join_name = $join_table_name;
+                    $condition = "{$origin_table_name}.{$origin_column} {$eq} {$join_table_name}.{$join_column}";
+                }
+
+                $joins[] = PHP_EOL . " {$join['type']} JOIN {$join_name} ON {$condition}";
             }
             $sql = implode(' ', $joins) . PHP_EOL;
         }
@@ -2851,7 +2886,12 @@ class PgsqlEntity extends Entity
         if (!$orders) return;
         foreach ($orders as $order) {
             if ($order['column']) {
-                $_orders[] = "{$this->table_name}.{$order['column']} {$order['option']}";
+                $column = "{$this->table_name}.{$order['column']}";
+                if ($order['column_type']['type'] == 'NUMBER') {
+                    $format =  ($order['column_type']['format']) ? $order['column_type']['format'] : 99999999;
+                    $column = "TO_NUMBER({$column}, '{$format}')";
+                }
+                $_orders[] = ($order['option']) ? "{$column} {$order['option']}": $column;
             }
         }
         if ($_orders) $results = implode(', ', $_orders);

@@ -167,24 +167,23 @@ class ModelController extends ProjectController {
                 unset($value['id']);
                 unset($value['attrelid']);
                 unset($value['attnum']);
+                unset($value['pg_class_id']);
                 $new_attribute = DB::model('Attribute')->insert($value);
 
                 if ($new_attribute->sql_error) {
-                    var_dump($new_attribute->sql_error);
                     $new_model->delete($new_model->value['id']);
                     exit;
                 }
                 if ($new_attribute->errors) {
-                    var_dump($new_attribute->errors);
                     $new_model->delete($new_model->value['id']);
                     exit;
                 }
             }
 
-            if ($new_model->value['id']) $this->syncDB($new_model);
+            if ($new_model->value['id']) $new_model->syncDB($this->database);
         }
 
-        $this->redirect_to('list');
+        $this->redirect_to('list', ['model_id' => $new_model->value['id']]);
     }
 
     function action_delete() {
@@ -192,26 +191,15 @@ class ModelController extends ProjectController {
 
         $model = DB::model('Model')->fetch($this->pw_params['id']);
         if ($model->value['id']) {
-
-            $attribute = $model->relationMany('Attribute')->all();
-            if ($attribute->values) {
-                foreach ($attribute->values as $attribute_value) {
-                    $attribute = DB::model('Attribute')->fetch($attribute_value['id']);
-                    if ($attribute->value['id'] && $attribute->value['attnum']) {
-                        $pgsql = $this->database->pgsql();
-                        $pgsql->dropColumn($model->value['name'], $attribute->value['name']);
-                        $attribute->delete($attribute->value['id']);
-                    }
-                } 
-            }
-
-            if (!$database->value['is_lock']) {
-                $database = DB::model('Database')->fetch($this->database->value['id']);
-                $pgsql = $database->pgsql();
-                $results = $pgsql->dropTable($model->value['name']);
-            }
-
             $model = DB::model('Model')->delete($model->value['id']);
+            
+            if (!$model->errors) {
+                if (!$database->value['is_lock']) {
+                    $database = DB::model('Database')->fetch($this->database->value['id']);
+                    $pgsql = $database->pgsql();
+                    $results = $pgsql->dropTable($model->value['name']);
+                }
+            }
             
             if ($model->errors) {
                 $this->flash['errors'] = $model->errors;
@@ -354,32 +342,6 @@ class ModelController extends ProjectController {
             }
         }
         $this->redirect_to('list');
-    }
-
-    //TODO Model
-    function syncDB($model) {
-        $model = DB::model('Model')->fetch($this->pw_params['id']);
-        if ($model->value['id']) {
-            $attribute = $model->relationMany('Attribute')->all();
-
-            $columns = Model::$required_columns;
-
-            $required_columns = array_keys(Model::$required_columns);
-            //TODO Entity?
-            foreach ($attribute->values as $value) {
-                if (!in_array($value['name'], $required_columns)) {
-                    $column['name'] = $value['name'];
-                    $column['type'] = $value['type'];
-                    $column['length'] = $value['length'];
-                    $column['comment'] = $value['label'];
-                    $columns[$value['name']] = $column;
-                }
-            }
-        }
-        $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
-        $create_sql = $pgsql_entity->createTableSqlByName($model->value['name'], $columns);
-
-        $pgsql_entity->query($create_sql);
     }
 
 

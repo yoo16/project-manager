@@ -1,30 +1,55 @@
-<h3 class=""><?= $this->model->value['name'] ?> -> <?= $this->attribute->value['name'] ?></h3>
+<h3 class="">
+  <?= $this->model->value['name'] ?> ->
+  <?= $this->attribute->value['name'] ?>
+</h3>
 
 <? if ($this->fk_attribute->value): ?>
 <form action="<?= $this->urlActionFor('remove_relation') ?>" method="post">
-  
-  <?= $this->fk_model->value['name'] ?> -> <?= $this->fk_attribute->value['name'] ?>
+
+  <?= $this->fk_model->value['name'] ?> ->
+  <?= $this->fk_attribute->value['name'] ?>
 
   <input class="btn btn-sm btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
   <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
 </form>
 <? endif ?>
 
+<form action="<?= $this->urlActionFor('update_relation') ?>" method="post">
+<? if ($this->candidate_model->value): ?>
+<h2><?= $this->candidate_model->value['name'] ?></h2>
+<table class="table table-sm">
+<? if ($this->candidate_attribute->value): ?>
+<tr>
+  <td>
+    <?= $this->candidate_attribute->value['name'] ?>
+  </td>
+  <td>
+    <input type="submit" class="btn btn-sm btn-primary" value="<?= LABEL_UPDATE ?>">
+    <input type="hidden" name="fk_attribute_id" value="<?= $this->candidate_attribute->value['id'] ?>">
+    <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
+  </td>
+</tr>
+<? endif ?>
+<? endif ?>
+</table>
+</form>
+
+<h2>other models</h2>
 <table class="table table-sm">
   <? foreach ($this->relation_model->values as $relation_model->value): ?>
   <tr>
     <td>
-    <?= FormHelper::link('#relation-window',
+      <?= FormHelper::link('#relation-window',
         [
         'label' => $relation_model->value['name'],
-        'class' => 'pw-app', 
+        'class' => 'pw-click', 
         'pw-controller' => 'attribute',
         'pw-action' => 'relation_attribute_list', 
         'fk_model_id' => $relation_model->value['id'], 
         'attribute_id' => $this->attribute->value['id'], 
         ]) ?>
-      </td>
-    </tr>
+    </td>
+  </tr>
   <? endforeach ?>
 </table>
 <? if (!$this->attribute->value['fk_attribute_id']): ?>

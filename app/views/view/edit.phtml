@@ -31,8 +31,7 @@
 
       <?= FormHelper::submit(LABEL_UPDATE) ?>
       <?= FormHelper::linkButton('list', null, ['label' => LABEL_CANCEL]) ?>
+      <?= $this->view->confirmDelete() ?>
     </form>
-
-    <?= $this->view->confirmDelete() ?>
   </div>
 </div>

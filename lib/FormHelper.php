@@ -24,7 +24,7 @@ class FormHelper {
                               'unselect',
                               'unselct_label',
                               'unselct_value',
-                              'effective-digit'
+                              'effective-digit',
                             ];
 
     static $http_tag_columns = ['id', 'class'];
@@ -368,14 +368,14 @@ class FormHelper {
     }
 
     /**
-     * 
+     * values
      *
      * @param array $params
      * @return array
      */
     static function values($params) {
         if (isset($params['csv']) && $params['csv']) {
-            $lang = AppSession::getWithKey('app', 'lang');
+            $lang = ApplicationLocalize::lang();
             $values = CsvLite::options($params['csv'], $lang);
         } else if (isset($params['model']) && $params['model']) {
             $instance = DB::model($params['model']);
@@ -393,7 +393,9 @@ class FormHelper {
                 }
             }
             if (isset($params['wheres'])) $instance->wheres($params['wheres']);
-            if (isset($params['order'])) $instance->order($params['order']);
+            if (isset($params['order'])) {
+                $instance->order($params['order'], $params['order_type'], $params['order_column_type']);
+            }
             $instance->all();
 
             $values = $instance->values;

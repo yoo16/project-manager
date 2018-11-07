@@ -36,6 +36,7 @@ class Controller extends RuntimeException {
     public $session_name = null;
     public $pw_admin_controller = 'pw_admin';
     public $pw_admin_escapes = ['login', 'auth'];
+    public $pw_login_escapes = ['login', 'auth'];
 
     static $libs = [
         'Helper',
@@ -322,13 +323,15 @@ class Controller extends RuntimeException {
      * @param string $action
      * @return void
      */
-    private function pwTemplate($action) {
-        if ($this->view_dir) {
-            $template = "views/{$this->view_dir}/{$action}.phtml";
-        } else if (substr($action, 0, 1) === '/') {
-            $template = "views{$action}.phtml";
-        } else {
-            $template = "views/{$this->name}/{$action}.phtml";
+    private function pwTemplate($action, $template = null) {
+        if (!$template) {
+            if ($this->view_dir) {
+                $template = "views/{$this->view_dir}/{$action}.phtml";
+            } else if (substr($action, 0, 1) === '/') {
+                $template = "views{$action}.phtml";
+            } else {
+                $template = "views/{$this->name}/{$action}.phtml";
+            }
         }
         $this->pw_template = $template;
         return $template;
@@ -370,10 +373,10 @@ class Controller extends RuntimeException {
      * @param  string $action
      * @return void
      */
-    public function render($action) {
+    public function render($action, $template = null) {
         if ($this->performed_render) return;
         $this->before_rendering($action, $this->with_layout);
-        $template = $this->pwTemplate($action);
+        $template = $this->pwTemplate($action, $template);
 
         @include_once BASE_DIR."app/helpers/application_helper.php";
 
@@ -649,8 +652,6 @@ class Controller extends RuntimeException {
     function link($controller, $action = null, $id = null, $params = null) {
         if ($params['is_use_selected']) $params['class'].= FormHelper::linkActive($controller, $this->name);
         if ($params['is_use_action_selected']) $params['class'].= TagHelper::actionActive($controller, $action);
-        // dump($controller);
-        // dump($action);
         unset($params['is_use_selected']);
         unset($params['is_use_action_selected']);
 
@@ -658,6 +659,37 @@ class Controller extends RuntimeException {
         if (!$params || is_array($params)) $params['href'] = $href;
         $tag = TagHelper::a($params);
         return $tag;
+    }
+
+    /**
+     * link tag for pw-click
+     *
+     * @param  array $params
+     * @return string
+     */
+    function linkJs($params = null) {
+        if ($params['is_use_selected']) $params['class'].= FormHelper::linkActive($controller, $this->name);
+        if ($params['is_use_action_selected']) $params['class'].= TagHelper::actionActive($controller, $action);
+        unset($params['is_use_selected']);
+        unset($params['is_use_action_selected']);
+
+        $params['href'] = '#';
+        $tag = TagHelper::a($params);
+        return $tag;
+    }
+
+
+    /**
+     * link tag for controller action id
+     *
+     * @param  string $controller
+     * @param  string $action
+     * @param  string $id
+     * @param  array $params
+     * @return string
+     */
+    function linkTag($controller, $action = null, $id = null, $params = null) {
+        return $this->link($controller, $action, $id, $params);
     }
 
     /**
@@ -687,19 +719,6 @@ class Controller extends RuntimeException {
     function urlAction($action, $http_params = null) {
         $url = $this->urlFor($this->name, $action, null, $http_params);
         return $url;
-    }
-
-    /**
-     * link tag for controller action id
-     *
-     * @param  string $controller
-     * @param  string $action
-     * @param  string $id
-     * @param  array $params
-     * @return string
-     */
-    function linkTag($controller, $action = null, $id = null, $params = null) {
-        return $this->link($controller, $action, $id, $params);
     }
 
     /**
@@ -1046,11 +1065,7 @@ class Controller extends RuntimeException {
             $this->renderError($errors);
             exit;
         }
-        if ($this->session_name) {
-            return DB::model($model_name)->requestSession($this->session_name);
-        } else {
-            return DB::model($model_name)->requestSession();
-        }
+        return DB::model($model_name)->requestSession();
     }
 
     /**
@@ -1078,6 +1093,20 @@ class Controller extends RuntimeException {
     function clearModelForSession($model_name) {
         $instance = DB::model($model_name);
         AppSession::clearWithKey('app', $instance->entity_name);
+    }
+
+    /**
+     * add session errors for model
+     *
+     * @param  array $errors
+     * @return void
+     */
+    function addErrorByModel($model) {
+        if ($key = $model->name) {
+            $errors = AppSession::getWithKey('errors', $this->name);
+            $errors[$key] = $model->errors;
+            AppSession::setWithKey('errors', $this->name, $errors);
+        }
     }
 
     /**
@@ -1219,7 +1248,12 @@ class Controller extends RuntimeException {
     function loadRequestSession() {
         if ($this->session_request_columns) {
             foreach ($this->session_request_columns as $session_request_column) {
-                $this->$session_request_column = AppSession::load($session_request_column, null, $this->pw_multi_sid);
+                if ($this->name) {
+                    $this->session_name = "{$this->name}_controller";
+                    $this->$session_request_column = AppSession::loadWithKey($this->session_name, $session_request_column, null, $this->pw_multi_sid);
+                } else {
+                    $this->$session_request_column = AppSession::load($session_request_column, null, $this->pw_multi_sid);
+                }
                 $this->pw_session_params[$session_request_column] = $this->$session_request_column;
             }
         }
@@ -1234,7 +1268,12 @@ class Controller extends RuntimeException {
     function clearRequestSession() {
         if ($this->session_request_columns) {
             foreach ($this->session_request_columns as $session_request_column) {
-                AppSession::clear($session_request_column, $this->pw_multi_sid);
+                if ($this->name) {
+                    $this->session_name = "{$this->name}_controller";
+                    AppSession::clearWithKey($this->session_name, $session_request_column, $this->pw_multi_sid);
+                } else {
+                    AppSession::clear($session_request_column, $this->pw_multi_sid);
+                }
                 unset($this->$session_request_column);
             }
         }
@@ -1261,7 +1300,7 @@ class Controller extends RuntimeException {
     * @return void
     */
     public function action_update_sort() {
-        if (!$this->auth->value['id']) return;
+        if (!$this->pw_auth->value['id']) return;
         if ($_POST['model_name']) {
             $this->updateSort($_POST['model_name']);
         }
@@ -1353,20 +1392,67 @@ class Controller extends RuntimeException {
     }
 
     /**
+     * login
+     *
+     * @return void
+     */
+    function login() {
+        $this->layout = 'login';
+        $template = 'views/components/auth/login.phtml';
+        $this->render('login', $template);
+    }
+
+    /**
+     * auth
+     *
+     * @return PgsqlEntity
+     */
+    function auth() {
+        if (!$this->auth_controller) return;
+        if (!$this->auth_model) return;
+        if (class_exists($this->auth_model)) {
+            $model = DB::model($this->auth_model)->auth();
+            return $model;
+        }
+        exit;
+    }
+
+    /**
+     * redirectAuthTop
+     *
+     * @return void
+     */
+    function redirectAuthTop() {
+        $uri = "{$this->auth_top_controller}/";
+        $this->redirectTo($uri);
+        exit;
+    }
+
+    /**
+     * redirectAuthTop
+     *
+     * @return void
+     */
+    function redirectAuthLogin() {
+        $uri = $this->base.'login';
+        $this->redirectTo($uri);
+        exit;
+    }
+
+    /**
      * check auth
      * 
      * @param  string $action
      * @return void
      */
     function checkAuth($action) {
+        if (in_array($action, $this->pw_login_escapes)) return;
         if (!$this->auth_controller) return;
         if (!$this->auth_model) return;
         if (!class_exists($this->auth_model)) return;
-        if ($this->auth_controller == $this->name) return;
-
-        $this->auth = AppSession::getWithKey('pw_auth', DB::model($this->auth_model)->entity_name);
-        if (!$this->auth->value['id']) {
-            $uri = "{$this->auth_controller}/";
+        $this->pw_auth = AppSession::getWithKey('pw_auth', DB::model($this->auth_model)->entity_name);
+        if (!$this->pw_auth->value['id']) {
+            $uri = "login";
             $this->redirectTo($uri);
             exit;
         }
@@ -1388,74 +1474,6 @@ class Controller extends RuntimeException {
             $this->redirectTo($uri);
             exit;
         }
-    }
-
-    /**
-     * auth
-     *
-     * @return void
-     */
-    function auth() {
-        if (!$this->auth_controller) return;
-        if (!$this->auth_model) return;
-        if (class_exists($this->auth_model)) {
-            $model = DB::model($this->auth_model)->auth();
-            if ($model->value) {
-                $this->redirectAuthTop();
-            } else {
-                $this->redirectAuthLogin();
-            }
-        }
-        exit;
-    }
-
-   /**
-    * login
-    *
-    * @param
-    * @return void
-    */ 
-    function action_login() {
-        
-    }
-
-   /**
-    * logout
-    *
-    * @param
-    * @return void
-    */ 
-    function action_logout() {
-        AppSession::flush();
-        $uri = "{$this->auth_controller}/";
-        $this->redirectTo($uri);
-        exit;
-    }
-
-    /**
-     * redirectAuthTop
-     *
-     * @return void
-     */
-    function redirectAuthLogin() {
-        if ($this->auth_controller) {
-            $uri = "{$this->auth_controller}/";
-        } else {
-            $uri = 'login/';
-        }
-        $this->redirectTo($uri);
-        exit;
-    }
-
-    /**
-     * redirectAuthTop
-     *
-     * @return void
-     */
-    function redirectAuthTop() {
-        $uri = "{$this->auth_top_controller}/";
-        $this->redirectTo($uri);
-        exit;
     }
 
     /**

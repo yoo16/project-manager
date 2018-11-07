@@ -37,6 +37,8 @@ class AppSession {
         if (!$sid) $sid = 0;
         $value = null;
         if (isset($_SESSION[APP_NAME][$sid][$key])) $value = $_SESSION[APP_NAME][$sid][$key];
+        dump($key);
+        dump($value);
         if (is_null($value)) $value = $default_value;
         return $value;
     }
@@ -54,7 +56,22 @@ class AppSession {
     }
 
    /**
-    * get
+    * load with session key
+    *
+    * @param  string $session_key
+    * @param  string $key
+    * @param  object $default_value
+    * @param  int $sid
+    * @return object
+     **/ 
+    static function loadWithKey($session_key, $key, $default_value = null, $sid = 0) {
+        if (!$sid) $sid = 0;
+        if (isset($_REQUEST[$key])) AppSession::setWithKey($session_key, $key, $_REQUEST[$key], $sid);
+        return AppSession::getWithKey($session_key, $key, $default_value, $sid);
+    }
+
+   /**
+    * get with key
     *
     * @param string $session_key
     * @param string $key
@@ -64,7 +81,11 @@ class AppSession {
     */
     static function getWithKey($session_key, $key, $default_value = null, $sid = 0) {
         $value = null;
-        if (isset($_SESSION[APP_NAME][$sid][$session_key][$key])) $value = $_SESSION[APP_NAME][$sid][$session_key][$key];
+        if (isset($_SESSION[APP_NAME][$sid][$session_key])) {
+            if (isset($_SESSION[APP_NAME][$sid][$session_key][$key])) {
+                $value = $_SESSION[APP_NAME][$sid][$session_key][$key];
+            }
+        }
         if (is_null($value)) $value = $default_value;
         return $value;
     }

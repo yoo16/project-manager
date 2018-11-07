@@ -18,6 +18,7 @@ var AttributeController = function() {
     }
 
     this.relation_attribute_list = function(dom) {
+        console.log(dom);
         var params = {};
         params.fk_model_id = $(dom).attr('fk_model_id');
         params.attribute_id = $(dom).attr('attribute_id');
@@ -30,6 +31,7 @@ var AttributeController = function() {
     }
 
     this.unique_attribute_list = function(dom) {
+        console.log(dom);
         var params = {};
         params.model_id = $(dom).attr('model_id');
 

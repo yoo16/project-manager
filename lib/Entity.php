@@ -1219,25 +1219,23 @@ class Entity {
 
     /**
      * auth
+     * 
+     * request $_POST only
      *
      * @return Entity
      */
     function auth() {
         if (!$this->auth_columns) exit('Not defined $auth_columns in Model File');
+        if ($this->auth_conditions) $this->wheres($this->auth_conditions);
         foreach ($this->auth_columns as $column) {
-            $value = $_REQUEST[$column];
+            $value = $_POST[$column];
             if (is_array($this->auth_hash_types) && isset($this->auth_hash_types[$column])) {
                 $value = $this->convertHash($value, $this->auth_hash_types[$column]);
             }
             $this->where($column, $value);
         }
         $this->one();
-        //update login timestamp, remember session
         if ($this->value) $this->rememberAuth();
-        if ($this->value && $this->auth_login_at_column) {
-            $posts['login_at'] = date('Y/m/d H:i');
-            $this->update($posts);
-        }
         return $this;
     }
 
@@ -1250,7 +1248,7 @@ class Entity {
     function rememberAuth() {
         if (!$this->entity_name) exit('Not defined $entity_name');
         if (!$this->value) return;
-        $pw_auth = AppSession::get('pw_auth');
+
         $pw_auth[$this->entity_name] = $this;
         AppSession::set('pw_auth', $pw_auth);
     }

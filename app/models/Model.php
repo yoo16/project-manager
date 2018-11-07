@@ -462,4 +462,51 @@ class Model extends _Model {
         return $value;
     }
 
+    /**
+     * sync DB
+     *
+     * @param Database $database
+     * @return void
+     */
+    function syncDB($database) {
+        if (!$database) return;
+        if (!$this->value['id']) return;
+
+        //update pg_class_id
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());
+        $pg_class = $pgsql_entity->pgClassByRelname($this->value['name']);
+
+        //create table
+        $attribute = $this->relationMany('Attribute')->all();
+        if (!$attribute->values) return;
+
+        $columns = Model::$required_columns;
+        $required_columns = array_keys(Model::$required_columns);
+        foreach ($attribute->values as $value) {
+            if (!in_array($value['name'], $required_columns)) {
+                $column['name'] = $value['name'];
+                $column['type'] = $value['type'];
+                $column['length'] = $value['length'];
+                $column['comment'] = $value['label'];
+                $columns[$value['name']] = $column;
+            }
+        }
+        $pgsql_entity = new PgsqlEntity($database->pgInfo());
+        $create_sql = $pgsql_entity->createTableSqlByName($this->value['name'], $columns);
+        if ($create_sql) $result = $pgsql_entity->query($create_sql);
+
+        $attribute = DB::model('Attribute');
+        $attribute->importByModel($this->value, $database);
+
+        //update pg_class_id
+        $pg_class = $pgsql_entity->pgClassByRelname($this->value['name']);
+        if ($pg_class) {
+            $model_values['pg_class_id'] = $pg_class['pg_class_id'];
+            $model = DB::model('Model')->update($model_values, $this->value['id']);
+        }
+
+        //comment label
+        $pgsql_entity->updateTableComment($model->value['name'], $this->value['label']);
+    }
+
 }

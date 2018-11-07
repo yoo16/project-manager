@@ -2,7 +2,7 @@
 /**
  * ViewItem 
  * 
- * @create  2017-08-21 13:46:27 
+ * @create  2017/08/21 13:46:27 
  */
 
 //namespace project_manager;
@@ -41,13 +41,21 @@ class _ViewItem extends PgsqlEntity {
 
     public $primary_key = 'view_items_pkey';
     public $foreign = array(
+            'view_items_where_model_id_fkey' => [
+                                  'column' => 'where_model_id',
+                                  'class_name' => 'Model',
+                                  'foreign_table' => 'models',
+                                  'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'c',
+                                  ],
             'view_items_page_id_fkey' => [
                                   'column' => 'page_id',
                                   'class_name' => 'Page',
                                   'foreign_table' => 'pages',
                                   'foreign_column' => 'id',
                                   'cascade_update_type' => 'a',
-                                  'cascade_delete_type' => 'a',
+                                  'cascade_delete_type' => 'c',
                                   ],
             'view_items_localize_string_id_fkey' => [
                                   'column' => 'localize_string_id',
@@ -55,15 +63,15 @@ class _ViewItem extends PgsqlEntity {
                                   'foreign_table' => 'localize_strings',
                                   'foreign_column' => 'id',
                                   'cascade_update_type' => 'a',
-                                  'cascade_delete_type' => 'a',
+                                  'cascade_delete_type' => 'c',
                                   ],
-            'view_items_where_attribute_id_fkey' => [
-                                  'column' => 'where_attribute_id',
-                                  'class_name' => 'Attribute',
-                                  'foreign_table' => 'attributes',
+            'view_items_view_id_fkey' => [
+                                  'column' => 'view_id',
+                                  'class_name' => 'View',
+                                  'foreign_table' => 'views',
                                   'foreign_column' => 'id',
                                   'cascade_update_type' => 'a',
-                                  'cascade_delete_type' => 'a',
+                                  'cascade_delete_type' => 'c',
                                   ],
             'view_items_link_param_id_attribute_id_fkey' => [
                                   'column' => 'link_param_id_attribute_id',
@@ -71,28 +79,20 @@ class _ViewItem extends PgsqlEntity {
                                   'foreign_table' => 'attributes',
                                   'foreign_column' => 'id',
                                   'cascade_update_type' => 'a',
-                                  'cascade_delete_type' => 'a',
+                                  'cascade_delete_type' => 'c',
+                                  ],
+            'view_items_where_attribute_id_fkey' => [
+                                  'column' => 'where_attribute_id',
+                                  'class_name' => 'Attribute',
+                                  'foreign_table' => 'attributes',
+                                  'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'c',
                                   ],
             'view_items_attribute_id_fkey' => [
                                   'column' => 'attribute_id',
                                   'class_name' => 'Attribute',
                                   'foreign_table' => 'attributes',
-                                  'foreign_column' => 'id',
-                                  'cascade_update_type' => 'a',
-                                  'cascade_delete_type' => 'a',
-                                  ],
-            'view_items_where_model_id_fkey' => [
-                                  'column' => 'where_model_id',
-                                  'class_name' => 'Model',
-                                  'foreign_table' => 'models',
-                                  'foreign_column' => 'id',
-                                  'cascade_update_type' => 'a',
-                                  'cascade_delete_type' => 'a',
-                                  ],
-            'view_items_view_id_fkey' => [
-                                  'column' => 'view_id',
-                                  'class_name' => 'View',
-                                  'foreign_table' => 'views',
                                   'foreign_column' => 'id',
                                   'cascade_update_type' => 'a',
                                   'cascade_delete_type' => 'c',
