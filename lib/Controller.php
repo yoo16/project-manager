@@ -28,7 +28,6 @@ class Controller extends RuntimeException {
     public $pw_method = '';
     public $session_request_columns;
     public $csv_options;
-    //public $escape_auth_actions = array('login', 'logout', 'auth');
     public $auth_controller = '';
     public $auth_model = '';
     public $auth_top_controller = '';
@@ -37,6 +36,7 @@ class Controller extends RuntimeException {
     public $pw_admin_controller = 'pw_admin';
     public $pw_admin_escapes = ['login', 'auth'];
     public $pw_login_escapes = ['login', 'auth'];
+    public $pw_login_controller = 'login';
 
     static $libs = [
         'Helper',
@@ -674,6 +674,8 @@ class Controller extends RuntimeException {
         unset($params['is_use_action_selected']);
 
         $params['href'] = '#';
+        if ($params['id']) $params['href'].= $params['id'];
+
         $tag = TagHelper::a($params);
         return $tag;
     }
@@ -1202,7 +1204,6 @@ class Controller extends RuntimeException {
     function before_action($action) {
         $this->loadrequestSession();
         if ($this->name == $this->pw_admin_controller) $this->checkPwAdmin($action);
-        if ($this->auth_controller) $this->checkAuth($action);
     } 
 
     function before_rendering() {}
@@ -1392,50 +1393,12 @@ class Controller extends RuntimeException {
     }
 
     /**
-     * login
+     * public action login
      *
      * @return void
      */
     function login() {
-        $this->layout = 'login';
-        $template = 'views/components/auth/login.phtml';
-        $this->render('login', $template);
-    }
-
-    /**
-     * auth
-     *
-     * @return PgsqlEntity
-     */
-    function auth() {
-        if (!$this->auth_controller) return;
-        if (!$this->auth_model) return;
-        if (class_exists($this->auth_model)) {
-            $model = DB::model($this->auth_model)->auth();
-            return $model;
-        }
-        exit;
-    }
-
-    /**
-     * redirectAuthTop
-     *
-     * @return void
-     */
-    function redirectAuthTop() {
-        $uri = "{$this->auth_top_controller}/";
-        $this->redirectTo($uri);
-        exit;
-    }
-
-    /**
-     * redirectAuthTop
-     *
-     * @return void
-     */
-    function redirectAuthLogin() {
-        $uri = $this->base.'login';
-        $this->redirectTo($uri);
+        $this->redirectLogin();
         exit;
     }
 
@@ -1447,13 +1410,12 @@ class Controller extends RuntimeException {
      */
     function checkAuth($action) {
         if (in_array($action, $this->pw_login_escapes)) return;
-        if (!$this->auth_controller) return;
-        if (!$this->auth_model) return;
-        if (!class_exists($this->auth_model)) return;
+        if (!$this->auth_model) exit('Not setting auth_model');
+        if (!class_exists($this->auth_model)) exit('Not found auth_model');
         $this->pw_auth = AppSession::getWithKey('pw_auth', DB::model($this->auth_model)->entity_name);
+
         if (!$this->pw_auth->value['id']) {
-            $uri = "login";
-            $this->redirectTo($uri);
+            $this->redirectTo('login/');
             exit;
         }
     }
@@ -1474,6 +1436,67 @@ class Controller extends RuntimeException {
             $this->redirectTo($uri);
             exit;
         }
+    }
+
+    /**
+     * pwlogin
+     *
+     * @return void
+     */
+    function pwLogin() {
+        $this->layout = 'login';
+        $template = 'views/components/auth/login.phtml';
+        $this->render('login', $template);
+    }
+
+    /**
+     * auth
+     *
+     * @return PgsqlEntity
+     */
+    function pwAuth() {
+        if (!$this->auth_controller) return;
+        if (!$this->auth_model) return;
+        if (class_exists($this->auth_model)) {
+            $model = DB::model($this->auth_model)->auth();
+            return $model;
+        }
+        exit;
+    }
+
+    /**
+     * logout
+     *
+     * @param string $uri
+     * @return void
+     */
+    function pwLogout($uri = null)
+    {
+        AppSession::flush();
+        $this->redirectTo($uri);
+        exit;
+    }
+
+    /**
+     * redirectAuthTop
+     *
+     * @return void
+     */
+    function redirectAuthTop() {
+        $uri = "{$this->auth_top_controller}/";
+        $this->redirectTo($uri);
+        exit;
+    }
+
+    /**
+     * redirect login top
+     *
+     * @return void
+     */
+    function redirectLogin($uri = null) {
+        if (!$uri) $uri = $this->pw_login_controller.'/';
+        $this->redirectTo($uri);
+        exit;
     }
 
     /**

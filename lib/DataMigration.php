@@ -25,22 +25,25 @@ class DataMigration {
      */
     static function migrate($class_name, $old_db_info, $foreigns = null, $old_id_column = 'id', $default_values = null) {
         if (!$old_db_info) return;
-        $old = DB::model($class_name)->setDBInfo($old_db_info)->useOldTable()->all();
-        $default_db_name = $old_db_info['dbname'];
-        if (!$old->values) return;
+
+        $old_model = DB::model($class_name)->setDBInfo($old_db_info)->useOldTable()->all();
+        if (!$old_model->values) return;
+
+        $migrate_report = MigrateReport::model($class_name, $old_db_info, $old_model->values);
 
         if (is_array($foreigns)) {
             foreach ($foreigns as $column => $foreign) {
-                $db_name = ($foreign['db_name']) ? $foreign['db_name'] : $default_db_name;
+                $db_name = ($foreign['db_name']) ? $foreign['db_name'] : $old_db_info['dbname'];
                 $foreign_ids[$column] = DB::model($foreign['class_name'])->where('old_db', $db_name)->ids('old_id', 'id');
                 if ($foreign['is_search']) $search_columns[] = $column;
             }
         }
-
         $ids = DB::model($class_name)->where('old_db', $old_db_info['dbname'])->ids('old_id', 'id');
-        foreach ($old->values as $old->value) {
-            $old_id = $old->value[$old_id_column];
-            $posts = $old->oldValueToValue()->value;
+        foreach ($old_model->values as $old_model->value) {
+            $old_value = $old_model->value;
+
+            $old_id = $old_model->value[$old_id_column];
+            $posts = $old_model->oldValueToValue()->value;
             $old_posts = $posts;
 
             $posts['old_db'] = $old_db_info['dbname'];
@@ -48,7 +51,7 @@ class DataMigration {
 
             if (is_array($foreign_ids)) {
                 foreach ($foreign_ids as $column => $foreign_id) {
-                    $posts[$column] = $foreign_id[$old->value[$column]];
+                    $posts[$column] = $foreign_id[$old_model->value[$column]];
                 }
             }
 
@@ -71,19 +74,11 @@ class DataMigration {
             }
 
             if ($posts['old_db']) {
-                $new = DB::model($class_name)->save($posts, $id);
-                if ($new->sql_error) {
-                    if (class_exists('MigrateError')) {
-                        $errors['datetime'] = date('Y/m/d H:i');
-                        $errors['model_name'] = $class_name;
-                        $errors['old_db'] = $old_db_info['dbname'];
-                        $errors['sql'] = $new->sql;
-                        $errors['contents'] = $new->sql_error;
-                        DB::model('MigrateError')->insert($errors);
-                    }
-                }
+                $new_model = DB::model($class_name)->save($posts, $id);
+                $migrate_report->addReport($new_model, $posts);
             }
         }
+        $migrate_report->create();
     }
 
     /**
@@ -241,6 +236,27 @@ class DataMigration {
                       ->where("old_id = {$old_id}")
                       ->where("old_db = '{$old_pgsql->dbname}'")
                       ->one();
+        }
+        return $instance;
+    }
+
+    /**
+     * fetch from old id
+     *
+     * @param  PgsqlEntity $old_pgsql
+     * @param  string $class_name
+     * @param  int $old_id
+     * @return PgsqlEntity
+     */
+    static function fetchByOld($old_pg_info, $class_name, $old_id) {
+        $instance = DB::model($class_name);
+        if ($old_id && $old_pg_info['dbname']) {
+            $instance->select(['*'])
+                     ->where("old_id IS NOT NULL")
+                     ->where("old_db IS NOT NULL")
+                     ->where('old_id', $old_id)
+                     ->where('old_db', $old_pg_info['dbname'])
+                     ->one();
         }
         return $instance;
     }

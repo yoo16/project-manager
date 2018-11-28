@@ -13,6 +13,7 @@ require_once 'Entity.php';
 
 class PgsqlEntity extends Entity
 {
+    public $db_info = null;
     public $pg_info = null;
     public $pg_info_array = null;
     public $dbname = null;
@@ -280,6 +281,7 @@ class PgsqlEntity extends Entity
      */
     function setDBInfo($params)
     {
+        $this->db_info = $params;
         if (!$params) return $this;
         foreach ($params as $key => $value) {
             if (in_array($key, self::$pg_info_columns)) {
@@ -788,6 +790,7 @@ class PgsqlEntity extends Entity
         $this->limit = null;
         $this->joins = null;
         $this->group_by_columns = null;
+
         return $results;
     }
 
@@ -1204,7 +1207,7 @@ class PgsqlEntity extends Entity
         $this->group_by_columns = null;
         if (!$id) return $this;
 
-        $this->where('id', $id);
+        $this->where($this->id_column, $id);
 
         $sql = $this->selectSql();
 
@@ -1407,6 +1410,8 @@ class PgsqlEntity extends Entity
     {
         $this->id = null;
         $this->value[$this->id_column] = null;
+        $this->value['created_at'] = null;
+        $this->value['updated_at'] = null;
         $this->values = null;
 
         if ($this->value['id']) unset($this->value['id']);
@@ -1437,6 +1442,7 @@ class PgsqlEntity extends Entity
      */
     public function update($posts = null, $id = null)
     {
+        if ($posts[$this->id_column]) unset($posts[$this->id_column]);
         if ($id > 0) $this->fetch($id);
         if (!$this->id) return $this;
         if ($posts) $this->takeValues($posts);
@@ -1777,6 +1783,7 @@ class PgsqlEntity extends Entity
     {
         if (!$condition) return $this;
         if (isset($value)) {
+            if (is_bool($value)) $value = ($value === true) ? 'TRUE' : 'FALSE';
             $this->conditions[] = "{$condition} {$eq} '{$value}'";
         } else {
             if (is_array($condition)) {
@@ -1784,6 +1791,7 @@ class PgsqlEntity extends Entity
                 $value = $condition[1];
                 $eq = (isset($conditions[3])) ? $conditions[3] : '=';
 
+                if (is_bool($value)) $value = ($value === true) ? 'TRUE' : 'FALSE';
                 $this->conditions[] = "{$column} {$eq} '{$value}'";
             } else {
                 $this->conditions[] = $condition;

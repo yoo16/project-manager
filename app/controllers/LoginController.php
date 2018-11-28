@@ -4,7 +4,7 @@
  * LoginController 
  *
  * @author  Yohei Yoshikawa
- * @create  2018/10/03 
+ * @create  2012/10/03 
  */
 require_once 'AppController.php';
 
@@ -12,8 +12,7 @@ class LoginController extends AppController
 {
 
     public $layout = 'login';
-    public $auth_controller = 'login';
-    public $auth_model = 'Staff';
+    public $name = 'login';
     public $auth_top_controller = 'project';
 
     function before_action($action)
@@ -22,13 +21,24 @@ class LoginController extends AppController
     }
 
     /**
-     * index
+     * login index
      *
-     * @param
      * @return void
      */
-    function action_index()
+    function index() {
+        $this->pwLogin();
+    }
+
+    /**
+     * auth
+     *
+     * @param  
+     * @return void
+     **/
+    function auth()
     {
+        $this->redirectAuthTop($action);
+        exit;
     }
 
 }

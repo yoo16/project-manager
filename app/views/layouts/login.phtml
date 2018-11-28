@@ -1,0 +1,28 @@
+<html lang="ja">
+<head>
+  <? include('components/meta.phtml') ?>
+  <? include('components/stylesheet.phtml') ?>
+  <? include('components/javascript.phtml') ?>
+  <?= TagHelper::stylesheet('login') ?>
+</head>
+<body id="main">
+  <nav id="header" class="navbar navbar-toggleable-md fixed-top">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#nav-header" aria-controls="nav-header" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav-header">
+
+    </div>
+
+  </nav>
+
+  <div class="container">
+
+    <?= $this->content_for_layout?>
+
+  </div>
+  <div id="indicator">
+    <img src="<?= $this->urlFor('images/loader.gif') ?>">
+  </div>
+</body>
+</html>

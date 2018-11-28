@@ -37,8 +37,6 @@ class AppSession {
         if (!$sid) $sid = 0;
         $value = null;
         if (isset($_SESSION[APP_NAME][$sid][$key])) $value = $_SESSION[APP_NAME][$sid][$key];
-        dump($key);
-        dump($value);
         if (is_null($value)) $value = $default_value;
         return $value;
     }

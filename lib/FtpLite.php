@@ -293,9 +293,6 @@ class FtpLite
         ftp_pasv($this->connect, true);
         $this->is_success_download = ftp_get($this->connect, $file_path, $remote_path, $upload_mode);
 
-        dump($this->host);
-        dump($remote_path);
-
         $this->changeMod($file_path);
         return $this;
     }

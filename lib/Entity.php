@@ -236,9 +236,9 @@ class Entity {
             foreach ($this->columns as $column_name => $column) {
                 if ($column['old_name'] && $column_name != $column['old_name']) {
                     $this->value[$column_name] = $this->value[$column['old_name']];
-                    //if ($column['old_name'] != $this->id_column) {
+                    if ($column['old_name'] != $this->id_column) {
                         unset($this->value[$column['old_name']]);
-                    //}
+                    }
                 }
             }
         }
@@ -270,6 +270,7 @@ class Entity {
      */
     public function save($posts, $id = null)
     {
+        if (isset($posts[$this->id_column])) unset($posts[$this->id_column]);
         if ($id) $this->fetch($id);
         if ($this->id > 0) {
             $this->update($posts);
@@ -1001,7 +1002,7 @@ class Entity {
         return $this;
     }
 
-
+    //TODO 
     /**
     * find Parent 
     *
@@ -1034,22 +1035,23 @@ class Entity {
     }
 
     /**
-     * relation value 
-     *
-     * @param Entity $instance
-     * @param string $key
+     * find from relation value
+     * 
+     * @param  Entity $relation
+     * @param  string $column
      * @return Entity
      */
-    function valueForInstanceKey($instance, $key) {
+    function findByRelation($relation, $column = null) {
         if (!$this->values) return $this;
-        if (!$instance->value) return $this;
-        $index = $instance->value[$key];
-        $this->value = $this->values[$index];
+        if (!$relation->value) return $this;
+        if (!$column) $column = "{$this->entity_name}_id";
+        $id = $relation->value[$column];
+        $this->value = $this->values[$id];
         return $this;
     }
 
     /**
-     * values For column index
+     * convert values by column index
      *
      * @param string $column
      * @return Entity
@@ -1065,22 +1067,7 @@ class Entity {
     }
 
     /**
-     * values by column
-     * 
-     * @param  Entity $relation
-     * @param  string $column
-     * @return Entity
-     */
-    function findValueByRelation($relation, $column = null) {
-        if (!$relation->value) return $this;
-        if (!$column) $column = "{$this->entity_name}_id";
-        $id = $relation->value[$column];
-        $this->value = $this->values[$id];
-        return $this;
-    }
-
-    /**
-     * column_name is maybe foreign key
+     * valid column_name for foreign key
      *
      * @param  string $column_name
      * @return int
@@ -1091,7 +1078,7 @@ class Entity {
     }
 
     /**
-     * table_name is maybe by foreign column_name
+     * table_name by foreign column_name
      *
      * @param  string $column_name
      * @return string
@@ -1202,17 +1189,16 @@ class Entity {
      * @return integer
      */
     function counts($column = null, $filter_value = null) {
+        if (!$this->values) return 0;
         $count = 0;
-        if ($this->values) {
-            if (isset($column) && isset($filter_value)) {
-                $this->_filter_value = $filter_value;
-                if ($values = array_column($this->values, $column)) {
-                    $filter_values = array_filter($values, function($param) { return ($param == $this->_filter_value); });
-                    if ($filter_values) $count = count($filter_values);
-                }
-            } else {
-                $count = count($this->values);
+        if (isset($column) && isset($filter_value)) {
+            $this->_filter_value = $filter_value;
+            if ($values = array_column($this->values, $column)) {
+                $filter_values = array_filter($values, function($param) { return ($param == $this->_filter_value); });
+                if ($filter_values) $count = count($filter_values);
             }
+        } else {
+            $count = count($this->values);
         }
         return $count;
     }
@@ -1225,13 +1211,12 @@ class Entity {
      * @return Entity
      */
     function auth() {
-        if (!$this->auth_columns) exit('Not defined $auth_columns in Model File');
-        if ($this->auth_conditions) $this->wheres($this->auth_conditions);
-        foreach ($this->auth_columns as $column) {
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') exit;
+
+        if (!$this->auth_columns) exit('Not found auth columns in model');
+        foreach ($this->auth_columns as $column => $options) {
             $value = $_POST[$column];
-            if (is_array($this->auth_hash_types) && isset($this->auth_hash_types[$column])) {
-                $value = $this->convertHash($value, $this->auth_hash_types[$column]);
-            }
+            if ($options['hash']) $value = $this->convertHash($value, $options['hash']);
             $this->where($column, $value);
         }
         $this->one();
@@ -1240,13 +1225,13 @@ class Entity {
     }
 
     /**
-     * remember auth
+     * remember session pw_auth
      *
      * @param Entity $model
      * @return void
      */
     function rememberAuth() {
-        if (!$this->entity_name) exit('Not defined $entity_name');
+        if (!$this->entity_name) exit('Error remember auth : Not defined $entity_name');
         if (!$this->value) return;
 
         $pw_auth[$this->entity_name] = $this;

@@ -18,18 +18,9 @@
         
         <? Tag::init()->php('FormHelper::linkButton("cancel", null, [\'label\' => LABEL_BACK])') ?>
 
+        <? Tag::init()->php('$this->'."{$values['model']['entity_name']}".'->confirmDelete()') ?>
       </div>
     </div>
 
   </div>
 </form>
-
-<div class="card">
-  <div class="card-footer">
-    <div class="text-left">
-
-      <? Tag::init()->php('$this->'."{$values['model']['entity_name']}".'->confirmDelete()') ?>
-
-    </div>
-  </div>
-</div>
