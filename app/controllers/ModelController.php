@@ -20,7 +20,7 @@ class ModelController extends ProjectController {
         parent::before_action($action);
 
         if (!$this->project->value['id'] || !$this->database->value['id']) {
-            $this->redirect_to('project/index');
+            $this->redirectTo(['controller' => 'project']);
             exit;
         }
     }
@@ -36,12 +36,12 @@ class ModelController extends ProjectController {
     }
 
     function action_index() {
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_cancel() {
         unset($this->session['posts']);
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_list() {
@@ -64,7 +64,7 @@ class ModelController extends ProjectController {
     function action_add() {
         if (!isPost()) exit;
 
-        if (!$this->database->value) $this->redirect_to('list');
+        if (!$this->database->value) $this->redirectTo(['action' => 'list']);;
 
         $posts = $this->pw_posts['model'];
 
@@ -108,7 +108,7 @@ class ModelController extends ProjectController {
         }
 
         unset($this->session['posts']);
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_update() {
@@ -140,7 +140,7 @@ class ModelController extends ProjectController {
         } else {
             unset($this->session['posts']);
         }
-        $this->redirect_to('edit', $this->pw_params['id']);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
     }
 
     function action_duplicate() {
@@ -183,7 +183,7 @@ class ModelController extends ProjectController {
             if ($new_model->value['id']) $new_model->syncDB($this->database);
         }
 
-        $this->redirect_to('list', ['model_id' => $new_model->value['id']]);
+        $this->redirectTo(['action' => 'list'], ['model_id' => $new_model->value['id']]);
     }
 
     function action_delete() {
@@ -204,11 +204,11 @@ class ModelController extends ProjectController {
             if ($model->errors) {
                 $this->flash['errors'] = $model->errors;
 
-                $this->redirect_to('edit', $this->pw_params['id']);
+                $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
                 exit;
             }
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_lock() {
@@ -218,7 +218,7 @@ class ModelController extends ProjectController {
                             ->where("database_id = {$this->database->value['id']}")
                             ->updates($posts);
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_add_table() {
@@ -240,7 +240,7 @@ class ModelController extends ProjectController {
                 }
             }
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_old_table_list() {
@@ -266,7 +266,7 @@ class ModelController extends ProjectController {
         $posts['old_name'] = $this->pw_posts['old_name'];
 
         DB::model('Model')->fetch($_REQUEST['model_id'])->update($posts);
-        $this->redirect_to('relation_database/diff_model');
+        $this->redirectTo(['controller' => 'relation_database', 'action' => 'list']);
     }
 
     function action_check_relation() {
@@ -300,11 +300,11 @@ class ModelController extends ProjectController {
                 }
             }
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_sync_models() {
-        if (!$this->database->value['id']) $this->redirect_to('project/');
+        if (!$this->database->value['id']) $this->redirectTo(['controller' => 'project']);
 
         $model = $this->project->relationMany('Model')->all();
 
@@ -323,11 +323,11 @@ class ModelController extends ProjectController {
             }
         }
 
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_sync_model() {
-        if (!$this->database->value['id']) $this->redirect_to('project/');
+        if (!$this->database->value['id']) $this->redirectTo(['controller' => 'project']);
 
         $model = DB::model('Model')->fetch($this->pw_params['id']);
         if ($model->value) {
@@ -341,7 +341,7 @@ class ModelController extends ProjectController {
                 $attribute->importByModel($model_values, $this->database);
             }
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
 
@@ -367,7 +367,7 @@ class ModelController extends ProjectController {
                 $pgsql->dropColumn($model_value['name'], $column);
             }
         }
-        $this->redirect_to('model/list');
+        $this->redirectTo(['controller' => 'model', 'action' => 'list']);
     }
 
     function action_add_require_columns() {
@@ -390,7 +390,7 @@ class ModelController extends ProjectController {
                 }
             }
         }
-        $this->redirect_to('model/list');
+        $this->redirectTo(['controller' => 'model', 'action' => 'list']);
     }
 
     /**
@@ -411,7 +411,7 @@ class ModelController extends ProjectController {
                 }
             }
         }
-        $this->redirect_to('model/list');
+        $this->redirectTo(['controller' => 'model', 'action' => 'list']);
     }
 
     /**
@@ -460,7 +460,7 @@ class ModelController extends ProjectController {
                 }
             }
         }
-        $this->redirect_to('model/list');
+        $this->redirectTo(['controller' => 'model', 'action' => 'list']);
     }
 
     function rebuild_fk_attributes() {
@@ -505,7 +505,7 @@ class ModelController extends ProjectController {
                 }
             }
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
 
@@ -561,7 +561,7 @@ class ModelController extends ProjectController {
             echo($pgsql->host.PHP_EOL);
             exit;
         }
-        $this->redirect_to('values', $this->pw_params['id']);
+        $this->redirectTo(['action' => 'values', 'id' => $this->pw_params['id']]);
     }
 
 

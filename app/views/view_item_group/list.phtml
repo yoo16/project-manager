@@ -19,7 +19,7 @@
     <? foreach ($this->view_item_group->values as $values): ?>
       <tr row-id="<?= $values['id'] ?>">
         <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-        <td><a href="<?= url_for('view_item_group_member/', ['view_item_group_id' => $values['id']]) ?>"><?= $values['name'] ?></a></td>
+        <td><a href="<?= $this->linkTo('view_item_group_member/', ['view_item_group_id' => $values['id']]) ?>"><?= $values['name'] ?></a></td>
       </tr>
     <? endforeach ?>
   <? endif ?>

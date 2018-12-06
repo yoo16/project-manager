@@ -4,7 +4,7 @@
 <div class="pt-3">
 <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
 <?= $this->linkControllerTag('page', ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-<a class="btn btn-outline-primary" href="<?= url_for('page_model/', array('page_id' => $this->page->value['id'])) ?>">Model Requests</a>
+<a class="btn btn-outline-primary" href="<?= $this->linkTo('page_model/', array('page_id' => $this->page->value['id'])) ?>">Model Requests</a>
 </div>
 
 <? if ($this->page->view->values): ?>

@@ -1,56 +1,57 @@
 <? include('_header.phtml') ?>
 
-  <? include('add_window.phtml') ?>
+<div class="alert alert-success">
+  <p>
+    <dl>
+      <dd>* If you export PHP files(Model, Controller, View etc...) by project-manager, please download PHP Framework '
+        <a href="https://github.com/yoo16/phpwork" target="_blank">php-work</a>'.</dd>
+    </dl>
+  </p>
+</div>
 
-    <div class="alert alert-success">
-      <p>
-        <dl>
-          <dd>* If you export PHP files(Model, Controller, View etc...) by project-manager, please download PHP Framework '
-            <a href="https://github.com/yoo16/phpwork" target="_blank">php-work</a>'.</dd>
-        </dl>
-      </p>
-    </div>
+<div>
+  <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
+  <? include('views/components/sortable.phtml') ?>
+</div>
 
-    <div>
-      <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
-      <? include('views/components/sortable.phtml') ?>
-    </div>
+<div class="content">
+  <table id="sortable-table" class="table" model-name="Project">
+    <thead class="thead-default">
+      <tr>
+        <th>&nbsp;</th>
+        <th>Name</th>
+        <th>DB</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
 
-    <div class="content">
-      <table id="sortable-table" class="table" model-name="Project">
-        <thead class="thead-default">
-          <tr>
-            <th>&nbsp;</th>
-            <th>Name</th>
-            <th>DB</th>
-            <th>&nbsp;</th>
-          </tr>
-        </thead>
-
-        <? if (is_array($this->project->values)): ?>
-          <? foreach ($this->project->values as $project->value): ?>
-            <tr row-id="<?= $project->value['id']?>" order="<?= $project->value['sort_order']?>">
-              <td>
-                <?= FormHelper::linkButton('edit', $project->value['id'], ['label' => LABEL_EDIT]) ?>
-              </td>
-              <td>
-                <?= $this->linkControllerTag('model', 
+    <? if (is_array($this->project->values)): ?>
+    <? foreach ($this->project->values as $values): ?>
+    <tr row-id="<?= $values['id']?>" order="<?= $values['sort_order']?>">
+      <td>
+        <?= $this->project->linkEdit([], $values) ?>
+      </td>
+      <td>
+        <?= $this->linkTo(['controller' => 'model'], 
             [
-              'label' => $project->value['name'],
-              'http_params' => ['project_id' => $project->value['id']]
+              'label' => $values['name'],
+              'http_params' => ['project_id' => $values['id']]
             ]
           )
           ?>
-              </td>
-              <td>
-                <?= $project->value['database']['name'] ?>
-              </td>
-              <td>
-                <?= FormHelper::linkButton('export_list', LABEL_EXPORT.LABEL_SETTING, $project->value['id']) ?>
-              </td>
-            </tr>
-            <? endforeach ?>
-              <? endif ?>
+      </td>
+      <td>
+        <?= $values['database']['name'] ?>
+      </td>
+      <td>
+        <?= $this->linkTo(['action' => 'export_list', 'id' => $values['id']],
+          ['label' => LABEL_EXPORT.LABEL_SETTING]
+        ) ?>
+      </td>
+    </tr>
+    <? endforeach ?>
+    <? endif ?>
 
-      </table>
-    </div>
+  </table>
+</div>
+  <? include('add_window.phtml') ?>

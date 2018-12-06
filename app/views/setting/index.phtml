@@ -25,7 +25,7 @@
   <div class="alert alert-danger">
     Not Found project-manager's database '<?= DB_NAME ?>'
     <p>createdb <?= DB_NAME ?></p>
-    <a class="btn btn-primary" href="<?= url_for('create_database') ?>" onClick="return confirm('createdb for PostgreSQL?')">Create Database</a>
+    <a class="btn btn-primary" href="<?= $this->linkTo('create_database') ?>" onClick="return confirm('createdb for PostgreSQL?')">Create Database</a>
     * If you want createdb on browser, please set the permission on pg_hba.conf, postgresql.conf
   </div>
 <? endif ?>
@@ -33,7 +33,7 @@
 <? if (!$this->database->is_success): ?>
 <div class="alert alert-danger">
   Not Found <?= DB_NAME ?>'s tables.
-  <a class="btn btn-primary" href="<?= url_for('pgsql') ?>">Create Table</a>
+  <a class="btn btn-primary" href="<?= $this->linkTo('pgsql') ?>">Create Table</a>
 </div>
 <? endif ?>
 <h2>PostgreSQL</h2>

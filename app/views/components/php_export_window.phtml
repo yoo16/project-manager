@@ -1,4 +1,3 @@
-
 <div id="php-export-window" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content" style="width:50rem; margin-left: -10rem;">
@@ -12,100 +11,118 @@
 
       <div class="modal-body">
         <div class="alert alert-success">
-         <p>
-           if you export php models, need download PHP Framework 'php-work'.
-         </p>
-         <a class="btn btn-primary" href="<?= PHP_WORK_GIT_URL ?>" target="_blank">Download php-work(GitHub)</a>
-       </div>
-       <h5><?= $this->project->value['name'] ?></h5>
-       <? if (is_array($this->user_project_setting->values)): ?>
-         <table class="table">
+          <p>
+            if you export php models, need download PHP Framework 'php-work'.
+          </p>
+          <a class="btn btn-primary" href="<?= PHP_WORK_GIT_URL ?>" target="_blank">Download php-work(GitHub)</a>
+        </div>
+        <h5>
+          <?= $this->project->value['name'] ?>
+        </h5>
+        <? if (is_array($this->user_project_setting->values)): ?>
+        <table class="table">
           <? foreach ($this->user_project_setting->values as $user_project_setting): ?>
-            <tr>
-              <td>
-                <?= $user_project_setting['project_path'] ?>
-              </td>
-              <td>
-                <? if (file_exists($user_project_setting['project_path'])): ?>
-                  <? if (file_exists($user_project_setting['project_path']."app/")): ?>
-                    <label class="badge badge-success">exists</label>
-                  <? else: ?>
-                    <label class="badge badge-danger">not found php-work</label>
-                  <? endif ?>
-                <? else: ?>
-                  <label class="badge badge-danger">not exists</label>
-                <? endif ?>
-              </td>
-              <td>
-                <? if (file_exists($user_project_setting['project_path'])): ?>
-                  <? if (file_exists($user_project_setting['project_path']."app/")): ?>
-
-                    <div class="form-inline">
-                      <form action="<?=url_for('project/export_php_models') ?>" method="post">
-                        <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">PHP Model</button>
-                        <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                        <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                      </form>
-                      &nbsp;
-                      <form action="<?=url_for('project/export_php_controller_view') ?>" method="post">
-                        <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">Controller/View</button>
-                        <div>
-                          <input type="checkbox" name="is_overwrite" value="1"> overwrite
-                        </div>
-                        <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                        <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                      </form>
-                      &nbsp;
-                      <form action="<?=url_for('localize_string/export') ?>" method="post">
-                        <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP Localize files?">Localize</button>
-                        <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                        <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                      </form>
-                      &nbsp;
-                      <form action="<?=url_for('project/csv_export') ?>" method="post">
-                        <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export CSV files?">CSV</button>
-                        <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                        <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                      </form>
-                      &nbsp;
-                      <? if (defined('IS_DEVELOPER') && IS_DEVELOPER): ?>
-                        &nbsp;
-                        <form action="<?=url_for('project/export_php_view_edit') ?>" method="post">
-                          <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP View edit files?">View Edit</button>
-                          <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                          <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                        </form>
-                      <? endif ?>
-                      <form action="<?=url_for('project/export_python_models') ?>" method="post">
-                        <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Python Models?">Python Model</button>
-                        <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                        <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                      </form>
-                      &nbsp;
-                    </div>
-                  <? endif ?>
-                <? endif ?>
-              </td>
-            </tr>
-
-            <? if (file_exists($user_project_setting['project_path'])): ?>
-              <? if (!file_exists($user_project_setting['project_path']."app/")): ?>
-                <tr>
-                  <td>
-                    <small class="text-danger"><?= UserProjectSetting::gitCloneCommand($user_project_setting) ?></small>
-                  </td>
-                  <td></td>
-                </tr>
+          <tr>
+            <td>
+              <?= $user_project_setting['project_path'] ?>
+            </td>
+            <td>
+              <? if (file_exists($user_project_setting['project_path'])): ?>
+              <? if (file_exists($user_project_setting['project_path']."app/")): ?>
+              <label class="badge badge-success">exists</label>
+              <? else: ?>
+              <label class="badge badge-danger">not found php-work</label>
               <? endif ?>
-            <? endif ?>
+              <? else: ?>
+              <label class="badge badge-danger">not exists</label>
+              <? endif ?>
+            </td>
+            <td>
+              <? if (file_exists($user_project_setting['project_path'])): ?>
+              <? if (file_exists($user_project_setting['project_path']."app/")): ?>
+
+              <div class="form-inline">
+                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_php_models']) ?>"
+                  method="post">
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">PHP
+                    Model</button>
+                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+                </form>
+                &nbsp;
+                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_php_controller_view']) ?>"
+                  method="post">
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">Controller/View</button>
+                  <div>
+                    <input type="checkbox" name="is_overwrite" value="1"> overwrite
+                  </div>
+                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+                </form>
+                &nbsp;
+                <form action="<?= $this->urlFor(['controller' => 'localize_string', 'action' => 'export']) ?>" method="post">
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP Localize files?">Localize</button>
+                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+                </form>
+                &nbsp;
+                <form action="<?= $this->urlFor(['controller' => 'localize_string', 'action' => 'csv_export']) ?>"
+                  method="post">
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export CSV files?">CSV</button>
+                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+                </form>
+                &nbsp;
+                <? if (defined('IS_DEVELOPER') && IS_DEVELOPER): ?>
+                &nbsp;
+                <form action="<?= $this->urlFor(['controller' => 'localize_string', 'action' => 'export_php_view_edit']) ?>"
+                  method="post">
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP View edit files?">View
+                    Edit</button>
+                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+                </form>
+                <? endif ?>
+                <form action="<?= $this->urlFor(['controller' => 'localize_string', 'action' => 'export_python_models']) ?>"
+                  method="post">
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Python Models?">Python
+                    Model</button>
+                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+                </form>
+                &nbsp;
+              </div>
+              <? endif ?>
+              <? endif ?>
+            </td>
+          </tr>
+
+          <? if (file_exists($user_project_setting['project_path'])): ?>
+          <? if (!file_exists($user_project_setting['project_path']."app/")): ?>
+          <tr>
+            <td>
+              <small class="text-danger">
+                <?= UserProjectSetting::gitCloneCommand($user_project_setting) ?></small>
+            </td>
+            <td></td>
+          </tr>
+          <? endif ?>
+          <? endif ?>
           <? endforeach ?>
 
         </table>
-      <? else: ?>
-        <?= FormHelper::linkButton('project/export_list', LABEL_EXPORT.LABEL_SETTING, $this->project->value['id']) ?>
-      <? endif ?>
+        <? else: ?>
+        <?= FormHelper::linkButton(
+                [
+                'controller' => 'project',
+                'action' => 'export_list',
+                'id' => $this->project->value['id']
+                ],
+                ['label' => LABEL_EXPORT.LABEL_SETTING]
+                ) ?>
+        <? endif ?>
 
+      </div>
     </div>
   </div>
-</div>
 </div>

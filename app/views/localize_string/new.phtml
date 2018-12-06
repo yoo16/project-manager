@@ -1,5 +1,5 @@
 <? include('_header.phtml') ?>
-<form action="<?= url_for('add') ?>" method="post">
+<form action="<?= $this->linkTo('add') ?>" method="post">
 
   <table class="table">
     <tr>
@@ -17,7 +17,7 @@
     </table>
 
   <?= FormHelper::submit(LABEL_SAVE) ?>
-  <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>  
+  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>  
     
   <input type="hidden" name="localize_string[project_id]" value="<?= $this->project->value['id'] ?>">
 </form>

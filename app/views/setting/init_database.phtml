@@ -20,7 +20,7 @@
     </tr>
   </table>
 
-  <a class="btn btn-outline-primary" href="<?= url_for('init_database') ?>" onClick="return confirm('init database?')"><?= LABEL_INIT ?></a>
-  <a class="btn btn-outline-primary" href="<?= url_for('/index') ?>"><?= LABEL_BACK ?></a>
+  <a class="btn btn-outline-primary" href="<?= $this->linkTo('init_database') ?>" onClick="return confirm('init database?')"><?= LABEL_INIT ?></a>
+  <a class="btn btn-outline-primary" href="<?= $this->linkTo('/index') ?>"><?= LABEL_BACK ?></a>
 </div>
 

@@ -27,13 +27,13 @@
 
   <div class="card-footer text-center">
     <? if (!$this->pg_connection): ?>
-    <a class="btn btn-primary confirm-dialog" href="<?= url_for('create_database') ?>" message="createdb for PostgreSQL?"><?= LABEL_CREATE ?></a>
+    <a class="btn btn-primary confirm-dialog" href="<?= $this->linkTo('create_database') ?>" message="createdb for PostgreSQL?"><?= LABEL_CREATE ?></a>
   <? else: ?>
   <? if ($this->sql): ?>
-  <a class="btn btn-primary confirm-dialog" href="<?= url_for('create_tables') ?>" message="Init Database? *Data will be deleted on database."><?= LABEL_UPDATE ?></a>
+  <a class="btn btn-primary confirm-dialog" href="<?= $this->linkTo('create_tables') ?>" message="Init Database? *Data will be deleted on database."><?= LABEL_UPDATE ?></a>
 <? endif ?>
 <? endif ?>
-  <a class="btn btn-outline-primary" href="<?= url_for('index') ?>"><?= LABEL_BACK ?></a>
+  <a class="btn btn-outline-primary" href="<?= $this->linkTo('index') ?>"><?= LABEL_BACK ?></a>
 </div>
 </div>
 

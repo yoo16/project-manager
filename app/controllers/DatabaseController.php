@@ -17,11 +17,11 @@ class DatabaseController extends AppController {
         AppSession::clear('project');
         AppSession::clear('model');
         AppSession::clear('attribute');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function cancel() {
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_list() {
@@ -51,7 +51,7 @@ class DatabaseController extends AppController {
             $this->render('result');
         } else {
             unset($this->session['posts']);
-            $this->redirect_to('list');
+            $this->redirectTo(['action' => 'list']);;
         }
     }
 
@@ -60,7 +60,7 @@ class DatabaseController extends AppController {
         $posts = $this->pw_posts['database'];
         $database = DB::model('Database')->update($posts, $this->pw_params['id']);
 
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
 
@@ -69,7 +69,7 @@ class DatabaseController extends AppController {
                             ->fetch($this->database->value['id'])
                             ->exportDatabase();
 
-        $this->redirect_to('list', $params);
+        $this->redirectTo(['action' => 'list']);
     }
 
     function action_delete() {
@@ -86,7 +86,7 @@ class DatabaseController extends AppController {
             DB::model('Database')->delete($this->pw_params['id']);
         }
 
-        $this->redirect_to('database/');
+        $this->redirectTo(['controller' => 'database']);
     }
 
     function action_import_list() {
@@ -130,7 +130,7 @@ class DatabaseController extends AppController {
             DB::model('Database')->insert($posts);
         }
 
-        $this->redirect_to('database/');
+        $this->redirectTo(['controller' => 'database']);
     }
 
     function action_tables() {
@@ -148,7 +148,7 @@ class DatabaseController extends AppController {
             $model = Model::_getValue($this->pw_params['id']);
             $this->createTable($model);
             $this->flash['result'] = true;
-            $this->redirect_to('model/list');
+            $this->redirectTo(['controller' => 'model', 'action' => 'list']);
         }
     }
 

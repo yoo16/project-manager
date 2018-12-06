@@ -12,21 +12,21 @@ class AttributeController extends ModelController {
 
    /**
     * @access public
-    * @param String $action
+    * @param string $action
     * @return void
     */ 
     function before_action($action) {
         parent::before_action($action);
 
         if (!$this->project->value) {
-            $this->redirect_to('project/list');
+            $this->redirectTo(['controller' => 'project']);
         }
         $this->model = DB::model('Model')->requestSession();
 
         if ($this->model->value) {
             $this->page = $this->model->relationMany('Page')->one();
         } else {
-            $this->redirect_to('model/list');
+            $this->redirectTo(['controller' => 'model', 'action' => 'list']);
         }
     }
 
@@ -35,7 +35,7 @@ class AttributeController extends ModelController {
     }
 
     function index() {
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_cancel() {
@@ -97,7 +97,7 @@ class AttributeController extends ModelController {
         $posts['attnum'] = $pg_attribute['attnum'];
         $attribute = DB::model('Attribute')->insert($posts);
 
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_update() {
@@ -161,9 +161,9 @@ class AttributeController extends ModelController {
 
         if ($attribute->errors) {
             $this->flash['errors'] = $attribute->errors;
-            $this->redirect_to('edit', $this->pw_params['id']);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_delete() {
@@ -178,9 +178,9 @@ class AttributeController extends ModelController {
         if ($attribute->errors) {
             $errors['attributes'] = $attribute->errors;
             $this->setErrors($errors);
-            $this->redirect_to('edit', $this->pw_params['id']);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -195,7 +195,7 @@ class AttributeController extends ModelController {
             $pgsql = $database->pgsql(); 
             $pgsql->createTable($table_name);
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function add_column() {
@@ -223,7 +223,7 @@ class AttributeController extends ModelController {
                 DB::model('Attribute')->update($posts, $attribute->value['id']);
             }
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
 
@@ -236,7 +236,7 @@ class AttributeController extends ModelController {
         $pg_class = $pgsql->pgClassById($this->model->value['pg_class_id']);
         $pgsql->updateColumnComment($pg_class['relname'], $attribute->value['name'], $posts['label']);
 
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_change_required() {
@@ -250,7 +250,7 @@ class AttributeController extends ModelController {
             $pgsql->changeNotNull($this->model->value['name'], $attribute->value['name'], $attribute->value['is_required']);
             if ($pgsql->sql_error) exit($pgsql->sql_error);
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_rename_constraint() {
@@ -260,7 +260,7 @@ class AttributeController extends ModelController {
 
         $pgsql = $database->pgsql();
         $results = $pgsql->renamePgConstraint($model->value['name'], $this->pw_posts['constraint_name'], $this->pw_posts['new_constraint_name']);
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_delete_constraint() {
@@ -270,7 +270,7 @@ class AttributeController extends ModelController {
 
         $pgsql = $database->pgsql();        
         $pgsql->removePgConstraint($model->value['name'], $this->pw_posts['constraint_name']);
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     /**
@@ -362,7 +362,7 @@ class AttributeController extends ModelController {
             }
         }
         $params['model_id'] = $attribute->value['model_id'];
-        $this->redirect_to('list', $params);
+        $this->redirectTo(['action' => 'list'], $params);
     }
 
     /**
@@ -386,7 +386,7 @@ class AttributeController extends ModelController {
             }
         }
         $params['model_id'] = $this->model->value['id'];
-        $this->redirect_to('list', $params);
+        $this->redirectTo(['action' => 'list'], $params);
     }
 
     /**
@@ -401,7 +401,7 @@ class AttributeController extends ModelController {
         $pg_class = $pgsql->pgClassByRelname($this->model->value['name']);
         $pgsql->removePgConstraints($pg_class['relname'], 'p');
 
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     /**
@@ -438,7 +438,7 @@ class AttributeController extends ModelController {
         $pgsql = $database->pgsql();
         $pgsql->addPgUnique($model['name'], $column_names);
 
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_old_attribute_list() {
@@ -469,19 +469,19 @@ class AttributeController extends ModelController {
         $posts['old_name'] = $this->pw_posts['old_name'];
 
         DB::model('Attribute')->fetch($_REQUEST['attribute_id'])->update($posts);
-        $this->redirect_to('relation_database/diff_model');
+        $this->redirectTo(['controller' => 'relation_database', 'action' => 'diff_model']);
     }
 
     function action_delete_old_name() {
         $posts['old_name'] = '';
         DB::model('Attribute')->fetch($this->pw_params['id'])->update($posts);
-        $this->redirect_to('edit', $this->pw_params['id']);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
     }
 
     function action_sync_model() {
         $model = DB::model('Model')->fetch($this->pw_params['id']);
         if ($model->value['id']) $model->syncDB($this->database);
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_sync_attribute() {
@@ -512,7 +512,7 @@ class AttributeController extends ModelController {
             }
         }
 
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
 }

@@ -32,62 +32,21 @@ class Helper
     /**
      * number format
      *
-     * @param Float $value
-     * @param Integer $digit
-     * @param String $not_format
-     * @return Float
+     * @param float $value
+     * @param integer $digit
+     * @param string $not_format
+     * @return float
      */
     static function numberFormat($value, $digit = null, $not_format = '-')
     {
         if (is_numeric($value)) {
-            if ($digit) {
-                return number_format($value, $digit);
-            } else {
-                return $value;
-            }
+            if ($digit) return number_format($value, $digit);
+            return $value;
         }
         if ($not_format) return $not_format;
         return '';
     }
     
-}
-
-/**
- * url_for_session
- *
- * @param int $sid
- * @param array $params
- * @param object $option
- * @return string
- */
-function url_for_session($sid = 0, $params = null, $option = null)
-{
-    if (is_array($option)) {
-        $options = $option;
-    } else if (is_numeric($option)) {
-        $options['id'] = $option;
-    }
-    if ($sid) $options['sid'] = $sid;
-    $url = url_for($params, $options);
-    return $url;
-}
-
-/**
- * url_for
- *
- * @param array $params
- * @param object $option
- * @return string
- */
-function url_for($params, $option = null)
-{
-    $controller = $GLOBALS['controller'];
-    $path = $controller->url_for($params, $option);
-    if (strpos($path, '://')) {
-        return htmlspecialchars($path);
-    } else {
-        return htmlspecialchars($controller->relative_base . $path);
-    }
 }
 
 /**

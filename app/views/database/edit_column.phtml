@@ -1,6 +1,6 @@
 <? include('_header.phtml') ?>
 
-<form action="<?= url_for('update_column') ?>" method="post">
+<form action="<?= $this->linkTo('update_column') ?>" method="post">
   <div class="">
     <div class="form-group row">
       <label for="" class="col-2 col-form-label">name</label>
@@ -24,14 +24,14 @@
   </div>
   <div class="">
     <input class="btn btn-outline-primary" type="submit" value="<?= LABEL_UPDATE ?>">
-    <a class="btn btn-outline-primary" href="<?= url_for('columns', $this->pw_params) ?>"><?= LABEL_BACK ?></a>
+    <a class="btn btn-outline-primary" href="<?= $this->linkTo('columns', $this->pw_params) ?>"><?= LABEL_BACK ?></a>
     <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
     <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
     <input type="hidden" name="old_column_name" value="<?= $this->pg_attribute['column_name'] ?>">
   </div>
 </form>
 
-<form action="<?= url_for('delete_column') ?>" method="post">
+<form action="<?= $this->linkTo('delete_column') ?>" method="post">
   <input type="submit" class="btn btn-outline-danger" value="<?= LABEL_DELETE ?>">
   <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
   <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">

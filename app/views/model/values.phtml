@@ -5,7 +5,7 @@
 <div class="">
   <div class="pt-3">
     <?= FormHelper::linkModal('#model-value-window', LABEL_ADD) ?>
-    <a class="btn btn-outline-primary" href="<?= url_for('list'); ?>"><?= LABEL_BACK ?></a>
+    <a class="btn btn-outline-primary" href="<?= $this->linkTo('list'); ?>"><?= LABEL_BACK ?></a>
   </div>
 
   <div class="pt-3">
@@ -27,7 +27,7 @@
         <? foreach ($values as $column_name => $value): ?>
         <td>
         <? if ($model = $this->fk_models[$column_name]): ?>
-        <a href="<?= url_for('values', $model['id']) ?>"><?= $value ?></a>
+        <a href="<?= $this->linkTo('values', $model['id']) ?>"><?= $value ?></a>
         <? else: ?>
         <?= $value ?>
         <? endif ?>

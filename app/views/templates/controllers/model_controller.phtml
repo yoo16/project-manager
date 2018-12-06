@@ -46,7 +46,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     */
     function index() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -57,7 +57,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     */
     function action_cancel() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -139,7 +139,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
             $errors['<?= $model->value['name'] ?>'] = $<?= $model->value['entity_name'] ?>->errors;
             $this->setErrors($errors);
         }
-        $this->redirect_to('edit', $this->pw_params['id']);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
 <? endif ?>
     }
 
@@ -154,7 +154,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
 <? if ($values['model']): ?>
         DB::model('<?= $model->value['class_name'] ?>')->delete($this->pw_params['id']);
 <? endif ?>
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
    /**

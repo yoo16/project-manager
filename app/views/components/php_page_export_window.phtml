@@ -72,7 +72,7 @@ if you export php models, need download PHP Framework 'php-work'.
 </div>
 <? endif ?>
 <div>
-<?= $this->linkTag('localize_string', 'import_from_model', null, 
+<?= $this->linkTo('localize_string', 'import_from_model', null, 
 [
 'label' => 'Localize',
 'class' => 'btn btn-sm btn-primary',
@@ -108,7 +108,7 @@ if you export php models, need download PHP Framework 'php-work'.
 
 </table>
 <? else: ?>
-<?= FormHelper::linkButton('project/export_list', LABEL_EXPORT.LABEL_SETTING, $this->project->value['id']) ?>
+<?= FormHelper::linkButton(['controller' => 'project', 'action' => 'export_list'], LABEL_EXPORT.LABEL_SETTING, $this->project->value['id']) ?>
 <? endif ?>
 
 </div>

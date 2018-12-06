@@ -11,7 +11,7 @@
 </div>
 
 <div class="d-flex">
-  <form action="<?= url_for('sync_model', $this->model->value['id']) ?>" method="post">
+  <form action="<?= $this->linkTo('sync_model', $this->model->value['id']) ?>" method="post">
     <?= FormHelper::linkModal('#add-attribute', LABEL_ADD) ?>
     <?= $this->linkControllerTag("model", ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
     <?= FormHelper::submit('Sync DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you sync from DB?']) ?>
@@ -23,7 +23,7 @@
   </form>
 
   &nbsp;
-  <form action="<?= url_for('page/create_page_from_model') ?>" method="post" class="form-inline">
+  <form action="<?= $this->linkTo('page/create_page_from_model') ?>" method="post" class="form-inline">
     <? if ($this->page->value): ?>
       <?= $this->linkControllerTag (
         'view',

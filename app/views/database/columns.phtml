@@ -6,7 +6,7 @@ if you want create database's columns, please add columns on 'Project'.
 
 <div class="card">
   <div class="card-header">
-    <h4><a href="<?= url_for('tables', array('database_id' => $this->database->value['id'])) ?>"><?= $this->pg_class['relname'] ?></a></h4>
+    <h4><a href="<?= $this->linkTo('tables', array('database_id' => $this->database->value['id'])) ?>"><?= $this->pg_class['relname'] ?></a></h4>
   </div>
 
   <div class="card-block overflow-list">
@@ -27,7 +27,7 @@ if you want create database's columns, please add columns on 'Project'.
       <td><?= $attribute['attnum'] ?></td>
       <td><?= $attribute['attname'] ?></td>
       <td>
-        <form action="<?= url_for('update_column_comment') ?>" method="post">
+        <form action="<?= $this->linkTo('update_column_comment') ?>" method="post">
           <div class="row">
             <div class="input-group">
               <input class="form-control col-6" type="text" name="comment" value="<?= $attribute['comment'] ?>">
@@ -53,7 +53,7 @@ if you want create database's columns, please add columns on 'Project'.
 
 <div class="card-footer text-center">
   <div class="text-center">
-  <a class="btn btn-outline-primary" href="<?= url_for('tables') ?>"><?= LABEL_BACK ?></a>
+  <a class="btn btn-outline-primary" href="<?= $this->linkTo('tables') ?>"><?= LABEL_BACK ?></a>
   </div>
 </div>
 </div>

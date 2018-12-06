@@ -736,6 +736,29 @@ class Entity {
     }
 
    /**
+    * link edit
+    *
+    * @param array $value
+    * @param array $http_params
+    * @return string
+    */
+    function linkEdit($http_params = null, $value = null) {
+        if ($this->value) $value = $this->value;
+        $controller = $GLOBALS['controller'];
+        if (!$controller) return;
+
+        $params['controller'] = $controller->name;
+        $params['action'] = 'edit';
+        $params['id'] = $value['id'];
+
+        if (!$http_params['label']) $http_params['label'] = LABEL_EDIT;
+        if (!$http_params['class']) $http_params['class'] = 'btn btn-outline-primary';
+
+        $tag = $controller->linkTo($params, $http_params);
+        return $tag;
+    }
+
+   /**
     * formInput
     *
     * @param string $column
@@ -868,33 +891,34 @@ class Entity {
     * @return string
     */
     function formDelete($params = null) {
+        if (!$this->id) return;
         $action =  (isset($params['action'])) ? $params['action'] : 'delete';
-        if (!$action) return;
 
-        if (!isset($params['label'])) $params['label'] = LABEL_DELETE;
-
-        if (!$this->value[$this->id_column]) return;
-
+        if (!$params['label']) $params['label'] = LABEL_DELETE;
         if (!$params['class']) $params['class'] = 'btn btn-danger confirm-dialog';
         if (!$params['message']) $params['message'] = 'Do you delete?';
+
+        $controller = $GLOBALS['controller'];
+        $params['action'] = $action;
+        $params['id'] = $this->value[$this->id_column];
 
         $contents = FormHelper::delete($params);
 
         $params = null;
-        $params['action'] = url_for($action, $this->value[$this->id_column]);
+        $params['action'] = Controller::url($params);
         $tag = FormHelper::form($contents, $params);
         return $tag;
     }
 
    /**
-    * formDelete
+    * confirm delete
     *
     * @param array $params
     * @return string
     */
     function confirmDelete($params = null) {
-        if (!$this->value[$this->id_column]) return;
-        $params['value'] = $this->value[$this->id_column];
+        if (!$this->id) return;
+        $params['delete_id'] = $this->id;
         if ($params['title_column']) $params['title'] = $this->value[$params['title_column']];
         $tag = FormHelper::confirmDelete($params);
         return $tag;

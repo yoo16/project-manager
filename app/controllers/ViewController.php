@@ -24,7 +24,7 @@ class ViewController extends ProjectController {
         $this->model = DB::model('Model')->belongsTo('Page');
 
         if (!$this->project->value || !$this->page->value) {
-            $this->redirect_to('page/');
+            $this->redirectTo(['controller' => 'page']);
         }
     }
 
@@ -37,7 +37,7 @@ class ViewController extends ProjectController {
     */
     function index() {
         $this->clearPwPosts();
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -49,7 +49,7 @@ class ViewController extends ProjectController {
     */
     function action_cancel() {
         $this->clearPwPosts();
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -110,7 +110,7 @@ class ViewController extends ProjectController {
             var_dump($view->errors);
             exit;      
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -128,7 +128,7 @@ class ViewController extends ProjectController {
         if (!$project->errors) {
             $this->clearPwPosts();
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -141,7 +141,7 @@ class ViewController extends ProjectController {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             DB::model('View')->delete($this->pw_params['id']);
         }
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
     function action_change_overwrite() {
@@ -150,7 +150,7 @@ class ViewController extends ProjectController {
             $posts['is_overwrite'] = !$view->value['is_overwrite'];
             $view->update($posts);
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
 }

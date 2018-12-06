@@ -1,27 +1,27 @@
 <? include('_header.phtml') ?>
-    <form action="<?= url_for('update', $this->pw_params['id']) ?>" method="post">
+<form action="<?= $this->urlFor(['action' => 'update', 'id' => $this->pw_params['id']]) ?>" method="post">
 
-        <table class="table table-list">
-            <tr>
-                <th>
-                    <?= FormHelper::formLabel('Name', ['class' => 'col-2']) ?>
-                </th>
-                <td>
-                    <?= $this->project->formInput('name', ['class' => 'form-control']) ?>
-                </td>
-            </tr>
-            <tr>
-                <th>
-                    <?= FormHelper::formLabel('Database', ['class' => 'col-2']) ?>
-                </th>
-                <td>
-                    <?= $this->project->formSelect('database_id', ['model' => 'Database', 'label' => 'name']) ?>
-                </td>
+  <table class="table table-list">
+    <tr>
+      <th>
+        <?= FormHelper::formLabel('Name', ['class' => 'col-2']) ?>
+      </th>
+      <td>
+        <?= $this->project->formInput('name', ['class' => 'form-control']) ?>
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <?= FormHelper::formLabel('Database', ['class' => 'col-2']) ?>
+      </th>
+      <td>
+        <?= $this->project->formSelect('database_id', ['model' => 'Database', 'label' => 'name']) ?>
+      </td>
 
-            </tr>
-        </table>
+    </tr>
+  </table>
 
-        <?= FormHelper::submit(LABEL_UPDATE) ?>
-        <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
-    </form>
+  <?= FormHelper::submit(LABEL_UPDATE) ?>
+  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+</form>
 <?= $this->project->confirmDelete() ?>

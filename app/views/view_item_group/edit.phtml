@@ -1,5 +1,5 @@
 <? include('_header.phtml') ?>
-<form action="<?= url_for('update', $this->pw_params['id']) ?>" method="post">
+<form action="<?= $this->linkTo('update', $this->pw_params['id']) ?>" method="post">
 
 <? include('form.phtml') ?>
 </form>

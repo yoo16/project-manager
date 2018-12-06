@@ -3,7 +3,7 @@
 <h2>Project Setting</h2>
 <div class="pt-3">
   <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#add-project-path-window"><?= LABEL_ADD ?></a>
-  <a href="<?= url_for('list') ?>" class="btn btn-outline-primary"><?= LABEL_BACK ?></a>
+  <a href="<?= $this->linkTo('list') ?>" class="btn btn-outline-primary"><?= LABEL_BACK ?></a>
 </div>
 
 <? include('add_project_path_window.phtml'); ?>
@@ -20,7 +20,7 @@
   <tbody>
     <? foreach ($this->project->user_project_setting->values as $user_project_setting): ?>
     <tr>
-      <td><a class="btn btn-outline-primary" href="<?= url_for('edit_user_project_setting', $user_project_setting['id']) ?>"><?= LABEL_EDIT ?></a></td>
+      <td><a class="btn btn-outline-primary" href="<?= $this->linkTo('edit_user_project_setting', $user_project_setting['id']) ?>"><?= LABEL_EDIT ?></a></td>
       <td><?= $user_project_setting['project_path'] ?></td>
       <td>
         <? if (file_exists($user_project_setting['project_path'])): ?>

@@ -13,7 +13,7 @@
       <?= $pg_class['relname'] ?>
     </td>
     <td>
-      <form action="<?= url_for('model/update_old_table') ?>" method="post">
+      <form action="<?= $this->linkTo('model/update_old_table') ?>" method="post">
         <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
         <input type="hidden" name="old_name" value="<?= $pg_class['relname'] ?>">
         <?= FormHelper::submit(

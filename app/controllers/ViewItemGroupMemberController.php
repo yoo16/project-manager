@@ -31,7 +31,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     */
     function index() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -42,7 +42,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     */
     function action_cancel() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -52,7 +52,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     * @return void
     */
     function action_list() {
-        if (!$this->view_item_group->value) $this->redirect_to('/');
+        if (!$this->view_item_group->value) $this->redirectTo(['controller' => 'root']);
         $this->view_item_group_member = $this->view_item_group->relationMany('ViewItemGroupMember')
                                 ->wheres($this->filters)
                                 ->all();
@@ -96,9 +96,9 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
         $view_item_group_member = DB::model('ViewItemGroupMember')->insert($posts);
 
         if ($view_item_group_member->errors) {
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -114,9 +114,9 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
         $view_item_group_member = DB::model('ViewItemGroupMember')->update($posts, $this->pw_params['id']);
 
         if ($view_item_group_member->errors) {
-            $this->redirect_to('edit', $this->pw_params['id']);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -129,7 +129,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     function action_delete() {
         if (!isPost()) exit;
         DB::model('ViewItemGroupMember')->delete($this->pw_params['id']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
 }

@@ -1,5 +1,5 @@
 <? include('_header.phtml') ?>
-<form action="<?= url_for('add') ?>" method="post">
+<form action="<?= $this->linkTo('add') ?>" method="post">
 
 <h4>Page public</h4>
   <table class="table">
@@ -89,6 +89,6 @@
   <input type="hidden" name="view_item[view_id]" value="<?= $this->view->value['id'] ?>">
 
   <?= FormHelper::submit(LABEL_SAVE) ?>
-  <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>  
+  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>  
 </form>
 

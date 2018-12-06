@@ -28,14 +28,13 @@ class TagHelper {
     /**
     * urlFor
     *
-    * @param string $action
-    * @param integer $id
     * @param array $params
+    * @param array $http_params
     * @return string
     */
-    static function urlFor($action = null, $id = null, $params = null) {
+    static function urlFor($params, $http_params = null) {
         if ($controller = $GLOBALS['controller']) {
-            $url = $controller->urlFor($controller->name, $action, $id, $params);
+            $url = $controller->urlFor($params, $id, $http_params);
             return $url;
         }
     }
@@ -465,7 +464,7 @@ class TagHelper {
         if ($params['pw-controller']) {
             $tag = self::paginatorAForPwJs($params);
         } else {
-            $href = self::urlFor($params['action'], null, ['offset' => $params['offset']]);
+            $href = self::urlFor($params, ['offset' => $params['offset']]);
             $tag = self::a(['class' => $params['a_class'], 'href' => $href, 'label' => $params['label'], ]);
         }
         return $tag;

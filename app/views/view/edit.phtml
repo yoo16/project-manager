@@ -3,7 +3,7 @@
 <div class="card">
   <h3 class="card-header">View</h3>
   <div class="card-block">
-    <form id="form-edit" action="<?= url_for('update', $this->view->value['id']) ?>" method="post" autocomplete="off">
+    <form id="form-edit" action="<?= $this->linkTo('update', $this->view->value['id']) ?>" method="post" autocomplete="off">
       <div class="form-group row">
         <?= FormHelper::formLabel('Name') ?>
         <?= $this->view->formInput('name', ['class' => 'form-control']) ?>

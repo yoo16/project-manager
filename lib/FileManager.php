@@ -330,6 +330,28 @@ class FileManager {
     }
 
     /**
+     * is Jpeg Image
+     *
+     * @return string
+     */
+    static function isJpeg($key)
+    {
+        $file_type = self::uploadFileType($key);
+        return (is_numeric(strpos($file_type, 'jpeg')));
+    }
+
+    /**
+     * is Png Image
+     *
+     * @return string
+     */
+    static function isPng($key)
+    {
+        $file_type = self::uploadFileType($key);
+        return (is_numeric(strpos($file_type, 'png')));
+    }
+
+    /**
      * uploaded file name
      *
      * @param string $key
@@ -384,6 +406,19 @@ class FileManager {
             self::removeFile($to_path);
             self::moveFile($files['tmp_name'], $to_path);
         }
+    }
+
+    /**
+     * upload image file for png
+     *
+     * @param string $to_path
+     * @param string $key
+     *
+     * @return void
+     */
+    static function uploadPngImage($to_path, $key='file') {
+        self::uploadImage($to_path, $key);
+        if (self::isJpeg($key)) self::convertJpgToPng($path);
     }
 
     /**

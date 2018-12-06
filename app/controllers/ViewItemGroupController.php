@@ -32,7 +32,7 @@ class ViewItemGroupController extends ViewController {
     */
     function index() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -43,7 +43,7 @@ class ViewItemGroupController extends ViewController {
     */
     function action_cancel() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -53,7 +53,7 @@ class ViewItemGroupController extends ViewController {
     * @return void
     */
     function action_list() {
-        if (!$this->view->value) $this->redirect_to('/');
+        if (!$this->view->value) $this->redirectTo(['controller' => 'root']);
         $this->view_item_group = $this->view->relationMany('ViewItemGroup')->all();
 
     }
@@ -94,9 +94,9 @@ class ViewItemGroupController extends ViewController {
         $view_item_group = DB::model('ViewItemGroup')->insert($posts);
 
         if ($view_item_group->errors) {
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -112,9 +112,9 @@ class ViewItemGroupController extends ViewController {
         $view_item_group = $view_item_group = DB::model('ViewItemGroup')->update($posts, $this->pw_params['id']);
 
         if ($view_item_group->errors) {
-            $this->redirect_to('edit', $this->pw_params['id']);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -127,7 +127,7 @@ class ViewItemGroupController extends ViewController {
     function action_delete() {
         if (!isPost()) exit;
         DB::model('ViewItemGroup')->delete($this->pw_params['id']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
 }

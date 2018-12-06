@@ -30,7 +30,7 @@ class PublicLocalizeStringController extends AppController {
     */
     function index() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -41,7 +41,7 @@ class PublicLocalizeStringController extends AppController {
     */
     function action_cancel() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -96,10 +96,10 @@ class PublicLocalizeStringController extends AppController {
         if ($public_localize_string->errors) {
             $errors['public_localize_strings'] = $public_localize_string->errors;
             $this->setErrors($errors);
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
             exit;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -118,7 +118,7 @@ class PublicLocalizeStringController extends AppController {
             $errors['public_localize_strings'] = $public_localize_string->errors;
             $this->setErrors($errors);
         }
-        $this->redirect_to('edit', $this->pw_params['id']);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
     }
 
    /**
@@ -130,7 +130,7 @@ class PublicLocalizeStringController extends AppController {
     function action_delete() {
         if (!isPost()) exit;
         DB::model('PublicLocalizeString')->delete($this->pw_params['id']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
 }

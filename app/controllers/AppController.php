@@ -19,12 +19,12 @@ class AppController extends Controller {
     function before_action($action = null) {
         $pgsql_entity = new PgsqlEntity();
         if (!$pgsql_entity->connection()) {
-            $this->redirect_to('setting/');
+            $this->redirectTo(['controller' => 'setting']);
             exit;
         }
         $database = new Database();
         if (!$database->checkProjectManager()) {
-            $this->redirect_to('setting/');
+            $this->redirectTo(['controller' => 'setting']);
             exit;
         }
         $this->loadDefaultCsvOptions();
@@ -40,7 +40,7 @@ class AppController extends Controller {
      */
     function checkEdit($redirect_action = 'new') {
         if (!$this->pw_params['id']) {
-            $this->redirect_to($redirect_action);
+            $this->redirectTo(['action' => $redirect_action]);
             exit;
         }
     }

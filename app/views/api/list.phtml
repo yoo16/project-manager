@@ -22,7 +22,7 @@
     <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
     <td><?= $values['label'] ?></td>
     <td><?= $values['note'] ?></td>
-    <td><a href="<?= url_for('/', ['id' => $values['id'],'api_id' => $values['id']]) ?>"><?= $values['name'] ?></a></td>
+    <td><a href="<?= $this->linkTo('/', ['id' => $values['id'],'api_id' => $values['id']]) ?>"><?= $values['name'] ?></a></td>
   </tr>
   <? endforeach ?>
   <? endif ?>

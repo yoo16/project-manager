@@ -30,7 +30,7 @@ class RecordController extends ProjectController {
     */
     function index() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -41,7 +41,7 @@ class RecordController extends ProjectController {
     */
     function action_cancel() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -51,7 +51,7 @@ class RecordController extends ProjectController {
     * @return void
     */
     function action_list() {
-        if (!$this->project->value) $this->redirect_to('/');
+        if (!$this->project->value) $this->redirectTo(['controller' => 'root']);
         $this->record = $this->project->relationMany('Record')
                                 ->wheres($this->filters)
                                 ->all();
@@ -95,9 +95,9 @@ class RecordController extends ProjectController {
         $record = DB::model('Record')->insert($posts);
 
         if ($record->errors) {
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -113,9 +113,9 @@ class RecordController extends ProjectController {
         $record = DB::model('Record')->update($posts, $this->pw_params['id']);
 
         if ($record->errors) {
-            $this->redirect_to('edit', $this->pw_params['id']);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -128,7 +128,7 @@ class RecordController extends ProjectController {
     function action_delete() {
         if (!isPost()) exit;
         DB::model('Record')->delete($this->pw_params['id']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
    /**
@@ -138,7 +138,7 @@ class RecordController extends ProjectController {
     * @return void
     */
     function action_sort_order() {
-        if (!$this->project->value) $this->redirect_to('/');
+        if (!$this->project->value) $this->redirectTo(['controller' => 'root']);
         $this->record = $this->project->relationMany('Record')
                                 ->wheres($this->filters)
                                 ->all();

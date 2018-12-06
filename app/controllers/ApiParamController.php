@@ -31,7 +31,7 @@ class ApiParamController extends ApiController {
     */
     function index() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -42,7 +42,7 @@ class ApiParamController extends ApiController {
     */
     function action_cancel() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -52,7 +52,7 @@ class ApiParamController extends ApiController {
     * @return void
     */
     function action_list() {
-        if (!$this->api->value) $this->redirect_to('/');
+        if (!$this->api->value) $this->redirectTo(['controller' => 'root']);
         $this->api_param = $this->api->relationMany('ApiParam')
                                 ->wheres($this->filters)
                                 ->all();
@@ -96,9 +96,9 @@ class ApiParamController extends ApiController {
         $api_param = DB::model('ApiParam')->insert($posts);
 
         if ($api_param->errors) {
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -114,9 +114,9 @@ class ApiParamController extends ApiController {
         $api_param = DB::model('ApiParam')->update($posts, $this->pw_params['id']);
 
         if ($api_param->errors) {
-            $this->redirect_to('edit', $this->pw_params['id']);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -129,7 +129,7 @@ class ApiParamController extends ApiController {
     function action_delete() {
         if (!isPost()) exit;
         DB::model('ApiParam')->delete($this->pw_params['id']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
 

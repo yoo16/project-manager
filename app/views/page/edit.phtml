@@ -126,7 +126,7 @@
 
         </table>
         <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
-        <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
+        <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
       </form>
       <?= $this->page->confirmDelete() ?>
     </div>

@@ -24,8 +24,7 @@ class ViewItemController extends ProjectController {
         $this->view = DB::model('View')->requestSession();
 
         if (!$this->project || !$this->page || !$this->view) {
-            $this->redirect_to('view/');
-            exit;
+            $this->redirectTo(['controller' => 'view']);
         }
     }
 
@@ -37,7 +36,7 @@ class ViewItemController extends ProjectController {
     */
     function index() {
         $this->clearPwPosts();
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -48,7 +47,7 @@ class ViewItemController extends ProjectController {
     */
     function action_cancel() {
         $this->clearPwPosts();
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -147,7 +146,7 @@ class ViewItemController extends ProjectController {
             exit;
         }
 
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -162,9 +161,9 @@ class ViewItemController extends ProjectController {
         DB::model('ViewItem')->insert($posts);
 
         if ($view_item->errors) {
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -206,7 +205,7 @@ class ViewItemController extends ProjectController {
                 }
             }
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -221,7 +220,7 @@ class ViewItemController extends ProjectController {
         foreach ($view_item->values as $view_item) {
             DB::model('ViewItem')->delete($view_item['id']);
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -235,7 +234,7 @@ class ViewItemController extends ProjectController {
         $posts = $this->session['posts'] = $_REQUEST["view_item"];
         $view_item = DB::model('ViewItem')->update($posts, $this->pw_params['id']);
 
-        $this->redirect_to('edit', $this->pw_params['id']);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
     }
 
    /**
@@ -247,7 +246,7 @@ class ViewItemController extends ProjectController {
     function action_delete() {
         if (!isPost()) exit;
         DB::model('ViewItem')->delete($this->pw_params['id']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
     /**
@@ -263,7 +262,7 @@ class ViewItemController extends ProjectController {
             $posts['label'] = $attribute->value['label'];
             DB::model('ViewItem')->update($posts, $value['id']);
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -282,7 +281,7 @@ class ViewItemController extends ProjectController {
         if (!$view_item_group_member->value) {
             $view_item_group_member = DB::model('ViewItemGroupMember')->insert($posts);
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
 

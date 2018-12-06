@@ -1,100 +1,166 @@
-
 <div class="row">
   <? if ($this->project->value['id']): ?>
-    <table class="table">
-      <tr>
-        <th>Project</th>
-        <td>
-          <?= $this->project->value['name'] ?>
-        </td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>
-          <?= FormHelper::linkModal('#php-export-window', 'PHP Export', ['class' => 'btn btn-sm btn-success']) ?>
-          <a class="btn btn-sm btn-outline-primary" href="<?= $this->urlFor('user_project_setting', 'list') ?>">Project Setting</a>
-        </td>
-      </tr>
+  <table class="table">
+    <tr>
+      <th>Project</th>
+      <td>
+        <?= $this->project->value['name'] ?>
+      </td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>
+        <?= FormHelper::linkModal('#php-export-window', 'PHP Export', ['class' => 'btn btn-sm btn-success']) ?>
+        <?= $this->linkTo(['controller' => 'user_project_setting', 'action' => 'list'],
+        [
+        'label' => 'Project Setting',
+        'class' => 'btn btn-sm btn-outline-primary',
+        ]
+        ) ?>
+      </td>
+    </tr>
 
-      <? if ($this->database->value['id']): ?>
-        <tr>
-          <th>Database</th>
-          <td>
-            <a href="<?= url_for('database/edit', $this->database->value['id']) ?>">
-              <?= $this->database->value['name'] ?>
-            </a>
-          </td>
-          <td>
-            <?= $this->database->value['hostname'] ?>
-          </td>
-          <td>
-            <?= $this->database->value['user_name'] ?>
-          </td>
-          <td>
-            <?= $this->database->value['port'] ?>
-          </td>
-          <td>
-            <?= $this->linkTag('project', 'export_db', null, 
+    <? if ($this->database->value['id']): ?>
+    <tr>
+      <th>Database</th>
+      <td>
+        <?= $this->linkTo(
+          [
+          'controller' => 'database',
+          'action' => 'edit',
+          'id' => $this->database->value['id']
+          ],
+          [
+          'label' => 'Database'
+          ]
+          ) ?>
+        <?= $this->database->value['name'] ?>
+        </a>
+      </td>
+      <td>
+        <?= $this->database->value['hostname'] ?>
+      </td>
+      <td>
+        <?= $this->database->value['user_name'] ?>
+      </td>
+      <td>
+        <?= $this->database->value['port'] ?>
+      </td>
+      <td>
+        <?= $this->linkTo(
               [
-                'class' => 'btn btn-sm btn-outline-primary confirm-dialog',
+              'controller' => 'project',
+              'action' => 'export_db',
+              ],
+              [
                 'label' => 'Excel',
+                'class' => 'btn btn-sm btn-outline-primary confirm-dialog',
                 'attributes' => ['message' => 'Do you download Excel?'],
               ]
             )
             ?>
-            <?= $this->linkTag('database', 'export_html', null, 
+        <?= $this->linkTo(
               [
-                'class' => 'btn btn-sm btn-outline-primary',
+              'controller' => 'database',
+              'action' => 'export_html',
+              ],
+              [
                 'label' => 'HTML',
+                'class' => 'btn btn-sm btn-outline-primary',
                 'target' => '_blank',
-                'http_params' => 
-                [
-                  'database_id' => $this->database->value['id']
-                ]
+                'http_params' => ['database_id' => $this->database->value['id']]
               ]
             )
             ?>
-          </td>
-        </tr>
-        <? endif ?>
-    </table>
+      </td>
+    </tr>
     <? endif ?>
+  </table>
+  <? endif ?>
 </div>
 
 <? if ($this->project->value['id']): ?>
-  <div class="pb-3">
-    <? include('php_export_window.phtml') ?>
-      <? include('sql_export_window.phtml') ?>
+<div class="pb-3">
+  <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <?= $this->linkTo(['controller' => 'model', 'action' => 'list'],
+             [
+              'label' => 'Model',
+              'class' => 'nav-link',
+              'http_params' => ['project_id' => $this->project->value['id']]
+            ]
+            ) ?>
+      </li>
+      <li class="nav-item">
+        <?= $this->linkTo(['controller' => 'page', 'action' => 'list'],
+             [
+              'label' => 'Page',
+              'class' => 'nav-link',
+              'http_params' => ['project_id' => $this->project->value['id']]
+            ]
+            ) ?>
+      </li>
+      <? if ($this->page->value): ?>
+      <li class="nav-item">
+        <?= $this->linkTo(['controller' => 'view'],
+             [
+              'label' => 'View',
+              'class' => 'nav-link',
+              'http_params' => ['page_id' => $this->page->value['id']]
+            ]
+            ) ?>
+      </li>
+      <? endif ?>
+      <li class="nav-item">
+        <?= $this->linkTo(['controller' => 'api', 'action' => 'list'],
+             [
+              'label' => 'Api',
+              'class' => 'nav-link',
+              'http_params' => ['project_id' => $this->project->value['id']]
+            ]
+            ) ?>
+      </li>
+      <li class="nav-item">
+        <?= $this->linkTo(['controller' => 'record', 'action' => 'list'],
+            [
+              'label' => 'Csv',
+              'class' => 'nav-link',
+              'http_params' => ['project_id' => $this->project->value['id']]
+            ]
+            ) ?>
+      </li>
+      <li class="nav-item">
+        <?= $this->linkTo(['controller' => 'localize_string', 'action' => 'list'],
+            [
+              'label' => 'Localize',
+              'class' => 'nav-link',
+              'http_params' => ['project_id' => $this->project->value['id']]
+            ]
+            ) ?>
+      </li>
+      <li class="nav-item">
+        <?= $this->linkTo(['controller' => 'document', 'action' => 'list'],
+            [
+              'label' => 'Document',
+              'class' => 'nav-link',
+              'http_params' => ['project_id' => $this->project->value['id']]
+            ]
+            ) ?>
+      </li>
+      <li class="nav-item">
+        <?= $this->linkTo(['controller' => 'layout', 'action' => 'list'],
+            [
+              'label' => 'Layout',
+              'class' => 'nav-link',
+              'http_params' => ['project_id' => $this->project->value['id']]
+            ]
+            ) ?>
+      </li>
+    </ul>
+  </nav>
+</div>
 
-        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
-          <ul class="nav nav-pills">
-            <li class="nav-item">
-              <a class="nav-link <?= cssClass('model', $this->pw_params['controller'], 'active'); ?>" href="<?= url_for('model/list', array('project_id' => $this->project->value['id'])) ?>">Model</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link <?= cssClass('page', $this->pw_params['controller'], 'active'); ?>" href="<?= url_for('page/list', array('project_id' => $this->project->value['id'])) ?>">Page</a>
-            </li>
-            <? if ($this->page->value): ?>
-              <li class="nav-item">
-                <a class="nav-link <?= cssClass('view', $this->pw_params['controller'], 'active'); ?>" href="<?= url_for('view/', array('page_id' => $this->page->value['id'])) ?>">View</a>
-              </li>
-              <? endif ?>
-                <li class="nav-item">
-                  <a class="nav-link <?= cssClass('api', $this->pw_params['controller'], 'active'); ?>" href="<?= url_for('api/list', array('project_id' => $this->project->value['id'])) ?>">Api</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link <?= cssClass('record', $this->pw_params['controller'], 'active'); ?>" href="<?= url_for('record/list', array('project_id' => $this->project->value['id'])) ?>">Record</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link <?= cssClass('localize_string', $this->pw_params['controller'], 'active'); ?>" href="<?= url_for('localize_string/list', array('project_id' => $this->project->value['id'])) ?>">Localize</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link <?= cssClass('document', $this->pw_params['controller'], 'active'); ?>" href="<?= url_for('document/list', array('project_id' => $this->project->value['id'])) ?>">Document</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link <?= cssClass('layout', $this->pw_params['controller'], 'active'); ?>" href="<?= url_for('layout/list', array('project_id' => $this->project->value['id'])) ?>">Layout</a>
-                </li>
-          </ul>
-        </nav>
-  </div>
-  <? endif ?>
+<? include('php_export_window.phtml') ?>
+<? include('sql_export_window.phtml') ?>
+<? endif ?>

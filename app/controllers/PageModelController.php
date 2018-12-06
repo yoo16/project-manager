@@ -31,7 +31,7 @@ class PageModelController extends ProjectController {
     */
     function index() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -42,7 +42,7 @@ class PageModelController extends ProjectController {
     */
     function action_cancel() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -52,7 +52,7 @@ class PageModelController extends ProjectController {
     * @return void
     */
     function action_list() {
-        if (!$this->page->value) $this->redirect_to('/');
+        if (!$this->page->value) $this->redirectTo(['controller' => 'root']);
         $this->page_model = $this->page->relationMany('PageModel')
                                 ->wheres($this->filters)
                                 ->all();
@@ -97,9 +97,9 @@ class PageModelController extends ProjectController {
         $page_model = DB::model('PageModel')->insert($posts);
 
         if ($page_model->errors) {
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -115,9 +115,9 @@ class PageModelController extends ProjectController {
         $page_model = DB::model('PageModel')->update($posts, $this->pw_params['id']);
 
         if ($page_model->errors) {
-            $this->redirect_to('edit', $this->pw_params['id']);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -130,7 +130,7 @@ class PageModelController extends ProjectController {
     function action_delete() {
         if (!isPost()) exit;
         DB::model('PageModel')->delete($this->pw_params['id']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
    /**
@@ -140,7 +140,7 @@ class PageModelController extends ProjectController {
     * @return void
     */
     function action_sort_order() {
-        if (!$this->page->value) $this->redirect_to('/');
+        if (!$this->page->value) $this->redirectTo(['controller' => 'root']);
         $this->page_model = $this->page->relationMany('PageModel')
                                 ->wheres($this->filters)
                                 ->all();

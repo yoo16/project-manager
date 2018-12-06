@@ -12,7 +12,7 @@
 <tr>
   <td><?= $pg_database['datname'] ?></td>
   <td>
-    <form method="post" action="<?= url_for('import_database') ?>">
+    <form method="post" action="<?= $this->linkTo('import_database') ?>">
       <?= FormHelper::submit(LABEL_IMPORT) ?>
       <?= FormHelper::hidden('database_name', $pg_database['datname']) ?>
       <?= FormHelper::hidden('host', $this->host) ?>

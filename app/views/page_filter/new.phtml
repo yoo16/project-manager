@@ -1,13 +1,13 @@
 <? include('_header.phtml') ?>
 <div class="card">
 
-  <form action="<?= url_for('add') ?>" method="post">
+  <form action="<?= $this->linkTo('add') ?>" method="post">
 
     <div class="card-header">
       <h4></h4>
       <div class="text-left">
         <?= FormHelper::submit(LABEL_SAVE) ?>
-        <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
+        <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
       </div>
     </div>
 

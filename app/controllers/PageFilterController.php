@@ -32,7 +32,7 @@ class PageFilterController extends PageController {
     */
     function index() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -43,7 +43,7 @@ class PageFilterController extends PageController {
     */
     function action_cancel() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -53,7 +53,7 @@ class PageFilterController extends PageController {
     * @return void
     */
     function action_list() {
-        if (!$this->page->value) $this->redirect_to('/');
+        if (!$this->page->value) $this->redirectTo(['controller' => 'root']);
         $this->page_filter = $this->page->relationMany('PageFilter')->all();
 
                 
@@ -113,9 +113,9 @@ class PageFilterController extends PageController {
         $page_filter = DB::model('PageFilter')->insert($posts);
 
         if ($page_filter->errors) {
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -131,9 +131,9 @@ class PageFilterController extends PageController {
         $page_filter = $page_filter = DB::model('PageFilter')->update($posts, $this->pw_params['id']);
 
         if ($page_filter->errors) {
-            $this->redirect_to('edit', $this->pw_params['id']);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -146,7 +146,7 @@ class PageFilterController extends PageController {
     function action_delete() {
         if (!isPost()) exit;
         DB::model('PageFilter')->delete($this->pw_params['id']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
    /**
@@ -156,7 +156,7 @@ class PageFilterController extends PageController {
     * @return void
     */
     function action_sort_order() {
-        if (!$this->page->value) $this->redirect_to('/');
+        if (!$this->page->value) $this->redirectTo(['controller' => 'root']);
         $this->page_filter = $this->page->relationMany('PageFilter')->all();
     }
 

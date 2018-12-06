@@ -31,7 +31,7 @@ class RecordItemController extends RecordController {
     */
     function index() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -42,7 +42,7 @@ class RecordItemController extends RecordController {
     */
     function action_cancel() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -52,7 +52,7 @@ class RecordItemController extends RecordController {
     * @return void
     */
     function action_list() {
-        if (!$this->record->value) $this->redirect_to('/');
+        if (!$this->record->value) $this->redirectTo(['controller' => 'root']);
         $this->record_item = $this->record->relationMany('RecordItem')
                                   ->wheres($this->filters)
                                   ->all();
@@ -96,9 +96,9 @@ class RecordItemController extends RecordController {
         $record_item = DB::model('RecordItem')->insert($posts);
 
         if ($record_item->errors) {
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -114,9 +114,9 @@ class RecordItemController extends RecordController {
         $record_item = DB::model('RecordItem')->update($posts, $this->pw_params['id']);
 
         if ($record_item->errors) {
-            $this->redirect_to('edit', $this->pw_params['id']);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -129,7 +129,7 @@ class RecordItemController extends RecordController {
     function action_delete() {
         if (!isPost()) exit;
         DB::model('RecordItem')->delete($this->pw_params['id']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
    /**

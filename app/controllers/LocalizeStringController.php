@@ -30,7 +30,7 @@ class LocalizeStringController extends ProjectController {
     */
     function index() {
         unset($this->session['posts']);
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -41,7 +41,7 @@ class LocalizeStringController extends ProjectController {
     */
     function action_cancel() {
         unset($this->session['posts']);
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -53,7 +53,7 @@ class LocalizeStringController extends ProjectController {
     function action_export() {
         $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
         $this->project->exportAttributeLabels();
-        $this->redirect_to('localize_string/list');
+        $this->redirectTo(['controller' => 'localize_string', 'action' => 'list']);
     }
 
    /**
@@ -76,9 +76,9 @@ class LocalizeStringController extends ProjectController {
         }
 
         if ($_REQUEST['redirect']) {
-            $this->redirect_to($_REQUEST['redirect']);
+            $this->redirectTo(['action' => $_REQUEST['redirect']]);
         } else {
-            $this->redirect_to('list');
+            $this->redirectTo(['action' => 'list']);
         }
     }
 
@@ -119,7 +119,7 @@ class LocalizeStringController extends ProjectController {
                 }
             }
         } 
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -139,7 +139,7 @@ class LocalizeStringController extends ProjectController {
                 }
             }
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -197,9 +197,9 @@ class LocalizeStringController extends ProjectController {
         $localize_string = DB::model('LocalizeString')->insert($posts);
 
         if ($localize_string->errors) {
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -217,9 +217,9 @@ class LocalizeStringController extends ProjectController {
         $localize_string = DB::model('LocalizeString')->update($posts, $this->pw_params['id']);
 
         if ($localize_string->errors) {
-            $this->redirect_to('edit', $this->pw_params['id']);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -242,7 +242,7 @@ class LocalizeStringController extends ProjectController {
                 $this->addErrors($localize_string->errors);
             }
         }
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
    /**
@@ -254,7 +254,7 @@ class LocalizeStringController extends ProjectController {
     function action_delete() {
         if (!isPost()) exit;
         DB::model('LocalizeString')->delete($this->pw_params['id']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
 }

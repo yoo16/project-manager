@@ -8,7 +8,7 @@
 <?= $this->total_file_count ?>
 
 <a class="btn" href="#" onClick="$('#error_documents').show()">Error Documents</a>
-<a class="btn" href="<?= url_for('test_php', array('project_id' => $this->project->value['id'])) ?>">Test PHP</a>
+<a class="btn" href="<?= $this->linkTo('test_php', array('project_id' => $this->project->value['id'])) ?>">Test PHP</a>
 <div id="error_documents">
   <ul>
     <? foreach ($this->missmatch_function_params as $file_name => $missmatch_function_params): ?>

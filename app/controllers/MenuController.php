@@ -30,7 +30,7 @@ class MenuController extends AppController {
     */
     function index() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -41,7 +41,7 @@ class MenuController extends AppController {
     */
     function action_cancel() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -94,10 +94,10 @@ class MenuController extends AppController {
         if ($menu->errors) {
             $errors['menus'] = $menu->errors;
             $this->setErrors($errors);
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
             exit;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -116,7 +116,7 @@ class MenuController extends AppController {
             $errors['menus'] = $menu->errors;
             $this->setErrors($errors);
         }
-        $this->redirect_to('edit', $this->pw_params['id']);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
     }
 
 }

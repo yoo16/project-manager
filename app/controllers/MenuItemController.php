@@ -31,7 +31,7 @@ class MenuItemController extends MenuController {
     */
     function index() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -42,7 +42,7 @@ class MenuItemController extends MenuController {
     */
     function action_cancel() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -94,10 +94,10 @@ class MenuItemController extends MenuController {
         if ($menu_item->errors) {
             $errors['menu_items'] = $menu_item->errors;
             $this->setErrors($errors);
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
             exit;
         } else {
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -116,7 +116,7 @@ class MenuItemController extends MenuController {
             $errors['menu_items'] = $menu_item->errors;
             $this->setErrors($errors);
         }
-        $this->redirect_to('edit', $this->pw_params['id']);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
     }
 
    /**
@@ -128,7 +128,7 @@ class MenuItemController extends MenuController {
     function action_delete() {
         if (!isPost()) exit;
         DB::model('MenuItem')->delete($this->pw_params['id']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
 }

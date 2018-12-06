@@ -317,7 +317,7 @@ class Tag {
 
             $parent_instance = '$this->'.$parent_model->value['entity_name'];
             $relation_many = "{$parent_instance}->relationMany";
-            $redirect = '$this->redirect_to(\'/\')';
+            $redirect = '$this->redirectTo(\'root\')';
 
             $tag = "if (!{$parent_instance}->value) {$redirect};".PHP_EOL;
             $tag.= "        {$instance} = {$relation_many}('{$model->value['class_name']}')";

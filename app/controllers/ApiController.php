@@ -31,7 +31,7 @@ class ApiController extends ProjectController {
     */
     function index() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -42,7 +42,7 @@ class ApiController extends ProjectController {
     */
     function action_cancel() {
         AppSession::clear('posts');
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
    /**
@@ -52,7 +52,7 @@ class ApiController extends ProjectController {
     * @return void
     */
     function action_list() {
-        if (!$this->project->value) $this->redirect_to('/');
+        if (!$this->project->value) $this->redirectTo(['controller' => 'root']);
         $this->api = $this->project->relationMany('Api')->all();
 
                 
@@ -117,7 +117,7 @@ class ApiController extends ProjectController {
             $errors['apis'] = $api->errors;
             $this->setErrors($errors);
         }
-        $this->redirect_to('edit', $this->pw_params['id']);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
     }
 
    /**
@@ -129,7 +129,7 @@ class ApiController extends ProjectController {
     function action_delete() {
         if (!isPost()) exit;
         DB::model('Api')->delete($this->pw_params['id']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
    /**

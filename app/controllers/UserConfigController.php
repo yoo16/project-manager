@@ -11,12 +11,12 @@ class UserConfigController extends AppController {
     }
 
     function index() {
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function cancel() {
         unset($this->session['posts']);
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
     function action_list() {

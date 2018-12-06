@@ -19,7 +19,7 @@ class RelationDatabaseController extends ProjectController {
     function before_action($action) {
         parent::before_action($action);
         if (!$this->project->value) {
-            $this->redirect_to('project/');
+            $this->redirectTo(['controller' => 'project']);
         }
     }
     
@@ -34,12 +34,12 @@ class RelationDatabaseController extends ProjectController {
     }
 
     function action_index() {
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_cancel() {
         unset($this->session['posts']);
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_list() {
@@ -61,7 +61,7 @@ class RelationDatabaseController extends ProjectController {
         if (!isPost()) exit;
 
         DB::model('RelationDatabase')->insert($this->pw_posts['relation_database']);
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_update() {
@@ -69,14 +69,14 @@ class RelationDatabaseController extends ProjectController {
 
         $posts = $this->pw_posts['posts'];
 
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_delete() {
         if (!isPost()) exit;
 
         DB::model('RelationDatabase')->delete($this->pw_params['id']);
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_update_old_table() {
@@ -116,7 +116,7 @@ class RelationDatabaseController extends ProjectController {
                 }
             }
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function update_old() {
@@ -176,7 +176,7 @@ class RelationDatabaseController extends ProjectController {
                 }
             }
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function diff_model() {

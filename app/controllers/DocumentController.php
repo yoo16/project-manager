@@ -20,7 +20,7 @@ class DocumentController extends ProjectController {
         parent::before_action($action);
 
         if (!$this->project->value['id'] || !$this->database->value['id']) {
-            $this->redirect_to('project/index');
+            $this->redirectTo(['controller' => 'project']);
             exit;
         }
     }
@@ -53,11 +53,11 @@ class DocumentController extends ProjectController {
 
     function action_cancel() {
         unset($this->session['posts']);
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_list() {
-        $this->redirect_to('model');
+        $this->redirectTo(['controller' => 'model']);
     }
 
     function action_attribute_list() {
@@ -90,7 +90,7 @@ class DocumentController extends ProjectController {
         } else {
             unset($this->session['posts']);
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
 
@@ -105,7 +105,7 @@ class DocumentController extends ProjectController {
         $attribute = DB::model('Attribute')->update($posts, $this->pw_params['id']);
 
         $params['model_id'] = $attribute->value['model_id'];
-        $this->redirect_to('attribute_list', $params);
+        $this->redirectTo(['action' => 'attribute_list'], $params);
     }
 
     function action_model() {

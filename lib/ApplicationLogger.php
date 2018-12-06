@@ -52,6 +52,7 @@ class ApplicationLogger {
         foreach (glob($path) as $file_name) {
             $files[] = pathinfo($file_name);
         }
+        if ($files) $files = array_reverse($files);
         return $files;
     }
 

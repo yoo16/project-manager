@@ -21,7 +21,7 @@ class PageController extends ProjectController {
         parent::before_action($action);
 
         if (!$this->project->value['id']) {
-            $this->redirect_to('project/');
+            $this->redirectTo(['controller' => 'project']);
             exit;
         }
     }
@@ -31,7 +31,7 @@ class PageController extends ProjectController {
     }
 
     function index() {
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_cancel() {
@@ -83,7 +83,7 @@ class PageController extends ProjectController {
             var_dump($page->errors);
             exit;      
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_update() {
@@ -100,7 +100,7 @@ class PageController extends ProjectController {
         } else {
             unset($this->session['posts']);
         }
-        $this->redirect_to('edit', $this->pw_params['id']);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
     }
 
     function action_duplicate() {
@@ -120,7 +120,7 @@ class PageController extends ProjectController {
             var_dump($page->sql);
             exit;
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_delete() {
@@ -128,9 +128,9 @@ class PageController extends ProjectController {
             $page = DB::model('Page')->delete($this->pw_params['id']);
             if ($page->errors) {
                 $this->flash['errors'] = $page->errors;
-                $this->redirect_to('edit', $this->pw_params['id']);
+                $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
             } else {
-                $this->redirect_to('index');
+                $this->redirectTo();
             }
         }
     }
@@ -161,7 +161,7 @@ class PageController extends ProjectController {
                 DB::model('View')->generateDefaultActions($page);
             }
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_create_page_from_model() {
@@ -192,7 +192,7 @@ class PageController extends ProjectController {
             }
         }
 
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_change_overwrite() {
@@ -201,7 +201,7 @@ class PageController extends ProjectController {
             $posts['is_overwrite'] = !$page->value['is_overwrite'];
             $page->update($posts);
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     function action_all_off_overwrite() {
@@ -211,7 +211,7 @@ class PageController extends ProjectController {
             $posts['is_overwrite'] = false;
             $page = DB::model('Page')->update($posts, $page_value['id']);
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
 }

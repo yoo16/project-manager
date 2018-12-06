@@ -21,7 +21,7 @@ class AdminController extends AppController {
         $admin = new Admin();
         $admin->one();
         if ($admin->value) {
-            $this->redirect_to('index'); 
+            $this->redirectTo(); 
             exit;
         }
     }
@@ -30,7 +30,7 @@ class AdminController extends AppController {
         $admin = new Admin();
         $admin->one();
         if ($admin->value) {
-            $this->redirect_to('index'); 
+            $this->redirectTo(); 
             exit;
         }
 
@@ -40,9 +40,9 @@ class AdminController extends AppController {
         $admin->takeValues($_POST);
         $admin->insert();
         if ($admin->value['id']) {
-            $this->redirect_to('login');
+            $this->redirectTo(['controller' => 'login']);
         } else {
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
         }
     }
 
@@ -50,7 +50,7 @@ class AdminController extends AppController {
         if (!in_array($action, $this->escape_auth_actions)) {
             $this->admin = AppSession::get('admin', 'admin');
             if (!$this->admin['id']) {
-                $this->redirect_to('admin/login');
+                $this->redirectTo(['controller' => 'admin', 'action' => 'login']);
                 return;
             }
         }
@@ -60,7 +60,7 @@ class AdminController extends AppController {
         $admin = new Admin();
         $admin->one();
         if (!$admin->value) {
-            $this->redirect_to('new');
+            $this->redirectTo(['action' => 'new']);;
             exit;
         }
     }
@@ -99,7 +99,7 @@ class AdminController extends AppController {
                 exit;
             }
         }
-        $this->redirect_to('login');
+        $this->redirectTo(['controller' => 'login']);
     }
 
    /**
@@ -120,7 +120,7 @@ class AdminController extends AppController {
     */ 
     function action_logout() {
         AppSession::clearSession('admin', 'admin');
-        $this->redirect_to('admin/login');
+        $this->redirectTo(['controller' => 'admin', 'action' => 'login']);
     }
 
    /**
@@ -130,7 +130,7 @@ class AdminController extends AppController {
     * @return void
     */ 
     function default_page() {
-        $this->redirect_to('admin/');
+        $this->redirectTo(['controller' => 'admin']);
     }
 
     function log() {

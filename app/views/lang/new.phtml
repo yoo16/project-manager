@@ -1,10 +1,10 @@
 <? include('_header.phtml') ?>
-<form action="<?= url_for('add') ?>" method="post">
+<form action="<?= $this->linkTo('add') ?>" method="post">
 
   <table class="table">
 
     <tr>
-      <th>名称</th>
+      <th>坝称</th>
       <td>
         <?= $this->lang->formInput('name') ?>        
       </td>
@@ -20,4 +20,4 @@
   </table>
 
   <?= FormHelper::submit(LABEL_SAVE) ?>
-  <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?></form>
+  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?></form>

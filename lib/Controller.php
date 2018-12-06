@@ -280,6 +280,7 @@ class Controller extends RuntimeException {
         if (isset($params['controller'])) $this->pw_params['controller'] = $params['controller'];
         if (isset($params['action'])) $this->pw_params['action'] = $params['action'];
         if (isset($params['id'])) $this->pw_params['id'] = $params['id'];
+        $this->pw_gets = $this->pw_params;
 
         $this->loadPwPosts();
         $this->errors = $this->getErrors();
@@ -436,7 +437,7 @@ class Controller extends RuntimeException {
         if (file_exists($error_layout)) {
             include $error_layout;
         }
-        $error_template = BASE_DIR."app/views/components/php_error.phtml";
+        $error_template = BASE_DIR."app/views/components/lib/php_error.phtml";
         if (file_exists($error_template)) {
             ob_start();
             include $error_template;
@@ -544,121 +545,19 @@ class Controller extends RuntimeException {
         exit;
     }
 
-    //TODO remove function
-    /**
-     * redirect
-     *
-     * TODO: remove
-     * 
-     * @param  string $controller_action
-     * @param  string $id
-     * @return void
-     */
-    function redirect_to($controller_action, $id = null) {
-        $this->redirectTo($controller_action, $id);
-    }
-
-
     /**
      * redirect
      * 
-     * @param  string $action
-     * @param  mixed $id
      * @param  array $params
+     * @param  array $url_params
      * @return void
      */
-    function redirectTo($action, $id = null, $params = null) {
-        if (strpos($action, '/') > 0) {
-            $actions = explode('/', $action);
-            $controller = $actions[0];
-            $action = $actions[1];
-        }
-        if (is_array($id)) {
-            $params = $id;
-            $id = null;
-        }
-        if ($this->pw_multi_sid) $params['pw_multi_sid'] = $this->pw_multi_sid;
-        if ($controller) {
-            $url = $this->urlFor($controller, $action, $id, $params);
-        } else {
-            $url = $this->urlSelfFor($action, $id, $params);
-        }
-        if (defined('DEBUG') && DEBUG) error_log("REDIRECT: {$url}");
+    function redirectTo($params = null, $url_params = null) {
+        if ($this->pw_multi_sid) $url_params['pw_multi_sid'] = $this->pw_multi_sid;
+        if (!$params['controller']) $params['controller'] = $this->name;
+        $url = $this->urlFor($params, $url_params);
         header("Location: {$url}");
         exit;
-    }
-
-     //TODO: remove function
-    /**
-     * url for params
-     * 
-     * @param  array $url_params
-     * @param  array $options
-     * @return string
-     */
-    function url_for($url_params, $options = null) {
-        $params = array();
-        if (is_string($url_params)) {
-            $_params = explode('?', $url_params);
-            if ($_params[0]) $url_params = $_params[0];
-            if (isset($_params[1])) $query = $_params[1];
-
-            $_params = explode('#', $url_params);
-            if ($_params[0]) $url_params = $_params[0];
-            if (isset($_params[1])) $params['.anchor'] = $_params[1];
-
-            $_params = explode('.', $url_params);
-            if ($_params[0]) $url_params = $_params[0];
-            if (isset($_params[1])) $params['.extension'] = $_params[1];
-
-            $_params = explode('/', $url_params);
-            if (isset($_params[1])) {
-                if (empty($_params[0])) {
-                    $params['controller'] = ROOT_CONTROLLER_NAME;
-                    $params['action'] = 'index';
-                } else {
-                    $params['controller'] = $_params[0];
-                    $params['action'] = $_params[1];
-                }
-            } else {
-                $params['controller'] = $this->name;
-                $params['action'] = $_params[0];
-            }
-            if (!$params['action']) $params['action'] = 'index';
-        }
-
-        if (is_array($options)) {
-            if (isset($options['id']) && $options['id'] > 0) {
-                $params['id'] = $options['id'];
-                unset($options['id']);
-            }
-            $params['params'] = $options;
-        } else if (isset($options)) {
-            $params['id'] = $options;
-        }
-        $url = Controller::generateUrl($params);
-        return $url;
-    }
-
-    /**
-     * link tag for controller action id
-     *
-     * @param  string $controller
-     * @param  string $action
-     * @param  string $id
-     * @param  array $params
-     * @return string
-     */
-    function link($controller, $action = null, $id = null, $params = null) {
-        if ($params['is_use_selected']) $params['class'].= FormHelper::linkActive($controller, $this->name);
-        if ($params['is_use_action_selected']) $params['class'].= TagHelper::actionActive($controller, $action);
-        unset($params['is_use_selected']);
-        unset($params['is_use_action_selected']);
-
-        $href = $this->urlFor($controller, $action, $id, $params['http_params']);
-        if (!$params || is_array($params)) $params['href'] = $href;
-        $tag = TagHelper::a($params);
-        return $tag;
     }
 
     /**
@@ -680,107 +579,63 @@ class Controller extends RuntimeException {
         return $tag;
     }
 
-
     /**
-     * link tag for controller action id
+     * file upload template
      *
-     * @param  string $controller
-     * @param  string $action
-     * @param  string $id
      * @param  array $params
      * @return string
      */
-    function linkTag($controller, $action = null, $id = null, $params = null) {
-        return $this->link($controller, $action, $id, $params);
-    }
+    function uploadFileJs($params) {
+        include('views/components/lib/file_upload.phtml');
 
-    /**
-     * link tag for controller action id
-     *
-     * @param  string $controller
-     * @param  string $action
-     * @param  string $id
-     * @param  array $params
-     * @return string
-     */
-    function linkAction($action = null, $id = null, $params = null) {
-        if ($params['is_use_selected']) $params['class'].= FormHelper::linkActive($controller, $this->name);
-        $href = $this->urlFor($this->name, $action, $id, $params['http_params']);
-        if (!$params || is_array($params)) $params['href'] = $href;
-        $tag = TagHelper::a($params);
+        $tag = $this->linkJs($params);
         return $tag;
     }
 
     /**
-     * url action for params
+     * link tag for controller action id
      *
-     * @param  string $action
+     * @param  array $params
+     * @param  array $html_params
+     * @return string
+     */
+    function linkTo($params, $html_params = null) {
+        if (!$html_params['label']) $html_params['label'] = 'Link';
+        if ($html_params['is_use_selected']) $html_params['class'].= FormHelper::linkActive($params['controller'], $this->name);
+        if ($html_params['is_use_action_selected']) $html_params['class'].= TagHelper::actionActive($params['controller'], $action);
+        unset($html_params['is_use_selected']);
+        unset($html_params['is_use_action_selected']);
+
+        $html_params['href'] = $this->urlFor($params, $html_params['http_params']);
+        $tag = TagHelper::a($html_params);
+        return $tag;
+    }
+
+    /**
+     * url for params
+     *
+     * @param  array $params
      * @param  array $http_params
+     * @param  string $base_url
      * @return string
      */
-    function urlAction($action, $http_params = null) {
-        $url = $this->urlFor($this->name, $action, null, $http_params);
-        return $url;
-    }
-
-    /**
-     * link tag for action id
-     *
-     * @param  string $controller
-     * @param  string $action
-     * @param  string $id
-     * @param  array $params
-     * @return string
-     */
-    function linkActionTag($action = null, $id = null, $params = null) {
-        $controller = $this->pw_controller;
-        if ($params['is_use_selected']) $params['class'].= FormHelper::linkActive($controller, $this->name);
-        $params['href'] = $this->urlFor($controller, $action, $id, $params['http_params']);
-
-        $tag = TagHelper::a($params);
-        return $tag;
-    }
-
-    /**
-     * link tag for controller
-     *
-     * @param  string $controller
-     * @param  string $action
-     * @param  string $id
-     * @param  array $params
-     * @return string
-     */
-    function linkControllerTag($controller, $params = null) {
-        if ($params['is_use_selected']) {
-            if ($this->menu_name) {
-                $params['class'].= FormHelper::linkActive($controller, $this->menu_name);
+    static function url($params, $http_params = null, $base_url = null) {
+        $url = ($base_url) ? $base_url : $GLOBALS['controller']->base;
+        if (is_string($params)) {
+            $url.= $params;
+        } else {
+            if ($params['controller']) $elements[] = $params['controller'];
+            if ($params['action']) $elements[] = $params['action'];
+            if ($params['id']) $elements[] = $params['id'];
+            if (count($elements) == 1) {
+                $url.= "{$elements[0]}/";
+            } else {
+                $url.= implode('/', $elements);
             }
-            $params['class'].= FormHelper::linkActive($controller, $this->name);
         }
-        $params['href'] = $this->urlFor($controller, null, null, $params['http_params']);
-
-        $tag = TagHelper::a($params);
-        return $tag;
-    }
-
-    /**
-     * url for params
-     *
-     * @param  string $controller
-     * @param  string $action
-     * @param  string $id
-     * @param  array $http_params
-     * @return string
-     */
-    static function url($controller, $action = null, $id = null, $http_params = null) {
-        $controller_class = $GLOBALS['controller'];
-        $url = $controller_class->base;
-        if ($controller) $url.= "{$controller}/";
-        if ($action) $url.= "{$action}/";
-        if ($action && $id) $url.= "{$id}";
         if (isset($http_params) && is_array($http_params)) {
-            $url_params = http_build_query($http_params);
-            if ($url_params) $url = "{$url}?{$url_params}";
+            $http_param = http_build_query($http_params);
+            if ($http_param) $url = "{$url}?{$http_param}";
         }
         return $url;
     }
@@ -788,66 +643,13 @@ class Controller extends RuntimeException {
     /**
      * url for params
      *
-     * @param  string $controller
-     * @param  string $action
-     * @param  string $id
+     * @param  array $params
      * @param  array $http_params
      * @return string
      */
-    function urlFor($controller, $action = null, $id = null, $http_params = null) {
-        $url = $this->base;
-        if ($controller) $url.= "{$controller}/";
-        if ($action) $url.= "{$action}/";
-        if ($action && $id) $url.= "{$id}";
-        if (isset($http_params) && is_array($http_params)) {
-            $url_params = http_build_query($http_params);
-            if ($url_params) $url = "{$url}?{$url_params}";
-        }
-        return $url;
-    }
-
-    /**
-     * url for params
-     *
-     * @param  string $controller
-     * @param  array $http_params
-     * @return string
-     */
-    function urlControllerFor($controller, $http_params = null) {
-        $url = $this->urlFor($controller, null, null, $http_params);
-        return $url;
-    }
-
-    /**
-     * url action for params
-     *
-     * @param  string $action
-     * @param  array $http_params
-     * @return string
-     */
-    function urlActionFor($action, $http_params = null) {
-        $url = $this->urlFor($this->name, $action, null, $http_params);
-        return $url;
-    }
-
-    /**
-     * url self for params
-     *
-     * @param  string $action
-     * @param  string $id
-     * @param  array $http_params
-     * @return string
-     */
-    function urlSelfFor($action = null, $id = null, $http_params = null) {
-        $url = $this->base;
-        $url.= "{$this->name}/";
-        if ($action) $url.= "{$action}";
-        if ($action && $id) $url.= "/{$id}";
-
-        if (isset($http_params) && is_array($http_params)) {
-            $url_params = http_build_query($http_params);
-            if ($url_params) $url = "{$url}?{$url_params}";
-        }
+    function urlFor($params, $http_params = null) {
+        if (is_array($params) && !$params['controller']) $params['controller'] = $this->name;
+        $url = self::url($params, $http_params, $this->base);
         return $url;
     }
 
@@ -1226,7 +1028,7 @@ class Controller extends RuntimeException {
      */
     function checkEdit($redirect_action = 'new') {
         if (!$this->pw_params['id']) {
-            $this->redirect_to($redirect_action);
+            $this->redirectTo(['controller' => $this->name, 'action' => $redirect_action]);
             exit;
         }
     }
@@ -1415,7 +1217,7 @@ class Controller extends RuntimeException {
         $this->pw_auth = AppSession::getWithKey('pw_auth', DB::model($this->auth_model)->entity_name);
 
         if (!$this->pw_auth->value['id']) {
-            $this->redirectTo('login/');
+            $this->redirectTo(['controller' => 'login']);
             exit;
         }
     }
@@ -1473,7 +1275,9 @@ class Controller extends RuntimeException {
     function pwLogout($uri = null)
     {
         AppSession::flush();
-        $this->redirectTo($uri);
+        $params['lang'] = $this->lang;
+        $params['is_change_lang'] = 1;
+        $this->redirectTo($uri, null, $params);
         exit;
     }
 
@@ -1563,11 +1367,33 @@ class Controller extends RuntimeException {
     /**
      * images dirctory path
      *
-     * @return void
+     * @return string
      */
-    function imageDir() {
-        $path = $this->base."images/";
-        return $path;
+    function imageDir($dir = 'images') {
+        return $this->base."{$dir}/";
+    }
+
+    /**
+     * images dirctory path
+     *
+     * @return string
+     */
+    function image($file_name, $dir = 'images') {
+        if (!$dir) $dir = 'images';
+        $url = $this->imageDir($dir);
+        $url = "{$url}{$file_name}";
+        return $url;
+    }
+
+    /**
+     * images dirctory path
+     *
+     * @param string $dir
+     * @return string
+     */
+    static function imageBaseUrl($dir = 'images') {
+        $controller = $GLOBALS['controller'];
+        return $controller->base."{$dir}/";
     }
 
     /**
@@ -1575,10 +1401,11 @@ class Controller extends RuntimeException {
      *
      * @return void
      */
-    function image($file_name) {
-        $dir = $this->imageDir();
-        $path = "{$dir}{$file_name}";
-        return $path;
+    static function imageUrl($file_name, $dir = 'images') {
+        if (!$dir) $dir = 'images';
+        $url = self::imageBaseUrl($dir);
+        $url = "{$url}{$file_name}";
+        return $url;
     }
 
 }

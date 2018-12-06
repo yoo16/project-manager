@@ -16,11 +16,11 @@
 
 <div class="">
   <div class="pt-3">
-    <form action="<?= url_for('project/sync_db') ?>" method="post" class="">
+    <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'sync_db']) ?>" method="post">
       <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
       <?= FormHelper::submit('Import from DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you import from DB?']) ?>
       <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
-      <?= FormHelper::linkButton('lock', null ,['label' => 'Lock', 'class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you lock models?']) ?>
+      <?= FormHelper::linkButton(['action' => 'lock'], ['label' => 'Lock', 'class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you lock models?']) ?>
     </form>
   </div>
 
@@ -45,16 +45,13 @@
     <? if ($this->model->values): ?>
       <? foreach ($this->model->values as $model): ?>
         <tr>
-          <td><?= FormHelper::linkButton('edit', $model['id'], ['label' => LABEL_EDIT, 'class' => 'btn btn-outline-primary']) ?></td>
+          <td><?= $this->model->linkEdit([], $model) ?></td>
           <td>
             <div>
-              <?= $this->linkControllerTag(
-                'attribute', 
+              <?= $this->linkTo(['controller' => 'attribute'], 
                 [
                   'label' => $model['name'], 
-                  'http_params' => [
-                    'model_id' => $model['id']
-                  ]
+                  'http_params' => ['model_id' => $model['id']]
                 ]
               )
               ?>
@@ -62,13 +59,18 @@
             <div><?= $model['label'] ?></div>
             <? if ($model['old_name']): ?><div>(<?= $model['old_name'] ?> : <?= $model['old_database_id'] ?>)</div><? endif ?>
           </td>
-          <td><a class="btn btn-sm btn-outline-primary" href="<?= url_for('values', $model['id']) ?>">Data</a></td>
+          <td><?= $this->linkTo(['action' => 'values', 'id' => $model['id']],
+            [
+            'label' => 'Data',
+            'class' => 'btn btn-sm btn-outline-primary'
+            ]) ?>
+          </td>
           <td>
             <div><?= $model['entity_name'] ?></div>
             <div><?= $model['class_name'] ?></div>
           </td>
           <td>
-            <form action="<?= url_for('page/create_page_from_model') ?>" method="post">
+            <form action="<?= $this->urlFor(['controller' => 'page', 'action' => 'create_page_from_model']) ?>" method="post">
               <?= FormHelper::button(LABEL_CREATE, ['class' => 'btn btn-sm btn-primary confirm-dialog', 'message' => "Create page?"]) ?>
               <?= FormHelper::hidden('model_id', $model['id']) ?>
             </form>
@@ -102,10 +104,21 @@
             <?= $model['database_id'] ?>
           </td>
           <td>
-            <a class="btn btn-sm btn-outline-primary" href="<?= url_for('sync_model', $model['id']) ?>">Sync</a>
+            <?= $this->linkTo(['action' => 'sync_model', 'id' => $model['id']],
+            [
+            'label' => 'Sync',
+            'class' => 'btn btn-sm btn-outline-primary'
+            ]
+            ) ?>
           </td>
           <td>
-            <a class="btn btn-outline-primary" href="<?= url_for('duplicate', $model['id']) ?>"><?= LABEL_DUPLICATE ?></a>
+            <?= $this->linkTo(['action' => 'duplicate', 'id' => $model['id']],
+            [
+            'label' => LABEL_DUPLICATE,
+            'class' => 'btn btn-sm btn-outline-primary confirm-dialog',
+            'message' => 'Do you duplicate?'
+            ]
+            ) ?>
           </td>
 
         </tr>

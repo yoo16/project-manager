@@ -3,7 +3,7 @@
 <div class="card">
   <h4 class="card-header">
   <?= $this->model->value['name'] ?> <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label>
-  <?= FormHelper::linkButton("cancel", null, ['label' => LABEL_BACK]) ?>
+  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
   </h4>
 
   <div class="card-body">
@@ -34,7 +34,7 @@
         </td>
 
         <td>
-          <form method="post" action="<?= url_for('update_attribute', $attribute['id']) ?>">
+          <form method="post" action="<?= $this->linkTo('update_attribute', $attribute['id']) ?>">
             <div class="row">
              <div class="input-group">
                <?= FormHelper::text('attribute[label]', $attribute['label'], ['class' => 'form-control form-control-sm']) ?>

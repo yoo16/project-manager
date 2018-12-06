@@ -57,7 +57,7 @@
               </td>
 
               <td>
-                <form method="post" action="<?= url_for('update_label', $attribute['id']) ?>">
+                <form method="post" action="<?= $this->linkTo('update_label', $attribute['id']) ?>">
                   <div class="row">
                    <div class="input-group">
                      <?= FormHelper::input(['class' => 'form-control form-control-sm'], 'attribute[label]', $attribute['label']) ?>
@@ -89,9 +89,9 @@
             <td>
               <? if (!Model::$required_columns[$attribute['name']]): ?>
                 <? if ($attribute['is_required']): ?>
-                  <?= $this->linkTag($this->name, 'change_required', $attribute['id'], ['label' => 'required', 'class' => 'badge badge-success']) ?>
+                  <?= $this->linkTo($this->name, 'change_required', $attribute['id'], ['label' => 'required', 'class' => 'badge badge-success']) ?>
                 <? else: ?>
-                  <?= $this->linkTag($this->name, 'change_required', $attribute['id'], ['label' => 'required', 'class' => 'badge badge-default']) ?>
+                  <?= $this->linkTo($this->name, 'change_required', $attribute['id'], ['label' => 'required', 'class' => 'badge badge-default']) ?>
                 <? endif ?>
               <? endif ?>
             </td>
@@ -110,7 +110,7 @@
                   <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><?= FormHelper::badgeTag('Not Null', null, 'info') ?><? endif ?>
                 <? else: ?>
                   <label class="badge badge-pill badge-danger">unsync</label>
-                  <form action="<?= url_for('add_column', $attribute['id']) ?>" method="post">
+                  <form action="<?= $this->linkTo('add_column', $attribute['id']) ?>" method="post">
                     <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-outline-primary']) ?>
                     <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
                     <?= FormHelper::hidden('table_name', $this->model->value['name']) ?>
@@ -118,7 +118,7 @@
                 <? endif ?>
               </td>
               <td>
-                <a class="btn btn-outline-primary" href="<?= url_for('sync_attribute', $attribute['id']) ?>">Sync</a>
+                <a class="btn btn-outline-primary" href="<?= $this->linkTo('sync_attribute', $attribute['id']) ?>">Sync</a>
               </td>
             </tr>
           <? endforeach ?>

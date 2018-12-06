@@ -21,7 +21,7 @@ class ProjectController extends AppController {
 
         if (!defined('IS_PM_ADMIN') || !IS_PM_ADMIN) {
             if (!DB::model('Database')->myList()) {
-                $this->redirect_to('database/');
+                $this->redirectTo(['controller' => 'database']);
                 exit;
             }
         }
@@ -56,12 +56,12 @@ class ProjectController extends AppController {
         $pgsql_entity = new PgsqlEntity();
         $this->pg_connection = $pgsql_entity->connection();
         if (!$this->pg_connection) {
-            $this->redirect_to('root/');
+            $this->redirectTo(['controller' => 'root']);
             exit;
         }
 
         $this->clearSession();
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     /**
@@ -71,7 +71,7 @@ class ProjectController extends AppController {
      */
     function action_cancel() {
         $this->clearSession();
-        $this->redirect_to('index');
+        $this->redirectTo();
     }
 
     /**
@@ -124,7 +124,7 @@ class ProjectController extends AppController {
         if (!$project->errors) {
             $this->clearPwPosts();
         }
-        $this->redirect_to('list');
+        $this->redirectTo(['action' => 'list']);;
     }
 
     /**
@@ -138,7 +138,7 @@ class ProjectController extends AppController {
         if ($project->errors) {
             $this->addError('projects', $project->errors);
         }
-        $this->redirect_to('edit', $this->pw_params['id']);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
     }
 
     /**
@@ -151,10 +151,10 @@ class ProjectController extends AppController {
 
         $project = DB::model('Project')->delete($this->pw_params['id']);
         if ($project->errors) {
-            $this->redirect_to('edit', $this->pw_params['id']);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
         } else {
             $this->clearPwPosts();
-            $this->redirect_to('index');
+            $this->redirectTo();
         }
     }
 
@@ -171,7 +171,7 @@ class ProjectController extends AppController {
         $this->project->exportPHPViewsEdit($_REQUEST['is_overwrite']);
 
         $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('page/list', $params);
+        $this->redirectTo(['controller' => 'page', 'action' => 'list'], $params);
     }
 
     /**
@@ -186,7 +186,7 @@ class ProjectController extends AppController {
         $this->project->exportPHP();
 
         $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('model/list', $params);
+        $this->redirectTo(['controller' => 'model', 'action' => 'list'], $params);
     }
 
     /**
@@ -207,7 +207,7 @@ class ProjectController extends AppController {
         LocalizeString::importByModel($this->model, $this->project);
 
         $params['page_id'] = $this->pw_posts['page_id'];
-        $this->redirect_to('view/', $params);
+        $this->redirectTo(['controller' => 'view', 'action' => 'list'], $params);
     }
 
     /**
@@ -226,7 +226,7 @@ class ProjectController extends AppController {
         $this->project->exportPHPModels($pgsql);
 
         $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('attribute/list', $params);
+        $this->redirectTo(['controller' => 'attribute', 'action' => 'list'], $params);
     }
 
     /**
@@ -246,7 +246,7 @@ class ProjectController extends AppController {
         $this->project->exportPHPModel($pgsql, $this->model);
 
         $params['model_id'] = $this->model->value['id'];
-        $this->redirect_to('attribute/list', $params);
+        $this->redirectTo(['controller' => 'attribute', 'action' => 'list'], $params);
     }
 
     /**
@@ -262,7 +262,7 @@ class ProjectController extends AppController {
         $this->project->exportPHPViews($_REQUEST['is_overwrite']);
 
         $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('page/list', $params);
+        $this->redirectTo(['controller' => 'page', 'action' => 'list'], $params);
     }
 
     /**
@@ -277,7 +277,7 @@ class ProjectController extends AppController {
         $this->project->exportPHPControllers($_REQUEST['is_overwrite']);
 
         $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('page/list', $params);
+        $this->redirectTo(['controller' => 'page', 'action' => 'list'], $params);
     }
 
     /**
@@ -292,7 +292,7 @@ class ProjectController extends AppController {
         $this->project->exportPHPViews($_REQUEST['is_overwrite']);
 
         $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('page/list', $params);
+        $this->redirectTo(['controller' => 'page', 'action' => 'list'], $params);
     }
 
     function action_export_db() {
@@ -302,17 +302,17 @@ class ProjectController extends AppController {
 
         if ($this->project->value) {
             $params['project_id'] = $this->project->value['id'];
-            $this->redirect_to('model/list', $params);
+            $this->redirectTo(['controller' => 'model', 'action' => 'list'], $params);
         } else {
             $params['database_id'] = $database->value['id'];
-            $this->redirect_to('database/tables', $params);
+            $this->redirectTo(['controller' => 'database', 'action' => 'tables'], $params);
         }
     }
 
     function action_export_list() {
             $this->project = DB::model('Project')->fetch("{$this->pw_params['id']}");
             if (!$this->project->value['id']) {
-                $this->redirect_to('list');
+                $this->redirectTo(['action' => 'list']);;
                 exit;
             }
             $this->project->bindOne('Database');
@@ -337,7 +337,7 @@ class ProjectController extends AppController {
         $this->project->exportPythonModels($pgsql);
 
         $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('model/list', $params);
+        $this->redirectTo(['controller' => 'model', 'action' => 'list'], $params);
     }
 
     /**
@@ -357,7 +357,7 @@ class ProjectController extends AppController {
         $this->project->exportPythonModel($pgsql, $this->model);
 
         $params['model_id'] = $this->pw_posts['model_id'];
-        $this->redirect_to('attribute/list', $params);
+        $this->redirectTo(['controller' => 'attribute', 'action' => 'list'], $params);
     }
 
 
@@ -368,11 +368,6 @@ class ProjectController extends AppController {
         $project_path = $user_project_setting['project_path'];
 
         $app_path = "{$project_path}app/";
-
-        if (file_exists($app_path)) {
-            //$this->redirect_to('export_list', $project['id']);
-            //exit;
-        }
 
         $cmd = "mkdir -p {$project_path}";
         exec($cmd, $output, $return);
@@ -389,7 +384,7 @@ class ProjectController extends AppController {
             exec($cmd, $output, $return);
         }
 
-        $this->redirect_to('export_list', $project['id']);
+        $this->redirectTo(['action' => 'export_list', 'id' => $project['id']]);
     }
 
     function action_create() {
@@ -417,7 +412,7 @@ class ProjectController extends AppController {
         } else {
             unset($this->session['posts']);
         }
-        $this->redirect_to('export_list', $posts['project_id']);
+        $this->redirectTo(['action' => 'export_list', 'id' => $posts['project_id']]);
     }
 
     function action_delete_user_project_setting() {
@@ -426,7 +421,7 @@ class ProjectController extends AppController {
         if ($user_project_setting->value) {
             DB::model('UserProjectSetting')->delete($user_project_setting->value['id']);
         }
-        $this->redirect_to('export_list', $user_project_setting->value['project_id']);
+        $this->redirectTo(['action' => 'export_list', 'id' => $user_project_setting->value['project_id']]);
     }
 
     function action_update_user_project_setting() {
@@ -436,10 +431,10 @@ class ProjectController extends AppController {
 
         if ($user_project_setting->errors) {
             $this->flash['errors'] = $project->errors;
-            $this->redirect_to('edit_user_project_setting', $user_project_setting->value['id']);
+            $this->redirectTo(['action' => 'edit_user_project_setting', 'id' => $user_project_setting->value['id']]);
         } else {
             unset($this->session['posts']);
-            $this->redirect_to('export_list', $user_project_setting->value['project_id']);
+            $this->redirectTo(['action' => 'export_list', 'id' => $user_project_setting->value['project_id']]);
         }
     }
 
@@ -455,7 +450,7 @@ class ProjectController extends AppController {
     function action_sync_db() {
         if (!isPost()) exit;
         if (!$this->database->value['id']) {
-            $this->redirect_to('project/');
+            $this->redirectTo(['controller' => 'project']);
         }
 
         $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
@@ -492,7 +487,7 @@ class ProjectController extends AppController {
         Model::updateForeignKey($this->project);
 
         $params['project_id'] = $this->project->value['id'];
-        $this->redirect_to('model/list', $params);
+        $this->redirectTo(['controller' => 'model', 'action' => 'list']);
     }
 
     function action_export_sql_from_models() {
@@ -551,7 +546,7 @@ class ProjectController extends AppController {
         $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
         $this->project->exportRecord();
 
-        $this->redirect_to('record/list');
+        $this->redirectTo(['controller' => 'record', 'action' => 'list']);
     }
 
 }

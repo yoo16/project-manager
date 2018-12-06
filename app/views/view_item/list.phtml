@@ -6,12 +6,12 @@
   <? include('views/components/sortable.phtml') ?>
 
   <?= $this->linkControllerTag('view', ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-  <a class="btn btn-primary" href="<?= url_for('add_all') ?>">
+  <a class="btn btn-primary" href="<?= $this->linkTo('add_all') ?>">
     <?= LABEL_ALL ?>
     <?= LABEL_ADD ?>
   </a>
 
-  <a class="btn btn-outline-primary" href="<?= url_for('view_item_group/', ['view_id' => $this->view->value['id']]) ?>">
+  <a class="btn btn-outline-primary" href="<?= $this->linkTo('view_item_group/', ['view_id' => $this->view->value['id']]) ?>">
     <?= LABEL_VIEW_ITEM_GROUPS ?>
   </a>
 </div>
@@ -36,7 +36,7 @@
     <? endif ?>
     <tr row-id="<?= $view_item['id'] ?>">
       <td>
-        <?= $this->linkTag($this->pw_controller, 'edit', $view_item['id'],
+        <?= $this->linkTo($this->pw_controller, 'edit', $view_item['id'],
             [
             'label' => LABEL_EDIT,
             'class' => 'btn btn-outline-primary'
@@ -121,7 +121,7 @@
       </td>
 
       <td>
-        <form action="<?= url_for('delete') ?>" method="post">
+        <form action="<?= $this->linkTo('delete') ?>" method="post">
           <?= FormHelper::submit(LABEL_DELETE, ['class' => 'btn btn-sm btn-danger confim-dialog', 'message' => 'Delete Topic?']) ?>
           <?= FormHelper::hidden('id', $view_item['id']) ?>
         </form>
@@ -146,7 +146,7 @@
     <? if (!in_array($view_item['name'], Entity::$app_columns)): ?>
   <tr>
     <td>
-      <form action="<?= url_for('add_for_attribute') ?>" method="post">
+      <form action="<?= $this->linkTo('add_for_attribute') ?>" method="post">
         <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-sm btn-primary']) ?>
         <?= FormHelper::hidden('view_item[attribute_id]', $view_item['id']) ?>
       </form>

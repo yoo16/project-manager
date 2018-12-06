@@ -4,7 +4,7 @@
   <h3 class="card-header">Model</h3>
   <div class="card-block">
 
-    <form id="" action="<?= url_for('update', $this->model->value['id']) ?>" method="post" autocomplete="off">
+    <form id="" action="<?= $this->linkTo('update', $this->model->value['id']) ?>" method="post" autocomplete="off">
 
       <table class="table">
         <tr>
@@ -67,9 +67,8 @@
       </table>
 
       <?= FormHelper::submit(LABEL_UPDATE) ?>
-      <?= FormHelper::linkButton('cancel', null, ['label' => LABEL_BACK]) ?>
+      <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+      <?= $this->model->confirmDelete() ?>
     </form>
-
-    <?= $this->model->confirmDelete() ?>
   </div>
 </div>

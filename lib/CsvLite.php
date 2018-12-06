@@ -553,7 +553,7 @@ class CsvLite {
      */
     static function line($values, $from_encode = 'SJIS', $to_encode = 'UTF-8') {
         $value = implode(',', $values);
-        $value.="\r\n";
+        $value.= "\r\n";
         $value = mb_convert_encoding($value, $from_encode, $to_encode);
         return $value;
     }

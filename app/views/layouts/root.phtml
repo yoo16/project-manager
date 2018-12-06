@@ -11,16 +11,36 @@
     <div class="container">
       <ul class="nav nav-pills justify-content-left">
         <li class="nav-item">
-          <a class="nav-link <?= cssClass('project', $this->pw_params['controller'], 'active'); ?>" href="<?= url_for('project/') ?>">Project</a>
+          <?= $this->linkTo(['controller' => 'project'],
+          [
+          'label' => 'Project',
+          'class' => 'nav-link'
+          ]
+          ) ?>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= cssClass('database', $this->pw_params['controller'], 'active'); ?>" href="<?= url_for('database/') ?>">Database</a>
+          <?= $this->linkTo(['controller' => 'database'],
+          [
+          'label' => 'Database',
+          'class' => 'nav-link'
+          ]
+          ) ?>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= cssClass('setting', $this->pw_params['controller'], 'active'); ?>" href="<?= url_for('setting/') ?>">Setting</a>
+          <?= $this->linkTo(['controller' => 'setting'],
+          [
+          'label' => 'Setting',
+          'class' => 'nav-link'
+          ]
+          ) ?>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= cssClass('user', $this->pw_params['controller'], 'active'); ?>" href="<?= url_for('user/') ?>">User</a>
+          <?= $this->linkTo(['controller' => 'user'],
+          [
+          'label' => 'User',
+          'class' => 'nav-link'
+          ]
+          ) ?>
         </li>
       </ul>
     </div>
