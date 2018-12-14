@@ -1,26 +1,12 @@
 <?= "<? include('_header.phtml') ?>" ?>
 
 <form action="<? Tag::init()->php('$this->urlSelfFor(\'update\', $this->pw_params[\'id\'])') ?>" method="post">
+  <?= "<? include('form.phtml') ?>" ?>
+  <div class="">
+    <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
 
-  <div class="card">
+    <? Tag::init()->php('FormHelper::linkButton("cancel", null, [\'label\' => LABEL_BACK])') ?>
 
-    <div class="card-block">
-
-      <?= "<? include('form.phtml') ?>" ?>
-
-    </div>
-
-    <div class="card-footer">
-      <h4></h4>
-      <div class="text-left">
-
-        <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
-        
-        <? Tag::init()->php('FormHelper::linkButton("cancel", null, [\'label\' => LABEL_BACK])') ?>
-
-        <? Tag::init()->php('$this->'."{$values['model']['entity_name']}".'->confirmDelete()') ?>
-      </div>
-    </div>
-
+    <? Tag::init()->php('$this->'."{$values['model']['entity_name']}".'->confirmDelete()') ?>
   </div>
 </form>

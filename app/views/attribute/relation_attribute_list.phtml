@@ -1,6 +1,5 @@
-
 <h4>
-  <?= FormHelper::link('#',
+  <?= $this->linkJs(
     [
       'label' => LABEL_BACK,
       'class' => 'pw-click btn btn-sm btn-outline-primary', 
@@ -11,28 +10,35 @@
   )
   ?>
 </h4>
-<h4 class=""><?= $this->model->value['name'] ?> -> <?= $this->attribute->value['name'] ?></h4>
+<h4 class="">
+  <?= $this->model->value['name'] ?> ->
+  <?= $this->attribute->value['name'] ?>
+</h4>
 
 <? if ($this->fk_attribute->value): ?>
-  <form action="<?= $this->urlActionFor('remove_relation') ?>" method="post">
-    <?= $this->fk_model->value['name'] ?> -> <?= $this->fk_attribute->value['name'] ?>
-    <input class="btn btn-sm btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
-    <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
-  </form>
+<form action="<?= $this->urlFor(['action' => 'remove_relation']) ?>" method="post">
+  <?= $this->fk_model->value['name'] ?> ->
+  <?= $this->fk_attribute->value['name'] ?>
+  <input class="btn btn-sm btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
+  <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
+</form>
 <? endif ?>
 
-<h4><?= $this->fk_model->value['name'] ?></h4>
+<h4>
+  <?= $this->fk_model->value['name'] ?>
+</h4>
 <table class="table table-sm">
   <? foreach ($this->fk_model->attribute->values as $fk_attribute): ?>
-    <tr>
-      <td><?= $fk_attribute['name'] ?></a></td>
-      <td>
-        <form action="<?= $this->urlActionFor('update_relation') ?>" method="post">
-          <input type="submit" class="btn btn-sm btn-primary" value="<?= LABEL_UPDATE ?>">
-          <input type="hidden" name="fk_attribute_id" value="<?= $fk_attribute['id'] ?>">
-          <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
-        </form>
-      </td>
-    </tr>
+  <tr>
+    <td>
+      <?= $fk_attribute['name'] ?></a></td>
+    <td>
+      <form action="<?= $this->urlFor(['action' => 'update_relation']) ?>" method="post">
+        <input type="submit" class="btn btn-sm btn-primary" value="<?= LABEL_UPDATE ?>">
+        <input type="hidden" name="fk_attribute_id" value="<?= $fk_attribute['id'] ?>">
+        <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
+      </form>
+    </td>
+  </tr>
   <? endforeach ?>
 </table>

@@ -1,9 +1,9 @@
 <? include('_header.phtml') ?>
 
 <div class="pt-3">
-  <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
+  <?= FormHelper::linkButton(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
 
-  <? include('views/components/sortable.phtml') ?>
+  <? include('views/components/lib/sortable.phtml') ?>
 
   <?= $this->linkControllerTag('view', ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
   <a class="btn btn-primary" href="<?= $this->linkTo('add_all') ?>">
@@ -121,7 +121,7 @@
       </td>
 
       <td>
-        <form action="<?= $this->linkTo('delete') ?>" method="post">
+        <form action="<?= $this->urlFor(['action' => 'delete']) ?>" method="post">
           <?= FormHelper::submit(LABEL_DELETE, ['class' => 'btn btn-sm btn-danger confim-dialog', 'message' => 'Delete Topic?']) ?>
           <?= FormHelper::hidden('id', $view_item['id']) ?>
         </form>
@@ -146,7 +146,7 @@
     <? if (!in_array($view_item['name'], Entity::$app_columns)): ?>
   <tr>
     <td>
-      <form action="<?= $this->linkTo('add_for_attribute') ?>" method="post">
+      <form action="<?= $this->urlFor(['action' => 'add_for_attribute']) ?>" method="post">
         <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-sm btn-primary']) ?>
         <?= FormHelper::hidden('view_item[attribute_id]', $view_item['id']) ?>
       </form>

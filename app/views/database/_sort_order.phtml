@@ -5,16 +5,16 @@
       </tr>
     </thead>
 
-<% if (is_array($this->databases)): %> 
+<? if (is_array($this->databases)): ?> 
 
-<% foreach ($this->databases as $key => $database): %> 
+<? foreach ($this->databases as $key => $database): ?> 
 
-    <tr id="<%=$database['id'] %>">
+    <tr id="<?=$database['id'] ?>">
 
     </tr>
-<% endforeach %> 
+<? endforeach ?> 
 
-<% endif %> 
+<? endif ?> 
 
   </table>
 

@@ -11,7 +11,7 @@
     <td><?= $model_name ?></td>
     <td><?= $pg_attribute['attname'] ?></td>
     <td>
-      <form action="<?= $this->linkTo('attribute/update_old_name') ?>" method="post">
+      <form action="<?= $this->urlFor(['controller' => 'attribute', 'action' => 'update_old_name']) ?>" method="post">
         <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
         <input type="hidden" name="old_name" value="<?= $pg_attribute['attname'] ?>">
         <?= FormHelper::submit(

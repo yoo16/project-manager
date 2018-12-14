@@ -349,7 +349,7 @@ class Tag {
     }
 
     function sortbleLink() {
-        $tag = $this->phpTag("include('views/components/sortable.phtml')", false);
+        $tag = $this->phpTag("include('views/components/lib/sortable.phtml')", false);
         echo($tag).PHP_EOL;
     }
 

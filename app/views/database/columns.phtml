@@ -27,7 +27,7 @@ if you want create database's columns, please add columns on 'Project'.
       <td><?= $attribute['attnum'] ?></td>
       <td><?= $attribute['attname'] ?></td>
       <td>
-        <form action="<?= $this->linkTo('update_column_comment') ?>" method="post">
+        <form action="<?= $this->urlFor(['action' => 'update_column_comment']) ?>" method="post">
           <div class="row">
             <div class="input-group">
               <input class="form-control col-6" type="text" name="comment" value="<?= $attribute['comment'] ?>">

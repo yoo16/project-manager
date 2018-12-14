@@ -1,13 +1,10 @@
 <? include('_header.phtml') ?>
-<div class="card">
-
-  <form action="<?= $this->linkTo('update', $this->pw_params['id']) ?>" method="post">
+<form action="<?= $this->urlFor(['action' => 'update', 'id' => $this->pw_params['id']]) ?>" method="post">
+  <div class="card">
 
     <div class="card-header">
       <h4></h4>
       <div class="text-left">
-        <?= FormHelper::submit(LABEL_SAVE) ?>
-        <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
       </div>
     </div>
 
@@ -16,11 +13,14 @@
       <? include('form.phtml') ?>
     </div>
 
-  </form>
 
-  <div class="card-footer">
-    <div class="text-left">
-      <?= $this->record_item->confirmDelete() ?>    </div>
+    <div class="card-footer">
+      <div class="text-left">
+        <?= FormHelper::submit(LABEL_SAVE) ?>
+        <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+        <?= $this->record_item->confirmDelete() ?>
+      </div>
+    </div>
+
   </div>
-
-</div>
+  </form>

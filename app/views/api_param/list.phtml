@@ -1,10 +1,8 @@
 <? include('_header.phtml') ?>
 
 <div class="pt-3">
-  <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
-  <a href="#" class="btn btn-outline-primary change-sortable" rel="sortable-table"><?= LABEL_SORT_ORDER ?></a>
-
-  <a href="#" class="btn btn-primary update-sortable" controller="api_param"><?= LABEL_UPDATE ?></a>
+  <?= FormHelper::linkButton(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
+  <? include('views/components/lib/sortable.phtml') ?>
 </div>
 
 <table id="sortable-table" class="table">
@@ -20,7 +18,7 @@
   <? if ($this->api_param->values): ?>
   <? foreach ($this->api_param->values as $values): ?>
   <tr row-id="<?= $values['id'] ?>">
-    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
+    <td><?= $this->api_param->linkEdit([], $values) ?></td>
     <td><?= $values['name'] ?></td>
     <td><?= $values['type'] ?></td>
     <td><?= $values['note'] ?></td>

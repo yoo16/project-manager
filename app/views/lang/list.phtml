@@ -1,15 +1,15 @@
 <? include('_header.phtml') ?>
 
 <div class="pt-3">
-  <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
-  <?= FormHelper::linkButton('sort_order', LABEL_SORT_ORDER) ?>
+  <?= FormHelper::linkButton(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
+  <? include('views/components/lib/sortable.phtml') ?>
 </div>
 
 <table class="table">
   <thead class="thead-default">
     <tr>
       <th>&nbsp;</th>
-      <th>名称</th>
+      <th>坝称</th>
       <th>言語</th>
     </tr>
   </thead>
@@ -17,7 +17,7 @@
   <? if ($this->lang->values): ?>
   <? foreach ($this->lang->values as $values): ?>
   <tr>
-    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
+    <td><?= $this->lang->linkEdit([], $values) ?></td>
     <td><?= $values['name'] ?></td>
     <td><?= $values['lang'] ?></td>
   </tr>

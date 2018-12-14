@@ -1,23 +1,12 @@
 <?= "<? include('_header.phtml') ?>" ?>
 
 <form action="<? Tag::init()->php('$this->urlSelfFor(\'add\')') ?>" method="post">
-  <div class="card">
+  <?= "<? include('form.phtml') ?>" ?>
 
-    <div class="card-block">
+  <div class="">
+    <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
 
-      <?= "<? include('form.phtml') ?>" ?>
-      
-    </div>
+    <? Tag::init()->php('FormHelper::linkButton("cancel", null, [\'label\' => LABEL_BACK])') ?>
 
-    <div class="card-footer">
-      <h4></h4>
-      <div class="text-left">
-        
-        <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
-
-        <? Tag::init()->php('FormHelper::linkButton("cancel", null, [\'label\' => LABEL_BACK])') ?>
-
-      </div>
-    </div>
   </div>
 </form>

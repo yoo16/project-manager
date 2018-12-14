@@ -1,22 +1,22 @@
 <? include('_header.phtml') ?>
 <div id="database">
-  <form id="" action="<?=url_for('update_table') ?>" method="post">
+  <form id="" action="<?= $this->urlFor(['action' => 'update_table']) ?>" method="post">
 
     <table class="table">
       <tr>
-        <th>テーブル名</th>
+        <th>Table Name</th>
         <td><input class="form-control" name="new_table_name" type="text" value="<?= $this->pg_table['tablename'] ?>" required="required"></td>
       </tr>
     </table>
 
     <input class="btn btn-outline-primary" type="submit" value="<?=LABEL_UPDATE ?>">
-    <a class="btn btn-outline-primary" href="<?=url_for('tables', $this->database['id']) ?>"><?=LABEL_BACK?></a>
+    <a class="btn btn-outline-primary" href="<?= $this->urlFor(['action' => 'tables', 'id' => $this->database['id']]) ?>"><?=LABEL_BACK?></a>
     <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
     <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
   </form>
 
   <? if ($this->pg_table): ?>
-  <form id="" action="<?=url_for('drop_table', $this->pg_table['tablename']) ?>" method="post">
+  <form id="" action="<?= $this->urlFor(['action' => 'drop_table', 'id' => $this->pg_table['tablename']]) ?>" method="post">
     <input class="btn btn-outline-danger" type="submit" value="<?= LABEL_DELETE ?>">
     <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
     <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">

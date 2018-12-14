@@ -119,4 +119,16 @@ class MenuController extends AppController {
         $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
     }
 
+
+   /**
+    * update sort order
+    *
+    * @param
+    * @return void
+    */
+    function action_update_sort() {
+        $this->updateSort('Menu');
+    }
+
+
 }

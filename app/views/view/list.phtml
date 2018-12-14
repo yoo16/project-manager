@@ -2,65 +2,60 @@
 <? include('add_window.phtml') ?>
 
 <div class="pt-3">
-<?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
-<?= $this->linkControllerTag('page', ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-<a class="btn btn-outline-primary" href="<?= $this->linkTo('page_model/', array('page_id' => $this->page->value['id'])) ?>">Model Requests</a>
+  <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
+  <?= $this->linkTo(['controller' => 'page'], ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
+  <?= $this->linkTo(['controller' => 'page_model'],
+                    [
+                    'label' => 'Model Requests',
+                    'class' => 'btn btn-outline-primary',
+                    'http_params' => ['page_id' => $this->page->value['id']]
+                    ]
+  ) ?>
 </div>
 
 <? if ($this->page->view->values): ?>
 <table class="table">
-<tr>
-<th></th>
-<th>Name</th>
-<th>Overwrite</th>
-<th>URI</th>
-<th>Label Width</th>
-</tr>
-<? foreach ($this->page->view->values as $view): ?>
-<tr>
-<td>
-<a class="btn btn-sm btn-outline-primary" href="<?= $this->urlActionFor('edit', ['id' => $view['id']]) ?>">
-<?= LABEL_EDIT ?>
-</a>
-</td>
-<td>
-<div>
-<?= $this->linkControllerTag('view_item', 
-  [
-  'label' => $view['name'],
-  'http_params' => ['view_id' => $view['id']]
-  ])
-?>
-</div>
-<div>
-<?= $view['label'] ?>
-</div>
-</td>
-<td>
-<? if ($view['is_overwrite']): ?>
-<?= $this->linkActionTag('change_overwrite', $view['id'],
-[
-'label' => 'overwrite',
-'class' => 'badge badge-danger'
-])
-?>
-<? else: ?>
-<?= $this->linkActionTag('change_overwrite', $view['id'], 
-[
-'label' => 'off',
-'class' => 'badge badge-default'
-])
-?>
-<? endif ?>
-</td>
-<td>
-<?= $this->page->value['entity_name'] ?>/
-<?= $view['name'] ?>
-</td>
-<td>
-<?= $view['label_width'] ?>
-</td>
-</tr>
-<? endforeach ?>
+  <tr>
+    <th></th>
+    <th>Name</th>
+    <th>Overwrite</th>
+    <th>URI</th>
+    <th>Label Width</th>
+  </tr>
+  <? foreach ($this->page->view->values as $view): ?>
+  <tr>
+    <td>
+      <?= $this->page->view->linkEdit([], $view) ?>
+    </td>
+    <td>
+      <div>
+        <?= $this->linkTo(['controller' => 'view_item'], 
+                          [
+                          'label' => $view['name'],
+                          'http_params' => ['view_id' => $view['id']]
+                          ])
+        ?>
+      </div>
+      <div>
+        <?= $view['label'] ?>
+      </div>
+    </td>
+    <td>
+      <? if ($view['is_overwrite']): ?>
+      <?= $this->linkTo(['action' => 'change_overwrite', 'id' => $view['id']], ['label' => 'overwrite', 'class' => 'badge badge-danger']) ?>
+      <? else: ?>
+      <?= $this->linkTo(['action' => 'change_overwrite', 'id' => $view['id']], ['label' => 'off', 'class' => 'badge badge-default']) ?>
+      <? endif ?>
+    </td>
+    <td>
+      <?= $this->page->value['entity_name'] ?>
+      /
+      <?= $view['name'] ?>
+    </td>
+    <td>
+      <?= $view['label_width'] ?>
+    </td>
+  </tr>
+  <? endforeach ?>
 </table>
 <? endif ?>

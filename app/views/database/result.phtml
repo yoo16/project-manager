@@ -19,5 +19,5 @@
     </tr>
   </table>
 
-  <a class="btn btn-outline-primary" href="<?= $this->linkTo('index') ?>"><?= LABEL_BACK ?></a>
+  <?= FormHelper::linkButton(['action' => 'index'], ['label' => LABEL_BACK]) ?>
 </div>

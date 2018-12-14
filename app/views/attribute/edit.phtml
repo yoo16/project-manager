@@ -1,123 +1,123 @@
 <? include('_header.phtml') ?>
 
-  <div class="card">
-    <h3 class="card-header">Attribute</h3>
-    <div class="card-block">
-      <form id="" action="<?= $this->linkTo('update', $this->attribute->value['id']) ?>" method="post" autocomplete="off">
-        <table class="table">
+<div class="card">
+  <h3 class="card-header">Attribute</h3>
+  <div class="card-block">
+    <form id="" action="<?= $this->urlFor(['action' => 'update', 'id' => $this->attribute->value['id']]) ?>" method="post">
+      <table class="table">
 
-          <tr>
-            <th>attrelid</th>
-            <td>
-              <?= $this->attribute->value['attrelid'] ?>
-            </td>
-          </tr>
+        <tr>
+          <th>attrelid</th>
+          <td>
+            <?= $this->attribute->value['attrelid'] ?>
+          </td>
+        </tr>
 
-          <tr>
-            <th>attnum</th>
-            <td>
-              <?= $this->attribute->value['attnum'] ?>
-            </td>
-          </tr>
+        <tr>
+          <th>attnum</th>
+          <td>
+            <?= $this->attribute->value['attnum'] ?>
+          </td>
+        </tr>
 
-          <tr>
-            <th>Name</th>
-            <td>
-              <?= $this->attribute->formInput('name', ['class' => 'form-control']) ?>
-            </td>
-          </tr>
+        <tr>
+          <th>Name</th>
+          <td>
+            <?= $this->attribute->formInput('name', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
 
-          <tr>
-            <th>Type</th>
-            <td>
-              <?= $this->attribute->formSelect('type', ['csv' => 'pg_types', 'class' => 'form-control']) ?>
-            </td>
-          </tr>
+        <tr>
+          <th>Type</th>
+          <td>
+            <?= $this->attribute->formSelect('type', ['csv' => 'pg_types', 'class' => 'form-control']) ?>
+          </td>
+        </tr>
 
-          <tr>
-            <th>Length</th>
-            <td>
-              <?= $this->attribute->formInput('length', ['class' => 'col-2 form-control']) ?>
-            </td>
-          </tr>
+        <tr>
+          <th>Length</th>
+          <td>
+            <?= $this->attribute->formInput('length', ['class' => 'col-2 form-control']) ?>
+          </td>
+        </tr>
 
-          <tr>
-            <th>Requied</th>
-            <td>
-              <?= $this->attribute->formCheckbox('is_required') ?>
-            </td>
-          </tr>
+        <tr>
+          <th>Requied</th>
+          <td>
+            <?= $this->attribute->formCheckbox('is_required') ?>
+          </td>
+        </tr>
 
-          <tr>
-            <th>Label</th>
-            <td>
-              <?= $this->attribute->formInput('label', ['class' => 'form-control']) ?>
-            </td>
-          </tr>
+        <tr>
+          <th>Label</th>
+          <td>
+            <?= $this->attribute->formInput('label', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
 
-          <tr>
-            <th>Default value</th>
-            <td>
-              <?= $this->attribute->formInput('default_value', ['class' => 'form-control']) ?>
-            </td>
-          </tr>
+        <tr>
+          <th>Default value</th>
+          <td>
+            <?= $this->attribute->formInput('default_value', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
 
-          <tr>
-            <th>Relation CSV</th>
-            <td>
-              <?= $this->attribute->formInput('csv', ['class' => 'form-control']) ?>
-            </td>
-          </tr>
+        <tr>
+          <th>Relation CSV</th>
+          <td>
+            <?= $this->attribute->formInput('csv', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
 
-          <? if ($this->attribute->value['fk_attribute_id']): ?>
+        <? if ($this->attribute->value['fk_attribute_id']): ?>
 
-            <tr>
-              <th>Update Action</th>
-              <td>
-                <?= $this->attribute->formSelect('update_action', ['csv' => 'constraint_action', 'unselect' => true]) ?>
-              </td>
-            </tr>
+        <tr>
+          <th>Update Action</th>
+          <td>
+            <?= $this->attribute->formSelect('update_action', ['csv' => 'constraint_action', 'unselect' => true]) ?>
+          </td>
+        </tr>
 
-            <tr>
-              <th>Delete Action</th>
-              <td>
-                <?= $this->attribute->formSelect('delete_action', ['csv' => 'constraint_action', 'unselect' => true]) ?>
-              </td>
-            </tr>
+        <tr>
+          <th>Delete Action</th>
+          <td>
+            <?= $this->attribute->formSelect('delete_action', ['csv' => 'constraint_action', 'unselect' => true]) ?>
+          </td>
+        </tr>
+        <? endif ?>
+
+        <tr>
+          <th>Old Column</th>
+          <td>
+            <? if ($this->attribute->value['old_name']): ?>
+            <?= $this->attribute->value['old_name'] ?> &nbsp;
+            <a class="btn btn-danger btn-sm" href="<?= $this->urlFor(['action' => 'delete_old_name', 'id' => $this->attribute->value['id']]) ?>">
+              <?= LABEL_DELETE ?>
+            </a>
+            <? else: ?>
+            <?= $this->attribute->formInput('old_name', ['class' => 'form-control']) ?>
             <? endif ?>
+          </td>
+        </tr>
 
-              <tr>
-                <th>Old Column</th>
-                <td>
-                  <? if ($this->attribute->value['old_name']): ?>
-                    <?= $this->attribute->value['old_name'] ?> &nbsp;
-                    <a class="btn btn-danger btn-sm" href="<?= $this->linkTo('delete_old_name', $this->attribute->value['id']) ?>">
-                      <?= LABEL_DELETE ?>
-                    </a>
-                    <? else: ?>
-                      <?= $this->attribute->formInput('old_name', ['class' => 'form-control']) ?>
-                      <? endif ?>
-                </td>
-              </tr>
+        <tr>
+          <th>Note</th>
+          <td>
+            <?= $this->attribute->formTextarea('note') ?>
+          </td>
+        </tr>
 
-              <tr>
-                <th>Note</th>
-                <td>
-                  <?= $this->attribute->formTextarea('note') ?>
-                </td>
-              </tr>
+      </table>
+      <div>
+        <?= FormHelper::submit(LABEL_UPDATE) ?>
+        <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
 
-        </table>
-        <div>
-          <?= FormHelper::submit(LABEL_UPDATE) ?>
-          <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
-
-          <?= $this->attribute->formHidden('attnum') ?>
-        </div>
-      </form>
+        <?= $this->attribute->formHidden('attnum') ?>
+      </div>
+    </form>
 
 
-      <?= $this->attribute->confirmDelete() ?>
+    <?= $this->attribute->confirmDelete() ?>
 
-    </div>
+  </div>
 </div>

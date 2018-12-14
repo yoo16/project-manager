@@ -1,77 +1,78 @@
 <? include('_header.phtml'); ?>
-  <div class="card">
-    <h3 class="card-header">Page</h3>
-    <div class="card-block">
+<div class="card">
+  <h3 class="card-header">Page</h3>
+  <div class="card-block">
 
-      <form action="<?= $this->urlSelfFor('update', $this->page->value['id']) ?>" method="post">
+    <form action="<?= $this->urlFor(['action' => 'update', 'id' => $this->page->value['id']]) ?>" method="post">
 
-        <table class="table">
-          <tr>
-            <th>Overwrite</th>
-            <td>
-              <?= FormHelper::checkbox($this->forms['is_overwrite'], (bool) $this->page->value['is_overwrite']) ?>
-            </td>
-          </tr>
+      <table class="table">
+        <tr>
+          <th>Overwrite</th>
+          <td>
+            <?= FormHelper::checkbox($this->forms['is_overwrite'], (bool) $this->page->value['is_overwrite']) ?>
+          </td>
+        </tr>
 
-          <? if ($this->model->value): ?>
-            <tr>
-              <th>Model</th>
-              <td>
-                <?= $this->model->value['name'] ?>
-              </td>
-            </tr>
-            <? endif ?>
+        <? if ($this->model->value): ?>
+        <tr>
+          <th>Model</th>
+          <td>
+            <?= $this->model->value['name'] ?>
+          </td>
+        </tr>
+        <? endif ?>
 
-              <tr>
-                <th>Class Name</th>
-                <td>
-                  <?= $this->model->value['class_name'] ?>
-                </td>
-              </tr>
+        <tr>
+          <th>Class Name</th>
+          <td>
+            <?= $this->model->value['class_name'] ?>
+          </td>
+        </tr>
 
-              <tr>
-                <th>Name</th>
-                <td>
-                  <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'name') ?>" type="text" name="page[name]"
-                    value="<?= $this->page->value['name'] ?>" required autocomplete="off">
-                </td>
-              </tr>
+        <tr>
+          <th>Name</th>
+          <td>
+            <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'name') ?>" type="text"
+              name="page[name]" value="<?= $this->page->value['name'] ?>" required autocomplete="off">
+          </td>
+        </tr>
 
-              <tr>
-                <th>Label</th>
-                <td>
-                  <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'label') ?>" type="text" name="page[label]"
-                    value="<?= $this->page->value['label'] ?>" required autocomplete="off">
-                </td>
-              </tr>
+        <tr>
+          <th>Label</th>
+          <td>
+            <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'label') ?>" type="text"
+              name="page[label]" value="<?= $this->page->value['label'] ?>" required autocomplete="off">
+          </td>
+        </tr>
 
-              <tr>
-                <th>Entity Name</th>
-                <td>
-                  <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'entity_name') ?>" type="text" name="page[entity_name]"
-                    value="<?= $this->page->value['entity_name'] ?>" required autocomplete="off">
-                </td>
-              </tr>
+        <tr>
+          <th>Entity Name</th>
+          <td>
+            <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'entity_name') ?>" type="text"
+              name="page[entity_name]" value="<?= $this->page->value['entity_name'] ?>" required autocomplete="off">
+          </td>
+        </tr>
 
-              <tr>
-                <th>View Name</th>
-                <td>
-                  <input class="form-control col-5" type="text" name="page[view_name]" value="<?= $this->page->value['view_name'] ?>" autocomplete="off">
-                </td>
-              </tr>
+        <tr>
+          <th>View Name</th>
+          <td>
+            <input class="form-control col-5" type="text" name="page[view_name]" value="<?= $this->page->value['view_name'] ?>"
+              autocomplete="off">
+          </td>
+        </tr>
 
-              <tr>
-                <th>Layout</th>
-                <td>
-                  <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'layout_name') ?>" type="text" name="page[layout_name]"
-                    value="<?= $this->page->value['layout_name'] ?>" autocomplete="off">
-                </td>
-              </tr>
+        <tr>
+          <th>Layout</th>
+          <td>
+            <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'layout_name') ?>" type="text"
+              name="page[layout_name]" value="<?= $this->page->value['layout_name'] ?>" autocomplete="off">
+          </td>
+        </tr>
 
-              <tr>
-                <th>Parent Page</th>
-                <td>
-                  <?= $this->page->formSelect('parent_page_id', 
+        <tr>
+          <th>Parent Page</th>
+          <td>
+            <?= $this->page->formSelect('parent_page_id', 
                     [
                     'unselect' => true,
                     'label' => ['name'],
@@ -80,14 +81,14 @@
                     'order' => 'name',
                     ]
                     ) ?>
-                </td>
-              </tr>
+          </td>
+        </tr>
 
-              <tr>
+        <tr>
 
-                <th>Relation model for list values</th>
-                <td>
-                  <?= $this->page->formSelect('where_model_id', 
+          <th>Relation model for list values</th>
+          <td>
+            <?= $this->page->formSelect('where_model_id', 
                     [
                     'unselect' => true,
                     'label_separate' => '-',
@@ -96,38 +97,39 @@
                     'where' => "project_id = {$this->project->value['id']}",
                     'order' => 'name',
                     ]
-                    ) ?> .id
-                  <? if ($this->page->value['where_model_id']): ?>
-                    =
-                    <?= $this->model->value['name'] ?>.
-                    <?= DB::model('Model')->fetch($this->page->value['where_model_id'])->value['entity_name'] ?>_id
-                    <? endif ?>
-                </td>
-              </tr>
+                    ) ?>
+            .id
+            <? if ($this->page->value['where_model_id']): ?>
+            =
+            <?= $this->model->value['name'] ?>.
+            <?= DB::model('Model')->fetch($this->page->value['where_model_id'])->value['entity_name'] ?>_id
+            <? endif ?>
+          </td>
+        </tr>
 
-              <tr>
+        <tr>
 
-                <th>sort_order for list</th>
-                <td>
-                  <input class="form-control col-5" type="text" name="page[list_sort_order_columns]" value="<?= $this->page->value['list_sort_order_columns'] ?>"
-                    autocomplete="off">
-                </td>
-              </tr>
+          <th>sort_order for list</th>
+          <td>
+            <input class="form-control col-5" type="text" name="page[list_sort_order_columns]" value="<?= $this->page->value['list_sort_order_columns'] ?>"
+              autocomplete="off">
+          </td>
+        </tr>
 
-              <tr>
+        <tr>
 
-                <th>Note</th>
-                <td>
-                  <textarea class="form-control" name="page[note]" rows="5"><?= $this->page->value['note'] ?></textarea>
-                </td>
-              </tr>
+          <th>Note</th>
+          <td>
+            <textarea class="form-control" name="page[note]" rows="5"><?= $this->page->value['note'] ?></textarea>
+          </td>
+        </tr>
 
-              <tr>
+        <tr>
 
-        </table>
-        <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
-        <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
-      </form>
-      <?= $this->page->confirmDelete() ?>
-    </div>
+      </table>
+      <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
+      <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+    </form>
+    <?= $this->page->confirmDelete() ?>
+  </div>
 </div>

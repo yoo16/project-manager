@@ -5,7 +5,7 @@
     <div class="row">
       <div class="col-6">
       <? if ($index == 0): ?>
-        <form action="<?= $this->linkTo('rename_constraint') ?>" method="post">
+        <form action="<?= $this->urlFor(['action' => 'rename_constraint']) ?>" method="post">
           <div class="input-group">
             <?= FormHelper::input(['class' => 'form-control form-control'], 'new_constraint_name', $conname) ?>
             <span class="input-group-btn"><?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm confirm-dialog', 'message' => 'Do you rename Constrain key?']) ?></span>
@@ -20,7 +20,7 @@
 
       <div class="col-1">
       <? if ($index == 0): ?>
-        <form action="<?= $this->linkTo('delete_constraint') ?>" method="post">
+        <form action="<?= $this->urlFor(['action' => 'delete_constraint']) ?>" method="post">
           <?= FormHelper::submit(LABEL_DELETE, ['class' => 'btn btn-sm btn-danger confirm-dialog', 'message' => 'Do you delete Constrain key?']) ?></a>
           <?= FormHelper::hidden('constraint_name', $pg_constraint['conname']) ?></a>
           <?= FormHelper::hidden('model_id', $this->model->value['id']) ?></a>

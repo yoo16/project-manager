@@ -2,7 +2,7 @@
   <h3 class="card-header">Model</h3>
   <div class="card-block">
 
-    <form id="" action="<?= $this->linkTo('update', $this->model->value['id']) ?>" method="post" autocomplete="off">
+    <form id="" action="<?= $this->urlFor('update', $this->model->value['id']) ?>" method="post" autocomplete="off">
 
       <div class="form-group row">
         <label for="model-name" class="col-1 col-form-label">Name</label>
@@ -25,7 +25,7 @@
       </div> 
       
       <?= FormHelper::submit(LABEL_UPDATE) ?>
-      <?= FormHelper::linkButton('cancel', LABEL_BACK) ?>
+      <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
     </form>
 
     <?= $this->model->confirmDelete() ?>

@@ -2,7 +2,7 @@
 
 <div class="pt-3">
   <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary'] ) ?>
-  <? include('views/components/sortable.phtml') ?>
+  <? include('views/components/lib/sortable.phtml') ?>
 
 </div>
 
@@ -22,7 +22,7 @@
     <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
     <td><?= $values['label'] ?></td>
     <td><?= $values['note'] ?></td>
-    <td><a href="<?= $this->linkTo('/', ['id' => $values['id'],'api_id' => $values['id']]) ?>"><?= $values['name'] ?></a></td>
+    <td><a href="<?= $this->urlFor(['controller' => 'root', 'id' => $values['id'], ['api_id' => $values['id']]) ?>"><?= $values['name'] ?></a></td>
   </tr>
   <? endforeach ?>
   <? endif ?>

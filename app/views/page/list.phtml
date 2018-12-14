@@ -3,7 +3,7 @@
 <? include('add_window.phtml') ?>
 
 <div class="pt-3">
-  <form action="<?= $this->urlActionFor('import_from_models') ?>" method="post">
+  <form action="<?= $this->urlFor(['action' => 'import_from_models']) ?>" method="post">
     <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
     <?= FormHelper::submit(LABEL_IMPORT, ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you import from Models?']) ?>
     <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
@@ -18,7 +18,7 @@
       <th></th>
       <th nowrap="nowrap">
         Overwrite
-        <a href="<?= $this->urlActionFor('all_off_overwrite') ?>" class="btn btn-outline-primary btn-sm confirm-dialog" message="Do you turn off overwriting?">off</a>
+        <a href="<?= $this->urlFor(['action' => 'all_off_overwrite']) ?>" class="btn btn-outline-primary btn-sm confirm-dialog" message="Do you turn off overwriting?">off</a>
       </th>
       <th>Model / Entity Name</th>
       <th></th>
@@ -28,10 +28,10 @@
   <? if ($this->pages): ?>
     <? foreach ($this->pages as $page): ?>
       <tr>
-        <td><?= FormHelper::linkButton('edit', $page['id'], ['label' => LABEL_EDIT]) ?></td>
+        <td><?= FormHelper::linkButton(['action' => 'edit', 'id' => $page['id']], ['label' => LABEL_EDIT]) ?></td>
         <td>
           <div>
-            <a class="" href="<?= $this->urlControllerFor('view', ['page_id' => $page['id']]) ?>"><?= $page['name'] ?></a>
+            <a href="<?= $this->urlFor(['controller' => 'view'], ['page_id' => $page['id']]) ?>"><?= $page['name'] ?></a>
             <div>
               <?= Page::className($page) ?>
             </div>
@@ -40,12 +40,12 @@
             <?= $page['label'] ?>
           </div>
         </td>
-        <td><a class="btn btn-outline-primary" href="<?= $this->urlControllerFor('page_model', ['page_id' => $page['id']]) ?>">Model Request</a></td>
+        <td><a class="btn btn-outline-primary" href="<?= $this->urlFor(['controller' => 'page_model'], ['page_id' => $page['id']]) ?>">Model Request</a></td>
         <td>
           <? if ($page['is_overwrite']): ?>
-            <?= $this->linkActionTag('change_overwrite', $page['id'], ['label' => 'overwrite', 'class' => 'badge badge-danger']) ?>
+            <?= $this->linkTo(['action' => 'change_overwrite', 'id' => $page['id']], ['label' => 'overwrite', 'class' => 'badge badge-danger']) ?>
           <? else: ?>
-            <?= $this->linkActionTag('change_overwrite', $page['id'], ['label' => 'off', 'class' => 'badge badge-default']) ?>
+            <?= $this->linkTo(['action' => 'change_overwrite', 'id' => $page['id']], ['label' => 'off', 'class' => 'badge badge-default']) ?>
           <? endif ?>
         </td>
         <td>
@@ -53,7 +53,7 @@
           <div><? if ($page['model_id']): ?><?= $page['model']['name'] ?><? endif ?></div>
         </td>
 
-        <td><a class="btn btn-outline-primary confirm-dialog" message="Do you duplicate page?" href="<?= $this->urlSelfFor('duplicate', $page['id']) ?>"><?= LABEL_DUPLICATE ?></a></td>
+        <td><a class="btn btn-outline-primary confirm-dialog" message="Do you duplicate page?" href="<?= $this->urlFor(['action' => 'duplicate', 'id' => $page['id']]) ?>"><?= LABEL_DUPLICATE ?></a></td>
       </tr>
     <? endforeach ?> 
   <? endif ?>

@@ -34,7 +34,7 @@
         </td>
 
         <td>
-          <form method="post" action="<?= $this->linkTo('update_attribute', $attribute['id']) ?>">
+          <form method="post" action="<?= $this->urlFor('update_attribute', $attribute['id']) ?>">
             <div class="row">
              <div class="input-group">
                <?= FormHelper::text('attribute[label]', $attribute['label'], ['class' => 'form-control form-control-sm']) ?>

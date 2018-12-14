@@ -1,9 +1,9 @@
 <? include('_header.phtml') ?>
 
 <div class="pt-3">
-  <?= FormHelper::linkButton('new', null, ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
+  <?= FormHelper::linkButton(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
 
-  <? include('views/components/sortable.phtml') ?>
+  <? include('views/components/lib/sortable.phtml') ?>
 </div>
 
 <table id="sortable-table" class="table table-list">
@@ -19,7 +19,7 @@
   <? if ($this->record_item->values): ?>
     <? foreach ($this->record_item->values as $values): ?>
       <tr row-id="<?= $values['id'] ?>">
-        <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT, 'class' => 'btn btn-outline-primary']) ?></td>
+        <td><?= $this->record_item->linkEdit([], $values) ?></td>
         <td><?= $values['key'] ?></td>
         <td><?= $values['value'] ?></td>
         <td><?= $values['value_en'] ?></td>

@@ -4,7 +4,7 @@
 </h3>
 
 <? if ($this->fk_attribute->value): ?>
-<form action="<?= $this->urlActionFor('remove_relation') ?>" method="post">
+<form action="<?= $this->urlFor(['action' => 'remove_relation']) ?>" method="post">
 
   <?= $this->fk_model->value['name'] ?> ->
   <?= $this->fk_attribute->value['name'] ?>
@@ -14,7 +14,7 @@
 </form>
 <? endif ?>
 
-<form action="<?= $this->urlActionFor('update_relation') ?>" method="post">
+<form action="<?= $this->urlFor(['action' => 'update_relation']) ?>" method="post">
 <? if ($this->candidate_model->value): ?>
 <h2><?= $this->candidate_model->value['name'] ?></h2>
 <table class="table table-sm">
@@ -52,10 +52,9 @@
   </tr>
   <? endforeach ?>
 </table>
-<? if (!$this->attribute->value['fk_attribute_id']): ?>
 
-<? else: ?>
-<form action="<?= $this->urlActionFor('remove_relation')?>" method="post">
+<? if ($this->attribute->value['fk_attribute_id']): ?>
+<form action="<?= $this->urlFor(['action' => 'remove_relation'])?>" method="post">
   <input class="btn btn-sm btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
   <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
 </form>

@@ -1,6 +1,6 @@
 <div class="card card-container">
   <p id="profile-name" class="profile-name-card"></p>
-  <form class="form-signin" method="post" action="<?= $this->linkTo('/user/auth') ?>">
+  <form class="form-signin" method="post" action="<?= $this->urlFor('/user/auth') ?>">
     <input type="text" class="form-control input" placeholder="<?= LABEL_MAIL ?>" name="user[email]" value="<?= $this->user['email'] ?>" required autofocus>
     <input type="password" class="form-control input" placeholder="<?= LABEL_PASSWORD ?>" name="user[password]" required>
     <button class="btn btn-lg btn-outline-primary btn-block btn-signin" type="submit"><?= LABEL_LOGIN  ?></button>

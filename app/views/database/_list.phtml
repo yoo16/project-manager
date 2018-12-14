@@ -14,8 +14,15 @@
 
   <? foreach ($this->database->values as $database): ?> 
   <tr>
-    <td><a class="btn btn-outline-primary" href="<?= $this->linkTo('edit', $database['id']) ?>"><?= LABEL_EDIT ?></a></td>
-    <td><a href="<?= $this->linkTo('tables', array('database_id' => $database['id'])) ?>"><?= $database['name'] ?></a></td>
+    <td><?= $this->database->linkEdit([], $database) ?></td>
+    <td>
+      <?= $this->linkTo(['action' => 'tables'],
+                        [
+                        'label' => $database['name'],
+                        'http_params' => ['database_id' => $database['id']]
+                        ]
+      ) ?>
+    </td>
     <td><?= $database['hostname'] ?></td>
     <td><?= $database['user_name'] ?></td>
     <td><?= $database['port'] ?></td>

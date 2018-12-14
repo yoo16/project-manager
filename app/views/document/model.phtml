@@ -22,7 +22,7 @@
         <? if ($model['old_name']): ?><div>(<?= $model['old_name'] ?>)</div><? endif ?>
       </td>
       <td>
-        <form method="post" action="<?= $this->linkTo('update_model', $model['id']) ?>">
+        <form method="post" action="<?= $this->urlFor('update_model', $model['id']) ?>">
           <div class="row">
            <div class="input-group">
              <label for="" class="col-3 col-form-label">Comment</label>

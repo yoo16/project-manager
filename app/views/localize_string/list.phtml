@@ -1,12 +1,11 @@
 <? include('_header.phtml') ?>
 
 <div class="pt-3">
-  <?= FormHelper::linkButton('new', null, ['class' => 'btn btn-primary', 'label' => LABEL_ADD]) ?>
-  <?= FormHelper::linkButton('import_from_model', null, ['class' => 'btn btn-outline-primary', 'label' => LABEL_IMPORT]) ?>
-  <?= FormHelper::linkButton('sort_order', null, ['class' => 'btn btn-outline-primary', 'label' => LABEL_SORT_ORDER]) ?>
+  <?= FormHelper::linkButton(['action' => 'new'], ['class' => 'btn btn-primary', 'label' => LABEL_ADD]) ?>
+  <?= FormHelper::linkButton(['action' => 'import_from_model'], ['class' => 'btn btn-outline-primary', 'label' => LABEL_IMPORT]) ?>
 </div>
 <div>
-  <form action="<?= $this->linkTo('csv_import'); ?>" method="post" enctype="multipart/form-data">
+  <form action="<?= $this->urlFor(['action' => 'csv_import']); ?>" method="post" enctype="multipart/form-data">
     <input class="btn btn-primary" type="submit" value="<?= LABEL_IMPORT ?>">
     <input type="file" name="file">
   </form>
@@ -24,7 +23,7 @@
   <? if ($this->localize_string->values): ?>
     <? foreach ($this->localize_string->values as $values): ?>
       <tr>
-        <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
+        <td><?= $this->localize_string->linkEdit([], $values) ?></td>
         <td><?= $values['name'] ?></td>
         <td>
           <dl class="row">
@@ -35,7 +34,14 @@
           <? endforeach ?>
           </dl>
         </td>
-        <td><a class="btn btn-outline-primary" href="<?= $this->linkTo('duplicate', $values['id']) ?>"><?= LABEL_DUPLICATE ?></a></td>
+        <td>
+          <?= $this->linkTo(['controller' => 'duplicate', 'id' => $values['id']],
+                            [
+                            'label' => LABEL_DUPLICATE,
+                            'class' => 'btn btn-outline-primary',
+                            ]
+          ) ?>
+        </td>
       </tr>
     <? endforeach ?>
   <? endif ?>

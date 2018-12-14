@@ -1,9 +1,9 @@
 <? include('_header.phtml') ?>
-<form id="input_form" action="<?=url_for('add') ?>" method="post">
+<form id="input_form" action="<?= $this->urlFor(['action' => 'add']) ?>" method="post">
 
   <? include('_edit.phtml') ?>
 
   <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>"></a>
-  <a class="btn btn-outline-primary" href="<?=url_for('cancel') ?>"><?=LABEL_BACK ?></a>
+  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
 
 </form>

@@ -1,27 +1,19 @@
 <? include('_header.phtml') ?>
 
-<div class="alert alert-success">
-  <h2>Database</h2>
-  <p>
-    <dl>
-      <dd>* If you want manage PostgreSQL on browser, please set the permission on pg_hba.conf, postgresql.conf. </dd>
-      <dd>* project-manager need database '<?= DB_NAME ?>' by PostgreSQL 9.x. </dd>
-    </dl>
-  </p>
-</div>
+<? include('help.phtml') ?>
 
 <div>
-  <a class="btn btn-primary" href="<?= $this->linkTo('new') ?>"><?= LABEL_ADD ?></a>
+  <?= $this->linkTo(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
   <?= FormHelper::linkModal('#import-table', LABEL_IMPORT, 
     [
     'class' => 'btn btn-outline-primary btn-sm pw-click', 
     'pw-controller' => 'database',
     'pw-action' => 'import_list', 
     ]) ?>
+  <?= FormHelper::linkModal('#help-database', 'Help', ['class' => 'btn btn-outline-primary']) ?>
 </div>
 <? include('import_window.phtml') ?>
 
 <? include('_list.phtml') ?>
-
 
 <?= TagHelper::javascript('controllers/DatabaseController') ?>

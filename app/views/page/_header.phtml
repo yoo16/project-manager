@@ -3,7 +3,19 @@
   <h3><?= $this->page->value['label'] ?> : <?= $this->page->value['name'] ?></h3>
 
   <div>
-    <a class="btn btn-outline-primary" href="<?= $this->linkTo('page_model/', array('page_id' => $this->page->value['id'])) ?>">Model Requests</a>
-    <a class="btn btn-outline-primary" href="<?= $this->linkTo('view/', array('page_id' => $this->page->value['id'])) ?>">View</a>
+    <?= $this->linkTo(['controller' => 'page_model'],
+        [
+        'label' => 'Model Requests',
+        'class' => 'btn btn-outline-primary',
+        'http_params' => ['page_id' => $this->page->value['id']]
+        ]
+        ) ?>
+    <?= $this->linkTo(['controller' => 'view'],
+        [
+        'label' => 'View',
+        'class' => 'btn btn-outline-primary',
+        'http_params' => ['page_id' => $this->page->value['id']]
+        ]
+        ) ?>
   </div>
 <? endif ?>

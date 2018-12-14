@@ -1,2 +1,2 @@
     <?= javascript('jquery/ajaxzip2/ajaxzip2') ?>
-    <script type="text/javascript">AjaxZip2.JSONDATA = '<%=url_for('javascripts/').'jquery/ajaxzip2/data' %>';</script>
+    <script type="text/javascript">AjaxZip2.JSONDATA = "<?= $this->urlFor(['action' => 'javascripts']) ?>jquery/ajaxzip2/data";</script>

@@ -1,21 +1,15 @@
 <? include('_header.phtml') ?>
 
-<div class="alert alert-success">
-  <p>
-    <dl>
-      <dd>* If you export PHP files(Model, Controller, View etc...) by project-manager, please download PHP Framework '
-        <a href="https://github.com/yoo16/phpwork" target="_blank">php-work</a>'.</dd>
-    </dl>
-  </p>
-</div>
+<? include('help.phtml') ?>
 
 <div>
   <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
-  <? include('views/components/sortable.phtml') ?>
+  <? include('views/components/lib/sortable.phtml') ?>
+  <?= FormHelper::linkModal('#help-project', 'Help', ['class' => 'btn btn-outline-primary']) ?>
 </div>
 
 <div class="content">
-  <table id="sortable-table" class="table" model-name="Project">
+  <table id="sortable-table" class="table">
     <thead class="thead-default">
       <tr>
         <th>&nbsp;</th>
@@ -27,7 +21,7 @@
 
     <? if (is_array($this->project->values)): ?>
     <? foreach ($this->project->values as $values): ?>
-    <tr row-id="<?= $values['id']?>" order="<?= $values['sort_order']?>">
+    <tr row-id="<?= $values['id']?>">
       <td>
         <?= $this->project->linkEdit([], $values) ?>
       </td>

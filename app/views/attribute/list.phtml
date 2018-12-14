@@ -1,32 +1,21 @@
 <? include('_header.phtml') ?>
 
-<div class="alert alert-success">
-  <h3>Attributes</h3>
-  <ul>
-    <li>if you 'Import from DB', will automatically add model's information for O/R mapping from PostgreSQL.</li>
-    <li>if you 'Add', create attribute's information  on 'project-manager' and add attribute on PostgreSQL.</li>
-    <li>The columns (id, created_at, updated_at, sort_order) is required.</li>
-    <li>You can add and delete constraint on PostgreSQL.</li>
-  </ul>
-</div>
+<? include('help.phtml') ?>
 
-<div class="d-flex">
-  <form action="<?= $this->linkTo('sync_model', $this->model->value['id']) ?>" method="post">
-    <?= FormHelper::linkModal('#add-attribute', LABEL_ADD) ?>
-    <?= $this->linkControllerTag("model", ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-    <?= FormHelper::submit('Sync DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you sync from DB?']) ?>
-    <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
-  </form>
+<div class="col-12">
+  <div class="row">
+    <form action="<?= $this->urlFor(['action' => 'sync_model', 'id' => $this->model->value['id']]) ?>" method="post">
+      <?= FormHelper::linkModal('#add-attribute', LABEL_ADD) ?>
+      <?= $this->linkTo(['controller' => 'model'], ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
+      <?= FormHelper::submit('Sync DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you sync from DB?']) ?>
+      <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
+      <?= FormHelper::linkModal('#php-page-export-window', 'Export', ['class' => 'btn btn-outline-primary']) ?>
+    </form>
 
-  <form>
-  <?= FormHelper::linkModal('#php-page-export-window', 'Export', ['class' => 'btn btn-outline-primary']) ?>
-  </form>
-
-  &nbsp;
-  <form action="<?= $this->linkTo('page/create_page_from_model') ?>" method="post" class="form-inline">
-    <? if ($this->page->value): ?>
-      <?= $this->linkControllerTag (
-        'view',
+    &nbsp;
+    <form action="<?= $this->urlFor(['controller' => 'page', 'action' => 'create_page_from_model']) ?>" method="post">
+      <? if ($this->page->value): ?>
+      <?= $this->linkTo(['controller' => 'view'],
         [
           'label' => 'View',
           'class' => 'btn btn-outline-primary',
@@ -34,11 +23,13 @@
         ]
       )
       ?>
-    <? else: ?>
+      <? else: ?>
       <?= FormHelper::button('Create Page', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => "Do you create page from Model?"]) ?>
       <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
-    <? endif ?>
-  </form>
+      <? endif ?>
+      <?= FormHelper::linkModal('#help-attribute', 'Help', ['class' => 'btn btn-outline-primary']) ?>
+    </form>
+  </div>
 </div>
 
 <? include('add_window.phtml') ?>
@@ -48,5 +39,4 @@
 <? include('attributes.phtml') ?>
 
 <? include('constraints.phtml') ?>
-
 <? include('views/components/php_page_export_window.phtml') ?>

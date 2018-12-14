@@ -1,29 +1,36 @@
 <? include('_header.phtml') ?>
 
 <div class="pt-3">
-  <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
-  <a href="#" class="btn btn-outline-primary change-sortable" rel="sortable-table"><?= LABEL_SORT_ORDER ?></a>
-
-  <a href="#" class="btn btn-primary update-sortable" controller="view_item_group_member"><?= LABEL_UPDATE ?></a>
+  <?= FormHelper::linkButton(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
+  <? include('views/components/lib/sortable.phtml') ?>
 </div>
 
 <table id="sortable-table" class="table">
   <thead class="thead-default">
     <tr>
       <th>&nbsp;</th>
-      <th><?= LABEL_VIEW_ITEM_GROUPS ?></th>
-            <th><?= LABEL_VIEW_ITEMS ?></th>
-          </tr>
+      <th>
+        <?= LABEL_VIEW_ITEM_GROUPS ?>
+      </th>
+      <th>
+        <?= LABEL_VIEW_ITEMS ?>
+      </th>
+    </tr>
   </thead>
 
   <? if ($this->view_item_group_member->values): ?>
   <? foreach ($this->view_item_group_member->values as $values): ?>
   <tr row-id="<?= $values['id'] ?>">
-    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-    <td><?= $this->view_item_group->values[$values['view_item_group_id']][''] ?></td>
-    <td><?= $this->view_item->values[$values['view_item_id']][''] ?></td>
+    <td>
+      <?= $this->view_item_group_member->linkEdit([], $values) ?>
+    </td>
+    <td>
+      <?= $this->view_item_group->values[$values['view_item_group_id']]['name'] ?>
+    </td>
+    <td>
+      <?= $this->view_item->values[$values['view_item_id']]['name'] ?>
+    </td>
   </tr>
   <? endforeach ?>
   <? endif ?>
-
 </table>

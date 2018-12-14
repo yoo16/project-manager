@@ -147,18 +147,14 @@ class PageController extends ProjectController {
             $posts['entity_name'] = $model['entity_name'];
             $posts['extends_class_name'] = '';
 
-            $page = DB::model('Page')
-                ->where("project_id = {$this->project->value['id']}")
-                ->where("name = '{$model['class_name']}'")
-                ->one()
-                ->value;
+            $page = DB::model('Page');
+            $page->where('project_id', $this->project->value['id'])
+                 ->where('name', $model['class_name'])
+                 ->one();
 
-            if (!$page['id']) {
-                $page = DB::model('Page')->insert($posts)->value;
-            }
-
-            if ($page['id']) {
-                DB::model('View')->generateDefaultActions($page);
+            if (!$page->value['id']) $page = DB::model('Page')->insert($posts);
+            if ($page->value['id']) {
+                DB::model('View')->generateDefaultActions($page->value);
             }
         }
         $this->redirectTo(['action' => 'list']);;
@@ -177,18 +173,16 @@ class PageController extends ProjectController {
             $posts['extends_class_name'] = '';
             $posts['is_overwrite'] = true;
 
-            $page = DB::model('Page')
-                ->where("project_id = {$this->project->value['id']}")
-                ->where("name = '{$model['class_name']}'")
-                ->one()
-                ->value;
+            $page = DB::model('Page');
+            $page->where('project_id', $this->project->value['id'])
+                 ->where('name', $model['class_name'])
+                 ->one();
 
-            if (!$page['id']) {
-                $page = DB::model('Page')->insert($posts)->value;
+            if (!$page->value['id']) {
+                $page = DB::model('Page')->insert($posts);
             }
-
-            if ($page['id']) {
-                DB::model('View')->generateDefaultActions($page);
+            if ($page->value['id']) {
+                DB::model('View')->generateDefaultActions($page->value);
             }
         }
 
@@ -212,6 +206,16 @@ class PageController extends ProjectController {
             $page = DB::model('Page')->update($posts, $page_value['id']);
         }
         $this->redirectTo(['action' => 'list']);;
+    }
+
+   /**
+    * update sort order
+    *
+    * @param
+    * @return void
+    */
+    function action_update_sort() {
+        $this->updateSort('Page');
     }
 
 }

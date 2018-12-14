@@ -1,7 +1,7 @@
 <div class="row car">
   <div class="card col-xs-6 col-sm-6 col-md-6">
     <div class="card-block">
-      <form id="form-edit" action="<?= $this->linkTo('add') ?>" method="post" autocomplete="off">
+      <form id="form-edit" action="<?= $this->urlFor('add') ?>" method="post" autocomplete="off">
         <div class="form-group">
           <label for="recipient-name" class="form-control-label"><?= LABEL_PAGE_NAME ?></label>
           <?= $this->model->formInput('name') ?>

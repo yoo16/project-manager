@@ -1,28 +1,51 @@
-<h3>Model</h3> 
-<a href="<%=url_for('export_model', $this->pw_params['id']) %>" onClick="return confirmPHPmodelOutput();">PHP Export</a>
+<h3>Model</h3>
+<a href="<?= $this->urlFor(['action' => 'export_model', 'id' => $this->pw_params['id']]) ?>" onClick="return confirmPHPmodelOutput();">PHP
+  Export</a>
 <table>
   <tr>
-    <th><a href="<%=url_for('model/new', array('database_id' => $this->database['id'])) %>"><img src="<%=image('/btn_add.gif') %>" alt="新規追加" /></a></th>
-    <th>モデル名</th>
+    <th>
+      <?= $this->linkTo(['controller' => 'model', 'action' => 'new'],
+      [
+      'label' => LABEL_ADD,
+      'class' => 'btn btn-outline-primary',
+      'http_params' => ['database_id' => $this->database['id']]
+      ]
+      ) ?>
+    </th>
+    <th>モデル坝</th>
     <th>relfilenode</th>
   </tr>
 
-  <% if (is_array($this->models)): %> 
+  <? if (is_array($this->models)): ?>
 
-  <% foreach ($this->models as $key => $model): %> 
-  <tr class="<%=tr_model($model) %>">
-    <td><a href="<%=url_for('model/edit', $model['id']) %>"><img src="<%=image('/btn_edit.gif') %>" alt="編集" /></a></td>
-    <td><a href="<%=url_for('attribute/list', $model['id']) %>"><%=$model['name'] %></a></td>
+  <? foreach ($this->models as $key => $model): ?>
+  <tr class="<?=tr_model($model) ?>">
     <td>
-      <% if ($model['relfilenode'] > 0): %>
-      <%=$model['relfilenode'] %>
-      <% else: %>
-      <a href="<%=url_for('create_table', $model['id']) %>">テーブル作成</a>
-      <% endif %>
+      <?= $this->linkTo(['controller' => 'model', 'action' => 'edit', 'id' => $model['id']],
+        [
+        'label' => LABEL_EDIT,
+        'class' => 'btn btn-outline-primary',
+        ]
+      ) ?>
+    <td>
+        <?= $this->linkTo(['controller' => 'attribute', 'action' => 'list', 'id' => $model['id']],
+        [
+        'label' => $model['name'] ?>,
+        'class' => 'btn btn-outline-primary',
+        'http_params' => ['database_id' => $this->database['id']]
+        ]
+        ) ?>
+    </td>
+    <td>
+      <? if ($model['relfilenode'] > 0): ?>
+      <?=$model['relfilenode'] ?>
+      <? else: ?>
+      <a href="<?= $this->urlFor(['controller' => 'create_table', 'id' => $model['id']) ?>">Create Table</a>
+      <? endif ?>
     </td>
   </tr>
-  <% endforeach %> 
+  <? endforeach ?>
 
-  <% endif %> 
+  <? endif ?>
 
 </table>

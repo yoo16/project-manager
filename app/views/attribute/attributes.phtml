@@ -1,23 +1,27 @@
-
 <div class="card">
   <h4 class="card-header">
     <?= $this->model->value['name'] ?>
-    <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label>
+    <label class="badge badge-pill badge-info">
+      <?= $this->pg_class['pg_class_id'] ?></label>
     <div>
-    <small>
-    <?= $this->model->value['old_name'] ?>
-    </small>
+      <small>
+        <?= $this->model->value['old_name'] ?>
+      </small>
     </div>
   </h4>
-  
+
   <? if ($this->pg_class['pg_class_id'] != $this->model->value['pg_class_id']): ?>
-    <div class="alert alert-danger">
-      pg_class is not match on PostgreSQL.
-      <ul>
-        <li>pg_class : <?= $this->pg_class['pg_class_id'] ?></li>
-        <li>model : <?= $this->model->value['pg_class_id'] ?></li>
-      </ul>
-    </div>
+  <div class="alert alert-danger">
+    pg_class is not match on PostgreSQL.
+    <ul>
+      <li>pg_class :
+        <?= $this->pg_class['pg_class_id'] ?>
+      </li>
+      <li>model :
+        <?= $this->model->value['pg_class_id'] ?>
+      </li>
+    </ul>
+  </div>
   <? endif ?>
 
   <div class="card-body">
@@ -37,91 +41,113 @@
 
       <tbody>
         <? if ($this->attribute->values): ?>
-          <? foreach ($this->attribute->values as $attribute): ?>
-            <tr>
-              <td>
-                <? if (!Model::$required_columns[$attribute['name']]): ?><? endif ?>
-                <?= FormHelper::linkButton('edit', $attribute['id'], ['label' => LABEL_EDIT]) ?>
-              </td>
+        <? foreach ($this->attribute->values as $attribute): ?>
+        <tr>
+          <td>
+            <? if (!Model::$required_columns[$attribute['name']]): ?>
+            <? endif ?>
+            <?= $this->attribute->linkEdit([], $attribute) ?>
+          </td>
 
-              <td>
-                <?= $attribute['name'] ?>
-                <? if ($attribute['old_name']): ?>
-                  <div>
-                    (<?= $attribute['old_name'] ?>)
-                  </div>
-                <? endif ?>
-                <div>
-                  <span class="badge badge-success"><?= $attribute['default_value'] ?></span>
+          <td>
+            <?= $attribute['name'] ?>
+            <? if ($attribute['old_name']): ?>
+            <div>
+              (<?= $attribute['old_name'] ?>)
+            </div>
+            <? endif ?>
+            <div>
+              <? if ($attribute['default_value']): ?>
+              <span class="badge badge-success"><?= $attribute['default_value'] ?></span>
+              <? endif ?>
+            </div>
+          </td>
+
+          <td>
+            <form method="post" action="<?= $this->urlFor(['action' => 'update_label', 'id' => $attribute['id']]) ?>">
+              <div class="row">
+                <div class="input-group">
+                  <?= FormHelper::input(['class' => 'form-control form-control-sm'], 'attribute[label]', $attribute['label']) ?>
+                  <span class="input-group-btn">
+                    <?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?></span>
                 </div>
-              </td>
+              </div>
+              <?= FormHelper::hidden('pg_class_id', $attribute['pg_attribute']['pg_class_id']) ?>
+              <?= FormHelper::hidden('database_id', $this->database->value['id']) ?>
+            </form>
+          </td>
 
-              <td>
-                <form method="post" action="<?= $this->linkTo('update_label', $attribute['id']) ?>">
-                  <div class="row">
-                   <div class="input-group">
-                     <?= FormHelper::input(['class' => 'form-control form-control-sm'], 'attribute[label]', $attribute['label']) ?>
-                     <span class="input-group-btn"><?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?></span>
-                   </div>
-                 </div>
-                 <?= FormHelper::hidden('pg_class_id', $attribute['pg_attribute']['pg_class_id']) ?>
-                 <?= FormHelper::hidden('database_id', $this->database->value['id']) ?>
-               </form>
-             </td>
-
-             <td>
-              <? if ($attribute['fk_attribute_id'] > 0): ?>
-                <?= FormHelper::linkModal('#relation-window', 'relation', 
+          <td>
+            <? if ($attribute['fk_attribute_id'] > 0): ?>
+            <?= FormHelper::linkModal('#relation-window', 'relation', 
                 ['class' => 'btn btn-success btn-sm pw-click', 'pw-controller' => 'attribute', 'pw-action' => 'relation_model_list', 'attribute_id' => $attribute['id'], ]) ?>
-              <? else: ?>
-                <?= FormHelper::linkModal('#relation-window', 'relation', 
+            <? else: ?>
+            <?= FormHelper::linkModal('#relation-window', 'relation', 
                 ['class' => 'btn btn-outline-primary btn-sm pw-click', 'pw-controller' => 'attribute', 'pw-action' => 'relation_model_list', 'attribute_id' => $attribute['id'], ]) ?>
+            <? endif ?>
+          </td>
+
+          <td>
+            <label class="badge badge-pill badge-info">
+              <?= $attribute['type'] ?>
+              <? if ($attribute['length'] > 0): ?> (
+              <?= $attribute['length'] ?>)
               <? endif ?>
-            </td>
+            </label>
+            <div>
+              <?= $attribute['default_value'] ?>
+            </div>
+          </td>
 
-            <td>
-              <label class="badge badge-pill badge-info">
-                <?= $attribute['type'] ?> <? if ($attribute['length'] > 0): ?> (<?= $attribute['length'] ?>) <? endif ?>
-              </label>
-              <div><?= $attribute['default_value'] ?></div>
-            </td>
-            
-            <td>
-              <? if (!Model::$required_columns[$attribute['name']]): ?>
-                <? if ($attribute['is_required']): ?>
-                  <?= $this->linkTo($this->name, 'change_required', $attribute['id'], ['label' => 'required', 'class' => 'badge badge-success']) ?>
-                <? else: ?>
-                  <?= $this->linkTo($this->name, 'change_required', $attribute['id'], ['label' => 'required', 'class' => 'badge badge-default']) ?>
-                <? endif ?>
-              <? endif ?>
-            </td>
-            
-            <td>
-              <?= FormHelper::badgeTag($attribute['pg_attribute']['attnum'], null, 'info') ?>
-              <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
-                <?= FormHelper::badgeTag('sync', null, 'success') ?>
+          <td>
+            <? if (!Model::$required_columns[$attribute['name']]): ?>
+            <? if ($attribute['is_required']): ?>
+            <?= $this->linkTo(['action' => 'change_required', 'id' => $attribute['id']], ['label' => 'required', 'class' => 'badge badge-success']) ?>
+            <? else: ?>
+            <?= $this->linkTo(['action' => 'change_required', 'id' => $attribute['id']], ['label' => 'required', 'class' => 'badge badge-default']) ?>
+            <? endif ?>
+            <? endif ?>
+          </td>
 
-                <? if ($attribute['pg_attribute']['attname'] != $attribute['name']): ?><?= FormHelper::badgeTag($attribute['pg_attribute']['attname'], null, 'danger') ?><? endif ?>
+          <td>
+            <?= FormHelper::badgeTag($attribute['pg_attribute']['attnum'], null, 'info') ?>
+            <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
+            <?= FormHelper::badgeTag('sync', null, 'success') ?>
 
-                <? if ($attribute['pg_attribute']['udt_name'] != $attribute['type']): ?><?= FormHelper::badgeTag($attribute['pg_attribute']['udt_name'], null, 'danger') ?>
-                  <?= FormHelper::badgeTag($attribute['pg_attribute']['character_maximum_length'], null, 'danger') ?><? endif ?>
+            <? if ($attribute['pg_attribute']['attname'] != $attribute['name']): ?>
+            <?= FormHelper::badgeTag($attribute['pg_attribute']['attname'], null, 'danger') ?>
+            <? endif ?>
 
-                  <? if ($attribute['is_primary_key']): ?><?= FormHelper::badgeTag('Primary', null, 'info') ?><? endif ?>
-                  <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?><?= FormHelper::badgeTag('Not Null', null, 'info') ?><? endif ?>
-                <? else: ?>
-                  <label class="badge badge-pill badge-danger">unsync</label>
-                  <form action="<?= $this->linkTo('add_column', $attribute['id']) ?>" method="post">
-                    <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-outline-primary']) ?>
-                    <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
-                    <?= FormHelper::hidden('table_name', $this->model->value['name']) ?>
-                  </form>
-                <? endif ?>
-              </td>
-              <td>
-                <a class="btn btn-outline-primary" href="<?= $this->linkTo('sync_attribute', $attribute['id']) ?>">Sync</a>
-              </td>
-            </tr>
-          <? endforeach ?>
+            <? if ($attribute['pg_attribute']['udt_name'] != $attribute['type']): ?>
+            <?= FormHelper::badgeTag($attribute['pg_attribute']['udt_name'], null, 'danger') ?>
+            <?= FormHelper::badgeTag($attribute['pg_attribute']['character_maximum_length'], null, 'danger') ?>
+            <? endif ?>
+
+            <? if ($attribute['is_primary_key']): ?>
+            <?= FormHelper::badgeTag('Primary', null, 'info') ?>
+            <? endif ?>
+            <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?>
+            <?= FormHelper::badgeTag('Not Null', null, 'info') ?>
+            <? endif ?>
+            <? else: ?>
+            <label class="badge badge-pill badge-danger">unsync</label>
+            <form action="<?= $this->urlFor(['action' => 'add_column', 'id' => $attribute['id']]) ?>" method="post">
+              <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-outline-primary']) ?>
+              <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
+              <?= FormHelper::hidden('table_name', $this->model->value['name']) ?>
+            </form>
+            <? endif ?>
+          </td>
+          <td>
+            <?= $this->linkTo(['action' => 'sync_attribute', 'id' => $attribute['id']],
+                              [
+                              'label' => 'Sync',
+                              'class' => 'btn btn-outline-primary'
+                              ]
+                ) ?>
+          </td>
+        </tr>
+        <? endforeach ?>
         <? endif ?>
       </tbody>
     </table>

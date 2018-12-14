@@ -114,7 +114,7 @@ class ViewController extends ProjectController {
     }
 
    /**
-    * 更新処理
+    * update
     *
     * @param
     * @return void
@@ -132,7 +132,7 @@ class ViewController extends ProjectController {
     }
 
    /**
-    * 削除処理
+    * delete
     *
     * @param
     * @return void
@@ -153,4 +153,13 @@ class ViewController extends ProjectController {
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+    * update sort order
+    *
+    * @param
+    * @return void
+    */
+    function action_update_sort() {
+        $this->updateSort('View');
+    }
 }

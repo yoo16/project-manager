@@ -2,7 +2,7 @@
   <h3 class="card-header">Relation Database</h3>
   <div class="card-block">
 
-    <form id="" action="<?= $this->linkTo('update', $this->relation_database->value['id']) ?>" method="post" autocomplete="off">
+    <form id="" action="<?= $this->urlFor('update', $this->relation_database->value['id']) ?>" method="post" autocomplete="off">
 
       <div class="form-group row">
         <label for="" class="col-1 col-form-label">Database</label>
@@ -17,7 +17,7 @@
 
 
         <?= FormHelper::submit(LABEL_UPDATE) ?>
-        <?= FormHelper::linkButton('cancel', LABEL_BACK) ?>
+        <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
       </form>
 
       <?= $this->relation_database->confirmDelete() ?>

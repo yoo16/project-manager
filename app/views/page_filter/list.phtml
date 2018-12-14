@@ -1,31 +1,42 @@
 <? include('_header.phtml') ?>
 
 <div class="pt-3">
-  <?= FormHelper::linkButton('new', LABEL_ADD, null, ['class' => 'btn btn-primary']) ?>
-  <a href="#" class="btn btn-outline-primary change-sortable" rel="sortable-table"><?= LABEL_SORT_ORDER ?></a>
-
-  <a href="#" class="btn btn-primary update-sortable" controller="page_filter"><?= LABEL_UPDATE ?></a>
+  <?= FormHelper::linkButton(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
+  <? include('views/components/lib/sortable.phtml') ?>
 </div>
 
 <table id="sortable-table" class="table">
   <thead class="thead-default">
     <tr>
       <th>&nbsp;</th>
-      <th><?= LABEL_PAGE_FILTERS_VALUE ?></th>
-            <th><?= LABEL_PAGE_FILTERS_EQUAL_SIGN ?></th>
-            <th><?= LABEL_ATTRIBUTES ?></th>
-          </tr>
+      <th>
+        <?= LABEL_PAGE_FILTERS_VALUE ?>
+      </th>
+      <th>
+        <?= LABEL_PAGE_FILTERS_EQUAL_SIGN ?>
+      </th>
+      <th>
+        <?= LABEL_ATTRIBUTES ?>
+      </th>
+    </tr>
   </thead>
 
   <? if ($this->page_filter->values): ?>
   <? foreach ($this->page_filter->values as $values): ?>
   <tr row-id="<?= $values['id'] ?>">
-    <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $values['id']) ?></td>
-    <td><?= $values['value'] ?></td>
-    <td><?= $values['equal_sign'] ?></td>
-    <td><?= $this->attribute->values[$values['attribute_id']]['name'] ?></td>
+    <td>
+      <?= $this->page_filter->linkEdit([], $values) ?>
+    </td>
+    <td>
+      <?= $values['value'] ?>
+    </td>
+    <td>
+      <?= $values['equal_sign'] ?>
+    </td>
+    <td>
+      <?= $this->attribute->values[$values['attribute_id']]['name'] ?>
+    </td>
   </tr>
   <? endforeach ?>
   <? endif ?>
-
 </table>

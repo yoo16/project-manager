@@ -89,6 +89,12 @@ var PwController = function () {
         url = url + '?' + url_param;
         return url;
     }
+    this.generateProjectUrl = function(url, params) {
+        url = pw_app.projectUrl() + url;
+        var url_param = $.param(params);
+        url = url + '?' + url_param;
+        return url;
+    }
     this.projectUrl = function () {
         return projectUrl();
     }
@@ -121,9 +127,11 @@ var PwController = function () {
         $(class_name).off('load');
         $(class_name).off('error');
         $(class_name).on('error', function(e) {
+            $(this).hide();
             pw_app.hideLoading();
         });
         $(class_name).on('load', function() {
+            $(this).show();
             if (count) {
                 displayed_count++;
                 if (count == displayed_count) {
@@ -134,13 +142,84 @@ var PwController = function () {
             }
         });
     }
-    this.loadingDom = function(dom) {
-        pw_app.showLoading();
+    this.loadingDom = function(dom, callback, error_callback) {
+        var selector = '';
+        if ($(dom).attr('id')) selector = '#' + $(dom).attr('id');
+        pw_app.showLoading(selector);
+        $(dom).on('error', function(e) {
+            pw_app.hideLoading(selector);
+            $(dom).off('error');
+            if (error_callback) error_callback();
+        });
         $(dom).on('load', function() {
-            pw_app.hideLoading();
+            pw_app.hideLoading(selector);
             $(dom).off('load');
+            if (callback) callback();
         });
     }
+    this.loadImage = function(url, dom, callback, error_callback) {
+        $(dom).attr('src', url);
+        pw_app.loadingDom(dom, callback, error_callback);
+
+        var selector = '';
+        if ($(dom).attr('id')) selector = '#' + $(dom).attr('id');
+        $(dom).on('error', function(e) {
+            pw_app.hideLoading(selector);
+            $(dom).attr('src', null);
+            $(dom).hide();
+            $(dom).off('error');
+            if (error_callback) error_callback();
+        });
+        $(dom).on('load', function() {
+            pw_app.hideLoading(selector);
+            $(dom).show();
+            $(dom).off('load');
+            if (callback) callback();
+        });
+    }
+    this.fileUpload = function(url, form_id, callback, error_callback)
+    {
+        if (!$(form_id)) return;
+        if (!$(form_id).get(0)) return;
+        var form_data = new FormData($(form_id).get(0));
+
+        pw_app.showLoading();
+
+        $.ajax({
+            url  : url,
+            type : 'POST',
+            data : form_data,
+            cache       : false,
+            contentType : false,
+            processData : false,
+            dataType    : 'html'
+        })
+        .done(function(data, status, xhr) {
+            pw_app.hideLoading();
+            callback(data, status, xhr);
+        })
+        .fail(function(xhr, status, errorThrown){
+            pw_app.hideLoading();
+            error_callback(xhr, status, errorThrown);
+        });
+    }
+    $(window).on('load', function () {
+        $('.pw-load').each(function() {
+            var name = $(this).attr('pw-controller');
+            if (!name) return;
+
+            var function_name = $(this).attr('pw-function');
+            var action = $(this).attr('pw-action');
+
+            var controller_name = controllerClassName(name);
+            if (controller_name in window) {
+                var controller = new window[controller_name]();
+                if (action && (action in controller)) controller[action](this);
+                if (function_name && (function_name in controller)) controller[function_name]();
+            }
+        });
+        $('#pw-error').modal('show');
+    });
     $(document).on('change', '.pw-change', function () {
         var name = $(this).attr('pw-controller');
         if (!name) return;
@@ -184,6 +263,15 @@ var PwController = function () {
                 controller[action](this);
             }
         }
+    });
+    $(document).on('click', '.confirm-delete', function() {
+        $('#from_delete_id').val($(this).attr('delete_id'));
+        var title = $(this).attr('title');
+        if (title) $('#from-delete-title').html(title);
+        $('.delete-window').modal();
+    });
+    $(document).on('click', '.action-loading', function() {
+        pw_app.showLoading();
     });
 
     /**

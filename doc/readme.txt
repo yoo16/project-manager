@@ -92,7 +92,7 @@
   app/view/layout/root.phtml
 
     <head>
-      <base href="<%=$this->base%>" />
+      <base href="<?=$this->base?>" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
       <meta http-equiv="Content-Script-Type" content="text/javascript" />
 
@@ -102,17 +102,17 @@
 
   例) 同じレイアウトのpage1
 
-    <%=url_for($this, 'page1')%>
+    <?=url_for($this, 'page1')?>
 
   例) sampleレイアウトのindex.htmlにリンク
 
-    <%=url_for($this, 'sample/index')%>
+    <?=url_for($this, 'sample/index')?>
 
   4) パーツHTMLの読み込みタグを記述
 
   root.phtmlに$templateをインクルードすると、手順1で設定したapp/view/root/のレイアウトが読み込まれる
 
-    <%include $template%>
+    <?include $template?>
 
   5) パーツHTMLの作成 app/view/root/内に順1で設定したHTMLファイルを作成する
 

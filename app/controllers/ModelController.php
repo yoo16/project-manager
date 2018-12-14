@@ -579,4 +579,15 @@ class ModelController extends ProjectController {
         }
         $this->redirectTo('values'); 
     }
+
+   /**
+    * update sort order
+    *
+    * @param
+    * @return void
+    */
+    function action_update_sort() {
+        $this->updateSort('Model');
+    }
+
 }

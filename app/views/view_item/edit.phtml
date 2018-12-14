@@ -1,6 +1,6 @@
 <? include('_header.phtml') ?>
 
-<form action="<?= $this->linkTo('update', $this->pw_params['id']) ?>" method="post">
+<form action="<?= $this->urlFor(['action' => 'update', 'id' => $this->pw_params['id']]) ?>" method="post">
 
   <h4>Page public</h4>
   <table class="table">
@@ -156,6 +156,6 @@
   <?= FormHelper::submit(LABEL_SAVE) ?>
   <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
 </form>
-<form action="<?= $this->linkTo('delete', $this->view_item->value['id']) ?>" method="post">
+<form action="<?= $this->urlFor(['action' => 'delete', 'id' => $this->view_item->value['id']]) ?>" method="post">
   <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
 </form>

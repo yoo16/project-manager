@@ -10,15 +10,20 @@ var pw_log;
 
 $(document).ready(function () {
     pw_log = new PwLog();
+    pw_log.base_url = pw_app.projectUrl()
 });
 
 var PwLog = function () {
     this.url_params = {};
     this.filename;
     this.html_id = '#log-list';
+    this.name = 'pw_admin';
+    this.action_list = 'log_list';
+    this.action_detail = 'log_file';
+    this.base_url = '';
 
     this.loadList = function() {
-        var url = pw_app.projectUrl() + 'pw_admin/log_list';
+        var url = pw_log.base_url + this.name + '/' + this.action_list;
 
         $(this.html_id).html('');
         pw_app.urlPost(url, this.url_params, callback);
@@ -32,6 +37,7 @@ var PwLog = function () {
         function renderHtml(values) {
             $(pw_log.html_id).append('<dl>');
 
+            //TODO dom function
             for (var key in values) {
                 var log = values[key];
                 var attribute = '';
@@ -48,7 +54,7 @@ var PwLog = function () {
         }
     }
     this.detail = function(dom) {
-        var url = pw_app.projectUrl() + 'pw_admin/log_file';
+        var url = pw_log.base_url + 'pw_admin/log_file';
         this.filename = $(dom).attr('filename');
         pw_log.filename = this.filename;
         this.url_params.filename = this.filename;
@@ -63,7 +69,7 @@ var PwLog = function () {
     }
     this.reload = function(dom) {
         if (!pw_log.filename) return;
-        var url = pw_app.projectUrl() + 'pw_admin/log_file';
+        var url = pw_log.base_url + 'pw_admin/log_file';
         this.url_params.filename = pw_log.filename;
         pw_app.urlPost(url, this.url_params, callback);
         pw_app.showLoading();
@@ -75,7 +81,7 @@ var PwLog = function () {
     }
     this.delete = function(dom) {
         if (window.confirm('delete log?')) {
-            var url = pw_app.projectUrl() + 'pw_admin/delete_log';
+            var url = pw_log.base_url + 'pw_admin/delete_log';
             this.url_params.filename = pw_log.filename;
 
             pw_app.urlPost(url, this.url_params, callback);

@@ -284,5 +284,13 @@ class ViewItemController extends ProjectController {
         $this->redirectTo(['action' => 'list']);;
     }
 
-
+   /**
+    * update sort order
+    *
+    * @param
+    * @return void
+    */
+    function action_update_sort() {
+        $this->updateSort('ViewItem');
+    }
 }

@@ -131,4 +131,15 @@ class MenuItemController extends MenuController {
         $this->redirectTo();
     }
 
+
+   /**
+    * update sort order
+    *
+    * @param
+    * @return void
+    */
+    function action_update_sort() {
+        $this->updateSort('MenuItem');
+    }
+
 }

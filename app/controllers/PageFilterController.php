@@ -160,4 +160,14 @@ class PageFilterController extends PageController {
         $this->page_filter = $this->page->relationMany('PageFilter')->all();
     }
 
+    /**
+    * update sort order
+    *
+    * @param
+    * @return void
+    */
+    function action_update_sort() {
+        $this->updateSort('PageFilter');
+    }
+
 }
