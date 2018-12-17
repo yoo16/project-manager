@@ -92,10 +92,8 @@ class UserProjectSettingController extends AppController {
         $user_project_setting = DB::model('UserProjectSetting')->insert($posts);
 
         if ($user_project_setting->errors) {
-            $errors['user_project_settings'] = $user_project_setting->errors;
-            $this->setErrors($errors);
+            $this->addErrorByModel($user_project_setting);
             $this->redirectTo(['action' => 'new']);;
-            exit;
         } else {
             $this->redirectTo();
         }
