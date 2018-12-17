@@ -68,7 +68,10 @@
 
       <?= FormHelper::submit(LABEL_UPDATE) ?>
       <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+
+      <? if (!$this->model->value['is_lock']): ?>
       <?= $this->model->confirmDelete() ?>
+      <? endif ?>
     </form>
   </div>
 </div>

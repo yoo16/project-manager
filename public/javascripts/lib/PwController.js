@@ -30,7 +30,6 @@ $(document).on('change', ':file', function () {
 var PwController = function () {
     this.multiSessionLink = function(fileName, content) {
         pw_multi_sid = $('#pw-multi-session-id').val();
-
         if (!pw_multi_sid) return;
 
         jQuery('a').each(function() {
@@ -220,6 +219,14 @@ var PwController = function () {
         });
         $('#pw-error').modal('show');
     });
+    /**
+     * confirm dialog
+     */
+    $(document).on('click', '.confirm-dialog', function() {
+        var message = '';
+        if ($(this).attr('message')) message = $(this).attr('message');
+        return (window.confirm(message));
+    });
     $(document).on('change', '.pw-change', function () {
         var name = $(this).attr('pw-controller');
         if (!name) return;
@@ -273,7 +280,6 @@ var PwController = function () {
     $(document).on('click', '.action-loading', function() {
         pw_app.showLoading();
     });
-
     /**
      * controller class name
      * 

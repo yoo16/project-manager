@@ -23,5 +23,5 @@
 
   <?= FormHelper::submit(LABEL_UPDATE) ?>
   <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+  <?= $this->project->confirmDelete() ?>
 </form>
-<?= $this->project->confirmDelete() ?>

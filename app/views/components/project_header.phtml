@@ -10,7 +10,12 @@
       <td></td>
       <td></td>
       <td>
-        <?= FormHelper::linkModal('#php-export-window', 'PHP Export', ['class' => 'btn btn-sm btn-success']) ?>
+        <?= FormHelper::linkModal('#php-export-window', 'PHP Export',
+        [
+        'class' => 'btn btn-sm btn-outline-primary',
+        'icon_name' => 'php',
+        ]
+        ) ?>
         <?= $this->linkTo(['controller' => 'user_project_setting', 'action' => 'list'],
         [
         'label' => 'Project Setting',
@@ -25,16 +30,9 @@
       <th>Database</th>
       <td>
         <?= $this->linkTo(
-          [
-          'controller' => 'database',
-          'action' => 'edit',
-          'id' => $this->database->value['id']
-          ],
-          [
-          'label' => 'Database'
-          ]
+          [ 'controller' => 'database', 'action' => 'edit', 'id' => $this->database->value['id'] ],
+          [ 'label' => $this->database->value['name'] ]
           ) ?>
-        <?= $this->database->value['name'] ?>
         </a>
       </td>
       <td>
@@ -56,6 +54,7 @@
                 'label' => 'Excel',
                 'class' => 'btn btn-sm btn-outline-primary confirm-dialog',
                 'attributes' => ['message' => 'Do you download Excel?'],
+                'icon_name' => 'file-excel',
               ]
             )
             ?>
@@ -68,7 +67,8 @@
                 'label' => 'HTML',
                 'class' => 'btn btn-sm btn-outline-primary',
                 'target' => '_blank',
-                'http_params' => ['database_id' => $this->database->value['id']]
+                'http_params' => ['database_id' => $this->database->value['id']],
+                'icon_name' => 'download',
               ]
             )
             ?>
@@ -112,19 +112,11 @@
             ) ?>
       </li>
       <? endif ?>
-      <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'api', 'action' => 'list'],
-             [
-              'label' => 'Api',
-              'class' => 'nav-link',
-              'http_params' => ['project_id' => $this->project->value['id']]
-            ]
-            ) ?>
-      </li>
+
       <li class="nav-item">
         <?= $this->linkTo(['controller' => 'record', 'action' => 'list'],
             [
-              'label' => 'Csv',
+              'label' => 'CSV',
               'class' => 'nav-link',
               'http_params' => ['project_id' => $this->project->value['id']]
             ]
@@ -134,24 +126,6 @@
         <?= $this->linkTo(['controller' => 'localize_string', 'action' => 'list'],
             [
               'label' => 'Localize',
-              'class' => 'nav-link',
-              'http_params' => ['project_id' => $this->project->value['id']]
-            ]
-            ) ?>
-      </li>
-      <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'document', 'action' => 'list'],
-            [
-              'label' => 'Document',
-              'class' => 'nav-link',
-              'http_params' => ['project_id' => $this->project->value['id']]
-            ]
-            ) ?>
-      </li>
-      <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'layout', 'action' => 'list'],
-            [
-              'label' => 'Layout',
               'class' => 'nav-link',
               'http_params' => ['project_id' => $this->project->value['id']]
             ]

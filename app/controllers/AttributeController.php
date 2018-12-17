@@ -31,7 +31,6 @@ class AttributeController extends ModelController {
     }
 
     function before_rendering($action) {
-        if (isset($this->flash['errors'])) $this->errors = $this->flash['errors'];
     }
 
     function index() {

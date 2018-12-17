@@ -910,6 +910,7 @@ class Controller extends RuntimeException {
             $errors = AppSession::getWithKey('errors', $this->name);
             $errors[$key] = $model->errors;
             AppSession::setWithKey('errors', $this->name, $errors);
+            $errors = AppSession::getWithKey('errors', $this->name);
         }
     }
 

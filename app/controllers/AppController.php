@@ -28,9 +28,6 @@ class AppController extends Controller {
             exit;
         }
         $this->loadDefaultCsvOptions();
-
-        $this->errors = AppSession::getErrors();
-        AppSession::flushErrors();
     }
 
     /**

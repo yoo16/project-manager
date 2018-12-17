@@ -1,4 +1,5 @@
 <?php
+require('_localize.php');
 
 define('LABEL_NAME', 'Name');
 define('LABEL_LAST_NAME', 'Last Name');
@@ -23,6 +24,7 @@ define('LABEL_PASSWORD', 'Password');
 define('LABEL_USER_ID', 'User id');
 define('LABEL_LOGIN_NAME', 'Login name');
 
+define('LABEL_FILE', 'File');
 define('LABEL_SEARCH', 'Search');
 define('LABEL_CANCEL', 'Cancel');
 define('LABEL_BACK', 'Back');
@@ -40,6 +42,7 @@ define('LABEL_INIT', 'Init');
 define('LABEL_SORT_ORDER', 'Sort Order');
 define('LABEL_JSON', 'JSON');
 define('LABEL_CSV', 'CSV');
+define('LABEL_IMAGE', 'Image');
 define('LABEL_CLOSE', 'Close');
 define('LABEL_CLEAR', 'Clear');
 define('LABEL_DUPLICATE', 'Duplicate');
@@ -62,12 +65,22 @@ define('LABEL_USER', 'User');
 define('LABEL_STAFF', 'Staff');
 define('LABEL_ADMIN', 'Admin');
 
-define('DATABASE_NAME', 'Database Name');
-define('DATABASE_HOST', 'Host');
-define('DATABASE_USER', 'User');
-define('DATABASE_PORT', 'Port');
-define('DATABASE_TYPE', ' Type');
+define('DEPTH_GRAPH_Y_TITLE', LABEL_INSTRUMENTS_DEPTH.'(GL.-m)');
+define('DEPTH_TIME_GRAPH_Y_TITLE', LABEL_INSTRUMENTS_DEPTH.'(GL.-m)');
+define('GRAPH_Y_TITLE', LABEL_DISPLACEMENT);
+define('GRAPH_X_TITLE', LABEL_DATE_TITLE);
+
+define('LABEL_BLUE', 'Blue');
+define('LABEL_RED', 'Red');
+define('LABEL_YELLOW', 'Yewllow');
+define('LABEL_PINK', 'Pink');
+define('LABEL_ORANGE', 'Orange');
+
+define('LABEL_TRUE', 'On');
+define('LABEL_FALSE', 'Off');
+define('LABEL_ERROR', 'Error');
 
 define('MESSAGE_DELETE', 'Do you delete？');
 define('MESSAGE_CONFIRM', 'Do you confirm？');
 define('MESSAGE_REQUIRED', 'Please, input');
+define('MESSAGE_INVALID', 'is invalid');

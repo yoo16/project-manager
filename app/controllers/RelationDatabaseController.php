@@ -30,7 +30,6 @@ class RelationDatabaseController extends ProjectController {
     * @return void
     */ 
     function before_rendering($action) {
-        if (isset($this->flash['errors'])) $this->errors = $this->flash['errors'];
     }
 
     function action_index() {

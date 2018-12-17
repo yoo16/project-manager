@@ -3,22 +3,23 @@
 
   <table class="table">
     <tr>
-      <th>坝称</th>
-      <td><?= $this->localize_string->formInput('name') ?></td>
+      <th>Name</th>
+      <td>
+        <?= $this->localize_string->formInput('name') ?>
+      </td>
     </tr>
 
     <? foreach ($this->lang->values as $lang): ?>
-      <tr>
-        <th>言語(<?= $lang['name'] ?>)</th>
-        <td><input class="form-control" name="localize_string[label][<?= $lang['lang'] ?>]" value="<?= $this->localize_string->value['label'][$lang['lang']] ?>"></td>
-      </tr> 
+    <tr>
+      <th>Language(<?= $lang['name'] ?>)</th>
+      <td><input class="form-control" name="localize_string[label][<?= $lang['lang'] ?>]" value="<?= $this->localize_string->value['label'][$lang['lang']] ?>"></td>
+    </tr>
     <? endforeach ?>
 
   </table>
 
   <?= FormHelper::submit(LABEL_SAVE) ?>
-  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>  
-  
-</form>
+  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+  <?= $this->localize_string->confirmDelete() ?>
 
-<?= $this->localize_string->confirmDelete() ?>
+</form>

@@ -10,21 +10,20 @@
       <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
       <?= FormHelper::submit('Import from DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you import from DB?']) ?>
       <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
-      <?= FormHelper::linkButton(['action' => 'lock'], ['label' => 'Lock', 'class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you lock models?']) ?>
       <?= FormHelper::linkModal('#help-model', 'Help', ['class' => 'btn btn-outline-primary']) ?>
     </form>
   </div>
 
-  table count : <?= count($this->model->values) ?>
+  table count :
+  <?= count($this->model->values) ?>
   <table class="table">
     <thead class="thead-default">
       <tr>
         <th></th>
-        <th>Name</th>
-        <th></th>
+        <th>Table Name</th>
         <th>
-          <div>Entity</div>
-          <div>Class</div>
+          <div>Entity Name</div>
+          <div>Class Name</div>
         </th>
         <th>Controller</th>
         <th>DB info</th>
@@ -34,86 +33,84 @@
     </thead>
 
     <? if ($this->model->values): ?>
-      <? foreach ($this->model->values as $model): ?>
-        <tr>
-          <td><?= $this->model->linkEdit([], $model) ?></td>
-          <td>
-            <div>
-              <?= $this->linkTo(['controller' => 'attribute'], 
+    <? foreach ($this->model->values as $model): ?>
+    <tr>
+      <td>
+        <?= $this->model->linkEdit([], $model) ?>
+      </td>
+      <td>
+        <div>
+          <?= $this->linkTo(['controller' => 'attribute'], 
                 [
                   'label' => $model['name'], 
                   'http_params' => ['model_id' => $model['id']]
                 ]
               )
               ?>
-            </div>
-            <div><?= $model['label'] ?></div>
-            <? if ($model['old_name']): ?><div>(<?= $model['old_name'] ?> : <?= $model['old_database_id'] ?>)</div><? endif ?>
-          </td>
-          <td><?= $this->linkTo(['action' => 'values', 'id' => $model['id']],
+          &nbsp;
+          <? if ($model['is_lock']): ?>
+          <?= TagHelper::iconTag('lock') ?>
+          <? endif ?>
+        </div>
+        <div>
+          <?= $model['label'] ?>
+        </div>
+        <? if ($model['old_name']): ?>
+        <div>(
+          <?= $model['old_name'] ?> :
+          <?= $model['old_database_id'] ?>)</div>
+        <? endif ?>
+      </td>
+
+      <td>
+        <div>
+          <?= $model['entity_name'] ?>
+        </div>
+        <div>
+          <?= $model['class_name'] ?>
+        </div>
+      </td>
+      <td>
+        <form action="<?= $this->urlFor(['controller' => 'page', 'action' => 'create_page_from_model']) ?>" method="post">
+          <?= FormHelper::button(LABEL_CREATE, ['class' => 'btn btn-sm btn-primary confirm-dialog', 'message' => "Create page?"]) ?>
+          <?= FormHelper::hidden('model_id', $model['id']) ?>
+        </form>
+      </td>
+      <td>
+        <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
+        <?= $this->linkTo(['action' => 'sync_model', 'id' => $model['id']], [ 'label' => 'Sync', 'class' => 'btn btn-sm btn-success' ]) ?>
+        <? else: ?>
+
+        <?= $this->linkTo(['action' => 'sync_model', 'id' => $model['id']], [ 'label' => 'Sync', 'class' => 'btn btn-sm btn-danger' ]) ?>
+        <span class="badge badge-default">
+          <?= $model['pg_class_id'] ?> =
+          <?= $model['pg_class']['pg_class_id'] ?></span>
+        <? endif ?>
+
+        <? if ($model['label'] != $model['pg_class']['comment']): ?>
+        <?= FormHelper::badgeTag('different label', null, 'danger') ?>
+        <?= FormHelper::badgeTag($model['pg_class']['comment'], null, 'default') ?>
+        <? endif ?>
+      </td>
+      <td>
+        <?= $this->linkTo(['action' => 'values', 'id' => $model['id']],
             [
             'label' => 'Data',
             'class' => 'btn btn-sm btn-outline-primary'
             ]) ?>
-          </td>
-          <td>
-            <div><?= $model['entity_name'] ?></div>
-            <div><?= $model['class_name'] ?></div>
-          </td>
-          <td>
-            <form action="<?= $this->urlFor(['controller' => 'page', 'action' => 'create_page_from_model']) ?>" method="post">
-              <?= FormHelper::button(LABEL_CREATE, ['class' => 'btn btn-sm btn-primary confirm-dialog', 'message' => "Create page?"]) ?>
-              <?= FormHelper::hidden('model_id', $model['id']) ?>
-            </form>
-          </td>
-          <td>
-            <? if ($model['pg_class']): ?>
-              <?= FormHelper::badgeTag($model['pg_class']['pg_class_id']) ?>
-            <? else: ?>
-            <? endif ?>
-
-            <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>
-              <?= FormHelper::badgeTag('sync', null, 'success') ?>
-            <? else: ?>
-              <?= FormHelper::badgeTag('unsync', null, 'danger') ?>
-              <span class="badge badge-default">
-                <?= $model['pg_class_id'] ?> = 
-                <?= $model['pg_class']['pg_class_id'] ?>
-              </span>
-            <? endif ?>
-
-            <? if ($model['label'] == $model['pg_class']['comment']): ?>
-              <?= FormHelper::badgeTag('label', null, 'success') ?>
-            <? else: ?>
-              <?= FormHelper::badgeTag('different label', null, 'danger') ?>
-              <?= FormHelper::badgeTag($model['pg_class']['comment'], null, 'default') ?>
-            <? endif ?>
-            <? if ($model['is_lock']): ?>
-              <?= FormHelper::badgeTag('Delete Lock', null, 'danger') ?>
-            <? endif ?>
-
-            <?= $model['database_id'] ?>
-          </td>
-          <td>
-            <?= $this->linkTo(['action' => 'sync_model', 'id' => $model['id']],
-            [
-            'label' => 'Sync',
-            'class' => 'btn btn-sm btn-outline-primary'
-            ]
-            ) ?>
-          </td>
-          <td>
-            <?= $this->linkTo(['action' => 'duplicate', 'id' => $model['id']],
+      </td>
+      <td>
+        <?= $this->linkTo(['action' => 'duplicate', 'id' => $model['id']],
             [
             'label' => LABEL_DUPLICATE,
             'class' => 'btn btn-sm btn-outline-primary confirm-dialog',
             'message' => 'Do you duplicate?'
             ]
             ) ?>
-          </td>
+      </td>
 
-        </tr>
-      <? endforeach ?>
+    </tr>
+    <? endforeach ?>
     <? endif ?>
   </table>
 </div>

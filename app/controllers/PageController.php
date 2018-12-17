@@ -27,7 +27,6 @@ class PageController extends ProjectController {
     }
 
     function before_rendering($action) {
-        if (isset($this->flash['errors'])) $this->errors = $this->flash['errors'];
     }
 
     function index() {
@@ -77,32 +76,28 @@ class PageController extends ProjectController {
         $posts['class_name'] = $posts['name'];
 
         $page = DB::model('Page')->insert($posts);
+        if ($page->errors) $this->addErrorByModel($page);
 
-
-        if ($page->errors) {
-            var_dump($page->errors);
-            exit;      
-        }
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * update
+     *
+     * @return void
+     */
     function action_update() {
         if (!isPost()) exit;
         $page = DB::model('Page')->update($this->pw_posts['page'], $this->pw_params['id']);
-
-        if ($page->errors) {
-            $this->flash['errors'] = $page->errors;
-            var_dump($this->pw_posts['page']);
-            var_dump($page->errors);
-            var_dump($page->sql_error);
-            var_dump($page->sql);
-            exit;
-        } else {
-            unset($this->session['posts']);
-        }
+        if ($page->errors) $this->addErrorByModel($page);
         $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
     }
 
+    /**
+     * duplicate
+     *
+     * @return void
+     */
     function action_duplicate() {
         //TODO Entity function?
         $page = DB::model('Page')->fetch($this->pw_params['id']);
@@ -111,27 +106,25 @@ class PageController extends ProjectController {
         unset($posts['id']);
 
         $page = DB::model('Page')->insert($posts);
+        if ($page->errors) $this->addErrorByModel($page);
 
-        if ($page->errors) {
-            $this->flash['errors'] = $page->errors;
-            var_dump($this->pw_posts['page']);
-            var_dump($page->errors);
-            var_dump($page->sql_error);
-            var_dump($page->sql);
-            exit;
-        }
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * delete
+     *
+     * @return void
+     */
     function action_delete() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $page = DB::model('Page')->delete($this->pw_params['id']);
-            if ($page->errors) {
-                $this->flash['errors'] = $page->errors;
-                $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
-            } else {
-                $this->redirectTo();
-            }
+        if (!isPost()) exit;
+        $page = DB::model('Page')->delete($this->pw_params['id']);
+
+        if ($page->errors) {
+            $this->addErrorByModel($page);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+        } else {
+            $this->redirectTo();
         }
     }
 

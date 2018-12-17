@@ -32,7 +32,6 @@ class DocumentController extends ProjectController {
     * @return void
     */ 
     function before_rendering($action) {
-        if (isset($this->flash['errors'])) $this->errors = $this->flash['errors'];
     }
 
     function action_index() {
@@ -57,7 +56,7 @@ class DocumentController extends ProjectController {
     }
 
     function action_list() {
-        $this->redirectTo(['controller' => 'model']);
+        //$this->redirectTo(['controller' => 'model']);
     }
 
     function action_attribute_list() {

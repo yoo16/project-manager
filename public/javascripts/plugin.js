@@ -1,133 +1,25 @@
 /**
  * plugin.js
  * 
- * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
+ * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
  */
+//TODO lib
 
-$(document).on('click', '.confirm-delete', function() {
-    var delete_id = $(this).attr('delete-id');
-    $('#from-delete-id').val(delete_id);
-
-    var title = $(this).attr('title');
-    if (title) $('#from-delete-title').html(title);
-
-    $('.delete-window').modal();
-});
-
- $(document).on('click', '.action-loading', function() {
-    showLoading();
-});
-
-/**
- * show loading
- * 
- * @return
- */
- function showLoading() {
-    $(document).ready(function() {
-        $.LoadingOverlay("show");
-    });
-}
-
-/**
- * hide loading
- * 
- * @return
- */
- function hideLoading() {
-    $(document).ready(function() {
-        $.LoadingOverlay("hide");
-    });
-}
 
 /**
  * delete check
  * @param
  * @return
  */
- $(document).on('click', '.delete_checkbox', function(event) {
+$(document).on('click', '.delete_checkbox', function(event) {
     var target = $(this).attr('rel');
     var selector = '#' + target;
-    console.log(selector);
     if ($(this).prop('checked')) {
         $(selector).attr('disabled', false);
     } else {
         $(selector).attr('disabled', true);
     }
 });
-
-/**
- * confirm dialog
- * @param
- * @return
- */
- $(document).on('click', '.confirm-dialog', function() {
-    var message = '';
-    if ($(this).attr('message')) {
-        message = $(this).attr('message');
-    }
-    if (window.confirm(message)) {
-        showLoading();
-        return true;
-    } else {
-        hideLoading();
-        return false;
-    }
-});
-
-/**
- * close 
- *
- * @param
- * @return
- */
- $(document).on('click', '.action-close', function() {
-    var window_id = '#' + $(this).attr('window-id');
-    $(window_id).hide();
-});
-
-/**
- * change date
- *
- * @param
- * @return
- */
- $(document).on('change', '.action-change-date', function() {
-    checkDate(this);
-
-    function checkDate(target) {
-        var date_name = $(target).attr('name');
-
-        date_names = date_name.split('[');
-
-        if (!date_names) return;
-
-        date_name = date_names[0];
-        var year_column = '[name="' + date_name + '[year]"]';
-        var month_column = '[name="' + date_name + '[month]"]';
-        var day_column = '[name="' + date_name + '[day]"]';
-
-        var year = $(year_column).val();
-        var month = $(month_column).val();
-        var day = $(day_column).val();
-
-        if (year && month && day) {
-            var date_string = year + '-' + month + '-' + day;
-            date_column = '[name="' + date_name + '"]';
-            $(date_column).val(date_string);
-        }
-    }
-});
-
-
-/**
- * 改行をBRタグに変換
- * 
- * @param String str 変換したい文字列
- */
- var nl2br = function (str) {
-    return str.replace(/\n/g, '<br>');
-};
 
 /**
  * autoInputZip()
@@ -148,6 +40,7 @@ $(document).on('click', '.confirm-delete', function() {
 
  /**
   * autoInputTel
+  * 
   * @param  Integer target_id [description]
   * @param  String tel_id1   [description]
   * @param  String tel_id2   [description]
@@ -226,21 +119,6 @@ $(function() {
     });
 });
 
-/**
- * PageScroll
- **/
- $(function() {
-     $('a.scroll').click(function() {
-      if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-       var target = $(this.hash);
-       target = target.length && target;
-       var targetPosition = target.offset().top;
-       $('html,body').animate({ scrollTop: targetPosition }, 'slow');
-       return false;
-   }
-});
-});
-
 function openWindow(url) {
     if (url) {
         window.open(url, 'new', 'scrollbars=yes,width=520,height=640');
@@ -260,101 +138,3 @@ function closeElement(id) {
     $(id).slideUp('normal');
 }
 
-function initShowHideElement(id) {
-    var is_open = _load_cookie(id);
-    if (is_open == 0) {
-        $(id).hide();
-    }
-}
-
-function showElement(id) {
-    $(id).slideDown('normal');
-    _save_cookie(id, 1);
-}
-
-function hideElement(id) {
-    $(id).slideUp('normal');
-    _save_cookie(id, 0);
-}
-
-function _save_cookie(id, value) {
-    var cookiename = 'ini' + id;
-    $.cookie(cookiename, value, { expires: 180, path: '/'});
-}
-
-function _load_cookie(id) {
-    var cookiename = 'ini' + id;
-    return $.cookie(cookiename);
-}
-
-function showErrorMessage() {
-    blindDownEffect('message_dialog');
-}
-
-function displayText(id, str, isShow) {
-    if(isShow) {
-        if($(id).value == '') {
-            $(id).value = str;
-        }
-    } else {
-        if($(id).value == str) {
-            $(id).value = '';
-        }
-    }
-}
-
-function showhide(id) {
-    if ($(id)) {
-        if ($(id).style.display == "none")
-            $(id).style.display = "block";
-        else
-            $(id).style.display = "none";
-    }
-}
-
-function selectToday(id) {
-    var year_id = id + '[year]';
-    var month_id = id + '[month]';
-    var date_id = id + '[day]';
-
-    var nowdate = new Date();
-    var year = nowdate.getFullYear();
-    var month  = nowdate.getMonth() + 1;
-    var date = nowdate.getDate();
-
-    $(year_id).item(0).value = year;
-    $(month_id).item(0).value = month;
-    $(date_id).item(0).value = date;
-}
-
-function selectDefaultDate(id) {
-    var year_id = id + '[year]';
-    var month_id = id + '[month]';
-    var date_id = id + '[day]';
-
-    $(year_id).item(0).selectedIndex = null;
-    $(month_id).item(0).selectedIndex = null;
-    $(date_id).item(0).selectedIndex = null;
-}
-
-function searchAddress(zip1, zip2, prefecture, city, address) {
-    var zip = $(zip1).val() + $(zip2).val();
-
-    $.ajax({
-        url : url,
-        dataType : "jsonp",
-        data : {
-            zip : zip
-        },
-        jsonp: 'jsonp',
-        success : function(json){
-            //set
-            $(prefecture).val(json.prefecture);
-            $(city).attr('value', json.city);
-            $(address).attr('value', json.address);
-        },
-        error : function(){
-            alert('error');
-        }
-    });
-}
