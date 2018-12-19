@@ -252,19 +252,14 @@ class PwTag {
      * @return string
      */
     static function a($params) {
+        if (!$params['label'] && !$params['icon_name']) $params['label'] = 'Link';
         if ($params['is_use_selected']) {
             if ($params['is_selected']) $params['class'].= ' active';
             if ($params['selected_key'] && $params['selected_key'] == $params['selected_value']) $params['class'].= ' active';
         }
-        if ($params['selected_controller'] && $params['selected_action']) {
-            $params['class'].= PwTag::actionActive($params['selected_controller'], $params['selected_action']);
-        }
-        if ($params['menu_group']) {
-            $controller = $GLOBALS['controller'];
-            if ($controller && $controller->menu_group) {
-                $params['class'].= PwTag::classActive($controller->menu_group, $params['menu_group']);
-            }
-        }
+        unset($html_params['menu_group']);
+        unset($html_params['is_use_selected']);
+        unset($html_params['is_use_action_selected']);
 
         $attribute = PwTag::attribute($params);
         if (isset($params['icon_name'])) $icon_tag = PwTag::iconTag($params['icon_name']);

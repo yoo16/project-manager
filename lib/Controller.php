@@ -263,7 +263,7 @@ class Controller extends RuntimeException {
             $errors['controller'] = $params['controller'];
             $errors['signature'] = $_SERVER['SERVER_SIGNATURE'];
 
-            $controller->renderError($errors);
+            if ($controller) $controller->renderError($errors);
         }
     }
 
@@ -379,7 +379,7 @@ class Controller extends RuntimeException {
         $this->before_rendering($action, $this->with_layout);
         $template = $this->pwTemplate($action, $template);
 
-        @include_once BASE_DIR."app/helpers/application_helper.php";
+        @include_once BASE_DIR."app/PwHelpers/application_PwHelper.php";
 
         if ($this->with_layout) {
             $layout = $this->pwLayout();
@@ -567,13 +567,11 @@ class Controller extends RuntimeException {
      * @return string
      */
     function linkJs($params = null) {
-        if ($params['is_use_selected']) $params['class'].= PwForm::linkActive($controller, $this->name);
-        if ($params['is_use_action_selected']) $params['class'].= PwTag::actionActive($controller, $action);
+        if ($params['is_use_selected'] && $params['controller']) $params['class'].= PwForm::linkActive($params['controller'], $this->name);
         unset($params['is_use_selected']);
-        unset($params['is_use_action_selected']);
 
-        $params['href'] = '#';
-        if ($params['id']) $params['href'].= $params['id'];
+        //$params['href'] = '#';
+        //if ($params['id']) $params['href'].= $params['id'];
 
         $tag = PwTag::a($params);
         return $tag;
@@ -600,15 +598,30 @@ class Controller extends RuntimeException {
      * @return string
      */
     function linkTo($params, $html_params = null) {
-        if (!$html_params['label']) $html_params['label'] = 'Link';
-        if ($html_params['is_use_selected']) $html_params['class'].= PwForm::linkActive($params['controller'], $this->name);
-        if ($html_params['is_use_action_selected']) $html_params['class'].= PwTag::actionActive($params['controller'], $action);
-        unset($html_params['is_use_selected']);
-        unset($html_params['is_use_action_selected']);
-
+        if ($this->checkLinkActive($params, $html_params)) $html_params['class'].= ' active';
         $html_params['href'] = $this->urlFor($params, $html_params['http_params']);
         $tag = PwTag::a($html_params);
         return $tag;
+    }
+
+    /**
+     * check link active
+     *
+     * @param  array $params
+     * @param  array $html_params
+     * @return string
+     */
+    function checkLinkActive($params, $html_params) {
+        if (!$html_params['is_use_selected']) return;
+        if (($params['controller'] == $this->name)) return true;  
+
+        if ($html_params['menu_group'] && $this->menu_group) {
+            return ($html_params['menu_group'] == $this->menu_group);
+        }
+
+        if ($html_params['menu_groups'] && $this->menu_groups) {
+            return (in_array($html_params['menu_groups'], $this->menu_groups));
+        }
     }
 
     /**
@@ -857,10 +870,10 @@ class Controller extends RuntimeException {
      * model
      *
      * @param string $model_name
-     * @param string $group
+     * @param string $session_name
      * @return void
      */
-    function model($model_name) {
+    function model($model_name, $session_name = null) {
         if (!class_exists($model_name)) {
             $errors['query'] = $_SERVER['QUERY_STRING'];
             $errors['request'] = $_SERVER['REQUEST_URI'];
@@ -869,7 +882,26 @@ class Controller extends RuntimeException {
             $this->renderError($errors);
             exit;
         }
-        return DB::model($model_name)->requestSession();
+        return DB::model($model_name)->requestSession($this->pw_multi_sid, $session_name);
+    }
+
+    /**
+     * clear model
+     *
+     * @param string $model_name
+     * @param string $session_name
+     * @return void
+     */
+    function clearModel($model_name, $session_name = null) {
+        if (!class_exists($model_name)) {
+            $errors['query'] = $_SERVER['QUERY_STRING'];
+            $errors['request'] = $_SERVER['REQUEST_URI'];
+            $errors['error'] = "{$model_name} Class is not exists.";
+            $errors['signature'] = $_SERVER['SERVER_SIGNATURE'];
+            $this->renderError($errors);
+            exit;
+        }
+        return DB::model($model_name)->clearSession($this->pw_multi_sid);
     }
 
     /**
@@ -910,7 +942,6 @@ class Controller extends RuntimeException {
             $errors = PwSession::getWithKey('errors', $this->name);
             $errors[$key] = $model->errors;
             PwSession::setWithKey('errors', $this->name, $errors);
-            $errors = PwSession::getWithKey('errors', $this->name);
         }
     }
 

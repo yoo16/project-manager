@@ -3,25 +3,19 @@
  * PwLocalize 
  *
  * @author  Yohei Yoshikawa
- * 
- * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
+ * @create  2012/10/03 
  */
 class PwLogger {
 
     /**
-     * construct
+     * [autoload_model description]
      * 
-     * @return
+     * @return [type] [description]
      */
     function __construct() {
 
     }
 
-    /**
-     * log directory
-     * 
-     * @return string
-     */
     function logDir() {
         if (defined('LOG_DIR')) {
             $path = LOG_DIR;
@@ -34,11 +28,6 @@ class PwLogger {
         return $path;
     }
 
-    /**
-     * log date
-     * 
-     * @return string
-     */
     function logDate($date) {
         if (!$date) {
             $date = date('Ymd');
@@ -46,11 +35,6 @@ class PwLogger {
         return $date;
     }
 
-    /**
-     * log file path
-     * 
-     * @return string
-     */
     function logFile($date=null) {
         $date = self::logDate($date);
         $file = $date.'.log';
@@ -72,11 +56,6 @@ class PwLogger {
         return $files;
     }
 
-    /**
-     * log analyze
-     * 
-     * @return array
-     */
     function analyze($date=null) {
         $path = self::logFile($date);
         if (!file_exists($path)) {
@@ -117,21 +96,11 @@ class PwLogger {
         return $values;
     }
 
-    /**
-     * is first sentence
-     * 
-     * @return boolean
-     */
     function isFirstSentence($row) {
         $value = mb_substr($row, 0, 1);
         return ($value == '[');
     }
 
-    /**
-     * is error
-     * 
-     * @return boolean
-     */
     function isError($row) {
         $keys[] = 'PHP Warning: ';
         $keys[] = 'PHP Fatal error:';
@@ -142,11 +111,6 @@ class PwLogger {
         }
     }
 
-    /**
-     * error date
-     * 
-     * @return string
-     */
     function errorDate($row) {
         if (self::isFirstSentence($row)) {
             $value = mb_substr($row, 1, 20); 
@@ -157,11 +121,6 @@ class PwLogger {
         }
     }
 
-    /**
-     * fetch error
-     * 
-     * @return array
-     */
     function fetchError($row) {
         $keys[] = 'PHP Warning: ';
         $keys[] = 'PHP Fatal error:';

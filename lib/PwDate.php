@@ -574,7 +574,7 @@ class PwDate {
     }
 
     //TODO
-    //from DatePwHelper functions
+    //from DatePwPwHelper functions
     /**
      * datetimeFormat
      *

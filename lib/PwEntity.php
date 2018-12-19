@@ -118,67 +118,65 @@ class PwEntity {
      * requestSession
      * 
      * @param  string $sid
-     * @param  string $multi_session_id
+     * @param  string $session_key
      * @return PwEntity
      */
-    public function requestSession($sid = 0, $multi_session_id = null) {
+    public function requestSession($sid = 0, $session_key = null) {
         $request_column = "{$this->entity_name}_id";
-        if ($this->session_name) {
-            $session_name = $this->session_name;
-        } else {
-            $session_name = $this->entity_name;
-        }
         if (isset($_REQUEST[$request_column])) {
             $this->fetch($_REQUEST[$request_column]);
-            if ($multi_session_id) {
-                PwSession::setWithKey($multi_session_id, $session_name, $this, $sid);
+            if ($session_key) {
+                PwSession::setWithKey($session_key, $this->entity_name, $this, $sid);
             } else {
-                PwSession::set($session_name, $this, $sid);
+                PwSession::set($this->entity_name, $this, $sid);
             }
         }
-        if ($multi_session_id) {
-            return PwSession::getWithKey($multi_session_id, $session_name, null, $sid);
+        if ($session_key) {
+            return PwSession::getWithKey($session_key, $this->entity_name, null, $sid);
         } else {
-            return PwSession::get($session_name, null, $sid);
+            return PwSession::get($this->entity_name, null, $sid);
         }
     }
 
     /**
      * load session
      * 
-     * @param int $id
+     * @param integer $sid
      * @return PwEntity
      */
-    public function session() {
-        return $this->getSession();
+    public function session($sid) {
+        return $this->getSession($sid);
     }
 
    /**
     * getSession
     *
+    * @param integer $sid
     * @return PwEntity
     */
-    public function getSession() {
-        return PwSession::get($this->entity_name);
+    public function getSession($sid = null) {
+        return PwSession::get($this->entity_name, $sid);
     }
 
    /**
     * setSession
     *
-    * @return void
+    * @param integer $sid
+    * @return PwEntity
     */
-    public function setSession() {
-        PwSession::set($this->entity_name, $this);
+    public function setSession($sid = null) {
+        PwSession::set($this->entity_name, $this, $sid);
         return $this;
     }
 
    /**
     * clearSession
     *
-    * @return void
+    * @param integer $sid
+    * @return PwEntity
     */
-    public function clearSession() {
-        PwSession::clear($this->entity_name);
+    public function clearSession($sid = null) {
+        PwSession::clear($this->entity_name, $sid);
         return $this;
     }
 

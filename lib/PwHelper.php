@@ -1,7 +1,7 @@
 <?php
 
 /**
- * helpers 
+ * PwHelpers 
  *
  * TODO class or global function
  *

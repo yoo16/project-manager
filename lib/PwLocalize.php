@@ -16,11 +16,25 @@ class PwLocalize {
 
     }
 
+    //TODO
+    /**
+     * japanese
+     *
+     * @param string $key
+     * @return string
+     */
     function jp($key) {
         $values = jp_values();
         return $values[$key];
     }
 
+    //TODO
+    /**
+     * english
+     *
+     * @param string $key
+     * @return string
+     */
     function en($key) {
         $values = en_values();
         return $values[$key];
