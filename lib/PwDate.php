@@ -1,12 +1,12 @@
 <?php
 /**
- * DateManager 
+ * PwDate 
  *
  * @author Yohei Yoshikawa
  * @create   
  */
 
-class DateManager {
+class PwDate {
 
     public $from_date;
     public $to_date;
@@ -38,7 +38,7 @@ class DateManager {
 
     static function instance($from_at, $to_at)
     {
-        $date = new DateManager();
+        $date = new PwDate();
         $date->setToAt($to_at);
         $date->setFromAt($from_at);
         return $date;
@@ -49,9 +49,9 @@ class DateManager {
      *
      * @return void
      */
-    function clearAppSession($key = 'app_date') {
+    function clearPwSession($key = 'app_date') {
         if (!$key) $key = 'app_date';
-        AppSession::clearWithKey($key, 'date');
+        PwSession::clearWithKey($key, 'date');
     }
 
     /**
@@ -59,19 +59,19 @@ class DateManager {
      *
      * @return void
      */
-    function storeAppSession($key = 'app_date') {
+    function storePwSession($key = 'app_date') {
         if (!$key) $key = 'app_date';
-        AppSession::setWithKey($key, 'date', $this);
+        PwSession::setWithKey($key, 'date', $this);
     }
 
     /**
      * load session
      *
-     * @return DateManager
+     * @return PwDate
      */
-    function loadAppSession($key = 'app_date') {
+    function loadPwSession($key = 'app_date') {
         if (!$key) $key = 'app_date';
-        $pw_date = AppSession::getWithKey($key, 'date');
+        $pw_date = PwSession::getWithKey($key, 'date');
         if ($pw_date) {
             $this->setFromAt($pw_date->from_at);
             $this->setToAt($pw_date->to_at);
@@ -137,7 +137,7 @@ class DateManager {
         if (!$start_at) return;
         $this->start_at = $start_at;
         $this->start_datetime = strtotime($this->start_at);
-        $this->start_date = DateManager::datetimeToNumber($this->start_at);
+        $this->start_date = PwDate::datetimeToNumber($this->start_at);
     }
 
     /**
@@ -149,7 +149,7 @@ class DateManager {
         if (!$end_at) return;
         $this->end_at = $end_at;
         $this->end_datetime = strtotime($this->end_at);
-        $this->end_date = DateManager::datetimeToNumber($this->end_at);
+        $this->end_date = PwDate::datetimeToNumber($this->end_at);
     }
 
     /**
@@ -215,7 +215,7 @@ class DateManager {
     function setFromAt($from_at) {
         $this->from_at = $from_at;
         $this->from_datetime = strtotime($this->from_at);
-        $this->from_date = DateManager::datetimeToNumber($this->from_at);
+        $this->from_date = PwDate::datetimeToNumber($this->from_at);
     }
 
     /**
@@ -226,7 +226,7 @@ class DateManager {
     function setToAt($to_at) {
         $this->to_at = $to_at;
         $this->to_datetime = strtotime($this->to_at);
-        $this->to_date = DateManager::datetimeToNumber($this->to_at);
+        $this->to_date = PwDate::datetimeToNumber($this->to_at);
     }
 
     /**
@@ -236,7 +236,7 @@ class DateManager {
      */
     function setFromDate($from_date) {
         $this->from_date = $from_date;
-        $this->from_at = DateManager::numberToDatetime($this->from_date);
+        $this->from_at = PwDate::numberToDatetime($this->from_date);
         $this->from_datetime = strtotime($this->from_at);
     }
 
@@ -247,7 +247,7 @@ class DateManager {
      */
     function setToDate($to_at) {
         $this->to_date = $to_at;
-        $this->to_at = DateManager::numberToDatetime($this->to_date);
+        $this->to_at = PwDate::numberToDatetime($this->to_date);
         $this->to_datetime = strtotime($this->to_at);
     }
 
@@ -287,7 +287,7 @@ class DateManager {
     /**
      * limitDate
      *
-     * @return DateManager
+     * @return PwDate
      */
     function limitDate() {
         if ($this->start_datetime && (!$this->from_datetime || $this->from_datetime < $this->start_datetime)) {
@@ -376,7 +376,7 @@ class DateManager {
     function setFromDatetime($from_datetime) {
         $this->from_datetime = $from_datetime;
         $this->from_at = date('Y/m/d H:i', $from_datetime);
-        $this->from_date = DateManager::datetimeToNumber($this->from_at);
+        $this->from_date = PwDate::datetimeToNumber($this->from_at);
     }
 
     /**
@@ -387,7 +387,7 @@ class DateManager {
     function setToDatetime($to_datetime) {
         $this->to_datetime = $to_datetime;
         $this->to_at = date('Y/m/d H:i', $to_datetime);
-        $this->to_date = DateManager::datetimeToNumber($this->to_at);
+        $this->to_date = PwDate::datetimeToNumber($this->to_at);
     }
 
     /**
@@ -401,12 +401,12 @@ class DateManager {
             $interval_string = "-{$interval}{$unit}";
             $this->prev_datetime = strtotime($interval_string, $this->from_datetime);
             $this->prev_at = date('Y/m/d H:i', $this->prev_datetime);
-            $this->prev_date = DateManager::datetimeToNumber($this->prev_at);
+            $this->prev_date = PwDate::datetimeToNumber($this->prev_at);
 
             $interval_string = "+{$interval}{$unit}";
             $this->next_datetime = strtotime($interval_string, $this->from_datetime);
             $this->next_at = date('Y/m/d H:i', $this->next_datetime);
-            $this->next_date = DateManager::datetimeToNumber($this->next_at);
+            $this->next_date = PwDate::datetimeToNumber($this->next_at);
         }
     }
 
@@ -521,9 +521,9 @@ class DateManager {
     }
 
     /**
-    * datetimeから連番
+    * datetime to number
     *
-    * @param String $value
+    * @param string $value
     * @return string
     */
     static function datetimeToNumber($string) {
@@ -573,4 +573,90 @@ class DateManager {
         return $now;
     }
 
+    //TODO
+    //from DatePwHelper functions
+    /**
+     * datetimeFormat
+     *
+     * @param string $value
+     * @param string $separate
+     * @return string
+     */
+    static function datetimeFormat($value, $separate = 's') {
+        if (!$separate) $separate = 's';
+        if ($value) {
+            $format = self::formatter($separate, true);
+            return date($format, strtotime($value));
+        }
+    }
+
+    /**
+     * formatter
+     *
+     * @param string $separate
+     * @param bool $is_time
+     * @return string
+     */
+    static function formatter($separate, $is_time = false) {
+        if (!$separate) $separate = 's';
+        $formatters = self::formatters($separate);
+        $year = $formatters['year'];
+        $month = $formatters['month'];
+        $day = $formatters['day'];
+        if ($is_time) {
+            $format = "Y{$year}m{$month}d{$day} H:i";
+        } else {
+            $format = "Y{$year}m{$month}d{$day}";
+        }
+        return $format;
+    }
+
+    /**
+     * formatters
+     *
+     * @param string $key
+     * @return string
+     */
+    static function formatters($key) {
+        if (!$key) return;
+        $formatters['s'] = array ('year' => '/', 'month' => '/', 'day' => '');
+        $formatters['h'] = array ('year' => '-', 'month' => '-', 'day' => '');
+        $formatters['j'] = array ('year' => '?', 'month' => '?', 'day' => '?');
+        return $formatters[$key];
+    }
+
+    /**
+     * convert string (remove micro second)
+     *
+     * @param string $value
+     * @return string
+     **/
+    static function convertString($value) {
+        preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2}) ?(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?/', $value, $m);
+        if (checkdate($m[2], $m[3], $m[1])) {
+            return sprintf('%4d/%02d/%02d %02d:%02d:%02d', $m[1], $m[2], $m[3], $m[4], $m[5], $m[6]);
+        } else {
+            $time = strtotime($value);
+            if ($time >= 0) return date('Y/m/d H:i:s', $time);
+            return null;
+        }
+    }
+
+    /**
+     * number to string
+     *
+     * @param string $number
+     * @return string
+     **/
+    static function numberToDate($number) {
+        if ($number) {
+            $pattern = "/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})$/";
+            $replacement = "\$1-\$2-\$3 \$4:\$5";
+            $date_str = preg_replace($pattern, $replacement, $number);
+
+            $time = strtotime($date_str);    
+            $date = date("Y/m/d H:i", $time);
+            return $date;
+        }
+    }
 }

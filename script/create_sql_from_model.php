@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
+ * Copyright (c) 2017 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
 echo('-- Create SQL --'.PHP_EOL);
 
 require_once dirname(__FILE__).'/../lib/Controller.php';
-require_once 'PgsqlEntity.php';
+require_once 'PwPgsql.php';
 
-$pgsql = new PgsqlEntity();
+$pgsql = new PwPgsql();
 $sql = $pgsql->createTablesSQLForProject();
 
 if (file_exists(DB_DIR)) {

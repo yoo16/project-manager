@@ -2,13 +2,13 @@
 /**
  * @author  Yohei Yoshikawa
  *
- * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
+ * Copyright (c) 2017 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
 require_once dirname(__FILE__).'/../lib/Controller.php';
-require_once 'PgsqlEntity.php';
+require_once 'PwPgsql.php';
 
-$pgsq_entity = new PgsqlEntity();
+$pgsq_entity = new PwPgsql();
 $schema_sql = 'SELECT version FROM schema_info;';
 $schema_version = $pgsq_entity->fetch_result($schema_sql);
 

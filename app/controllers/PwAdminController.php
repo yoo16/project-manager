@@ -56,7 +56,7 @@ class PwAdminController extends AppController
 
             $admin['name'] = 'Admin';
             $admin['login_name'] = PW_ADMIN_LOGIN_NAME;
-            AppSession::set('pw_admin', $admin);
+            PwSession::set('pw_admin', $admin);
             $this->redirectTo('index');
         } else {
             $this->redirectTo('login');
@@ -90,7 +90,7 @@ class PwAdminController extends AppController
      */
     function log_list()
     {
-        $logger = new ApplicationLogger();
+        $logger = new PwLogger();
         $values = $logger->logFiles();
         $values = json_encode($values);
         echo ($values);
@@ -118,7 +118,7 @@ class PwAdminController extends AppController
     function delete_log()
     {
         $path = LOG_DIR . $_REQUEST['filename'] . '.log';
-        $values['success'] = FileManager::removeFile($path);
+        $values['success'] = PwFile::removeFile($path);
         $values = json_encode($values);
         echo ($values);
         exit;

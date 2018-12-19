@@ -3,9 +3,9 @@
 <form action="<? Tag::init()->php('$this->urlSelfFor(\'update\', $this->pw_params[\'id\'])') ?>" method="post">
   <?= "<? include('form.phtml') ?>" ?>
   <div class="">
-    <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
+    <? Tag::init()->php('PwForm::submit(LABEL_SAVE)') ?>
 
-    <? Tag::init()->php('FormHelper::linkButton("cancel", null, [\'label\' => LABEL_BACK])') ?>
+    <? Tag::init()->php('PwForm::linkButton("cancel", null, [\'label\' => LABEL_BACK])') ?>
 
     <? Tag::init()->php('$this->'."{$values['model']['entity_name']}".'->confirmDelete()') ?>
   </div>

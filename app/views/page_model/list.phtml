@@ -12,7 +12,7 @@
 </div>
 
   <div class="pt-3">
-    <?= FormHelper::linkButton('new', null, ['class' => 'btn btn-primary', 'label' => LABEL_ADD]) ?>
+    <?= PwForm::linkButton('new', null, ['class' => 'btn btn-primary', 'label' => LABEL_ADD]) ?>
     <? include('views/components/lib/sortable.phtml') ?>
   </div>
 
@@ -36,16 +36,16 @@
       <? foreach ($this->page_model->values as $values): ?>
         <tr row-id="<?= $values['id'] ?>">
           <td>
-            <?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?>
+            <?= PwForm::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?>
           </td>
           <td>
             <?= $this->model->values[$values['model_id']]['name'] ?>
           </td>
           <td>
-            <?= FormHelper::activeLabelTag($values['is_fetch_list_values']) ?>
+            <?= PwForm::activeLabelTag($values['is_fetch_list_values']) ?>
           </td>
           <td>
-            <?= FormHelper::activeLabelTag($values['is_request_session']) ?>
+            <?= PwForm::activeLabelTag($values['is_request_session']) ?>
           </td>
         </tr>
         <? endforeach ?>

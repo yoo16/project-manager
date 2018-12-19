@@ -29,7 +29,7 @@ class PublicLocalizeStringController extends AppController {
     * @return void
     */
     function index() {
-        AppSession::clear('posts');
+        PwSession::clear('posts');
         $this->redirectTo(['action' => 'list']);;
     }
 
@@ -40,7 +40,7 @@ class PublicLocalizeStringController extends AppController {
     * @return void
     */
     function action_cancel() {
-        AppSession::clear('posts');
+        PwSession::clear('posts');
         $this->redirectTo(['action' => 'list']);;
     }
 

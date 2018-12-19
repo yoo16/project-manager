@@ -16,8 +16,8 @@
 
     </table>
 
-  <?= FormHelper::submit(LABEL_SAVE) ?>
-  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>  
+  <?= PwForm::submit(LABEL_SAVE) ?>
+  <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>  
     
   <input type="hidden" name="localize_string[project_id]" value="<?= $this->project->value['id'] ?>">
 </form>

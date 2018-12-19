@@ -6,8 +6,8 @@
     <input class="form-control col-5" name="user_project_setting[project_path]" type="text" value="<?= $this->user_project_setting->value['project_path'] ?>">
   </div>
   <div class="">
-    <?= FormHelper::submit(LABEL_UPDATE) ?>
-    <?= FormHelper::linkButton('export_list', LABEL_CLOSE, $this->project->value['id']) ?>
+    <?= PwForm::submit(LABEL_UPDATE) ?>
+    <?= PwForm::linkButton('export_list', LABEL_CLOSE, $this->project->value['id']) ?>
   </div>
 </form>
 

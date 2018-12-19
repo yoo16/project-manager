@@ -3,9 +3,9 @@
 <? include('help.phtml') ?>
 
 <div>
-  <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
+  <?= PwForm::linkModal('#add-window', LABEL_ADD) ?>
   <? include('views/components/lib/sortable.phtml') ?>
-  <?= FormHelper::linkModal('#help-project', 'Help', ['class' => 'btn btn-outline-primary']) ?>
+  <?= PwForm::linkModal('#help-project', 'Help', ['class' => 'btn btn-outline-primary']) ?>
 </div>
 
 <div class="content">

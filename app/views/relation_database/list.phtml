@@ -4,8 +4,8 @@
 
 <div class="">
   <div class="pt-3">
-    <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
-    <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
+    <?= PwForm::linkModal('#add-window', LABEL_ADD) ?>
+    <?= PwForm::hidden('project_id', $this->project->value['id']) ?>
   </div>
 
   <table class="table">
@@ -20,7 +20,7 @@
     <? if ($this->relation_database->values): ?>
     <? foreach ($this->relation_database->values as $relation_database): ?>
     <tr>
-      <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $relation_database['id']) ?></td>
+      <td><?= PwForm::linkButton('edit', LABEL_EDIT, $relation_database['id']) ?></td>
       <td><?= $relation_database['database_name'] ?></td>
       <td><?= $relation_database['database_hostname'] ?></td>
     </tr>

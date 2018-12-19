@@ -7,7 +7,7 @@
 <? endif ?>
 
 <div class="pt-3">
-  <? Tag::init()->php('FormHelper::linkButton(\'new\', null, [\'label\' => LABEL_ADD, \'class\' => \'btn btn-primary\'] )') ?>
+  <? Tag::init()->php('PwForm::linkButton(\'new\', null, [\'label\' => LABEL_ADD, \'class\' => \'btn btn-primary\'] )') ?>
 
   <? Tag::init()->sortbleLink() ?>
 
@@ -32,7 +32,7 @@
   <? Tag::init()->ifs('$this->'.$values['model']['entity_name'].'->values') ?>
   <? Tag::init()->foreachs('$this->'.$values['model']['entity_name'].'->values as $values') ?>
   <tr id="<?= Tag::init()->valuesId() ?>">
-    <td><? Tag::init()->php('FormHelper::linkButton(\'edit\', $values[\'id\'], [\'label\' => LABEL_EDIT])') ?></td>
+    <td><? Tag::init()->php('PwForm::linkButton(\'edit\', $values[\'id\'], [\'label\' => LABEL_EDIT])') ?></td>
 <? foreach ($values['view']['view_item'] as $view_item): ?>
 <? if (!Model::$required_columns[$view_item['name']]): ?>
 <? if ($view_item['page_id']): ?>

@@ -7,9 +7,9 @@
 
 //namespace project_manager;
 
-require_once 'PgsqlEntity.php';
+require_once 'PwPgsql.php';
 
-class _PageFilter extends PgsqlEntity {
+class _PageFilter extends PwPgsql {
 
     public $id_column = 'id';
     public $name = 'page_filters';

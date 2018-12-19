@@ -5,6 +5,6 @@
 </div>
 
 
-<?= FormHelper::submit(LABEL_SAVE) ?>
-<?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+<?= PwForm::submit(LABEL_SAVE) ?>
+<?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
 <input type="hidden" name="view_item_group[view_id]" value="<?= $this->view->value['id'] ?>">

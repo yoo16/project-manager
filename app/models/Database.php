@@ -34,7 +34,7 @@ class Database extends _Database {
     }
 
     function checkProjectManager() {
-        $pgsql_entity = new PgsqlEntity();
+        $pgsql_entity = new PwPgsql();
         $pg_database = $pgsql_entity->pgDatabase();
         if (!$pg_database) {
             return false;
@@ -58,7 +58,7 @@ class Database extends _Database {
         date_default_timezone_set('Asia/Tokyo');
         require BASE_DIR.'/vendor/autoload.php';
 
-        $pgsql_entity = new PgsqlEntity($this->pgInfo());
+        $pgsql_entity = new PwPgsql($this->pgInfo());
         $pg_classes = $pgsql_entity->pgClassesArray();
 
         $file_name = "{$this->value['name']}.xlsx";
@@ -94,7 +94,7 @@ class Database extends _Database {
         $this->sheet->getRowDimension(1)->setRowHeight($this->cell_height);
 
         foreach ($pg_classes as $index => $pg_class) {
-            $is_numbering = PgsqlEntity::isNumberingName($pg_class['relname']);
+            $is_numbering = PwPgsql::isNumberingName($pg_class['relname']);
             if (!$is_numbering) {
                 $model = DB::model('Model')->where("name = '{$pg_class['relname']}'")->one();
                 $pg_classes[$index]['model'] = $model;
@@ -118,7 +118,7 @@ class Database extends _Database {
         $this->sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(2))->setWidth(100);
 
         foreach ($pg_classes as $pg_class) {
-            $is_numbering = PgsqlEntity::isNumberingName($pg_class['relname']);
+            $is_numbering = PwPgsql::isNumberingName($pg_class['relname']);
             if (!$is_numbering) {
                 $this->sheet_name = $this->excelSheetName($pg_class['relname']);
                 $this->sheet = $book->createSheet()->setTitle($this->sheet_name);
@@ -285,12 +285,12 @@ class Database extends _Database {
 
             foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
                 foreach ($pg_constraints as $pg_constraint) {
-                    $is_numbering_constraint = PgsqlEntity::isNumberingName($pg_constraint['conname']);
+                    $is_numbering_constraint = PwPgsql::isNumberingName($pg_constraint['conname']);
                     if (!$is_numbering_constraint) {
                         $row++;
                         if ($index == 0) {
                             $this->sheet->setCellValueByColumnAndRow(0, $row, $pg_constraint['conname']);
-                            $this->sheet->setCellValueByColumnAndRow(1, $row, PgsqlEntity::$constraint_keys[$pg_constraint['contype']]);
+                            $this->sheet->setCellValueByColumnAndRow(1, $row, PwPgsql::$constraint_keys[$pg_constraint['contype']]);
                         }
                         $this->sheet->setCellValueByColumnAndRow(2, $row, $pg_constraint['attname']);
 
@@ -305,13 +305,13 @@ class Database extends _Database {
     }
 
     /**
-     * PgsqlEntity
+     * PwPgsql
      *
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function pgsql() {
         if ($pg_info = $this->pgInfo()) {
-            return new PgsqlEntity($pg_info);
+            return new PwPgsql($pg_info);
         }
     }
 

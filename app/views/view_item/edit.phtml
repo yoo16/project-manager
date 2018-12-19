@@ -153,8 +153,8 @@
 
   </table>
 
-  <?= FormHelper::submit(LABEL_SAVE) ?>
-  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+  <?= PwForm::submit(LABEL_SAVE) ?>
+  <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
 </form>
 <form action="<?= $this->urlFor(['action' => 'delete', 'id' => $this->view_item->value['id']]) ?>" method="post">
   <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">

@@ -30,7 +30,7 @@ class Tag {
             $tag = '$this->csv_options'."['{$view_item['csv']}'][{$entity}]";
         } else {
             if ($attribute['type'] == 'bool') {
-                $tag = "FormHelper::activeLabelTag({$entity})";
+                $tag = "PwForm::activeLabelTag({$entity})";
             } else {
                 $tag = $entity;
             }
@@ -69,7 +69,7 @@ class Tag {
     function tableItemUrlForAttribute($attribute, $page, $model, $view_item, $params = null) {
         $entity = '$values'."['{$attribute['name']}']";
         if ($attribute['type'] == 'bool') {
-            $label = "FormHelper::activeLabelTag({$entity})";
+            $label = "PwForm::activeLabelTag({$entity})";
         } else if ($view_item['localize_string_id']) {
             //TODO
             $localize_string = DB::model('LocalizeString')->fetch($view_item['localize_string_id']);

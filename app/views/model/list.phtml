@@ -7,10 +7,10 @@
 <div class="">
   <div class="pt-3">
     <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'sync_db']) ?>" method="post">
-      <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
-      <?= FormHelper::submit('Import from DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you import from DB?']) ?>
-      <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
-      <?= FormHelper::linkModal('#help-model', 'Help', ['class' => 'btn btn-outline-primary']) ?>
+      <?= PwForm::linkModal('#add-window', LABEL_ADD) ?>
+      <?= PwForm::submit('Import from DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you import from DB?']) ?>
+      <?= PwForm::hidden('project_id', $this->project->value['id']) ?>
+      <?= PwForm::linkModal('#help-model', 'Help', ['class' => 'btn btn-outline-primary']) ?>
     </form>
   </div>
 
@@ -22,7 +22,7 @@
         <th></th>
         <th>Table Name</th>
         <th>
-          <div>Entity Name</div>
+          <div>PwEntity Name</div>
           <div>Class Name</div>
         </th>
         <th>Controller</th>
@@ -49,7 +49,7 @@
               ?>
           &nbsp;
           <? if ($model['is_lock']): ?>
-          <?= TagHelper::iconTag('lock') ?>
+          <?= PwTag::iconTag('lock') ?>
           <? endif ?>
         </div>
         <div>
@@ -72,8 +72,8 @@
       </td>
       <td>
         <form action="<?= $this->urlFor(['controller' => 'page', 'action' => 'create_page_from_model']) ?>" method="post">
-          <?= FormHelper::button(LABEL_CREATE, ['class' => 'btn btn-sm btn-primary confirm-dialog', 'message' => "Create page?"]) ?>
-          <?= FormHelper::hidden('model_id', $model['id']) ?>
+          <?= PwForm::button(LABEL_CREATE, ['class' => 'btn btn-sm btn-primary confirm-dialog', 'message' => "Create page?"]) ?>
+          <?= PwForm::hidden('model_id', $model['id']) ?>
         </form>
       </td>
       <td>
@@ -88,8 +88,8 @@
         <? endif ?>
 
         <? if ($model['label'] != $model['pg_class']['comment']): ?>
-        <?= FormHelper::badgeTag('different label', null, 'danger') ?>
-        <?= FormHelper::badgeTag($model['pg_class']['comment'], null, 'default') ?>
+        <?= PwForm::badgeTag('different label', null, 'danger') ?>
+        <?= PwForm::badgeTag($model['pg_class']['comment'], null, 'default') ?>
         <? endif ?>
       </td>
       <td>

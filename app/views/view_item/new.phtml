@@ -88,7 +88,7 @@
 
   <input type="hidden" name="view_item[view_id]" value="<?= $this->view->value['id'] ?>">
 
-  <?= FormHelper::submit(LABEL_SAVE) ?>
-  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>  
+  <?= PwForm::submit(LABEL_SAVE) ?>
+  <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>  
 </form>
 

@@ -45,7 +45,7 @@ class Attribute extends _Attribute {
             if (mb_substr($attribute['name'], -3) == '_id') {
                 $length = mb_strlen($attribute['name']);
                 $attribute_name = mb_substr($attribute['name'], 0, $length - 3);
-                $attribute_name = FileManager::singularToPlural($attribute_name);
+                $attribute_name = PwFile::singularToPlural($attribute_name);
                 $attribute_name = strtoupper($attribute_name);
                 $label = "LABEL_{$attribute_name}";
             } else {

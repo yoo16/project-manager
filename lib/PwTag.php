@@ -1,11 +1,11 @@
 <?php
 /**
- * TagHelper
+ * PwTag
  *
  * @copyright 2017 copyright Yohei Yoshikawa (http://yoo-s.com)
  */
 
-class TagHelper {
+class PwTag {
 
     /**
      * base url
@@ -56,9 +56,9 @@ class TagHelper {
      * @return string
      */
     static function fileUrl($dir_name, $name, $ext) {
-        $base = TagHelper::baseUrl();
+        $base = PwTag::baseUrl();
         $url = "{$base}{$dir_name}/{$name}.{$ext}";
-        $url = TagHelper::serialUrl($url);
+        $url = PwTag::serialUrl($url);
         return $url;
     }
 
@@ -95,7 +95,7 @@ class TagHelper {
      */
     static function javascript($name, $dir_name = 'javascripts', $ext = 'js') {
         if (!$name) return;
-        $href = TagHelper::fileUrl($dir_name, $name, $ext);
+        $href = PwTag::fileUrl($dir_name, $name, $ext);
         return "<script type=\"text/javascript\" src=\"{$href}\"></script>\n";
     }
 
@@ -109,7 +109,7 @@ class TagHelper {
      */
     static function javascriptController($name, $dir_name = 'javascripts/controllers', $ext = 'js') {
         if (!$name) return;
-        $href = TagHelper::fileUrl($dir_name, $name, $ext);
+        $href = PwTag::fileUrl($dir_name, $name, $ext);
         $file_name = "{$name}.{$ext}";
         $path = BASE_DIR."public/javascripts/controllers/{$file_name}";
         if (file_exists($path)) {
@@ -127,10 +127,10 @@ class TagHelper {
      * @return string
      */
     static function stylesheet($name, $attributes = null, $dir_name = 'stylesheets', $ext = 'css') {
-        $attributes['href'] = TagHelper::fileUrl($dir_name, $name, $ext);
+        $attributes['href'] = PwTag::fileUrl($dir_name, $name, $ext);
         $attributes['rel'] = 'stylesheet';
         $attributes['type'] = 'text/css';
-        return FormHelper::singleTag('link', $attributes);
+        return PwForm::singleTag('link', $attributes);
     }
 
     /**
@@ -144,11 +144,11 @@ class TagHelper {
      */
     static function stylesheetPrint($name, $attributes = null, $dir_name = 'stylesheets', $ext = 'css') {
         if (!$name) return;
-        $href = TagHelper::fileUrl($dir_name, $name, $ext);
+        $href = PwTag::fileUrl($dir_name, $name, $ext);
         $attributes['rel'] = 'stylesheet';
         $attributes['type'] = 'text/css';
         $attributes['media'] = 'print';
-        return  FormHelper::singleTag('link', $attributes);
+        return  PwForm::singleTag('link', $attributes);
     }
 
     /**
@@ -188,7 +188,7 @@ class TagHelper {
     */
     static function color($color) {
         if ($color) {
-            $color = TagHelper::convertColorForSharp($color);
+            $color = PwTag::convertColorForSharp($color);
             $value = "<span class=\"badge p-2\" style=\"background-color: {$color}\">{$color}</span>";
             return $value;
         }
@@ -257,17 +257,17 @@ class TagHelper {
             if ($params['selected_key'] && $params['selected_key'] == $params['selected_value']) $params['class'].= ' active';
         }
         if ($params['selected_controller'] && $params['selected_action']) {
-            $params['class'].= TagHelper::actionActive($params['selected_controller'], $params['selected_action']);
+            $params['class'].= PwTag::actionActive($params['selected_controller'], $params['selected_action']);
         }
         if ($params['menu_group']) {
             $controller = $GLOBALS['controller'];
             if ($controller && $controller->menu_group) {
-                $params['class'].= TagHelper::classActive($controller->menu_group, $params['menu_group']);
+                $params['class'].= PwTag::classActive($controller->menu_group, $params['menu_group']);
             }
         }
 
-        $attribute = TagHelper::attribute($params);
-        if (isset($params['icon_name'])) $icon_tag = TagHelper::iconTag($params['icon_name']);
+        $attribute = PwTag::attribute($params);
+        if (isset($params['icon_name'])) $icon_tag = PwTag::iconTag($params['icon_name']);
         $tag = "<a {$attribute}>{$icon_tag}{$params['label']}</a>";
         return $tag;
     }
@@ -497,9 +497,9 @@ class TagHelper {
     static function button($params)
     {
         $label = $params['label'];
-        $attribute = TagHelper::attribute($params);
+        $attribute = PwTag::attribute($params);
         if (!$params['class']) $params['class'] = 'btn btn-outline-primary';
-        if (isset($params['icon_name'])) $icon_tag = TagHelper::iconTag($params['icon_name']);
+        if (isset($params['icon_name'])) $icon_tag = PwTag::iconTag($params['icon_name']);
         $tag = "<button {$attribute} class=\"{$params['class']}\">{$icon_tag}{$label}</button>";
         return $tag;
     }

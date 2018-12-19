@@ -2,14 +2,14 @@
 /**
  * Controller 
  *
- * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
 require_once "PwSetting.php";
 
 PwSetting::load();
 Controller::loadLib();
-ApplicationLoader::autoloadModel();
+PwLoader::autoloadModel();
 PwSetting::loadApplication();
 
 class Controller extends RuntimeException {
@@ -39,23 +39,23 @@ class Controller extends RuntimeException {
     public $pw_login_controller = 'login';
 
     static $libs = [
-        'Helper',
+        'PwHelper',
         'DB',
-        'SendMail',
-        'CsvLite',
-        'DataMigration',
-        'DateManager',
-        'FileManager',
-        'FtpLite',
-        'FormHelper',
-        'TagHelper',
-        'DateHelper',
-        'AppSession',
-        'ApplicationLocalize',
-        'ApplicationLoader',
-        'ApplicationLogger',
-        'BenchmarkTimer',
-        'ErrorMessage',
+        'PwMail',
+        'PwCsv',
+        'PwMigration',
+        'PwDate',
+        'PwFile',
+        'PwFtp',
+        'PwForm',
+        'PwTag',
+        'PwDate',
+        'PwSession',
+        'PwLocalize',
+        'PwLoader',
+        'PwLogger',
+        'PwTimer',
+        'PwError',
         'PwColor',
         ];
 
@@ -242,8 +242,8 @@ class Controller extends RuntimeException {
                 if (isset($_REQUEST['lang'])) $lang = $_REQUEST['lang'];
                 if (isset($_REQUEST['is_change_lang'])) $is_change_lang = $_REQUEST['is_change_lang'];
                 
-                if ($lang && $is_change_lang) AppSession::setWithKey('app', 'lang', $lang);
-                $controller->lang = ApplicationLocalize::load($lang);
+                if ($lang && $is_change_lang) PwSession::setWithKey('app', 'lang', $lang);
+                $controller->lang = PwLocalize::load($lang);
                 $controller->run($params);
             } catch (Throwable $t) {
                 $errors = Controller::throwErrors($t);
@@ -286,7 +286,7 @@ class Controller extends RuntimeException {
         $this->errors = $this->getErrors();
         $this->flushErrors();
         //$this->loadDefaultCsvOptions($this->lang, true);
-        $this->csv_options = ApplicationLocalize::loadCsvOptions($this->lang);
+        $this->csv_options = PwLocalize::loadCsvOptions($this->lang);
 
         try {
             $this->_invoke();
@@ -537,7 +537,7 @@ class Controller extends RuntimeException {
      * @return void
      */
     public function downloadContents($file_name, $contents) {
-        if (FileManager::isIE()) $file_name = mb_convert_encoding($file_name, 'SJIS', 'UTF-8');
+        if (PwFile::isIE()) $file_name = mb_convert_encoding($file_name, 'SJIS', 'UTF-8');
         header("Content-type: application/octet-stream; name=\"{$file_name}\"");
         header("Content-Disposition: Attachment; filename=\"{$file_name}\""); 
         header('Pragma: private');
@@ -567,15 +567,15 @@ class Controller extends RuntimeException {
      * @return string
      */
     function linkJs($params = null) {
-        if ($params['is_use_selected']) $params['class'].= FormHelper::linkActive($controller, $this->name);
-        if ($params['is_use_action_selected']) $params['class'].= TagHelper::actionActive($controller, $action);
+        if ($params['is_use_selected']) $params['class'].= PwForm::linkActive($controller, $this->name);
+        if ($params['is_use_action_selected']) $params['class'].= PwTag::actionActive($controller, $action);
         unset($params['is_use_selected']);
         unset($params['is_use_action_selected']);
 
         $params['href'] = '#';
         if ($params['id']) $params['href'].= $params['id'];
 
-        $tag = TagHelper::a($params);
+        $tag = PwTag::a($params);
         return $tag;
     }
 
@@ -601,13 +601,13 @@ class Controller extends RuntimeException {
      */
     function linkTo($params, $html_params = null) {
         if (!$html_params['label']) $html_params['label'] = 'Link';
-        if ($html_params['is_use_selected']) $html_params['class'].= FormHelper::linkActive($params['controller'], $this->name);
-        if ($html_params['is_use_action_selected']) $html_params['class'].= TagHelper::actionActive($params['controller'], $action);
+        if ($html_params['is_use_selected']) $html_params['class'].= PwForm::linkActive($params['controller'], $this->name);
+        if ($html_params['is_use_action_selected']) $html_params['class'].= PwTag::actionActive($params['controller'], $action);
         unset($html_params['is_use_selected']);
         unset($html_params['is_use_action_selected']);
 
         $html_params['href'] = $this->urlFor($params, $html_params['http_params']);
-        $tag = TagHelper::a($html_params);
+        $tag = PwTag::a($html_params);
         return $tag;
     }
 
@@ -838,8 +838,8 @@ class Controller extends RuntimeException {
      * @return void
      */
     function loadPwPosts() {
-        if ($_POST) AppSession::set('pw_posts', $_POST);
-        $this->pw_posts = AppSession::get('pw_posts');
+        if ($_POST) PwSession::set('pw_posts', $_POST);
+        $this->pw_posts = PwSession::get('pw_posts');
     }
 
 
@@ -849,7 +849,7 @@ class Controller extends RuntimeException {
      * @return void
      */
     function clearPwPosts() {
-        AppSession::clear('pw_posts');
+        PwSession::clear('pw_posts');
         unset($this->pw_posts);
     }
 
@@ -880,10 +880,10 @@ class Controller extends RuntimeException {
      */
     function modelForSession($model_name, $conditions = null) {
         $instance = DB::model($model_name);
-        $instance->values = AppSession::getWithKey('app', $instance->entity_name);
+        $instance->values = PwSession::getWithKey('app', $instance->entity_name);
         if (!$instance->values) {
             $instance->idIndex()->wheres($conditions)->all();
-            AppSession::setWithKey('app', $instance->entity_name, $instance->values);
+            PwSession::setWithKey('app', $instance->entity_name, $instance->values);
         }
         return $instance;
     }
@@ -896,7 +896,7 @@ class Controller extends RuntimeException {
      */
     function clearModelForSession($model_name) {
         $instance = DB::model($model_name);
-        AppSession::clearWithKey('app', $instance->entity_name);
+        PwSession::clearWithKey('app', $instance->entity_name);
     }
 
     /**
@@ -907,10 +907,10 @@ class Controller extends RuntimeException {
      */
     function addErrorByModel($model) {
         if ($key = $model->name) {
-            $errors = AppSession::getWithKey('errors', $this->name);
+            $errors = PwSession::getWithKey('errors', $this->name);
             $errors[$key] = $model->errors;
-            AppSession::setWithKey('errors', $this->name, $errors);
-            $errors = AppSession::getWithKey('errors', $this->name);
+            PwSession::setWithKey('errors', $this->name, $errors);
+            $errors = PwSession::getWithKey('errors', $this->name);
         }
     }
 
@@ -921,9 +921,9 @@ class Controller extends RuntimeException {
      * @return void
      */
     function addError($key, $values) {
-        $errors = AppSession::getWithKey('errors', $this->name);
+        $errors = PwSession::getWithKey('errors', $this->name);
         $errors[$key] = $values;
-        AppSession::setWithKey('errors', $this->name, $errors);
+        PwSession::setWithKey('errors', $this->name, $errors);
     }
 
     /**
@@ -933,7 +933,7 @@ class Controller extends RuntimeException {
      * @return void
      */
     function setErrors($errors) {
-        AppSession::setWithKey('errors', $this->name, $errors);
+        PwSession::setWithKey('errors', $this->name, $errors);
     }
 
     /**
@@ -942,7 +942,7 @@ class Controller extends RuntimeException {
      * @return array
      */
     function getErrors() {
-        return AppSession::getWithKey('errors', $this->name);
+        return PwSession::getWithKey('errors', $this->name);
     }
 
     /**
@@ -951,7 +951,7 @@ class Controller extends RuntimeException {
      * @return array
      */
     function flushErrors() {
-        return AppSession::clearWithKey('errors', $this->name);
+        return PwSession::clearWithKey('errors', $this->name);
     }
 
     /**
@@ -962,7 +962,7 @@ class Controller extends RuntimeException {
      */
     function getSessions($key) {
         if (!$this->session_name) return;
-        return AppSession::getWithKey($this->session_name, $key); 
+        return PwSession::getWithKey($this->session_name, $key); 
     }
 
     /**
@@ -974,7 +974,7 @@ class Controller extends RuntimeException {
      */
     function setSessions($key, $values) {
         if (!$this->session_name) return;
-        AppSession::setWithKey($this->session_name, $key, $values); 
+        PwSession::setWithKey($this->session_name, $key, $values); 
     }
 
     /**
@@ -985,7 +985,7 @@ class Controller extends RuntimeException {
      */
     function clearSessions($key) {
         if (!$this->session_name) return;
-        AppSession::clearWithKey($this->session_name, $key); 
+        PwSession::clearWithKey($this->session_name, $key); 
     }
 
     /**
@@ -995,7 +995,7 @@ class Controller extends RuntimeException {
      */
     function flushSessions() {
         if (!$this->session_name) return;
-        AppSession::flushWithKey($this->session_name);
+        PwSession::flushWithKey($this->session_name);
     }
 
     /**
@@ -1018,7 +1018,7 @@ class Controller extends RuntimeException {
      * @return void
      */
     function loadDefaultCsvOptions($lang = null) {
-        $this->csv_options = ApplicationLocalize::loadCsvOptions($lang);
+        $this->csv_options = PwLocalize::loadCsvOptions($lang);
     }
 
     /**
@@ -1054,9 +1054,9 @@ class Controller extends RuntimeException {
             foreach ($this->session_request_columns as $session_request_column) {
                 if ($this->name) {
                     $this->session_name = "{$this->name}_controller";
-                    $this->$session_request_column = AppSession::loadWithKey($this->session_name, $session_request_column, null, $this->pw_multi_sid);
+                    $this->$session_request_column = PwSession::loadWithKey($this->session_name, $session_request_column, null, $this->pw_multi_sid);
                 } else {
-                    $this->$session_request_column = AppSession::load($session_request_column, null, $this->pw_multi_sid);
+                    $this->$session_request_column = PwSession::load($session_request_column, null, $this->pw_multi_sid);
                 }
                 $this->pw_session_params[$session_request_column] = $this->$session_request_column;
             }
@@ -1074,9 +1074,9 @@ class Controller extends RuntimeException {
             foreach ($this->session_request_columns as $session_request_column) {
                 if ($this->name) {
                     $this->session_name = "{$this->name}_controller";
-                    AppSession::clearWithKey($this->session_name, $session_request_column, $this->pw_multi_sid);
+                    PwSession::clearWithKey($this->session_name, $session_request_column, $this->pw_multi_sid);
                 } else {
-                    AppSession::clear($session_request_column, $this->pw_multi_sid);
+                    PwSession::clear($session_request_column, $this->pw_multi_sid);
                 }
                 unset($this->$session_request_column);
             }
@@ -1156,7 +1156,7 @@ class Controller extends RuntimeException {
      * @return string
      */
     static function csvValues($csv_name, $lang = 'ja') {
-        $csv_list = ApplicationLocalize::loadCsvOptions($lang);
+        $csv_list = PwLocalize::loadCsvOptions($lang);
         $values = $csv_list[$csv_name];
         return $values;
     }
@@ -1169,7 +1169,7 @@ class Controller extends RuntimeException {
      * @return string
      */
     static function csvValue($csv_name, $key, $lang = 'ja') {
-        $csv_list = ApplicationLocalize::loadCsvOptions($lang);
+        $csv_list = PwLocalize::loadCsvOptions($lang);
         $value = $csv_list[$csv_name][$key];
         return $value;
     }
@@ -1215,7 +1215,7 @@ class Controller extends RuntimeException {
         if (in_array($action, $this->pw_login_escapes)) return;
         if (!$this->auth_model) exit('Not setting auth_model');
         if (!class_exists($this->auth_model)) exit('Not found auth_model');
-        $this->pw_auth = AppSession::getWithKey('pw_auth', DB::model($this->auth_model)->entity_name);
+        $this->pw_auth = PwSession::getWithKey('pw_auth', DB::model($this->auth_model)->entity_name);
 
         if (!$this->pw_auth->value['id']) {
             $this->redirectTo(['controller' => 'login']);
@@ -1233,7 +1233,7 @@ class Controller extends RuntimeException {
         if (in_array($action, $this->pw_admin_escapes)) {
             return;
         }
-        $this->pw_admin = AppSession::get('pw_admin');
+        $this->pw_admin = PwSession::get('pw_admin');
         if (!$this->pw_admin) {
             $uri = "{$this->pw_admin_controller}/login";
             $this->redirectTo($uri);
@@ -1255,7 +1255,7 @@ class Controller extends RuntimeException {
     /**
      * auth
      *
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function pwAuth() {
         if (!$this->auth_controller) return;
@@ -1275,7 +1275,7 @@ class Controller extends RuntimeException {
      */
     function pwLogout($uri = null)
     {
-        AppSession::flush();
+        PwSession::flush();
         $params['lang'] = $this->lang;
         $params['is_change_lang'] = 1;
         $this->redirectTo($uri, null, $params);

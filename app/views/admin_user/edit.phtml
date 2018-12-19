@@ -23,12 +23,12 @@
 
   <div class="form-group">
     <label for="recipient-name" class="form-control-label"><?= LABEL_GENDER ?></label>
-    <?= FormHelper::genderRadio($this->forms['gender'], $this->user['gender']); ?>
+    <?= PwForm::genderRadio($this->forms['gender'], $this->user['gender']); ?>
   </div>
 
   <div class="form-group">
     <label for="recipient-name" class="form-control-label"><?= LABEL_BIRTHDAY ?></label>
-    <?= FormHelper::selectBirthday($this->forms['birthday_at'], $this->user['birthday_at']); ?>
+    <?= PwForm::selectBirthday($this->forms['birthday_at'], $this->user['birthday_at']); ?>
   </div>
 
 </div>

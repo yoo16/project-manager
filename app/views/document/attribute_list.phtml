@@ -3,7 +3,7 @@
 <div class="card">
   <h4 class="card-header">
   <?= $this->model->value['name'] ?> <label class="badge badge-pill badge-info"><?= $this->pg_class['pg_class_id'] ?></label>
-  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+  <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
   </h4>
 
   <div class="card-body">
@@ -21,7 +21,7 @@
         <? foreach ($this->attribute->values as $attribute): ?>
         <tr>
           <td>
-            <? if (!Model::$required_columns[$attribute['name']]): ?><?= FormHelper::linkButton('edit', LABEL_EDIT, $attribute['id']) ?><? endif ?>
+            <? if (!Model::$required_columns[$attribute['name']]): ?><?= PwForm::linkButton('edit', LABEL_EDIT, $attribute['id']) ?><? endif ?>
           </td>
 
           <td>
@@ -37,17 +37,17 @@
           <form method="post" action="<?= $this->urlFor('update_attribute', $attribute['id']) ?>">
             <div class="row">
              <div class="input-group">
-               <?= FormHelper::text('attribute[label]', $attribute['label'], ['class' => 'form-control form-control-sm']) ?>
-               <span class="input-group-btn"><?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?></span>
+               <?= PwForm::text('attribute[label]', $attribute['label'], ['class' => 'form-control form-control-sm']) ?>
+               <span class="input-group-btn"><?= PwForm::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?></span>
              </div>
            </div>
             <div class="row">
              <div class="input-group">
-               <?= FormHelper::textarea('attribute[note]', $attribute['note'], ['class' => 'form-control', 'rows' => 3]) ?>
+               <?= PwForm::textarea('attribute[note]', $attribute['note'], ['class' => 'form-control', 'rows' => 3]) ?>
              </div>
            </div>
-           <?= FormHelper::hidden('pg_class_id', $attribute['pg_attribute']['pg_class_id']) ?>
-           <?= FormHelper::hidden('database_id', $this->database->value['id']) ?>
+           <?= PwForm::hidden('pg_class_id', $attribute['pg_attribute']['pg_class_id']) ?>
+           <?= PwForm::hidden('database_id', $this->database->value['id']) ?>
          </form>
        </td>
 

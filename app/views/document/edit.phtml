@@ -24,8 +24,8 @@
         <?= $this->model->formTextarea('note') ?>
       </div> 
       
-      <?= FormHelper::submit(LABEL_UPDATE) ?>
-      <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+      <?= PwForm::submit(LABEL_UPDATE) ?>
+      <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
     </form>
 
     <?= $this->model->confirmDelete() ?>

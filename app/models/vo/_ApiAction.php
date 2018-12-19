@@ -7,9 +7,9 @@
 
 //namespace project_manager;
 
-require_once 'PgsqlEntity.php';
+require_once 'PwPgsql.php';
 
-class _ApiAction extends PgsqlEntity {
+class _ApiAction extends PwPgsql {
 
     public $id_column = 'id';
     public $name = 'api_actions';

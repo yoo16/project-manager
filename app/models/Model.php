@@ -55,8 +55,8 @@ class Model extends _Model {
                                                    ->all()
                                                    ->values;
                 foreach ($attributes as $attribute) {
-                    if ($model['pg_class_id'] && Entity::isForeignColumnName($attribute['name'])) {
-                        $foreign_table_name = Entity::foreignTableByColumnName($attribute['name']);
+                    if ($model['pg_class_id'] && PwEntity::isForeignColumnName($attribute['name'])) {
+                        $foreign_table_name = PwEntity::foreignTableByColumnName($attribute['name']);
                         $foreign_pg_class = $pgsql->pgClassByRelname($foreign_table_name);
 
                         $fk_model = DB::model('Model')
@@ -116,7 +116,7 @@ class Model extends _Model {
                                                    ->all()
                                                    ->values;
                 foreach ($attributes as $attribute) {
-                    if ($attribute['fk_attribute_id'] && $model['pg_class_id'] && Entity::isForeignColumnName($attribute['name'])) {
+                    if ($attribute['fk_attribute_id'] && $model['pg_class_id'] && PwEntity::isForeignColumnName($attribute['name'])) {
                         $pg_class = $pgsql->pgClassByRelname($model['name']);
                         $pg_constraints = $pgsql->pgConstraints($pg_class['pg_class_id'], 'f');
 
@@ -264,8 +264,8 @@ class Model extends _Model {
      */
     static function localFilePath($model) {
         if (!$model['name']) return;
-        $name = FileManager::pluralToSingular($model['name']);
-        $file_name = FileManager::phpClassName($name).EXT_PHP;
+        $name = PwFile::pluralToSingular($model['name']);
+        $file_name = PwFile::phpClassName($name).EXT_PHP;
         $path = MODEL_DIR.$file_name;
         return $path;
     }
@@ -282,8 +282,8 @@ class Model extends _Model {
         if (!$model['name']) return;
         if (!file_exists($user_project_setting['project_path'])) return;
 
-        $name = FileManager::pluralToSingular($model['name']);
-        $file_name = FileManager::phpClassName($name).EXT_PHP;
+        $name = PwFile::pluralToSingular($model['name']);
+        $file_name = PwFile::phpClassName($name).EXT_PHP;
         $path = $user_project_setting['project_path']."app/models/{$file_name}";
         return $path;
     }
@@ -300,8 +300,8 @@ class Model extends _Model {
         if (!$model['name']) return;
         if (!file_exists($user_project_setting['project_path'])) return;
 
-        $name = FileManager::pluralToSingular($model['name']);
-        $file_name = FileManager::phpClassName($name).EXT_PHP;
+        $name = PwFile::pluralToSingular($model['name']);
+        $file_name = PwFile::phpClassName($name).EXT_PHP;
         $path = $user_project_setting['project_path']."app/models/vo/_{$file_name}";
         return $path;
     }
@@ -403,7 +403,7 @@ class Model extends _Model {
             $propaties[] = "'old_name' => '{$attribute['old_name']}'";
         }
         if (isset($attribute['default_value'])) {
-            if (in_array($attribute['type'], PgsqlEntity::$number_types)) {
+            if (in_array($attribute['type'], PwPgsql::$number_types)) {
                 if (is_numeric($attribute['default_value'])) {
                     $propaties[] = "'default' => {$attribute['default_value']}";
                 }
@@ -441,7 +441,7 @@ class Model extends _Model {
             $propaties[] = "'old_name': '{$attribute['old_name']}'";
         }
         if (isset($attribute['default_value'])) {
-            if (in_array($attribute['type'], PgsqlEntity::$number_types)) {
+            if (in_array($attribute['type'], PwPgsql::$number_types)) {
                 if (is_numeric($attribute['default_value'])) {
                     $propaties[] = "'default': {$attribute['default_value']}";
                 }
@@ -473,7 +473,7 @@ class Model extends _Model {
         if (!$this->value['id']) return;
 
         //update pg_class_id
-        $pgsql_entity = new PgsqlEntity($database->pgInfo());
+        $pgsql_entity = new PwPgsql($database->pgInfo());
         $pg_class = $pgsql_entity->pgClassByRelname($this->value['name']);
 
         //create table
@@ -491,7 +491,7 @@ class Model extends _Model {
                 $columns[$value['name']] = $column;
             }
         }
-        $pgsql_entity = new PgsqlEntity($database->pgInfo());
+        $pgsql_entity = new PwPgsql($database->pgInfo());
         $create_sql = $pgsql_entity->createTableSqlByName($this->value['name'], $columns);
         if ($create_sql) $result = $pgsql_entity->query($create_sql);
 

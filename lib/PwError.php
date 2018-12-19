@@ -6,7 +6,7 @@
  * @return String
  */
 
-class ErrorMessage {
+class PwError {
     /**
      * エラー
      *
@@ -14,7 +14,7 @@ class ErrorMessage {
      * @return String
      */
     static function display($values, $params, $model) {
-        return ErrorMessage::get($values, $params, $model);
+        return PwError::get($values, $params, $model);
     }
 
     /**
@@ -36,7 +36,7 @@ class ErrorMessage {
      * @return String
      */
     static function get($values, $params, $model) {
-        $messages = ErrorMessage::defaultMessage();
+        $messages = PwError::defaultMessage();
         $column = $values['column'];
         $message = $values['message'];
 

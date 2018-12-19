@@ -1,10 +1,10 @@
 <?php
 /**
- * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
+ * Copyright (c) 2017 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
 require_once dirname(__FILE__).'/../lib/setting.php';
-require_once 'PgsqlEntity.php';
+require_once 'PwPgsql.php';
 
 $schema_version = $argv[1];
 
@@ -13,7 +13,7 @@ if (!is_numeric($schema_version)) {
     return;
 }
 
-$pgsq_entity = new PgsqlEntity();
+$pgsq_entity = new PwPgsql();
 $schema_sql = 'SELECT version FROM schema_info;';
 $current_version = (int) $pgsq_entity->fetch_result($schema_sql);
 

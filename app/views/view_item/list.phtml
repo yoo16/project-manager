@@ -1,7 +1,7 @@
 <? include('_header.phtml') ?>
 
 <div class="pt-3">
-  <?= FormHelper::linkButton(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
+  <?= PwForm::linkButton(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
 
   <? include('views/components/lib/sortable.phtml') ?>
 
@@ -97,7 +97,7 @@
           <? endif ?>
         </div>
         <div>
-          <?= FormHelper::activeLabelTag($view_item['css_class']) ?>
+          <?= PwForm::activeLabelTag($view_item['css_class']) ?>
         </div>
       </td>
       <td>
@@ -122,8 +122,8 @@
 
       <td>
         <form action="<?= $this->urlFor(['action' => 'delete']) ?>" method="post">
-          <?= FormHelper::submit(LABEL_DELETE, ['class' => 'btn btn-sm btn-danger confim-dialog', 'message' => 'Delete Topic?']) ?>
-          <?= FormHelper::hidden('id', $view_item['id']) ?>
+          <?= PwForm::submit(LABEL_DELETE, ['class' => 'btn btn-sm btn-danger confim-dialog', 'message' => 'Delete Topic?']) ?>
+          <?= PwForm::hidden('id', $view_item['id']) ?>
         </form>
       </td>
     </tr>
@@ -143,12 +143,12 @@
 
   <? if ($this->page->model->attribute->values): ?>
   <? foreach ($this->page->model->attribute->values as $view_item): ?>
-    <? if (!in_array($view_item['name'], Entity::$app_columns)): ?>
+    <? if (!in_array($view_item['name'], PwEntity::$app_columns)): ?>
   <tr>
     <td>
       <form action="<?= $this->urlFor(['action' => 'add_for_attribute']) ?>" method="post">
-        <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-sm btn-primary']) ?>
-        <?= FormHelper::hidden('view_item[attribute_id]', $view_item['id']) ?>
+        <?= PwForm::submit(LABEL_ADD, ['class' => 'btn btn-sm btn-primary']) ?>
+        <?= PwForm::hidden('view_item[attribute_id]', $view_item['id']) ?>
       </form>
     </td>
     <td>

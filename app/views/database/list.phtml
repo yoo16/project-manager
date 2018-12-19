@@ -4,16 +4,16 @@
 
 <div>
   <?= $this->linkTo(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
-  <?= FormHelper::linkModal('#import-table', LABEL_IMPORT, 
+  <?= PwForm::linkModal('#import-table', LABEL_IMPORT, 
     [
     'class' => 'btn btn-outline-primary btn-sm pw-click', 
     'pw-controller' => 'database',
     'pw-action' => 'import_list', 
     ]) ?>
-  <?= FormHelper::linkModal('#help-database', 'Help', ['class' => 'btn btn-outline-primary']) ?>
+  <?= PwForm::linkModal('#help-database', 'Help', ['class' => 'btn btn-outline-primary']) ?>
 </div>
 <? include('import_window.phtml') ?>
 
 <? include('_list.phtml') ?>
 
-<?= TagHelper::javascript('controllers/DatabaseController') ?>
+<?= PwTag::javascript('controllers/DatabaseController') ?>

@@ -7,9 +7,9 @@
 
 //namespace project_manager;
 
-require_once 'PgsqlEntity.php';
+require_once 'PwPgsql.php';
 
-class _RecordItem extends PgsqlEntity {
+class _RecordItem extends PwPgsql {
 
     public $id_column = 'id';
     public $name = 'record_items';

@@ -99,7 +99,7 @@ class PageController extends ProjectController {
      * @return void
      */
     function action_duplicate() {
-        //TODO Entity function?
+        //TODO PwEntity function?
         $page = DB::model('Page')->fetch($this->pw_params['id']);
         $posts = $page->value;
         $posts['name'] = "{$page->value['name']}_copy";

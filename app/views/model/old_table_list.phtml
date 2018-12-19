@@ -16,7 +16,7 @@
       <form action="<?= $this->urlFor(['controller' => 'model', 'action' => 'update_old_table']) ?>" method="post">
         <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
         <input type="hidden" name="old_name" value="<?= $pg_class['relname'] ?>">
-        <?= FormHelper::submit(
+        <?= PwForm::submit(
           LABEL_UPDATE,
           [
           'class' => 'btn btn-primary',

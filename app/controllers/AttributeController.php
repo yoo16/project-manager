@@ -285,7 +285,7 @@ class AttributeController extends ModelController {
         if (substr($this->attribute->value['name'], -3) == '_id') {
             $length = strlen($this->attribute->value['name']);
             $name = substr($this->attribute->value['name'], 0, $length - 3);
-            $model_name = FileManager::singularToPlural($name);
+            $model_name = PwFile::singularToPlural($name);
 
             $this->candidate_model = DB::model('Model');
             $this->candidate_model->where('project_id', $this->project->value['id'])
@@ -451,7 +451,7 @@ class AttributeController extends ModelController {
                                         ->join('Project', 'id', 'project_id')
                                         ->all();
 
-        $pgsql = new PgsqlEntity();
+        $pgsql = new PwPgsql();
         foreach ($relation_database->values as $relation_database) {
             $pgsql->setDBName($relation_database['database_name'])
                   ->setDBHost($relation_database['database_hostname']);
@@ -489,7 +489,7 @@ class AttributeController extends ModelController {
         if ($attribute->value['id']) {
             $model = DB::model('Model')->fetch($attribute->value['model_id']);
 
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+            $pgsql_entity = new PwPgsql($this->database->pgInfo());
             $pg_attribute = $pgsql_entity->pgAttributeByColumn($model->value['name'], $attribute->value['name']);
 
             if ($pg_attribute) {

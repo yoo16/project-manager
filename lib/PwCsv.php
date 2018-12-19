@@ -1,11 +1,11 @@
 <?php
 /**
- * CsvLite.php
+ * PwCsv
  * 
- * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  **/
 
-class CsvLite {
+class PwCsv {
 
     public $id;
     public $id_key = 'id';
@@ -32,7 +32,7 @@ class CsvLite {
      **/
     function __construct($file_path = null, $lang = 'ja') {
         $this->setLang($lang);
-        $file_path = CsvLite::csvPath($file_path, $lang);
+        $file_path = PwCsv::csvPath($file_path, $lang);
         if (file_exists($file_path)) {
             $this->file_path = $file_path;
         }
@@ -43,10 +43,10 @@ class CsvLite {
      *
      * @param string $csv_name
      * @param string $lang
-     * @return CsvLite
+     * @return PwCsv
      */
     static function file($csv_name, $lang = 'ja') {
-        $instance = new CsvLite($csv_name, $lang);
+        $instance = new PwCsv($csv_name, $lang);
         return $instance;
     }
 
@@ -75,7 +75,7 @@ class CsvLite {
      **/
     static function options($file_path, $lang = null) {
         $results = array();
-        $file_path = CsvLite::csvPath($file_path, $lang);
+        $file_path = PwCsv::csvPath($file_path, $lang);
         if (file_exists($file_path)) {
             $fp = fopen($file_path, "r");
             $columns = fgetcsv($fp, 1024, ",");
@@ -94,7 +94,7 @@ class CsvLite {
      * setLang
      *
      * @param string $lang
-     * @return CsvLite
+     * @return PwCsv
      */ 
     function setLang($lang) {
         $this->lang = $lang;
@@ -104,10 +104,10 @@ class CsvLite {
     /**
      * key value all
      * 
-     * @return CsvLite
+     * @return PwCsv
      **/
     function keyValueAll() {
-        $this->values = CsvLite::keyValues($this->file_path, $this->id_column, $this->label_column, $this->lang);
+        $this->values = PwCsv::keyValues($this->file_path, $this->id_column, $this->label_column, $this->lang);
         return $this;
     }
 
@@ -121,7 +121,7 @@ class CsvLite {
      **/
      static function keyValues($file_path, $id_column='value', $label_column='label', $lang = 'ja') {
         $results = array();
-        $file_path = CsvLite::csvPath($file_path, $lang);
+        $file_path = PwCsv::csvPath($file_path, $lang);
         if (!$file_path || !file_exists($file_path)) return;
         $values = self::options($file_path);
         if (is_array($values)) {
@@ -141,7 +141,7 @@ class CsvLite {
     * @return array
     */ 
     static function form($csv_path, $name, $params = null) {
-        $params['values'] = CsvLite::options($csv_path);
+        $params['values'] = PwCsv::options($csv_path);
         $params['name'] = $name;
         return $params;
     }
@@ -216,7 +216,7 @@ class CsvLite {
      * @return array
      **/
      function valuesForCsvName($csv_name, $lang = 'ja') {
-        $file_path = CsvLite::csvPath($file_path, $lang);
+        $file_path = PwCsv::csvPath($file_path, $lang);
         if (!$file_path || !file_exists($file_path)) return;
 
         $values = $this->_readCsv($file_path);
@@ -565,7 +565,7 @@ class CsvLite {
      * @return array
      */
     static function loadSession($key) {
-        $csv_options = AppSession::getWithKey('app', 'csv_options');
+        $csv_options = PwSession::getWithKey('app', 'csv_options');
         return $csv_options[$key];
     }
 

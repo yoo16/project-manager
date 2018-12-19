@@ -16,8 +16,8 @@
         </div>
 
 
-        <?= FormHelper::submit(LABEL_UPDATE) ?>
-        <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+        <?= PwForm::submit(LABEL_UPDATE) ?>
+        <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
       </form>
 
       <?= $this->relation_database->confirmDelete() ?>

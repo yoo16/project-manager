@@ -11,7 +11,7 @@
 <? else: ?>
 <h3>
   <?= $values['model']['name'] ?> <-->
-  <?= FormHelper::linkModal(
+  <?= PwForm::linkModal(
     '#old-table-window',
     'Old Table', 
     [
@@ -28,7 +28,7 @@
   <tr>
     <td class="col-3"><?= $attribute['name'] ?></td>
     <td>
-  <?= FormHelper::linkModal(
+  <?= PwForm::linkModal(
     '#old-attribute-window',
     'Old Attribute', 
     [
@@ -47,6 +47,6 @@
 
 <? endforeach ?>
 
-<?= TagHelper::javascript('controllers/ModelController') ?>
+<?= PwTag::javascript('controllers/ModelController') ?>
 
-<?= TagHelper::javascript('controllers/AttributeController') ?>
+<?= PwTag::javascript('controllers/AttributeController') ?>

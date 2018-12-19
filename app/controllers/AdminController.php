@@ -48,7 +48,7 @@ class AdminController extends AppController {
 
     function checkLogin($action) {
         if (!in_array($action, $this->escape_auth_actions)) {
-            $this->admin = AppSession::get('admin', 'admin');
+            $this->admin = PwSession::get('admin', 'admin');
             if (!$this->admin['id']) {
                 $this->redirectTo(['controller' => 'admin', 'action' => 'login']);
                 return;
@@ -91,9 +91,9 @@ class AdminController extends AppController {
                   ->one();
 
             if ($admin->value) {
-                AppSession::set('admin', $admin->value, 'admin');
+                PwSession::set('admin', $admin->value, 'admin');
             }
-            $this->admin = AppSession::get('admin', 'admin');
+            $this->admin = PwSession::get('admin', 'admin');
             if ($this->admin['id'] > 0) {
                 $this->default_page();
                 exit;
@@ -119,7 +119,7 @@ class AdminController extends AppController {
     * @return void
     */ 
     function action_logout() {
-        AppSession::clearSession('admin', 'admin');
+        PwSession::clearSession('admin', 'admin');
         $this->redirectTo(['controller' => 'admin', 'action' => 'login']);
     }
 
@@ -138,7 +138,7 @@ class AdminController extends AppController {
     }
 
     function log_list() {
-        $values = FileManager::logFiles();
+        $values = PwFile::logFiles();
         $values = json_encode($values);
         echo($values);
         exit;
@@ -153,7 +153,7 @@ class AdminController extends AppController {
 
     function delete_log() {
         $path = LOG_DIR.$_REQUEST['filename'].'.log';
-        FileManager::removeFile($path);
+        PwFile::removeFile($path);
 
         $values['success'] = true;
         $values = json_encode($values);

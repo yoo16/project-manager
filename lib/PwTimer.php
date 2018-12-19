@@ -1,13 +1,13 @@
 <?php
 /**
- * BenchmarkTimer
+ * PwTimer
  *
  * Version      : 0.1
  * Author       : Yohei Yoshikawa
  * created      : 2011-01-28
  **/
 
-class BenchmarkTimer {
+class PwTimer {
 
     public $current_time = 0;
     public $start_time = 0;

@@ -1,11 +1,11 @@
 <?php
 /**
- * DataMigration 
+ * PwMigration 
  *
  * @create   
  */
 
-class DataMigration {
+class PwMigration {
     public $from_pgsql;
     public $used_old_host = false;
 
@@ -88,7 +88,7 @@ class DataMigration {
      * @return void
      */
     function pgsql($params = null) {
-        $this->from_pgsql = new PgsqlEntity();
+        $this->from_pgsql = new PwPgsql();
         if ($params) $this->from_pgsql->setDBInfo($params);
     }
 
@@ -110,7 +110,7 @@ class DataMigration {
         }
 
         foreach ($db_infos as $key => $db_info) {
-            $pgsql = new PgsqlEntity($db_info);
+            $pgsql = new PwPgsql($db_info);
             $from_model = $pgsql
                         ->table($model->old_name)
                         ->all();
@@ -137,10 +137,10 @@ class DataMigration {
     /**
      * update from old table
      *
-     * @param  PgsqlEntity $db_info
+     * @param  PwPgsql $db_info
      * @param  string $class_name
      * @param  int $old_id
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function updateValuesFromOldDB($db_info, $class_name, $foreign_classes = null, $search_columns = null) {
         if (!$db_info) {
@@ -152,7 +152,7 @@ class DataMigration {
             return;
         }
 
-        $old_pgsql = new PgsqlEntity();
+        $old_pgsql = new PwPgsql();
         $old_pgsql->setDBInfo($db_info);
         $old_values = DB::model($class_name)->valuesFromOldTable($old_pgsql);
 
@@ -183,11 +183,11 @@ class DataMigration {
                         }
                     } else {
                         if ($foreign_class['db_info']) {
-                            $old_foregin_pgsql = new PgsqlEntity($foreign_class['db_info']);
+                            $old_foregin_pgsql = new PwPgsql($foreign_class['db_info']);
                         } else {
                             $old_foregin_pgsql = $old_pgsql;
                         }
-                        $foreign = DataMigration::fetchByOldId($old_foregin_pgsql, $foreign_class['class_name'], $value[$foreign_column]);
+                        $foreign = PwMigration::fetchByOldId($old_foregin_pgsql, $foreign_class['class_name'], $value[$foreign_column]);
                     }
                     $value[$foreign_column] = $foreign->value['id'];
                     //TODO refectoring
@@ -204,7 +204,7 @@ class DataMigration {
                     }
                     $new_class->one();
                 } else {
-                    $new_class = DataMigration::fetchByOldId($old_pgsql, $class_name, $value['old_id']);
+                    $new_class = PwMigration::fetchByOldId($old_pgsql, $class_name, $value['old_id']);
                 }
 
                 $value['old_host'] = $old_pgsql->host;
@@ -222,10 +222,10 @@ class DataMigration {
     /**
      * fetch from old id
      *
-     * @param  PgsqlEntity $old_pgsql
+     * @param  PwPgsql $old_pgsql
      * @param  string $class_name
      * @param  int $old_id
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     static function fetchByOldId($old_pgsql, $class_name, $old_id) {
         $instance = DB::model($class_name);
@@ -243,10 +243,10 @@ class DataMigration {
     /**
      * fetch from old id
      *
-     * @param  PgsqlEntity $old_pgsql
+     * @param  PwPgsql $old_pgsql
      * @param  string $class_name
      * @param  int $old_id
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     static function fetchByOld($old_pg_info, $class_name, $old_id) {
         $instance = DB::model($class_name);
@@ -328,8 +328,8 @@ class DataMigration {
         if (!$model->foreign) return;
         foreach ($model->foreign as $foreign) {
             $fk_table_name = $foreign['foreign_table'];
-            $fk_entity_name = FileManager::pluralToSingular($fk_table_name);
-            $fk_class_name = FileManager::phpClassName($fk_entity_name);
+            $fk_entity_name = PwFile::pluralToSingular($fk_table_name);
+            $fk_class_name = PwFile::phpClassName($fk_entity_name);
 
             $fk_model = DB::model($fk_class_name)->setDBInfo($this->from_pgsql->pg_info_array);
             $fk_model->from($fk_model->old_name)
@@ -365,8 +365,8 @@ class DataMigration {
 
         $model = DB::model($class_name);
         foreach ($model->foreign as $foreign) {
-            $name = FileManager::pluralToSingular($foreign['foreign_table']);
-            $fk_class_name = FileManager::phpClassName($name);
+            $name = PwFile::pluralToSingular($foreign['foreign_table']);
+            $fk_class_name = PwFile::phpClassName($name);
             if (class_exists($fk_class_name)) {
                 $fk_model = DB::model($fk_class_name)->all();
                 foreach ($fk_model->values as $fk_value) {
@@ -487,7 +487,7 @@ class DataMigration {
             $file_name = date('YmdHis')."_error_{$class_name}.log";
             $dir = BASE_DIR."log/";
 
-            FileManager::outputFile($dir, $file_name, $contents);
+            PwFile::outputFile($dir, $file_name, $contents);
 
             echo($dir).PHP_EOL;
             echo($file_name).PHP_EOL;
@@ -505,7 +505,7 @@ class DataMigration {
         if ($contents) {
             $file_name = date('Ymd')."_error_{$class_name}.log";
             $error_log_dir = LOG_DIR."error_log/";
-            FileManager::outputFile($error_log_dir, $file_name, $contents);
+            PwFile::outputFile($error_log_dir, $file_name, $contents);
         }   
     }
 

@@ -22,7 +22,7 @@
         </tr>
 
         <tr>
-          <th>Entity Name</th>
+          <th>PwEntity Name</th>
           <td>
             <?= $this->model->value['entity_name'] ?>
           </td>
@@ -51,7 +51,7 @@
 
         <tr>
           <th>
-            <?= FormHelper::formLabel('Old Database', ['class' => 'col-2']) ?>
+            <?= PwForm::formLabel('Old Database', ['class' => 'col-2']) ?>
           </th>
           <td>
             <?= $this->model->formSelect('old_database_id', ['model' => 'Database', 'label' => 'name', 'unselect' => true]) ?>
@@ -66,8 +66,8 @@
         </tr>
       </table>
 
-      <?= FormHelper::submit(LABEL_UPDATE) ?>
-      <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+      <?= PwForm::submit(LABEL_UPDATE) ?>
+      <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
 
       <? if (!$this->model->value['is_lock']): ?>
       <?= $this->model->confirmDelete() ?>

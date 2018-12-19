@@ -9,7 +9,7 @@
         <tr>
           <th>Overwrite</th>
           <td>
-            <?= FormHelper::checkbox($this->forms['is_overwrite'], (bool) $this->page->value['is_overwrite']) ?>
+            <?= PwForm::checkbox($this->forms['is_overwrite'], (bool) $this->page->value['is_overwrite']) ?>
           </td>
         </tr>
 
@@ -32,7 +32,7 @@
         <tr>
           <th>Name</th>
           <td>
-            <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'name') ?>" type="text"
+            <input class="form-control col-5 <?= PwForm::validateRequired($this->errors, 'name') ?>" type="text"
               name="page[name]" value="<?= $this->page->value['name'] ?>" required autocomplete="off">
           </td>
         </tr>
@@ -40,15 +40,15 @@
         <tr>
           <th>Label</th>
           <td>
-            <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'label') ?>" type="text"
+            <input class="form-control col-5 <?= PwForm::validateRequired($this->errors, 'label') ?>" type="text"
               name="page[label]" value="<?= $this->page->value['label'] ?>" required autocomplete="off">
           </td>
         </tr>
 
         <tr>
-          <th>Entity Name</th>
+          <th>PwEntity Name</th>
           <td>
-            <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'entity_name') ?>" type="text"
+            <input class="form-control col-5 <?= PwForm::validateRequired($this->errors, 'entity_name') ?>" type="text"
               name="page[entity_name]" value="<?= $this->page->value['entity_name'] ?>" required autocomplete="off">
           </td>
         </tr>
@@ -64,7 +64,7 @@
         <tr>
           <th>Layout</th>
           <td>
-            <input class="form-control col-5 <?= FormHelper::validateRequired($this->errors, 'layout_name') ?>" type="text"
+            <input class="form-control col-5 <?= PwForm::validateRequired($this->errors, 'layout_name') ?>" type="text"
               name="page[layout_name]" value="<?= $this->page->value['layout_name'] ?>" autocomplete="off">
           </td>
         </tr>
@@ -128,7 +128,7 @@
 
       </table>
       <input class="btn btn-primary" type="submit" value="<?= LABEL_UPDATE ?>">
-      <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+      <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
     </form>
     <?= $this->page->confirmDelete() ?>
   </div>

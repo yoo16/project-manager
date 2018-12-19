@@ -1,11 +1,11 @@
 <?php
 /**
- * ApplicationLocalize 
+ * PwLocalize 
  *
- * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
-class ApplicationLocalize {
+class PwLocalize {
 
     /**
      * __construct
@@ -16,15 +16,25 @@ class ApplicationLocalize {
 
     }
 
+    function jp($key) {
+        $values = jp_values();
+        return $values[$key];
+    }
+
+    function en($key) {
+        $values = en_values();
+        return $values[$key];
+    }
+
     /**
      * load
      *
      * @return string
      **/
     static function load($lang = null) {
-        if (!$lang) $lang = AppSession::getWithKey('app', 'lang');
-        if (!$lang) $lang = ApplicationLocalize::loadLocale();
-        ApplicationLocalize::loadLocalizeFile($lang);
+        if (!$lang) $lang = PwSession::getWithKey('app', 'lang');
+        if (!$lang) $lang = PwLocalize::loadLocale();
+        PwLocalize::loadLocalizeFile($lang);
         return $lang;
     }
 
@@ -35,8 +45,8 @@ class ApplicationLocalize {
      * @return string
      */
     static function lang() {
-        $lang = AppSession::getWithKey('app', 'lang');
-        if (!$lang) $lang = ApplicationLocalize::loadLocale();
+        $lang = PwSession::getWithKey('app', 'lang');
+        if (!$lang) $lang = PwLocalize::loadLocale();
         return $lang;
     }
 
@@ -61,18 +71,18 @@ class ApplicationLocalize {
      * @return array
      */
     static function loadCsvOptions($lang = null, $is_clear = false) {
-        if ($is_clear) AppSession::clearWithKey('app', 'csv_options');
-        $csv_options = AppSession::getWithKey('app', 'csv_options');
+        if ($is_clear) PwSession::clearWithKey('app', 'csv_options');
+        $csv_options = PwSession::getWithKey('app', 'csv_options');
 
-        if (!$lang) $lang = AppSession::get('lang');
+        if (!$lang) $lang = PwSession::get('lang');
         if (!$lang) $lang = 'ja';
 
         $path = DB_DIR."records/{$lang}/*.csv";
         foreach (glob($path) as $file_path) {
             $path_info = pathinfo($file_path);
-            $csv_options[$path_info['filename']] = CsvLite::keyValues($file_path);
+            $csv_options[$path_info['filename']] = PwCsv::keyValues($file_path);
         }
-        AppSession::setWithKey('app', 'csv_options', $csv_options);
+        PwSession::setWithKey('app', 'csv_options', $csv_options);
         return $csv_options;
     }
 
@@ -98,10 +108,10 @@ class ApplicationLocalize {
      */
     static function requestLocale() {
         if ($_REQUEST['lang']) {
-            AppSession::set('app', 'lang', $_REQUEST['lang']);
-            ApplicationLocalize::claerLocaleValues();
+            PwSession::set('app', 'lang', $_REQUEST['lang']);
+            PwLocalize::claerLocaleValues();
         }
-        $lang = AppSession::get('lang');
+        $lang = PwSession::get('lang');
         return $lang;
     }
 
@@ -112,10 +122,10 @@ class ApplicationLocalize {
      * @return string 
      */
     static function loadLocale() {
-        ApplicationLocalize::requestLocale();
+        PwLocalize::requestLocale();
         if (!$lang) {
-            $lang = ApplicationLocalize::defaultLocale();
-            AppSession::setWithKey('app', 'lang', $lang);
+            $lang = PwLocalize::defaultLocale();
+            PwSession::setWithKey('app', 'lang', $lang);
         }
         return $lang;
     }
@@ -126,7 +136,7 @@ class ApplicationLocalize {
      * @return void
      */
     static function claerLocaleValues() {
-        AppSession::clearWithKey('app', 'csv_options');
+        PwSession::clearWithKey('app', 'csv_options');
     }
 
 }

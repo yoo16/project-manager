@@ -114,7 +114,7 @@
 
         </table>
         <? else: ?>
-        <?= FormHelper::linkButton(['controller' => 'project', 'action' => 'export_list'], LABEL_EXPORT.LABEL_SETTING, $this->project->value['id']) ?>
+        <?= PwForm::linkButton(['controller' => 'project', 'action' => 'export_list'], LABEL_EXPORT.LABEL_SETTING, $this->project->value['id']) ?>
         <? endif ?>
 
       </div>

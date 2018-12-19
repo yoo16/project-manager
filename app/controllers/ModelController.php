@@ -97,8 +97,8 @@ class ModelController extends ProjectController {
             $posts['relfilenode'] = $pg_class['relfilenode'];
             $posts['pg_class_id'] = $pg_class['pg_class_id'];
             $posts['name'] = $pg_class['relname'];
-            $posts['entity_name'] = FileManager::pluralToSingular($pg_class['relname']);
-            $posts['class_name'] = FileManager::phpClassName($posts['entity_name']);
+            $posts['entity_name'] = PwFile::pluralToSingular($pg_class['relname']);
+            $posts['class_name'] = PwFile::phpClassName($posts['entity_name']);
 
             $model = DB::model('Model')->insert($posts);
 
@@ -114,8 +114,8 @@ class ModelController extends ProjectController {
         if (!isPost()) exit;
 
         $posts = $this->session['posts'] = $_POST['model'];
-        $posts['entity_name'] = FileManager::pluralToSingular($posts['name']);
-        $posts['class_name'] = FileManager::phpClassName($posts['entity_name']);
+        $posts['entity_name'] = PwFile::pluralToSingular($posts['name']);
+        $posts['class_name'] = PwFile::phpClassName($posts['entity_name']);
         $posts['project_id'] = $this->project->value['id'];
 
         $model = DB::model('Model')->fetch($this->pw_params['id']);
@@ -247,7 +247,7 @@ class ModelController extends ProjectController {
 
         $this->model = DB::model('Model')->fetch($_REQUEST['model_id']);
 
-        $pgsql = new PgsqlEntity();
+        $pgsql = new PwPgsql();
         $relation_database = DB::model('RelationDatabase')
                                 ->join('Database', 'id', 'old_database_id')
                                 ->join('Project', 'id', 'project_id')
@@ -309,7 +309,7 @@ class ModelController extends ProjectController {
 
         if ($model->values) {
             foreach ($model->values as $model_values) {
-                $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+                $pgsql_entity = new PwPgsql($this->database->pgInfo());
                 $pg_class = $pgsql_entity->pgClassByRelname($model_values['name']);
 
                 if ($pg_class) {
@@ -330,7 +330,7 @@ class ModelController extends ProjectController {
 
         $model = DB::model('Model')->fetch($this->pw_params['id']);
         if ($model->value) {
-            $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+            $pgsql_entity = new PwPgsql($this->database->pgInfo());
             $pg_class = $pgsql_entity->pgClassByRelname($model->value['name']);
             if ($pg_class) {
                 $posts['pg_class_id'] = $pg_class['pg_class_id'];

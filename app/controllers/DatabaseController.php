@@ -8,15 +8,15 @@ class DatabaseController extends AppController {
     function before_action($action) {
         parent::before_action($action);
 
-        $this->pm_pgsql = new PgsqlEntity();
+        $this->pm_pgsql = new PwPgsql();
         $this->database = DB::model('Database')->requestSession();
     }
 
     function index() {
-        AppSession::clear('database');
-        AppSession::clear('project');
-        AppSession::clear('model');
-        AppSession::clear('attribute');
+        PwSession::clear('database');
+        PwSession::clear('project');
+        PwSession::clear('model');
+        PwSession::clear('attribute');
         $this->redirectTo(['action' => 'list']);;
     }
 
@@ -73,7 +73,7 @@ class DatabaseController extends AppController {
     }
 
     function action_delete() {
-        // $pgsql = new PgsqlEntity();
+        // $pgsql = new PwPgsql();
         // $pg_database = $pgsql->pgDatabase($_REQUEST['database_name']);
 
         // if (!$pg_database) {
@@ -95,7 +95,7 @@ class DatabaseController extends AppController {
         $this->host = $_REQUEST['host'];
         if (!$this->host) $this->host = DB_HOST;
 
-        $pgsql = new PgsqlEntity();
+        $pgsql = new PwPgsql();
         $this->pg_databases = $pgsql->setDBHost($this->host)
                                     ->pgDatabases();
         if ($pgsql->sql_error) {
@@ -107,7 +107,7 @@ class DatabaseController extends AppController {
     function action_import_database() {
         $host = $_REQUEST['host'];
         if (!$host) $host = DB_HOST;
-        $pgsql = new PgsqlEntity();
+        $pgsql = new PwPgsql();
         $pg_database = $pgsql->setDBHost($host)
                              ->setDBName($_REQUEST['database_name'])
                              ->pgDatabase($_REQUEST['database_name']);

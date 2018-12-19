@@ -31,7 +31,7 @@ class ViewItemGroupController extends ViewController {
     * @return void
     */
     function index() {
-        AppSession::clear('posts');
+        PwSession::clear('posts');
         $this->redirectTo(['action' => 'list']);;
     }
 
@@ -42,7 +42,7 @@ class ViewItemGroupController extends ViewController {
     * @return void
     */
     function action_cancel() {
-        AppSession::clear('posts');
+        PwSession::clear('posts');
         $this->redirectTo(['action' => 'list']);;
     }
 

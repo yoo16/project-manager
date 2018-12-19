@@ -16,7 +16,7 @@ class DB {
     * Deprecated
     *
     * @param string $name
-    * @return Entity
+    * @return PwEntity
     */
     static function table($name) {
         if (!class_exists($name)) exit;
@@ -28,7 +28,7 @@ class DB {
     * model
     *
     * @param string $name
-    * @return Entity
+    * @return PwEntity
     */
     static function model($name) {
         if (!class_exists($name)) exit;

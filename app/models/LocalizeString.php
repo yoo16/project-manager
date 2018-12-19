@@ -65,7 +65,7 @@ class LocalizeString extends _LocalizeString {
         }
 
         foreach ($attribute->values as $attribute->value) {
-            if (in_array($attribute->value['name'], Entity::$app_columns)) {
+            if (in_array($attribute->value['name'], PwEntity::$app_columns)) {
 
             } else {
                 if (mb_substr($attribute->value['name'], -3) != '_id') {

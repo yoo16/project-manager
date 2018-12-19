@@ -7,9 +7,9 @@
 
 //namespace project_manager;
 
-require_once 'PgsqlEntity.php';
+require_once 'PwPgsql.php';
 
-class _UserProjectSetting extends PgsqlEntity {
+class _UserProjectSetting extends PwPgsql {
 
     public $id_column = 'id';
     public $name = 'user_project_settings';

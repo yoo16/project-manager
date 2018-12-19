@@ -1,17 +1,17 @@
 <?php
 
 /**
- * PgsqlEntity 
+ * PwPgsql 
  *
  * @copyright  Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
-require_once 'Entity.php';
+require_once 'PwEntity.php';
 
 //TODO pg_escape_identifier
 //TODO pg_escape_literal
 //TODO pg_field_num, pg_field_name
 
-class PgsqlEntity extends Entity
+class PwPgsql extends PwEntity
 {
     public $db_info = null;
     public $pg_info = null;
@@ -181,7 +181,7 @@ class PgsqlEntity extends Entity
      * dropDatabase
      * 
      * @return array
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function dropDatabase()
     {
@@ -199,7 +199,7 @@ class PgsqlEntity extends Entity
      * default pg info
      * 
      * @param $pg_info
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function defaultDBInfo()
     {
@@ -217,7 +217,7 @@ class PgsqlEntity extends Entity
      * database name
      * 
      * @param array $name
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function setDBName($name)
     {
@@ -232,7 +232,7 @@ class PgsqlEntity extends Entity
      * database host
      * 
      * @param array $host
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function setDBHost($host)
     {
@@ -247,7 +247,7 @@ class PgsqlEntity extends Entity
      * database user
      * 
      * @param array $user
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function setDBUser($user)
     {
@@ -262,7 +262,7 @@ class PgsqlEntity extends Entity
      * database port
      * 
      * @param array $user
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function setDBPort($port)
     {
@@ -277,7 +277,7 @@ class PgsqlEntity extends Entity
      * pgInfo
      * 
      * @param array $params
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function setDBInfo($params)
     {
@@ -296,7 +296,7 @@ class PgsqlEntity extends Entity
      * load database information
      * 
      * @param array $params
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function loadDBInfo()
     {
@@ -397,7 +397,7 @@ class PgsqlEntity extends Entity
     /**
      * create table SQL
      * 
-     * @param PgsqlEntity $model
+     * @param PwPgsql $model
      * @return string
      */
     public function createTableSql($model)
@@ -437,7 +437,7 @@ class PgsqlEntity extends Entity
     /**
      * create constraint SQL
      * 
-     * @param PgsqlEntity $model
+     * @param PwPgsql $model
      * @param array $cascades
      * @return string
      */
@@ -450,8 +450,8 @@ class PgsqlEntity extends Entity
                 $sql.= "      ADD CONSTRAINT {$conname} FOREIGN KEY ({$foreign['column']})" . PHP_EOL;
                 $sql.= "      REFERENCES {$foreign['foreign_table']}({$foreign['foreign_column']})" . PHP_EOL;
 
-                $update_type = PgsqlEntity::$constraint_actions[$foreign['cascade_update_type']];
-                $delete_type = PgsqlEntity::$constraint_actions[$foreign['cascade_delete_type']];
+                $update_type = PwPgsql::$constraint_actions[$foreign['cascade_update_type']];
+                $delete_type = PwPgsql::$constraint_actions[$foreign['cascade_delete_type']];
 
                 if ($update_type) $sql.= "      ON UPDATE {$update_type}" . PHP_EOL;
                 if ($delete_type) $sql.= "      ON DELETE {$delete_type}" . PHP_EOL;
@@ -921,7 +921,7 @@ class PgsqlEntity extends Entity
      * @param  string $model_name
      * @param  string $foreign_key
      * @param  string $value_key
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function bindOne($model_name, $foreign_key = null, $value_key = null)
     {
@@ -940,7 +940,7 @@ class PgsqlEntity extends Entity
      * @param  string $model_name
      * @param  string $foreign_key
      * @param  string $value_key
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function bindMany($model_name, $foreign_key = null, $value_key = null)
     {
@@ -959,7 +959,7 @@ class PgsqlEntity extends Entity
      * @param  string $model_name
      * @param  string $foreign_key
      * @param  string $value_key
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function bindBelongsTo($model_name, $foreign_key = null, $value_key = null)
     {
@@ -978,7 +978,7 @@ class PgsqlEntity extends Entity
      * @param  string $model_name
      * @param  string $foreign_key
      * @param  string $value_key
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function hasOne($model_name, $foreign_key = null, $value_key = null)
     {
@@ -1004,7 +1004,7 @@ class PgsqlEntity extends Entity
      * @param  string $class_name
      * @param  string $foreign_key
      * @param  string $value_key
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function hasMany($class_name, $foreign_key = null, $value_key = null)
     {
@@ -1017,7 +1017,7 @@ class PgsqlEntity extends Entity
      * @param  string $class_name
      * @param  string $foreign_key
      * @param  string $value_key
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function relation($class_name, $foreign_key = null, $value_key = null)
     {
@@ -1038,7 +1038,7 @@ class PgsqlEntity extends Entity
      * @param  string $class_name
      * @param  string $foreign_key
      * @param  string $value_key
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function relationMany($class_name, $foreign_key = null, $value_key = null)
     {
@@ -1059,7 +1059,7 @@ class PgsqlEntity extends Entity
      * @param  string $class_name
      * @param  string $foreign_key
      * @param  string $value_key
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function relationOne($class_name, $foreign_key = null, $value_key = null)
     {
@@ -1074,7 +1074,7 @@ class PgsqlEntity extends Entity
      * @param  array $conditions
      * @param  string $foreign_key
      * @param  string $value_key
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function hasManyThrough($class_name, $through_class_name, $foreign_key = null, $value_key = null)
     {
@@ -1098,7 +1098,7 @@ class PgsqlEntity extends Entity
      * @param  string $class_name
      * @param  string $foreign_key
      * @param  string $value_key
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function belongsTo($class_name, $foreign_key = null, $value_key = null)
     {
@@ -1121,7 +1121,7 @@ class PgsqlEntity extends Entity
      * 
      * @param  string $class_name
      * @param  string $foreign_key
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function relationByValues($class_name, $foreign_key, $is_id_index = false)
     {
@@ -1165,7 +1165,7 @@ class PgsqlEntity extends Entity
      * select
      * 
      * @param  array $params
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function select($params = null)
     {
@@ -1198,7 +1198,7 @@ class PgsqlEntity extends Entity
      * fetch
      * 
      * @param  int $id
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function fetch($id)
     {
@@ -1224,7 +1224,7 @@ class PgsqlEntity extends Entity
      * 
      * @param  int $id
      * @param  array $columns
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function fetchByTrue($id, $columns)
     {
@@ -1261,7 +1261,7 @@ class PgsqlEntity extends Entity
      * find
      * 
      * @param  int $id
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function find($id)
     {
@@ -1283,7 +1283,7 @@ class PgsqlEntity extends Entity
     /**
      * select all
      * 
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function bulkSelect()
     {
@@ -1294,7 +1294,7 @@ class PgsqlEntity extends Entity
     /**
      * select all
      * 
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function all()
     {
@@ -1335,7 +1335,7 @@ class PgsqlEntity extends Entity
      * select all
      * 
      * @param  array $params
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function bulkAll($limit)
     {
@@ -1404,7 +1404,7 @@ class PgsqlEntity extends Entity
      * insert
      * 
      * @param  array $posts
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function insert($posts = null)
     {
@@ -1426,7 +1426,7 @@ class PgsqlEntity extends Entity
         } else {
             $this->addError('save', 'error');
         }
-        if (!$this->errors) AppSession::clear('pw_posts');
+        if (!$this->errors) PwSession::clear('pw_posts');
         return $this;
     }
 
@@ -1438,7 +1438,7 @@ class PgsqlEntity extends Entity
      * 
      * @param  array $posts
      * @param  integer $id
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function update($posts = null, $id = null)
     {
@@ -1457,14 +1457,14 @@ class PgsqlEntity extends Entity
 
         $result = $this->query($sql);
         if ($result === false) $this->addError('save', 'error');
-        if (!$this->errors) AppSession::clear('pw_posts');
+        if (!$this->errors) PwSession::clear('pw_posts');
         return $this;
     }
 
     /**
      * update by where
      * 
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function updateByWhere($posts)
     {
@@ -1484,7 +1484,7 @@ class PgsqlEntity extends Entity
      * 
      * @param  array $posts
      * @param  int $id
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function updateById($id, $posts)
     {
@@ -1518,7 +1518,7 @@ class PgsqlEntity extends Entity
      * updates
      * 
      * @param  array $posts
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function updates($posts)
     {
@@ -1552,7 +1552,7 @@ class PgsqlEntity extends Entity
      * inserts
      * 
      * @param  array $rows
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function copyFrom($rows)
     {
@@ -1564,7 +1564,7 @@ class PgsqlEntity extends Entity
      * move
      *
      * @param  string $model_name
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function move($model_name) {
         if (!$this->values) return $this;
@@ -1580,7 +1580,7 @@ class PgsqlEntity extends Entity
      * inserts
      *
      * @param  array $rows
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function inserts($rows)
     {
@@ -1615,7 +1615,7 @@ class PgsqlEntity extends Entity
      * pg insert
      * 
      * @param  array $posts
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function pgInsert($posts)
     {
@@ -1627,7 +1627,7 @@ class PgsqlEntity extends Entity
      * update sort_order
      *
      * @param array $sort_orders
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function updateSortOrder($sort_orders)
     {
@@ -1651,7 +1651,7 @@ class PgsqlEntity extends Entity
     /**
      * values from old table
      * 
-     * @param  PgsqlEntity $old_pgsql
+     * @param  PwPgsql $old_pgsql
      * @return array
      */
     public function valuesFromOldTable($old_pgsql)
@@ -1667,7 +1667,7 @@ class PgsqlEntity extends Entity
     /**
      * copy from old table
      * 
-     * @param  PgsqlEntity $old_pgsql
+     * @param  PwPgsql $old_pgsql
      * @return bool
      */
     public function copyFromOldTable($old_pgsql)
@@ -1683,8 +1683,8 @@ class PgsqlEntity extends Entity
      * insertsFromOldTable
      * TODO inserts()
      * 
-     * @param  PgsqlEntity $old_pgsql
-     * @return PgsqlEntity
+     * @param  PwPgsql $old_pgsql
+     * @return PwPgsql
      */
     public function insertsFromOldTable($old_pgsql)
     {
@@ -1704,7 +1704,7 @@ class PgsqlEntity extends Entity
      * delete
      *
      * @param  int $id
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function delete($id = null)
     {
@@ -1728,7 +1728,7 @@ class PgsqlEntity extends Entity
      * delete
      * 
      * @param  int $id
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function deletes()
     {
@@ -1748,7 +1748,7 @@ class PgsqlEntity extends Entity
      * CASCADE
      * RESTRICT
      * 
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function truncate($option = null)
     {
@@ -1763,7 +1763,7 @@ class PgsqlEntity extends Entity
      * where
      * 
      * @param  string $condition
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function from($name)
     {
@@ -1777,7 +1777,7 @@ class PgsqlEntity extends Entity
      * @param  mixed $condition
      * @param  string $value
      * @param  string $eq
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function where($condition, $value = null, $eq = '=')
     {
@@ -1806,7 +1806,7 @@ class PgsqlEntity extends Entity
      * 
      * @param  string $column
      * @param  array $values
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function whereIn($column, $values)
     {
@@ -1814,7 +1814,7 @@ class PgsqlEntity extends Entity
         foreach ($values as $value) {
             $_values[] = $this->sqlValue($value);
         }
-        $condition = PgsqlEntity::whereInConditionSQL($column, $_values);
+        $condition = PwPgsql::whereInConditionSQL($column, $_values);
         $this->where($condition);
         return $this;
     }
@@ -1827,7 +1827,7 @@ class PgsqlEntity extends Entity
      */
     function whereInCondition($column) {
         $ids = $this->valuesByColumn($column);
-        $condition = PgsqlEntity::whereInConditionSQL($column, $ids);
+        $condition = PwPgsql::whereInConditionSQL($column, $ids);
         return $condition;
     }
 
@@ -1851,7 +1851,7 @@ class PgsqlEntity extends Entity
      * wheres
      * 
      * @param  array $conditions
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function wheres($conditions)
     {
@@ -1866,7 +1866,7 @@ class PgsqlEntity extends Entity
      * @param  string $condition
      * @param  string $value
      * @param  string $eq
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function filter($filters)
     {
@@ -1896,7 +1896,7 @@ class PgsqlEntity extends Entity
     * 
     * @param array $hours
     * @param string $column
-    * @return PgsqlEntity
+    * @return PwPgsql
     */
     function daysCondition($days, $column) {
         if (!$days) return $this;
@@ -1925,7 +1925,7 @@ class PgsqlEntity extends Entity
     * 
     * @param array $hours
     * @param string $column
-    * @return PgsqlEntity
+    * @return PwPgsql
     */
     function hoursCondition($hours, $column) {
         if (!$hours) return $this;
@@ -1952,7 +1952,7 @@ class PgsqlEntity extends Entity
     /**
      * initWhere
      * 
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function initWhere()
     {
@@ -1963,7 +1963,7 @@ class PgsqlEntity extends Entity
     /**
      * initWhere
      * 
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function initLimit()
     {
@@ -1977,7 +1977,7 @@ class PgsqlEntity extends Entity
      * @param  string $column
      * @param  string $optionn
      * @param  string $column_type
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function order($column, $option = null, $column_type = null)
     {
@@ -1992,7 +1992,7 @@ class PgsqlEntity extends Entity
      * orders
      * 
      * @param  array $sort_orders
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function orders($sort_orders)
     {
@@ -2010,7 +2010,7 @@ class PgsqlEntity extends Entity
     /**
      * initOrder
      * 
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function initOrder()
     {
@@ -2022,7 +2022,7 @@ class PgsqlEntity extends Entity
      * limit
      * 
      * @param  int $limit
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function limit($limit)
     {
@@ -2034,7 +2034,7 @@ class PgsqlEntity extends Entity
      * offset
      * 
      * @param  string $condition
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function offset($offset)
     {
@@ -2048,7 +2048,7 @@ class PgsqlEntity extends Entity
      * 
      * @param  string $model_name
      * @param  array $conditions
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function selectColumn($join_class_name, $column, $join_column, $eq = '=', $type = 'LEFT')
     {
@@ -2077,7 +2077,7 @@ class PgsqlEntity extends Entity
      * @param  string $column
      * @param  string $class_name
      * @param  array $params
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function join($join_class_name, $join_column, $column, $class_name = null, $params = null)
     {
@@ -2111,7 +2111,7 @@ class PgsqlEntity extends Entity
      * init Join
      * 
      * @param  string $model_name
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function initJoin($class_name, $type = 'LEFT')
     {
@@ -2369,7 +2369,7 @@ class PgsqlEntity extends Entity
     /**
      * old column for SQL select
      * 
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function selectOldColumns()
     {
@@ -2703,7 +2703,7 @@ class PgsqlEntity extends Entity
     /**
      * reload primary key
      * 
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function reloadPrimaryKey()
     {
@@ -2715,7 +2715,7 @@ class PgsqlEntity extends Entity
      * set upsert constraint
      * 
      * @param string $upsert_constraint
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function setUpsertConstraint($upsert_constraint)
     {
@@ -3930,12 +3930,12 @@ class PgsqlEntity extends Entity
      * set Model(table name, columns ...) By pg_attributes
      *
      * @param  string $model_name
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function table($table_name)
     {
         $this->id_column = 'id';
-        $this->entity_name = FileManager::pluralToSingular($table_name);
+        $this->entity_name = PwFile::pluralToSingular($table_name);
         $this->name = $table_name;
         $this->from($this->name);
 
@@ -4102,7 +4102,7 @@ class PgsqlEntity extends Entity
         }
         $result = $this->resetSequence($this->name);
         if (!$result) {
-            $sequence_name = PgsqlEntity::sequenceName($this->name);
+            $sequence_name = PwPgsql::sequenceName($this->name);
 
             echo($class_name).PHP_EOL;
             echo($sequence_name).PHP_EOL;
@@ -4114,7 +4114,7 @@ class PgsqlEntity extends Entity
     /**
      * update empty sort order
      *
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     function updatesEmptySortOrder() {
         if (!array_key_exists('sort_order', $this->columns)) return $this;

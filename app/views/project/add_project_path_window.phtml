@@ -17,9 +17,9 @@
         </div>
 
         <div class="modal-footer">
-          <?= FormHelper::submit(LABEL_ADD) ?>
-          <?= FormHelper::button(LABEL_CLOSE, ['class' => 'btn btn-outline-primary', 'data-dismiss' => 'modal']) ?>
-          <?= FormHelper::hidden('user_project_setting[project_id]', $this->project->value['id']) ?>
+          <?= PwForm::submit(LABEL_ADD) ?>
+          <?= PwForm::button(LABEL_CLOSE, ['class' => 'btn btn-outline-primary', 'data-dismiss' => 'modal']) ?>
+          <?= PwForm::hidden('user_project_setting[project_id]', $this->project->value['id']) ?>
         </div>
 
       </div>

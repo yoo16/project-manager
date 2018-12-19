@@ -7,9 +7,9 @@
 
 //namespace project_manager;
 
-require_once 'PgsqlEntity.php';
+require_once 'PwPgsql.php';
 
-class _Admin extends PgsqlEntity {
+class _Admin extends PwPgsql {
 
     public $id_column = 'id';
     public $name = 'admins';

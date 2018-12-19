@@ -1,7 +1,7 @@
 <? include('_header.phtml') ?>
 
 <div class="pt-3">
-  <?= FormHelper::linkButton(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary'] ) ?>
+  <?= PwForm::linkButton(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary'] ) ?>
   <? include('views/components/lib/sortable.phtml') ?>
 
 </div>
@@ -18,7 +18,7 @@
   <? if ($this->public_localize_string->values): ?>
   <? foreach ($this->public_localize_string->values as $values): ?>
   <tr row-id="<?= $values['id'] ?>">
-    <td><?= FormHelper::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
+    <td><?= PwForm::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
     <td><?= $values['label'] ?></td>
     <td><?= $values['name'] ?></td>
   </tr>

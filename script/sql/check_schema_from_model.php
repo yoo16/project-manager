@@ -19,7 +19,7 @@ if ($is_excute_sql) {
     echo('--- Mode: Do not excute SQL ---').PHP_EOL;
 }
   echo("host: {$host}").PHP_EOL;
-$pgsql = new PgsqlEntity();
+$pgsql = new PwPgsql();
 $pgsql->is_excute_sql = $is_excute_sql;
 $pgsql->setDBHost($host);
 $pgsql->diffFromVoModel();

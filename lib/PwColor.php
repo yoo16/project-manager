@@ -2,7 +2,7 @@
 /**
  * PwColor
  * 
- * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
 class PwColor {

@@ -9,7 +9,7 @@
 
     <div class="form-group row">
       <label for="" class="col-2 col-form-label">type</label>
-      <?= FormHelper::select($this->forms['pg_types'], $this->pg_attribute['udt_name']) ?>
+      <?= PwForm::select($this->forms['pg_types'], $this->pg_attribute['udt_name']) ?>
     </div>
 
     <div class="form-group row">
@@ -19,7 +19,7 @@
 
     <div class="form-group row">
       <label for="" class="col-2 col-form-label">NOT NULL</label>
-      <?= FormHelper::checkbox($this->forms['notnull']) ?>
+      <?= PwForm::checkbox($this->forms['notnull']) ?>
     </div>
   </div>
   <div class="">

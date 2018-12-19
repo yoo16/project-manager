@@ -1,8 +1,8 @@
 <? include('_header.phtml') ?>
 
 <div class="pt-3">
-  <?= FormHelper::linkButton(['action' => 'new'], ['class' => 'btn btn-primary', 'label' => LABEL_ADD]) ?>
-  <?= FormHelper::linkButton(['action' => 'import_from_model'], ['class' => 'btn btn-outline-primary', 'label' => LABEL_IMPORT]) ?>
+  <?= PwForm::linkButton(['action' => 'new'], ['class' => 'btn btn-primary', 'label' => LABEL_ADD]) ?>
+  <?= PwForm::linkButton(['action' => 'import_from_model'], ['class' => 'btn btn-outline-primary', 'label' => LABEL_IMPORT]) ?>
 </div>
 <div>
   <form action="<?= $this->urlFor(['action' => 'csv_import']); ?>" method="post" enctype="multipart/form-data">

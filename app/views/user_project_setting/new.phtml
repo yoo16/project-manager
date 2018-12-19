@@ -1,6 +1,6 @@
 <? include('_header.phtml') ?>
 <form action="<?= $this->urlFor(['action' => 'add']) ?>" method="post">
   <? include('form.phtml') ?>
-  <?= FormHelper::submit(LABEL_SAVE) ?>
-  <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+  <?= PwForm::submit(LABEL_SAVE) ?>
+  <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
 </form>

@@ -10,7 +10,7 @@
     <? foreach ($this->model->attribute->values as $attribute): ?>
     <tr>
       <td>
-        <?= FormHelper::checkbox([
+        <?= PwForm::checkbox([
           'name' => "attribute_id[{$attribute['id']}]",
           'label' => $attribute['name'],
           ]

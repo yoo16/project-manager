@@ -1,11 +1,11 @@
 <?php
 /**
- * SendMail
+ * PwMail
  * 
- * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
-class SendMail {
+class PwMail {
     public $from;
     public $to;
     public $cc;
@@ -148,7 +148,7 @@ class SendMail {
         mb_language('Japanese');
         mb_internal_encoding('UTF-8');
 
-        $csv_lite = new CsvLite($this->setting_file);
+        $csv_lite = new PwCsv($this->setting_file);
         $settings = $csv_lite->fetch($this->type);
 
         $subject = ($values['subject']) ? $values['subject'] : $settings['subject'];

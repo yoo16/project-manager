@@ -4,9 +4,9 @@
 
 <div class="pt-3">
   <form action="<?= $this->urlFor(['action' => 'import_from_models']) ?>" method="post">
-    <?= FormHelper::linkModal('#add-window', LABEL_ADD) ?>
-    <?= FormHelper::submit(LABEL_IMPORT, ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you import from Models?']) ?>
-    <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
+    <?= PwForm::linkModal('#add-window', LABEL_ADD) ?>
+    <?= PwForm::submit(LABEL_IMPORT, ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you import from Models?']) ?>
+    <?= PwForm::hidden('project_id', $this->project->value['id']) ?>
   </form>
 </div>
 
@@ -20,7 +20,7 @@
         Overwrite
         <a href="<?= $this->urlFor(['action' => 'all_off_overwrite']) ?>" class="btn btn-outline-primary btn-sm confirm-dialog" message="Do you turn off overwriting?">off</a>
       </th>
-      <th>Model / Entity Name</th>
+      <th>Model / PwEntity Name</th>
       <th></th>
     </tr>
   </thead>
@@ -28,7 +28,7 @@
   <? if ($this->pages): ?>
     <? foreach ($this->pages as $page): ?>
       <tr>
-        <td><?= FormHelper::linkButton(['action' => 'edit', 'id' => $page['id']], ['label' => LABEL_EDIT]) ?></td>
+        <td><?= PwForm::linkButton(['action' => 'edit', 'id' => $page['id']], ['label' => LABEL_EDIT]) ?></td>
         <td>
           <div>
             <a href="<?= $this->urlFor(['controller' => 'view'], ['page_id' => $page['id']]) ?>"><?= $page['name'] ?></a>

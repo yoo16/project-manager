@@ -7,9 +7,9 @@
 
 //namespace project_manager;
 
-require_once 'PgsqlEntity.php';
+require_once 'PwPgsql.php';
 
-class _LocalizeString extends PgsqlEntity {
+class _LocalizeString extends PwPgsql {
 
     public $id_column = 'id';
     public $name = 'localize_strings';

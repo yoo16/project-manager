@@ -1,5 +1,5 @@
 
-<?= FormHelper::select(
+<?= PwForm::select(
         [
         'class' => 'pw-click',
         'csv' => DB_HOSTS_CSV,
@@ -13,9 +13,9 @@
   <td><?= $pg_database['datname'] ?></td>
   <td>
     <form method="post" action="<?= $this->urlFor(['action' => 'import_database']) ?>">
-      <?= FormHelper::submit(LABEL_IMPORT) ?>
-      <?= FormHelper::hidden('database_name', $pg_database['datname']) ?>
-      <?= FormHelper::hidden('host', $this->host) ?>
+      <?= PwForm::submit(LABEL_IMPORT) ?>
+      <?= PwForm::hidden('database_name', $pg_database['datname']) ?>
+      <?= PwForm::hidden('host', $this->host) ?>
     </form>
   </td>
 </tr>

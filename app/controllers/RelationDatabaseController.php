@@ -85,7 +85,7 @@ class RelationDatabaseController extends ProjectController {
                                         ->all();
 
         $pm_pgsql = $this->database->pgsql();
-        $pgsql = new PgsqlEntity();
+        $pgsql = new PwPgsql();
 
         foreach ($relation_database->values as $relation_database) {
             $pgsql->setDBName($relation_database['database_name'])
@@ -94,12 +94,12 @@ class RelationDatabaseController extends ProjectController {
             $old_pg_classes = $pgsql->pgClasses();
 
             foreach ($old_pg_classes as $old_pg_class) {
-                $is_numbering = PgsqlEntity::isNumberingName($old_pg_class['relname']);
+                $is_numbering = PwPgsql::isNumberingName($old_pg_class['relname']);
                 if (!$is_numbering) {
                     $pgsql->table($old_pg_class['relname']);
                     $table_name = str_replace($_REQUEST['prefix'], '', $old_pg_class['relname']);
-                    $table_name = FileManager::pluralToSingular($table_name);
-                    $table_name = FileManager::singularToPlural($table_name);
+                    $table_name = PwFile::pluralToSingular($table_name);
+                    $table_name = PwFile::singularToPlural($table_name);
 
                     $model = DB::model('Model')
                                             ->where("project_id = '{$this->project->value['id']}'")
@@ -125,7 +125,7 @@ class RelationDatabaseController extends ProjectController {
                                         ->all();
 
         $pm_pgsql = $this->database->pgsql();
-        $pgsql = new PgsqlEntity();
+        $pgsql = new PwPgsql();
 
         foreach ($relation_database->values as $relation_database) {
             $pgsql->setDBName($relation_database['database_name'])
@@ -134,12 +134,12 @@ class RelationDatabaseController extends ProjectController {
             $pg_classes = $pgsql->pgClasses();
 
             foreach ($pg_classes as $pg_class) {
-                $is_numbering = PgsqlEntity::isNumberingName($pg_class['relname']);
+                $is_numbering = PwPgsql::isNumberingName($pg_class['relname']);
                 if (!$is_numbering) {
                     $pgsql->table($pg_class['relname']);
                     $table_name = str_replace($_REQUEST['except_table_prefix'], '', $pg_class['relname']);
-                    $table_name = FileManager::pluralToSingular($table_name);
-                    $table_name = FileManager::singularToPlural($table_name);
+                    $table_name = PwFile::pluralToSingular($table_name);
+                    $table_name = PwFile::singularToPlural($table_name);
 
                     $model = DB::model('Model')
                                             ->where("project_id = '{$this->project->value['id']}'")

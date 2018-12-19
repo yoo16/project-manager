@@ -30,7 +30,7 @@ class ApiController extends ProjectController {
     * @return void
     */
     function index() {
-        AppSession::clear('posts');
+        PwSession::clear('posts');
         $this->redirectTo(['action' => 'list']);;
     }
 
@@ -41,7 +41,7 @@ class ApiController extends ProjectController {
     * @return void
     */
     function action_cancel() {
-        AppSession::clear('posts');
+        PwSession::clear('posts');
         $this->redirectTo(['action' => 'list']);;
     }
 

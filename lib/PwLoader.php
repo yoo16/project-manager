@@ -1,12 +1,12 @@
 <?php
 /**
- * ApplicationLoader 
+ * PwLoader 
  *
  * @author  Yohei Yoshikawa
  * 
- * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
-class ApplicationLoader {
+class PwLoader {
 
     /**
      * autoload_model
@@ -28,7 +28,7 @@ class ApplicationLoader {
      * @return string
      */
     static function loadModel($file_path, $project_name = null) {
-        $models = ApplicationLoader::rows($file_path);
+        $models = PwLoader::rows($file_path);
         if (!$models) return;
         if ($project_name) {
             $model_path = BASE_DIR."app/{$project_name}/";

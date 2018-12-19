@@ -16,9 +16,9 @@
     <? if ($this->model->values): ?>
     <? foreach ($this->model->values as $model): ?>
     <tr>
-      <td><?= FormHelper::linkButton('edit', LABEL_EDIT, $model['id']) ?></td>
+      <td><?= PwForm::linkButton('edit', LABEL_EDIT, $model['id']) ?></td>
       <td>
-        <div><?= FormHelper::link('attribute_list', $model['name'], ['model_id' => $model['id']]) ?></div>
+        <div><?= PwForm::link('attribute_list', $model['name'], ['model_id' => $model['id']]) ?></div>
         <? if ($model['old_name']): ?><div>(<?= $model['old_name'] ?>)</div><? endif ?>
       </td>
       <td>
@@ -26,20 +26,20 @@
           <div class="row">
            <div class="input-group">
              <label for="" class="col-3 col-form-label">Comment</label>
-             <?= FormHelper::input(['class' => 'form-control form-control-sm'], 'model[label]', $model['label']) ?>
-             <?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?>
+             <?= PwForm::input(['class' => 'form-control form-control-sm'], 'model[label]', $model['label']) ?>
+             <?= PwForm::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?>
            </div>
          </div>
          <div class="row">
            <div class="input-group">
              <label for="" class="col-3 col-form-label">Note</label>
-             <?= FormHelper::textarea('model[note]', $model['note'], ['class' => 'form-control', 'rows' => 5]) ?>
+             <?= PwForm::textarea('model[note]', $model['note'], ['class' => 'form-control', 'rows' => 5]) ?>
            </div>
          </div>
          <div class="row">
          </div>
-         <?= FormHelper::hidden('pg_class_id', $model['pg_attribute']['pg_class_id']) ?>
-         <?= FormHelper::hidden('database_id', $this->database->value['id']) ?>
+         <?= PwForm::hidden('pg_class_id', $model['pg_attribute']['pg_class_id']) ?>
+         <?= PwForm::hidden('database_id', $this->database->value['id']) ?>
        </form>
      </td>
    </td>

@@ -42,12 +42,12 @@ class ProjectController extends AppController
 
     function clearSession()
     {
-        AppSession::clear('project');
-        AppSession::clear('database');
-        AppSession::clear('model');
-        AppSession::clear('attribute');
-        AppSession::clear('page');
-        AppSession::clear('view');
+        PwSession::clear('project');
+        PwSession::clear('database');
+        PwSession::clear('model');
+        PwSession::clear('attribute');
+        PwSession::clear('page');
+        PwSession::clear('view');
         $this->clearPwPosts();
     }
 
@@ -58,7 +58,7 @@ class ProjectController extends AppController
      */
     function action_index()
     {
-        $pgsql_entity = new PgsqlEntity();
+        $pgsql_entity = new PwPgsql();
         $this->pg_connection = $pgsql_entity->connection();
         if (!$this->pg_connection) {
             $this->redirectTo(['controller' => 'root']);
@@ -477,7 +477,7 @@ class ProjectController extends AppController
             $this->redirectTo(['controller' => 'project']);
         }
 
-        $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+        $pgsql_entity = new PwPgsql($this->database->pgInfo());
         $this->pg_classes = $pgsql_entity->tableArray();
 
         foreach ($this->pg_classes as $pg_class) {
@@ -489,8 +489,8 @@ class ProjectController extends AppController
             if ($pg_class['relname']) $model_values['name'] = $pg_class['relname'];
             if ($pg_class['comment']) $model_values['label'] = $pg_class['comment'];
 
-            $model_values['entity_name'] = FileManager::pluralToSingular($pg_class['relname']);
-            $model_values['class_name'] = FileManager::phpClassName($model_values['entity_name']);
+            $model_values['entity_name'] = PwFile::pluralToSingular($pg_class['relname']);
+            $model_values['class_name'] = PwFile::phpClassName($model_values['entity_name']);
 
             $model = DB::model('Model')
                 ->where("name = '{$pg_class['relname']}'")
@@ -521,7 +521,7 @@ class ProjectController extends AppController
         $user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
         if (!$user_project_setting->value) return;
 
-        $pgsql_entity = new PgsqlEntity($this->database->pgInfo());
+        $pgsql_entity = new PwPgsql($this->database->pgInfo());
         $vo_path = "{$user_project_setting->value['project_path']}app/models/vo/";
         $sql = $pgsql_entity->createTablesSQLForPath($vo_path);
 
@@ -535,7 +535,7 @@ class ProjectController extends AppController
         $user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
         $path = $user_project_setting->value['project_path'];
         if ($path && !file_exists($path)) {
-            FileManager::createDir($path);
+            PwFile::createDir($path);
         }
         if ($path && file_exists($path)) {
             $cmd = "chmod 775 {$path}";
@@ -551,7 +551,7 @@ class ProjectController extends AppController
         $user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
         $path = $user_project_setting->value['project_path'];
         if ($path && !file_exists($path)) {
-            FileManager::createDir($path);
+            PwFile::createDir($path);
         }
         if ($path && file_exists($path)) {
             $cmd = "chmod 775 {$path}";

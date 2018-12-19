@@ -5,7 +5,7 @@
  * @copyright 2017 copyright Yohei Yoshikawa (http://yoo-s.com)
  */
 
-ApplicationLoader::autoloadModel();
+PwLoader::autoloadModel();
 
 require_once 'Controller.php';
 
@@ -17,7 +17,7 @@ class AppController extends Controller {
     var $is_pw_auth = true;
 
     function before_action($action = null) {
-        $pgsql_entity = new PgsqlEntity();
+        $pgsql_entity = new PwPgsql();
         if (!$pgsql_entity->connection()) {
             $this->redirectTo(['controller' => 'setting']);
             exit;
@@ -48,7 +48,7 @@ class AppController extends Controller {
      * @return void
      */
     function action_reload_csv_options() {
-        AppSession::clearWithKey('app', 'csv_options');
+        PwSession::clearWithKey('app', 'csv_options');
         $this->loadDefaultCsvOptions();
     }
 
@@ -58,16 +58,16 @@ class AppController extends Controller {
      * @return void
      */
     function loadDefaultCsvOptions() {
-        $this->csv_options = AppSession::getWithKey('app', 'csv_options');
+        $this->csv_options = PwSession::getWithKey('app', 'csv_options');
 
         if ($this->csv_options) return;
 
         $path = DB_DIR."records/*.csv";
         foreach (glob($path) as $file_path) {
             $path_info = pathinfo($file_path);
-            $this->csv_options[$path_info['filename']] = CsvLite::keyValues($file_path);
+            $this->csv_options[$path_info['filename']] = PwCsv::keyValues($file_path);
         }
-        AppSession::setWithKey('app', 'csv_options', $this->csv_options);
+        PwSession::setWithKey('app', 'csv_options', $this->csv_options);
     }
 
     function isRequestPost() {

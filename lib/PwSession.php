@@ -1,15 +1,15 @@
 <?php
 /**
- * AppSession 
+ * PwSession 
  *
  * @author  Yohei Yoshikawa
  *
- * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
 if (!defined('APP_NAME')) exit('Not found APP NAME');
 
-class AppSession {
+class PwSession {
 
    /**
     * load
@@ -21,8 +21,8 @@ class AppSession {
      **/ 
     static function load($key, $default_value = null, $sid = 0) {
         if (!$sid) $sid = 0;
-        if (isset($_REQUEST[$key])) AppSession::set($key, $_REQUEST[$key], $sid);
-        return AppSession::get($key, $default_value, $sid);
+        if (isset($_REQUEST[$key])) PwSession::set($key, $_REQUEST[$key], $sid);
+        return PwSession::get($key, $default_value, $sid);
     }
 
    /**
@@ -64,8 +64,8 @@ class AppSession {
      **/ 
     static function loadWithKey($session_key, $key, $default_value = null, $sid = 0) {
         if (!$sid) $sid = 0;
-        if (isset($_REQUEST[$key])) AppSession::setWithKey($session_key, $key, $_REQUEST[$key], $sid);
-        return AppSession::getWithKey($session_key, $key, $default_value, $sid);
+        if (isset($_REQUEST[$key])) PwSession::setWithKey($session_key, $key, $_REQUEST[$key], $sid);
+        return PwSession::getWithKey($session_key, $key, $default_value, $sid);
     }
 
    /**

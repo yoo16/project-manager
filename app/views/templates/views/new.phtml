@@ -4,9 +4,9 @@
   <?= "<? include('form.phtml') ?>" ?>
 
   <div class="">
-    <? Tag::init()->php('FormHelper::submit(LABEL_SAVE)') ?>
+    <? Tag::init()->php('PwForm::submit(LABEL_SAVE)') ?>
 
-    <? Tag::init()->php('FormHelper::linkButton("cancel", null, [\'label\' => LABEL_BACK])') ?>
+    <? Tag::init()->php('PwForm::linkButton("cancel", null, [\'label\' => LABEL_BACK])') ?>
 
   </div>
 </form>

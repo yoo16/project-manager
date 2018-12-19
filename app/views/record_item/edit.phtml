@@ -16,8 +16,8 @@
 
     <div class="card-footer">
       <div class="text-left">
-        <?= FormHelper::submit(LABEL_SAVE) ?>
-        <?= FormHelper::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+        <?= PwForm::submit(LABEL_SAVE) ?>
+        <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
         <?= $this->record_item->confirmDelete() ?>
       </div>
     </div>

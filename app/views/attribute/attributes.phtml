@@ -67,22 +67,22 @@
             <form method="post" action="<?= $this->urlFor(['action' => 'update_label', 'id' => $attribute['id']]) ?>">
               <div class="row">
                 <div class="input-group">
-                  <?= FormHelper::input(['class' => 'form-control form-control-sm'], 'attribute[label]', $attribute['label']) ?>
+                  <?= PwForm::input(['class' => 'form-control form-control-sm'], 'attribute[label]', $attribute['label']) ?>
                   <span class="input-group-btn">
-                    <?= FormHelper::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?></span>
+                    <?= PwForm::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?></span>
                 </div>
               </div>
-              <?= FormHelper::hidden('pg_class_id', $attribute['pg_attribute']['pg_class_id']) ?>
-              <?= FormHelper::hidden('database_id', $this->database->value['id']) ?>
+              <?= PwForm::hidden('pg_class_id', $attribute['pg_attribute']['pg_class_id']) ?>
+              <?= PwForm::hidden('database_id', $this->database->value['id']) ?>
             </form>
           </td>
 
           <td>
             <? if ($attribute['fk_attribute_id'] > 0): ?>
-            <?= FormHelper::linkModal('#relation-window', 'relation', 
+            <?= PwForm::linkModal('#relation-window', 'relation', 
                 ['class' => 'btn btn-success btn-sm pw-click', 'pw-controller' => 'attribute', 'pw-action' => 'relation_model_list', 'attribute_id' => $attribute['id'], ]) ?>
             <? else: ?>
-            <?= FormHelper::linkModal('#relation-window', 'relation', 
+            <?= PwForm::linkModal('#relation-window', 'relation', 
                 ['class' => 'btn btn-outline-primary btn-sm pw-click', 'pw-controller' => 'attribute', 'pw-action' => 'relation_model_list', 'attribute_id' => $attribute['id'], ]) ?>
             <? endif ?>
           </td>
@@ -110,31 +110,31 @@
           </td>
 
           <td>
-            <?= FormHelper::badgeTag($attribute['pg_attribute']['attnum'], null, 'info') ?>
+            <?= PwForm::badgeTag($attribute['pg_attribute']['attnum'], null, 'info') ?>
             <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
-            <?= FormHelper::badgeTag('sync', null, 'success') ?>
+            <?= PwForm::badgeTag('sync', null, 'success') ?>
 
             <? if ($attribute['pg_attribute']['attname'] != $attribute['name']): ?>
-            <?= FormHelper::badgeTag($attribute['pg_attribute']['attname'], null, 'danger') ?>
+            <?= PwForm::badgeTag($attribute['pg_attribute']['attname'], null, 'danger') ?>
             <? endif ?>
 
             <? if ($attribute['pg_attribute']['udt_name'] != $attribute['type']): ?>
-            <?= FormHelper::badgeTag($attribute['pg_attribute']['udt_name'], null, 'danger') ?>
-            <?= FormHelper::badgeTag($attribute['pg_attribute']['character_maximum_length'], null, 'danger') ?>
+            <?= PwForm::badgeTag($attribute['pg_attribute']['udt_name'], null, 'danger') ?>
+            <?= PwForm::badgeTag($attribute['pg_attribute']['character_maximum_length'], null, 'danger') ?>
             <? endif ?>
 
             <? if ($attribute['is_primary_key']): ?>
-            <?= FormHelper::badgeTag('Primary', null, 'info') ?>
+            <?= PwForm::badgeTag('Primary', null, 'info') ?>
             <? endif ?>
             <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?>
-            <?= FormHelper::badgeTag('Not Null', null, 'info') ?>
+            <?= PwForm::badgeTag('Not Null', null, 'info') ?>
             <? endif ?>
             <? else: ?>
             <label class="badge badge-pill badge-danger">unsync</label>
             <form action="<?= $this->urlFor(['action' => 'add_column', 'id' => $attribute['id']]) ?>" method="post">
-              <?= FormHelper::submit(LABEL_ADD, ['class' => 'btn btn-outline-primary']) ?>
-              <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
-              <?= FormHelper::hidden('table_name', $this->model->value['name']) ?>
+              <?= PwForm::submit(LABEL_ADD, ['class' => 'btn btn-outline-primary']) ?>
+              <?= PwForm::hidden('model_id', $this->model->value['id']) ?>
+              <?= PwForm::hidden('table_name', $this->model->value['name']) ?>
             </form>
             <? endif ?>
           </td>

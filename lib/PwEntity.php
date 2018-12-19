@@ -1,11 +1,11 @@
 <?php
 /**
- * Entity 
+ * PwEntity 
  *
- * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
-class Entity {
+class PwEntity {
     public $is_cast = true;
     public $id_column = 'id';
     public $columns = [];
@@ -47,7 +47,7 @@ class Entity {
     /**
      * init
      * 
-     * @return Entity
+     * @return PwEntity
      */
     public function init() {
         $this->conditions = null;
@@ -69,7 +69,7 @@ class Entity {
      * set is cast
      * 
      * @param  boolean $column
-     * @return Entity
+     * @return PwEntity
      */
     public function setIsCast($is_cast) {
         $this->is_cast = $is_cast;
@@ -80,7 +80,7 @@ class Entity {
      * set id
      * 
      * @param  string $id
-     * @return Entity
+     * @return PwEntity
      */
     public function setId($id) {
         if ($id > 0) {
@@ -94,7 +94,7 @@ class Entity {
      * set id column
      * 
      * @param  string $column
-     * @return Entity
+     * @return PwEntity
      */
     public function setIdColumn($column) {
         if ($column) $this->id_column = $column;
@@ -106,7 +106,7 @@ class Entity {
      * 
      * @param  string $values_index_column
      * @param  string $values_index_column_type
-     * @return Entity
+     * @return PwEntity
      */
     public function setValuesIndexColumn($values_index_column, $values_index_column_type = null) {
         $this->values_index_column = $values_index_column;
@@ -119,7 +119,7 @@ class Entity {
      * 
      * @param  string $sid
      * @param  string $multi_session_id
-     * @return Entity
+     * @return PwEntity
      */
     public function requestSession($sid = 0, $multi_session_id = null) {
         $request_column = "{$this->entity_name}_id";
@@ -131,15 +131,15 @@ class Entity {
         if (isset($_REQUEST[$request_column])) {
             $this->fetch($_REQUEST[$request_column]);
             if ($multi_session_id) {
-                AppSession::setWithKey($multi_session_id, $session_name, $this, $sid);
+                PwSession::setWithKey($multi_session_id, $session_name, $this, $sid);
             } else {
-                AppSession::set($session_name, $this, $sid);
+                PwSession::set($session_name, $this, $sid);
             }
         }
         if ($multi_session_id) {
-            return AppSession::getWithKey($multi_session_id, $session_name, null, $sid);
+            return PwSession::getWithKey($multi_session_id, $session_name, null, $sid);
         } else {
-            return AppSession::get($session_name, null, $sid);
+            return PwSession::get($session_name, null, $sid);
         }
     }
 
@@ -147,7 +147,7 @@ class Entity {
      * load session
      * 
      * @param int $id
-     * @return Entity
+     * @return PwEntity
      */
     public function session() {
         return $this->getSession();
@@ -156,10 +156,10 @@ class Entity {
    /**
     * getSession
     *
-    * @return Entity
+    * @return PwEntity
     */
     public function getSession() {
-        return AppSession::get($this->entity_name);
+        return PwSession::get($this->entity_name);
     }
 
    /**
@@ -168,7 +168,7 @@ class Entity {
     * @return void
     */
     public function setSession() {
-        AppSession::set($this->entity_name, $this);
+        PwSession::set($this->entity_name, $this);
         return $this;
     }
 
@@ -178,7 +178,7 @@ class Entity {
     * @return void
     */
     public function clearSession() {
-        AppSession::clear($this->entity_name);
+        PwSession::clear($this->entity_name);
         return $this;
     }
 
@@ -186,7 +186,7 @@ class Entity {
      * reload
      * 
      * @param
-     * @return Entity
+     * @return PwEntity
      */
     public function post() {
         if (!isPost()) exit('Not POST method');
@@ -200,7 +200,7 @@ class Entity {
      * reload
      * 
      * @param
-     * @return Entity
+     * @return PwEntity
      */
     public function reload() {
         if (isset($this->id)) $this->fetch($this->id);
@@ -211,7 +211,7 @@ class Entity {
      * default
      * 
      * @param
-     * @return Entity
+     * @return PwEntity
      */
     public function defaultValue() {
         if ($this->columns) {
@@ -266,7 +266,7 @@ class Entity {
      * 
      * @param  array $posts
      * @param  integer $id
-     * @return PgsqlEntity
+     * @return PwPgsql
      */
     public function save($posts, $id = null)
     {
@@ -317,7 +317,7 @@ class Entity {
      * setValue
      * 
      * @param  array $value
-     * @return Entity
+     * @return PwEntity
      */
     public function setValue($value) {
         $this->value = $value;
@@ -328,7 +328,7 @@ class Entity {
      * setValue By id
      * 
      * @param  integer $id
-     * @return Entity
+     * @return PwEntity
      */
     public function setValueById($id) {
         if (!$this->values) return $this;
@@ -344,7 +344,7 @@ class Entity {
      * takeValues
      * 
      * @param  array $values
-     * @return Entity
+     * @return PwEntity
      */
     public function takeValues($values) {
         if (!$values) return $this;
@@ -371,16 +371,16 @@ class Entity {
         if (isset($column) && isset($message)) {
             $this->errors[] = ['column' => $column, 'message' => $message];
         }
-        AppSession::setErrors($this->errors);
+        PwSession::setErrors($this->errors);
     }
 
     /**
-     * getErrorMessage
+     * getPwError
      * 
      * @param  string $column
      * @return array
      */
-    public function getErrorMessage($column) {
+    public function getPwError($column) {
         $messages = array();
         foreach ($this->errors as $error) {
             if ($error['column'] === $column) {
@@ -458,9 +458,9 @@ class Entity {
         if ($value === '') return null;
 
         if (is_string($value)) {
-            return DateHelper::convertString($value);
+            return PwDate::convertString($value);
         } else if (is_array($value)) {
-            $timestamp = DateHelper::arrayToString($value);
+            $timestamp = PwDate::arrayToString($value);
             return $this->castTimestamp($timestamp);
         } else {
             return $value;
@@ -576,7 +576,7 @@ class Entity {
     /**
      * set parent relation
      * 
-     * @param Entity $parent_relation
+     * @param PwEntity $parent_relation
      */
     function setParent($parent_relation) {
         if ($parent_relation->entity_name) {
@@ -589,7 +589,7 @@ class Entity {
     /**
      * add child relation
      * 
-     * @param Entity $relation
+     * @param PwEntity $relation
      */
     function addChild($relation) {
         if ($relation->entity_name && $relation->values) {
@@ -672,7 +672,7 @@ class Entity {
      * idIndex
      * 
      * @param  boolean $id_index
-     * @return Entity
+     * @return PwEntity
      */
     function idIndex($id_index = true) {
         $this->id_index = $id_index;
@@ -772,7 +772,7 @@ class Entity {
         } else {
             $name = "{$this->entity_name}[{$column}]";
         }
-        $tag = FormHelper::text($name, $this->value[$column], $params);
+        $tag = PwForm::text($name, $this->value[$column], $params);
         return $tag;
     }
 
@@ -786,7 +786,7 @@ class Entity {
     function formPassword($column, $params = null) {
         if (!$column) return;
         $name = "{$this->entity_name}[{$column}]";
-        $tag = FormHelper::password($name, $this->value[$column], $params);
+        $tag = PwForm::password($name, $this->value[$column], $params);
         return $tag;
     }
 
@@ -800,7 +800,7 @@ class Entity {
     function formTextarea($column, $params = null) {
         if (!$column) return;
         $name = "{$this->entity_name}[{$column}]";
-        $tag = FormHelper::textarea($name, $this->value[$column], $params);
+        $tag = PwForm::textarea($name, $this->value[$column], $params);
         return $tag;
     }
 
@@ -814,7 +814,7 @@ class Entity {
     function formHidden($column, $params = null) {
         if (!$column) return;
         $name = "{$this->entity_name}[{$column}]";
-        $tag = FormHelper::hidden($name, $this->value[$column], $params);
+        $tag = PwForm::hidden($name, $this->value[$column], $params);
         return $tag;
     }
 
@@ -831,7 +831,7 @@ class Entity {
         if (!$params['name']) $params['name'] = "{$this->entity_name}[{$column}]";
         if ($params['model'] && !$params['value']) $params['value'] = $this->id_column;
         if ($params['value_column']) $params['value'] = $params['value_column'];
-        $tag = FormHelper::select($params, $this->value[$column]);
+        $tag = PwForm::select($params, $this->value[$column]);
         return $tag;
     }
 
@@ -846,7 +846,7 @@ class Entity {
         if (!$column) return;
         if (!$params['name']) $params['name'] = "{$this->entity_name}[{$column}]";
 
-        $tag = FormHelper::selectDate($params, $this->value[$column]);
+        $tag = PwForm::selectDate($params, $this->value[$column]);
         return $tag;
     }
 
@@ -864,7 +864,7 @@ class Entity {
         if ($params['value_column']) $params['value'] = $params['value_column'];
         if ($params['model'] && !$params['value']) $params['value'] = $this->id_column;
 
-        $tag = FormHelper::radio($params, $this->value[$column]);
+        $tag = PwForm::radio($params, $this->value[$column]);
         return $tag;
     }
 
@@ -880,7 +880,7 @@ class Entity {
         if ($this->values) $params['values'] = $this->values;
         if (!$params['name']) $params['name'] = "{$this->entity_name}[{$column}]";
         if ($params['value_column']) $params['value'] = $params['value_column'];
-        $tag = FormHelper::checkbox($params, $this->value[$column]);
+        $tag = PwForm::checkbox($params, $this->value[$column]);
         return $tag;
     }
 
@@ -902,11 +902,11 @@ class Entity {
         $params['action'] = $action;
         $params['id'] = $this->value[$this->id_column];
 
-        $contents = FormHelper::delete($params);
+        $contents = PwForm::delete($params);
 
         $params = null;
         $params['action'] = Controller::url($params);
-        $tag = FormHelper::form($contents, $params);
+        $tag = PwForm::form($contents, $params);
         return $tag;
     }
 
@@ -920,7 +920,7 @@ class Entity {
         if (!$this->id) return;
         $params['delete_id'] = $this->id;
         if ($params['title_column']) $params['title'] = $this->value[$params['title_column']];
-        $tag = FormHelper::confirmDelete($params);
+        $tag = PwForm::confirmDelete($params);
         return $tag;
     }
 
@@ -934,7 +934,7 @@ class Entity {
     */
     function recordValue($csv_name, $column, $params = null) {
         if (!isset($this->value[$column])) return;
-        $csv_records = AppSession::getWithKey('app', 'csv_options');
+        $csv_records = PwSession::getWithKey('app', 'csv_options');
         if ($records = $csv_records[$csv_name]) {
             return $records[$this->value[$column]];
         }
@@ -945,7 +945,7 @@ class Entity {
     *
     * @param string $model_name
     * @param string $value_key
-    * @return Entity
+    * @return PwEntity
     */
     function bindById($model_name, $value_key = null) {
         if (!$this->values) return $this;
@@ -967,7 +967,7 @@ class Entity {
     * @param array $relation_values
     * @param string $relation_name
     * @param string $relation_key
-    * @return Entity
+    * @return PwEntity
     */
     function bindValuesArray($relation_values, $relation_name, $relation_key) {
         if (!$this->values) return $this;
@@ -982,9 +982,9 @@ class Entity {
     /**
     * binds by relation many
     *
-    * @param Entity $relation
+    * @param PwEntity $relation
     * @param string $relation_key
-    * @return Entity
+    * @return PwEntity
     */
     function bindMany($relation, $relation_key = null) {
         if (!$this->value) return $this;
@@ -1004,9 +1004,9 @@ class Entity {
     /**
     * binds by relation many
     *
-    * @param Entity $relation
+    * @param PwEntity $relation
     * @param string $relation_key
-    * @return Entity
+    * @return PwEntity
     */
     function bindsMany($relation, $relation_key = null) {
         if (!$this->values) return $this;
@@ -1030,9 +1030,9 @@ class Entity {
     /**
     * find Parent 
     *
-    * @param Entity $relation
+    * @param PwEntity $relation
     * @param string $relation_key
-    * @return Entity
+    * @return PwEntity
     */
     function findParent($relation, $relation_key = null) {
         if (!$this->value) return $this;
@@ -1050,7 +1050,7 @@ class Entity {
      * value From index values
      *
      * @param string $key
-     * @return Entity
+     * @return PwEntity
      */
     function valueForKey($key) {
         if (!$this->values) return $this;
@@ -1061,9 +1061,9 @@ class Entity {
     /**
      * find from relation value
      * 
-     * @param  Entity $relation
+     * @param  PwEntity $relation
      * @param  string $column
-     * @return Entity
+     * @return PwEntity
      */
     function findByRelation($relation, $column = null) {
         if (!$this->values) return $this;
@@ -1078,7 +1078,7 @@ class Entity {
      * convert values by column index
      *
      * @param string $column
-     * @return Entity
+     * @return PwEntity
      */
     function valuesForColumnIndex($column) {
         if (!$this->columns[$column]) return $this;
@@ -1110,7 +1110,7 @@ class Entity {
     static function foreignTableByColumnName($column_name) {
         if ($pos = strpos($column_name, '_id')) {
             $table_name = substr($column_name, 0, $pos);
-            $table_name = FileManager::singularToPlural($table_name);
+            $table_name = PwFile::singularToPlural($table_name);
             return $table_name;
         }
     }
@@ -1232,7 +1232,7 @@ class Entity {
      * 
      * request $_POST only
      *
-     * @return Entity
+     * @return PwEntity
      */
     function auth() {
         if ($_SERVER['REQUEST_METHOD'] != 'POST') exit;
@@ -1251,7 +1251,7 @@ class Entity {
     /**
      * remember session pw_auth
      *
-     * @param Entity $model
+     * @param PwEntity $model
      * @return void
      */
     function rememberAuth() {
@@ -1259,7 +1259,7 @@ class Entity {
         if (!$this->value) return;
 
         $pw_auth[$this->entity_name] = $this;
-        AppSession::set('pw_auth', $pw_auth);
+        PwSession::set('pw_auth', $pw_auth);
     }
 
     /**

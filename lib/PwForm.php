@@ -1,11 +1,11 @@
 <?php
 /**
- * FormHelper
+ * PwForm
  *
  * @copyright 2017 copyright Yohei Yoshikawa (http://yoo-s.com)
  */
 
-class FormHelper {
+class PwForm {
     //TODO refactoring
     static $radio_columns = ['value'];
 
@@ -60,14 +60,14 @@ class FormHelper {
         if (!$params) return;
         
         $params['class'].= ' form-control';
-        if (!$params['hide_year']) $tag.= FormHelper::selectYear($params, $selected);
-        if (!$params['hide_month']) $tag.= FormHelper::selectMonth($params, $selected);
-        if (!$params['hide_day']) $tag.= FormHelper::selectDays($params, $selected);
-        if ($params['show_hour']) $tag = FormHelper::selectTime($params, $selected);
+        if (!$params['hide_year']) $tag.= PwForm::selectYear($params, $selected);
+        if (!$params['hide_month']) $tag.= PwForm::selectMonth($params, $selected);
+        if (!$params['hide_day']) $tag.= PwForm::selectDays($params, $selected);
+        if ($params['show_hour']) $tag = PwForm::selectTime($params, $selected);
 
         if ($params['one_day']) {
             $name = "{$params['name']}[day]";
-            $tag.= FormHelper::input(['type' => 'hidden', 'name' => $name, 'value' => 1]);
+            $tag.= PwForm::input(['type' => 'hidden', 'name' => $name, 'value' => 1]);
         }
         return $tag;
     }
@@ -83,7 +83,7 @@ class FormHelper {
         if (!$formatter) return;
         if (!$type) return;
         $tag = '';
-        $format_label = DateHelper::formatters($formatter, $type);
+        $format_label = PwDate::formatters($formatter, $type);
         if ($format_label) $tag = "&nbsp;{$format_label[$type]}&nbsp;";
         return $tag;
     }
@@ -383,8 +383,8 @@ class FormHelper {
      */
     static function values($params) {
         if (isset($params['csv']) && $params['csv']) {
-            $lang = ApplicationLocalize::lang();
-            $values = CsvLite::options($params['csv'], $lang);
+            $lang = PwLocalize::lang();
+            $values = PwCsv::options($params['csv'], $lang);
         } else if (isset($params['model']) && $params['model']) {
             $instance = DB::model($params['model']);
 
@@ -622,7 +622,7 @@ class FormHelper {
                 $label_params['label'] = self::convertLabel($value, $params);
                 if ($params['label_unit']) $label_params['label'].= $params['label_unit'];
             }
-            $tag.= FormHelper::label($label_params);
+            $tag.= PwForm::label($label_params);
         }
         return $tag;
     }
@@ -648,7 +648,7 @@ class FormHelper {
     static function genderRadio($params=null, $selected=null) {
         if (!$params['csv_name']) $params['csv_name'] = 'gender';
         if (!$params['name']) $params['name'] = 'gender';
-        $values = CsvLite::formOptions($params);
+        $values = PwCsv::formOptions($params);
         $tag = self::radio($values, $selected);
         return $tag;
     }
@@ -916,7 +916,7 @@ class FormHelper {
         if (!isset($params['label'])) $params['label'] = LABEL_DELETE;
         if (!isset($params['class'])) $params['class'] = 'btn btn-danger';
         $params['class'].= ' confirm-delete fa fa-erase';
-        $tag = TagHelper::a($params);
+        $tag = PwTag::a($params);
         return $tag;
     }
 
@@ -993,10 +993,10 @@ class FormHelper {
     */ 
     static function changeActiveLabelTag($params, $is_active, $valid_label = LABEL_TRUE, $invalid_label = LABEL_FALSE) {
         if ($is_active) {
-            $icon_tag = TagHelper::iconTag('check');
+            $icon_tag = PwTag::iconTag('check');
             $tag = "<span class=\"btn btn-sm btn-danger action-loading\">{$icon_tag}{$valid_label}</span>";
         } else {
-            $icon_tag = TagHelper::iconTag('times');
+            $icon_tag = PwTag::iconTag('times');
             $tag = "<span class=\"btn btn-sm btn-outline-primary action-loading\">{$icon_tag}{$invalid_label}</span>";
         }
         $href = Controller::url($params, $params['http_params']);

@@ -76,7 +76,7 @@ class View extends _View {
 
         $view_dir = $user_project_setting['project_path']."app/views/{$page['entity_name']}/";
         if (!file_exists($view_dir)) {
-            FileManager::createDir($view_dir);
+            PwFile::createDir($view_dir);
         }
         $path = "{$view_dir}{$view['name']}.phtml";
         return $path;
@@ -96,7 +96,7 @@ class View extends _View {
 
         $view_dir = $user_project_setting['project_path']."app/views/{$page['entity_name']}/";
         if (!file_exists($view_dir)) {
-            FileManager::createDir($view_dir);
+            PwFile::createDir($view_dir);
         }
         $path = "{$view_dir}{$name}.phtml";
         return $path;
@@ -116,7 +116,7 @@ class View extends _View {
 
         $view_dir = $user_project_setting['project_path']."app/views/{$page['entity_name']}/";
         if (!file_exists($view_dir)) {
-            FileManager::createDir($view_dir);
+            PwFile::createDir($view_dir);
         }
         $path = "{$view_dir}_header.phtml";
         return $path;

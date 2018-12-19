@@ -1,11 +1,11 @@
 <?php
 /**
- * FileMnager.php
+ * PwFile
  *
- * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  **/
 
-class FileManager {
+class PwFile {
     public $base_dir;
     public $base_url;
     public $file;
@@ -100,7 +100,7 @@ class FileManager {
     }
 
     function create($is_add = false) {
-        FileManager::createDir($this->base_dir);
+        PwFile::createDir($this->base_dir);
         $mode = ($is_add) ? 'a' : 'w';
         $this->file = fopen($this->file_path, $mode);
     }
@@ -111,7 +111,7 @@ class FileManager {
      * @param array $contents
      **/
     function output($contents) {
-        FileManager::createDir($this->base_dir);
+        PwFile::createDir($this->base_dir);
 
         file_put_contents($this->file_path, $contents);
 
@@ -616,7 +616,7 @@ class FileManager {
      * @return void
      */
     static function outputDownloadHeader($file_name) {
-        if (FileManager::isIE()) {
+        if (PwFile::isIE()) {
             $file_name = mb_convert_encoding($file_name, 'SJIS', 'UTF-8');
         }
         header("Content-type: application/octet-stream; name=\"{$file_name}\"");
@@ -656,7 +656,7 @@ class FileManager {
      **/
     static function downloadFile($file_path, $file_name) {
         if (file_exists($file_path)) {
-            if (FileManager::isIE($_SERVER)) {
+            if (PwFile::isIE($_SERVER)) {
                 $file_name = mb_convert_encoding($file_name, 'SJIS', 'UTF-8');
             }
             header("Content-Disposition: Attachment; filename=\"{$file_name}\""); 
@@ -689,7 +689,7 @@ class FileManager {
      * @return void
      **/
     static function downloadContents($file_name, $contents) {
-        FileManager::outputDownloadHeader($file_name);
+        PwFile::outputDownloadHeader($file_name);
         echo($contents);
         exit;
     }
@@ -820,14 +820,14 @@ class FileManager {
     }
 
     /**
-     * phpClassNameFromEntityName
+     * phpClassNameFromPwEntityName
      *
      * @param string $entity_name
      * @return void
      */
-    static function phpClassNameFromEntityName($entity_name) {
-        $name = FileManager::pluralToSingular($entity_name);
-        $class_name = FileManager::phpClassName($name);
+    static function phpClassNameFromPwEntityName($entity_name) {
+        $name = PwFile::pluralToSingular($entity_name);
+        $class_name = PwFile::phpClassName($name);
         return $class_name;
     }
 

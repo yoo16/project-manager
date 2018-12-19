@@ -3,10 +3,10 @@
 /**
  *  FTP Connection
  * 
- * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
-class FtpLite
+class PwFtp
 {
     public $connect = null;
     public $is_login = false;
@@ -38,7 +38,7 @@ class FtpLite
     /**
      * set Host
      * @param string $host
-     * @return FtpLite
+     * @return PwFtp
      */
     function setHost($host)
     {
@@ -49,7 +49,7 @@ class FtpLite
     /**
      * set login_name
      * @param string $login_name
-     * @return FtpLite
+     * @return PwFtp
      */
     function setLoginName($login_name)
     {
@@ -60,7 +60,7 @@ class FtpLite
     /**
      * set password
      * @param string $password
-     * @return FtpLite
+     * @return PwFtp
      */
     function setPassword($password)
     {
@@ -71,7 +71,7 @@ class FtpLite
     /**
      * set is_scp
      * @param boolean $is_scp
-     * @return FtpLite
+     * @return PwFtp
      */
     function setScp($is_scp)
     {
@@ -284,7 +284,7 @@ class FtpLite
      * @param  string $file_path
      * @param  string $remote_path
      * @param  string $upload_mode
-     * @return FtpLite
+     * @return PwFtp
      */
     function ftpDownloadFile($file_path, $remote_path, $upload_mode = FTP_BINARY)
     {
@@ -302,7 +302,7 @@ class FtpLite
      * 
      * @param  string $file_path
      * @param  string $remote_path
-     * @return FtpLite
+     * @return PwFtp
      */
     function scpDownloadFile($file_path, $remote_path)
     {
@@ -320,7 +320,7 @@ class FtpLite
      * @param  string $file_path
      * @param  string $remote_dir
      * @param  string $upload_mode
-     * @return FtpLite
+     * @return PwFtp
      */
     function ftpUploadFile($file_path, $remote_dir, $upload_mode = FTP_BINARY)
     {
@@ -338,7 +338,7 @@ class FtpLite
      * 
      * @param  string $file_path
      * @param  string $remote_path
-     * @return FtpLite
+     * @return PwFtp
      */
     function scpUploadFile($file_path, $remote_dir)
     {

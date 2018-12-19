@@ -136,13 +136,13 @@ class SampleController extends AppController {
     }
 
     function action_upload_file() {
-        $this->contents = FileManager::loadContents();
+        $this->contents = PwFile::loadContents();
         $this->encoding = mb_detect_encoding($this->contents);
         $this->contents = mb_convert_encoding($this->contents, 'UTF-8', $this->encoding);
 
-        $this->upload_file_path = FileManager::uploadFilePath();
+        $this->upload_file_path = PwFile::uploadFilePath();
 
-        $this->file_type = FileManager::uploadFileType();
+        $this->file_type = PwFile::uploadFileType();
     }
 
 }

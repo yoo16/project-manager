@@ -1,23 +1,23 @@
 <!-- TODO setting -->
-<?= TagHelper::javascript('jquery/jquery-1.11.1.min') ?>
-<?= TagHelper::javascript('jquery/jquery-ui.min') ?>
-<?= TagHelper::javascript('jquery/jquery.tablednd') ?>
-<?= TagHelper::javascript('jquery/jquery.validate.min') ?>
-<?= TagHelper::javascript('jquery/jquery.datetimepicker') ?>
-<?= TagHelper::javascript('jquery/jpicker-1.1.6.min') ?>
-<?= TagHelper::javascript('jquery/loadingoverlay.min') ?>
+<?= PwTag::javascript('jquery/jquery-1.11.1.min') ?>
+<?= PwTag::javascript('jquery/jquery-ui.min') ?>
+<?= PwTag::javascript('jquery/jquery.tablednd') ?>
+<?= PwTag::javascript('jquery/jquery.validate.min') ?>
+<?= PwTag::javascript('jquery/jquery.datetimepicker') ?>
+<?= PwTag::javascript('jquery/jpicker-1.1.6.min') ?>
+<?= PwTag::javascript('jquery/loadingoverlay.min') ?>
 
-<?= TagHelper::javascript('bootstrap/tether.min') ?>
-<?= TagHelper::javascript('bootstrap/bootstrap.min') ?>
+<?= PwTag::javascript('bootstrap/tether.min') ?>
+<?= PwTag::javascript('bootstrap/bootstrap.min') ?>
 
 <script type="text/javascript">
   var pw_project_name = '<?= $this->pw_project_name ?>';
 </script>
 
-<?= TagHelper::javascript('application') ?>
-<?= TagHelper::javascript('plugin') ?>
-<?= TagHelper::javascript('functions') ?>
-<?= TagHelper::javascript('lib/PwController') ?>
-<?= TagHelper::javascript('lib/PwSortable') ?>
-<?= TagHelper::javascript('lib/PwScroller') ?>
-<?= TagHelper::javascriptController($this->class_name) ?>
+<?= PwTag::javascript('application') ?>
+<?= PwTag::javascript('plugin') ?>
+<?= PwTag::javascript('functions') ?>
+<?= PwTag::javascript('lib/PwController') ?>
+<?= PwTag::javascript('lib/PwSortable') ?>
+<?= PwTag::javascript('lib/PwScroller') ?>
+<?= PwTag::javascriptController($this->class_name) ?>

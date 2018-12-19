@@ -7,9 +7,9 @@
 
 //namespace project_manager;
 
-require_once 'PgsqlEntity.php';
+require_once 'PwPgsql.php';
 
-class _PageModel extends PgsqlEntity {
+class _PageModel extends PwPgsql {
 
     public $id_column = 'id';
     public $name = 'page_models';

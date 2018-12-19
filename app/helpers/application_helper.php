@@ -2,7 +2,7 @@
 /**
  * application helper 
  * 
- * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
+ * Copyright (c) 2017 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
 function undefineLabel($key, $value) {

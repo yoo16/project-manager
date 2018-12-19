@@ -1,23 +1,26 @@
 <html lang="ja">
+
 <head>
   <? include('components/meta.phtml') ?>
   <? include('components/stylesheet.phtml') ?>
   <? include('components/javascript.phtml') ?>
 
-  <?= TagHelper::javascript('log') ?>
+  <?= PwTag::javascript('log') ?>
 
+  <? if (defined('PROJECT_NAME')): ?>
   <script type="text/javascript">
-    <? if (defined('PROJECT_NAME')): ?>
     var project_name = '<?= PROJECT_NAME ?>';
+  </script>
   <? endif ?>
-</script>
 </head>
+
 <body>
 
   <div class="nav">
     <div class="container">
       <div class="navbar-header">
-        <a class="navbar-brand" href="<?= $this->linkTo('admin/') ?>"><?= APP_NAME ?></a>
+        <a class="navbar-brand" href="<?= $this->linkTo('admin/') ?>">
+          <?= APP_NAME ?></a>
       </div>
 
       <? if ($this->admin): ?>
@@ -26,22 +29,23 @@
         <a class="flex-sm-fill text-sm-center nav-link" href="<?= $this->linkTo('admin/log') ?>">Log File</a>
         <a class="flex-sm-fill text-sm-center nav-link" href="<?= $this->linkTo('admin/logout') ?>">Logout</a>
       </div>
-    <? endif ?>
-  </div>
-</div>
-
-<div class="container">
-  <div class="sidebar">
-    <? include('components/_header.phtml') ?>
+      <? endif ?>
+    </div>
   </div>
 
-  <?= $this->content_for_layout?>
+  <div class="container">
+    <div class="sidebar">
+      <? include('components/_header.phtml') ?>
+    </div>
 
-  <? include('components/_footer.phtml') ?>
-</div>
+    <?= $this->content_for_layout?>
 
-<div id="indicator">
-  <img src="<?= $this->linkTo('images/loader.gif') ?>">
-</div>
+    <? include('components/_footer.phtml') ?>
+  </div>
+
+  <div id="indicator">
+    <img src="<?= $this->linkTo('images/loader.gif') ?>">
+  </div>
 </body>
+
 </html>

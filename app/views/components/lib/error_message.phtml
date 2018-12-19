@@ -13,7 +13,7 @@
             <? if(is_array($this->errors)): ?>
               <? foreach ($this->errors as $model => $error): ?>
                 <? foreach ($error as $key2 => $value): ?>
-                  <li><?= ErrorMessage::display($value, $this->pw_params, $model)?></li>
+                  <li><?= PwError::display($value, $this->pw_params, $model)?></li>
                 <? endforeach?>
               <? endforeach?>
             <? endif ?>

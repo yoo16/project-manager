@@ -4,7 +4,7 @@
       <form id="form-edit" action="<?= $this->urlFor('add') ?>" method="post" autocomplete="off">
         <div class="form-group">
           <label for="recipient-name" class="form-control-label"><?= LABEL_MAIL ?></label>
-          <input class="form-control <?= FormHelper::validateRequired($this->errors, 'email') ?>" type="email" name="email" value="<?= $this->user['email'] ?>" required autocomplete="off">
+          <input class="form-control <?= PwForm::validateRequired($this->errors, 'email') ?>" type="email" name="email" value="<?= $this->user['email'] ?>" required autocomplete="off">
         </div>
 
         <div class="form-group">
@@ -36,12 +36,12 @@
 
       <div class="form-group">
         <label for="recipient-name" class="form-control-label"><?= LABEL_GENDER ?></label>
-        <?= FormHelper::genderRadio($this->forms['gender'], $this->user['gender']); ?>
+        <?= PwForm::genderRadio($this->forms['gender'], $this->user['gender']); ?>
       </div>
 
       <div class="form-group">
         <label for="recipient-name" class="form-control-label"><?= LABEL_BIRTHDAY ?></label>
-        <?= FormHelper::selectBirthday($this->forms['birthday_at'], $this->user['birthday_at']); ?>
+        <?= PwForm::selectBirthday($this->forms['birthday_at'], $this->user['birthday_at']); ?>
       </div>
 
       <button class="btn btn-outline-primary" type="submit"><?= LABEL_REGIST ?></button>

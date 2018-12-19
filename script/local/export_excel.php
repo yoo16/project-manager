@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__).'/../../lib/Controller.php';
 
-ApplicationLoader::autoloadModel();
+PwLoader::autoloadModel();
 
 if (!defined('EXCEL_EXPORT_DIR')) exit('Not defined EXCEL_EXPORT_DIR');
 if (!defined('EXCEL_SCP_UPLOAD_HOST')) exit('Not defined EXCEL_SCP_UPLOAD_HOST');

@@ -1,21 +1,27 @@
 <?php
 /**
- * ApplicationLocalize 
+ * PwLocalize 
  *
  * @author  Yohei Yoshikawa
- * @create  2012/10/03 
+ * 
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
-class ApplicationLogger {
+class PwLogger {
 
     /**
-     * [autoload_model description]
+     * construct
      * 
-     * @return [type] [description]
+     * @return
      */
     function __construct() {
 
     }
 
+    /**
+     * log directory
+     * 
+     * @return string
+     */
     function logDir() {
         if (defined('LOG_DIR')) {
             $path = LOG_DIR;
@@ -23,11 +29,16 @@ class ApplicationLogger {
             $path = BASE_DIR.'log/';
         }
         if (!file_exists($path)) {
-            FileManager::createDir($path);
+            PwFile::createDir($path);
         }
         return $path;
     }
 
+    /**
+     * log date
+     * 
+     * @return string
+     */
     function logDate($date) {
         if (!$date) {
             $date = date('Ymd');
@@ -35,6 +46,11 @@ class ApplicationLogger {
         return $date;
     }
 
+    /**
+     * log file path
+     * 
+     * @return string
+     */
     function logFile($date=null) {
         $date = self::logDate($date);
         $file = $date.'.log';
@@ -56,6 +72,11 @@ class ApplicationLogger {
         return $files;
     }
 
+    /**
+     * log analyze
+     * 
+     * @return array
+     */
     function analyze($date=null) {
         $path = self::logFile($date);
         if (!file_exists($path)) {
@@ -96,11 +117,21 @@ class ApplicationLogger {
         return $values;
     }
 
+    /**
+     * is first sentence
+     * 
+     * @return boolean
+     */
     function isFirstSentence($row) {
         $value = mb_substr($row, 0, 1);
         return ($value == '[');
     }
 
+    /**
+     * is error
+     * 
+     * @return boolean
+     */
     function isError($row) {
         $keys[] = 'PHP Warning: ';
         $keys[] = 'PHP Fatal error:';
@@ -111,6 +142,11 @@ class ApplicationLogger {
         }
     }
 
+    /**
+     * error date
+     * 
+     * @return string
+     */
     function errorDate($row) {
         if (self::isFirstSentence($row)) {
             $value = mb_substr($row, 1, 20); 
@@ -121,6 +157,11 @@ class ApplicationLogger {
         }
     }
 
+    /**
+     * fetch error
+     * 
+     * @return array
+     */
     function fetchError($row) {
         $keys[] = 'PHP Warning: ';
         $keys[] = 'PHP Fatal error:';

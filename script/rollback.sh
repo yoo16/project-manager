@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
+ * Copyright (c) 2017 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
 echo('DB rollback').PHP_EOL;
 
 require_once dirname(__FILE__).'/../lib/setting.php';
-require_once 'PgsqlEntity.php';
+require_once 'PwPgsql.php';
 
-$pgsq_entity = new PgsqlEntity();
+$pgsq_entity = new PwPgsql();
 $schema_sql = 'SELECT version FROM schema_info;';
 $schema_version = (int) $pgsq_entity->fetch_result($schema_sql);
 echo($schema_sql).PHP_EOL;

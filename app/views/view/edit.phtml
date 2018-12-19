@@ -5,32 +5,32 @@
   <div class="card-block">
     <form id="form-edit" action="<?= $this->urlFor('update', $this->view->value['id']) ?>" method="post" autocomplete="off">
       <div class="form-group row">
-        <?= FormHelper::formLabel('Name') ?>
+        <?= PwForm::formLabel('Name') ?>
         <?= $this->view->formInput('name', ['class' => 'form-control']) ?>
       </div>
 
       <div class="form-group row">
-        <?= FormHelper::formLabel('Label') ?>
+        <?= PwForm::formLabel('Label') ?>
         <?= $this->view->formInput('label', ['class' => 'form-control']) ?>
       </div>
 
       <div class="form-group row">
-        <?= FormHelper::formLabel('Overwrite') ?>
+        <?= PwForm::formLabel('Overwrite') ?>
         <?= $this->view->formCheckbox('is_overwrite') ?>
       </div>
 
       <div class="form-group row">
-        <?= FormHelper::formLabel('Label Width') ?>
+        <?= PwForm::formLabel('Label Width') ?>
         <?= $this->view->formSelect('label_width', ['csv' => 'bootstrap_width', 'unselect' => true]) ?>
       </div>
 
       <div class="form-group row">
-        <?= FormHelper::formLabel('Note') ?>
+        <?= PwForm::formLabel('Note') ?>
         <?= $this->view->formTextarea('note') ?>
       </div>
 
-      <?= FormHelper::submit(LABEL_UPDATE) ?>
-      <?= FormHelper::linkButton('list', null, ['label' => LABEL_CANCEL]) ?>
+      <?= PwForm::submit(LABEL_UPDATE) ?>
+      <?= PwForm::linkButton('list', null, ['label' => LABEL_CANCEL]) ?>
       <?= $this->view->confirmDelete() ?>
     </form>
   </div>

@@ -181,7 +181,7 @@ class ViewItemController extends ProjectController {
                                 ->all();
 
         foreach ($attribute->values as $attribute) {
-            if (!in_array($attribute['name'], Entity::$app_columns)) {
+            if (!in_array($attribute['name'], PwEntity::$app_columns)) {
                 $view_item = DB::model('ViewItem');
                 $view_item->where('view_id', $this->view->value['id'])
                           ->where('attribute_id', $attribute['id'])

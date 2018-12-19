@@ -7,9 +7,9 @@
 
 //namespace project_manager;
 
-require_once 'PgsqlEntity.php';
+require_once 'PwPgsql.php';
 
-class _ViewItem extends PgsqlEntity {
+class _ViewItem extends PwPgsql {
 
     public $id_column = 'id';
     public $name = 'view_items';

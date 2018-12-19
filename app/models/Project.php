@@ -2,7 +2,7 @@
 /**
  * Project 
  *
- * Copyright (c) 2013 Yohei Yoshikawa (http://yoo-s.com/)
+ * Copyright (c) 2017 Yohei Yoshikawa (http://yoo-s.com/)
  */
 require_once 'vo/_Project.php';
 
@@ -131,13 +131,13 @@ class Project extends _Project {
 
         if (!file_exists($model_path)) {
             $model_template_path = Model::templateFilePath();
-            $contents = FileManager::bufferFileContetns($model_template_path, $values);
+            $contents = PwFile::bufferFileContetns($model_template_path, $values);
             file_put_contents($model_path, $contents);
         }
 
         $vo_model_path = Model::projectVoFilePath($this->user_project_setting->value, $model->value);
         $vo_model_template_path = Model::voTemplateFilePath();
-        $contents = FileManager::bufferFileContetns($vo_model_template_path, $values);
+        $contents = PwFile::bufferFileContetns($vo_model_template_path, $values);
         file_put_contents($vo_model_path, $contents);
     }
 
@@ -196,13 +196,13 @@ class Project extends _Project {
         $model_path = Model::projectPythonFilePath($this->user_project_setting->value, $model->value);
         if (!file_exists($model_path)) {
             $model_template_path = Model::pythonTemplateFilePath();
-            $contents = FileManager::bufferFileContetns($model_template_path, $values);
+            $contents = PwFile::bufferFileContetns($model_template_path, $values);
             file_put_contents($model_path, $contents);
         }
 
         $python_vo_model_path = Model::projectPythonVoFilePath($this->user_project_setting->value, $model->value);
         $python_vo_model_template_path = Model::pythonVoTemplateFilePath();
-        $contents = FileManager::bufferFileContetns($python_vo_model_template_path, $values);
+        $contents = PwFile::bufferFileContetns($python_vo_model_template_path, $values);
         file_put_contents($python_vo_model_path, $contents);
     }
 
@@ -270,7 +270,7 @@ class Project extends _Project {
                 $contents = ob_get_contents();
                 ob_end_clean();
             }
-            //$contents = FileManager::bufferFileContetns($page_template_path, $values);
+            //$contents = PwFile::bufferFileContetns($page_template_path, $values);
             file_put_contents($page_path, $contents);
         }
     }
@@ -306,21 +306,21 @@ class Project extends _Project {
 
                     $view_template_path = View::templateFilePath($view);
                     if (file_exists($view_template_path)) {
-                        $contents = FileManager::bufferFileContetns($view_template_path, $values);
+                        $contents = PwFile::bufferFileContetns($view_template_path, $values);
                         file_put_contents($view_path, $contents);
                     }
 
                     if ($view['name'] == 'edit') {
                         //new
                         $form_template_path = View::templateNameFilePath('new');
-                        $contents = FileManager::bufferFileContetns($form_template_path, $values);
+                        $contents = PwFile::bufferFileContetns($form_template_path, $values);
 
                         $form_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'new');
                         file_put_contents($form_path, $contents);
 
                         //form
                         $new_template_path = View::templateNameFilePath('form_for_table');
-                        $contents = FileManager::bufferFileContetns($new_template_path, $values);
+                        $contents = PwFile::bufferFileContetns($new_template_path, $values);
 
                         $new_file_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'form');
                         file_put_contents($new_file_path, $contents);
@@ -346,14 +346,14 @@ class Project extends _Project {
 
         //new
         $form_template_path = View::templateNameFilePath('new');
-        $contents = FileManager::bufferFileContetns($form_template_path, $values);
+        $contents = PwFile::bufferFileContetns($form_template_path, $values);
 
         $form_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'new');
         file_put_contents($form_path, $contents);
 
         //edit
         $form_template_path = View::templateNameFilePath('edit');
-        $contents = FileManager::bufferFileContetns($form_template_path, $values);
+        $contents = PwFile::bufferFileContetns($form_template_path, $values);
 
         $form_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'edit');
         file_put_contents($form_path, $contents);

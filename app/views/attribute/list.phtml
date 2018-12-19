@@ -5,11 +5,11 @@
 <div class="col-12">
   <div class="row">
     <form action="<?= $this->urlFor(['action' => 'sync_model', 'id' => $this->model->value['id']]) ?>" method="post">
-      <?= FormHelper::linkModal('#add-attribute', LABEL_ADD) ?>
+      <?= PwForm::linkModal('#add-attribute', LABEL_ADD) ?>
       <?= $this->linkTo(['controller' => 'model'], ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-      <?= FormHelper::submit('Sync DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you sync from DB?']) ?>
-      <?= FormHelper::hidden('project_id', $this->project->value['id']) ?>
-      <?= FormHelper::linkModal('#php-page-export-window', 'Export', ['class' => 'btn btn-outline-primary']) ?>
+      <?= PwForm::submit('Sync DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you sync from DB?']) ?>
+      <?= PwForm::hidden('project_id', $this->project->value['id']) ?>
+      <?= PwForm::linkModal('#php-page-export-window', 'Export', ['class' => 'btn btn-outline-primary']) ?>
     </form>
 
     &nbsp;
@@ -24,10 +24,10 @@
       )
       ?>
       <? else: ?>
-      <?= FormHelper::button('Create Page', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => "Do you create page from Model?"]) ?>
-      <?= FormHelper::hidden('model_id', $this->model->value['id']) ?>
+      <?= PwForm::button('Create Page', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => "Do you create page from Model?"]) ?>
+      <?= PwForm::hidden('model_id', $this->model->value['id']) ?>
       <? endif ?>
-      <?= FormHelper::linkModal('#help-attribute', 'Help', ['class' => 'btn btn-outline-primary']) ?>
+      <?= PwForm::linkModal('#help-attribute', 'Help', ['class' => 'btn btn-outline-primary']) ?>
     </form>
   </div>
 </div>

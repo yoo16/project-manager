@@ -1,10 +1,10 @@
 <?php
 /**
- * MysqlEntity 
+ * PwMysql 
  *
  * under construction
  * 
- * Copyright (c) 2013 Yohei Yoshikawa (https://github.com/yoo16/)
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
 //check
@@ -13,9 +13,9 @@ if (!defined('DB_USER')) exit('Not found DB_USER in setting file.');
 if (!defined('DB_PASS')) exit('Not found DB_PASS in setting file.');
 if (!defined('DB_NAME')) exit('Not found DB_NAME in setting file.');
 
-require_once 'Entity.php';
+require_once 'PwEntity.php';
 
-class MysqlEntity extends Entity {
+class PwMysql extends PwEntity {
     var $extra_columns = false;
     var $group_columns = false;
     var $joins = array();
@@ -33,7 +33,7 @@ class MysqlEntity extends Entity {
     }
 
     function query($sql) {
-        $mysql = MysqlEntity::connection();
+        $mysql = PwMysql::connection();
 		
         if (defined('DEBUG') && DEBUG) error_log("SQL: {$sql}");
         return mysql_query($sql);
@@ -54,16 +54,16 @@ class MysqlEntity extends Entity {
     }
 	
     function fetch_rows($sql) {
-        $rs = MysqlEntity::query($sql);
+        $rs = PwMysql::query($sql);
         if ($rs) {
-            return MysqlEntity::mysql_rows($rs);
+            return PwMysql::mysql_rows($rs);
         } else {
             return false;
         }
     }
 
     function fetch_row($sql) {
-        $rs = MysqlEntity::query($sql);
+        $rs = PwMysql::query($sql);
         if ($rs) {
             $row = mysql_fetch_assoc($rs);
             if (defined('DB_ENCODING') && defined('DB_CONVERT_ENCODING') && is_array($row)) {
@@ -80,7 +80,7 @@ class MysqlEntity extends Entity {
     }
 
     function fetch_result($sql) {
-        $rs = MysqlEntity::query($sql);
+        $rs = PwMysql::query($sql);
         if ($rs) {
 			$obj = mysql_fetch_array($rs);
 			$result = $obj[0];
@@ -96,7 +96,7 @@ class MysqlEntity extends Entity {
             $sql .= " ORDER BY {$order}";
         }
         $sql .= ";";
-        $rows = MysqlEntity::fetch_rows($sql);
+        $rows = PwMysql::fetch_rows($sql);
         $this->_cast_rows($rows);
         return $rows;
     }
@@ -118,7 +118,7 @@ class MysqlEntity extends Entity {
         }
         $sql .= ";";
         
-        $this->value = MysqlEntity::fetch_row($sql);
+        $this->value = PwMysql::fetch_row($sql);
         $this->applyCast();
         if (is_array($this->value) && isset($this->value['id'])) {
             $this->id = (int) $this->value['id'];

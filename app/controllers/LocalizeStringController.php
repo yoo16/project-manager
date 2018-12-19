@@ -89,8 +89,8 @@ class LocalizeStringController extends ProjectController {
      */
     function action_csv_import() {
         if ($this->project->value['id']) {
-            $file_path = FileManager::uploadFilePath();
-            $csv = new CsvLite($file_path);
+            $file_path = PwFile::uploadFilePath();
+            $csv = new PwCsv($file_path);
             $csv->from_encode = 'AUTO';
             $csv->to_encode = 'UTF-8';
             $csv_values = $csv->results();
