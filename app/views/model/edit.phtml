@@ -4,7 +4,7 @@
   <h3 class="card-header">Model</h3>
   <div class="card-block">
 
-    <form id="" action="<?= $this->urlFor('update', $this->model->value['id']) ?>" method="post" autocomplete="off">
+    <form id="" action="<?= $this->urlFor(['action' => 'update', 'id' => $this->model->value['id']]) ?>" method="post" autocomplete="off">
 
       <table class="table">
         <tr>

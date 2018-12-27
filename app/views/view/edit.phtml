@@ -3,7 +3,7 @@
 <div class="card">
   <h3 class="card-header">View</h3>
   <div class="card-block">
-    <form id="form-edit" action="<?= $this->urlFor('update', $this->view->value['id']) ?>" method="post" autocomplete="off">
+    <form id="form-edit" action="<?= $this->urlFor(['action' => 'update', 'id' => $this->view->value['id']]) ?>" method="post" autocomplete="off">
       <div class="form-group row">
         <?= PwForm::formLabel('Name') ?>
         <?= $this->view->formInput('name', ['class' => 'form-control']) ?>
