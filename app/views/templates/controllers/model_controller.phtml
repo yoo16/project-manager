@@ -114,11 +114,10 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
         $<?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->insert($posts);
 
         if ($<?= $model->value['entity_name'] ?>->errors) {
-            $this->addError('<?= $model->value['name'] ?>', $<?= $model->value['entity_name'] ?>->errors);
-            $this->redirectTo('new');
-            exit;
+            $this->addErrorByModel($<?= $model->value['entity_name'] ?>);
+            $this->redirectTo(['action' => 'new']);
         } else {
-            $this->redirectTo('index');
+            $this->redirectTo(['action' => 'index']);
         }
 <? endif ?>
     }
@@ -136,8 +135,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
         $<?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->update($posts, $this->pw_params['id']);
 
         if ($<?= $model->value['entity_name'] ?>->errors) {
-            $errors['<?= $model->value['name'] ?>'] = $<?= $model->value['entity_name'] ?>->errors;
-            $this->setErrors($errors);
+            $this->addErrorByModel($<?= $model->value['entity_name'] ?>);
         }
         $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
 <? endif ?>

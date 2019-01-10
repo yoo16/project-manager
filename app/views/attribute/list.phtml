@@ -4,15 +4,28 @@
 
 <div class="col-12">
   <div class="row">
-    <form action="<?= $this->urlFor(['action' => 'sync_model', 'id' => $this->model->value['id']]) ?>" method="post">
-      <?= PwForm::linkModal('#add-attribute', LABEL_ADD) ?>
-      <?= $this->linkTo(['controller' => 'model'], ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-      <?= PwForm::submit('Sync DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you sync from DB?']) ?>
-      <?= PwForm::hidden('project_id', $this->project->value['id']) ?>
-      <?= PwForm::linkModal('#php-page-export-window', 'Export', ['class' => 'btn btn-outline-primary']) ?>
-    </form>
+    <?= PwForm::linkModal('#add-attribute', LABEL_ADD) ?>
+    <?= $this->linkTo(['controller' => 'model'], ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
+    <?= $this->linkTo([ 'action' => 'sync_model', 'id' => $this->model->value['id'] ],
+      [
+      'class' => 'btn btn-outline-primary confirm-dialog',
+      'label' => 'Sync DB',
+      'icon_name' => 'sync',
+      'message' => 'Do you sync from DB?'
+      ]
+      ) ?>
+    <?= PwForm::hidden('project_id', $this->project->value['id']) ?>
 
-    &nbsp;
+    <?= $this->linkJs(
+    [
+    'class' => 'btn btn-outline-primary',
+    'label' => 'Export',
+    'icon_name' => 'file-export',
+    'data-toggle' => 'modal',
+    'data-target' => '#php-page-export-window'
+    ]
+    ) ?>
+
     <form action="<?= $this->urlFor(['controller' => 'page', 'action' => 'create_page_from_model']) ?>" method="post">
       <? if ($this->page->value): ?>
       <?= $this->linkTo(['controller' => 'view'],

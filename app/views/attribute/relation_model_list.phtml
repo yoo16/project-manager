@@ -39,7 +39,7 @@
   <? foreach ($this->relation_model->values as $relation_model->value): ?>
   <tr>
     <td>
-      <?= PwForm::link('#relation-window',
+      <?= $this->linkJs(
         [
         'label' => $relation_model->value['name'],
         'class' => 'pw-click', 

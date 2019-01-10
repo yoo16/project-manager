@@ -555,6 +555,7 @@ class PwDate {
     * @return string
     */
     static function dateFormat($date_string, $formatter = 'Y/m/d H:i') {
+        if (!$date_string) return;
         $date = date($formatter, strtotime($date_string));
         return $date;
     }

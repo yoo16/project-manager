@@ -1,11 +1,11 @@
 <?= "<? include('_header.phtml') ?>" ?>
 
-<form action="<? Tag::init()->php('$this->urlSelfFor(\'update\', $this->pw_params[\'id\'])') ?>" method="post">
+<form action="<? Tag::init()->php('$this->urlFor([\'action\' => \'update\', \'id\' => $this->pw_params[\'id\']])') ?>" method="post">
   <?= "<? include('form.phtml') ?>" ?>
   <div class="">
     <? Tag::init()->php('PwForm::submit(LABEL_SAVE)') ?>
 
-    <? Tag::init()->php('PwForm::linkButton("cancel", null, [\'label\' => LABEL_BACK])') ?>
+    <? Tag::init()->php('PwForm::linkButton([\'action\' => \'cancel\'], [\'label\' => LABEL_BACK])') ?>
 
     <? Tag::init()->php('$this->'."{$values['model']['entity_name']}".'->confirmDelete()') ?>
   </div>

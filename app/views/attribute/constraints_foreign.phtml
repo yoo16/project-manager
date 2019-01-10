@@ -13,14 +13,18 @@
     </form>
   </div>
 
-  <div class="col-2"><?= $pg_constraint['attname'] ?></div>
+  <div class="col-4">
+    <?= $pg_constraint['attname'] ?>
+    ->
+    <?= $pg_constraint['foreign_relname'] ?>.<?= $pg_constraint['foreign_attname'] ?>
+  </div>
 
-  <div class="col-3"><?= $pg_constraint['foreign_relname'] ?> : <?= $pg_constraint['foreign_attname'] ?></div>
-
-  <div class="col-2">
+  <div class="col-3">
     <div>
       update : <span class="badge badge-info"><?= PwPgsql::$constraint_actions[$pg_constraint['confupdtype']] ?></span>
-      delete : <span class="badge badge-info"><?= PwPgsql::$constraint_actions[$pg_constraint['confdeltype']] ?></span>
+    </div>
+    <div>
+      delete : <span class="badge badge-info"><?= PwPgsql::$constraint_actions[$pg_con1traint['confdeltype']] ?></span>
     </div>
   </div>
 

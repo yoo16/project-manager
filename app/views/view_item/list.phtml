@@ -5,15 +5,16 @@
 
   <? include('views/components/lib/sortable.phtml') ?>
 
-  <?= $this->linkControllerTag('view', ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-  <a class="btn btn-primary" href="<?= $this->linkTo('add_all') ?>">
-    <?= LABEL_ALL ?>
-    <?= LABEL_ADD ?>
-  </a>
+  <?= $this->linkTo(['controller' => 'view'], ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
+  <?= $this->linkTo(['action' => 'add_all'], ['label' => LABEL_ALL.LABEL_ADD, 'class' => 'btn btn-primary']) ?>
 
-  <a class="btn btn-outline-primary" href="<?= $this->linkTo('view_item_group/', ['view_id' => $this->view->value['id']]) ?>">
-    <?= LABEL_VIEW_ITEM_GROUPS ?>
-  </a>
+  <?= $this->linkTo(['controller' => 'view_item_group'],
+    [
+    'label' => LABEL_VIEW_ITEM_GROUPS,
+    'class' => 'btn btn-outline-primary',
+    'view_id' => $this->view->value['id']
+    ]
+  ) ?>
 </div>
 
 <table id="sortable-table" class="table table-list">
@@ -36,7 +37,12 @@
     <? endif ?>
     <tr row-id="<?= $view_item['id'] ?>">
       <td>
-        <?= $this->linkTo($this->pw_controller, 'edit', $view_item['id'],
+        <?= $this->linkTo(
+            [
+            'controller' => $this->pw_controller,
+            'action' => 'edit',
+            'id' => $view_item['id']
+            ],
             [
             'label' => LABEL_EDIT,
             'class' => 'btn btn-outline-primary'

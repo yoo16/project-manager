@@ -21,12 +21,15 @@ class PwMigration {
      * @param array $foreigns
      * @param array $old_id_column
      * @param array $default_values
+     * @param array $conditions
      * @return void
      */
-    static function migrate($class_name, $old_db_info, $foreigns = null, $old_id_column = 'id', $default_values = null) {
+    static function migrate($class_name, $old_db_info, $foreigns = null, $old_id_column = 'id', $conditions = null, $default_values = null) {
         if (!$old_db_info) return;
 
-        $old_model = DB::model($class_name)->setDBInfo($old_db_info)->useOldTable()->all();
+        $old_model = DB::model($class_name)->setDBInfo($old_db_info)->useOldTable();
+        if ($conditions) $old_model->wheres($conditions);
+        $old_model->all();
         if (!$old_model->values) return;
 
         $migrate_report = MigrateReport::model($class_name, $old_db_info, $old_model->values);
