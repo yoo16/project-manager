@@ -12,7 +12,7 @@
 </div>
 
   <div class="pt-3">
-    <?= PwForm::linkButton('new', null, ['class' => 'btn btn-primary', 'label' => LABEL_ADD]) ?>
+    <?= PwForm::linkButton(['action' => 'new'], ['class' => 'btn btn-primary', 'label' => LABEL_ADD]) ?>
     <? include('views/components/lib/sortable.phtml') ?>
   </div>
 
@@ -36,16 +36,16 @@
       <? foreach ($this->page_model->values as $values): ?>
         <tr row-id="<?= $values['id'] ?>">
           <td>
-            <?= PwForm::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?>
+            <?= PwForm::linkButton(['action' => 'edit', 'id' => $values['id']], ['label' => LABEL_EDIT]) ?>
           </td>
           <td>
             <?= $this->model->values[$values['model_id']]['name'] ?>
           </td>
           <td>
-            <?= PwForm::activeLabelTag($values['is_fetch_list_values']) ?>
+            <?= PwForm::changeActiveLabelTag(['controller' => $this->name, 'action' => 'change_fetch_list_values', 'id' => $values['id']], $values['is_fetch_list_values']) ?>
           </td>
           <td>
-            <?= PwForm::activeLabelTag($values['is_request_session']) ?>
+            <?= PwForm::changeActiveLabelTag(['controller' => $this->name, 'action' => 'change_request_session', 'id' => $values['id']], $values['is_request_session']) ?>
           </td>
         </tr>
         <? endforeach ?>

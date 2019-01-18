@@ -156,4 +156,26 @@ class PageModelController extends ProjectController {
         $this->updateSort('PageModel');
     }
 
+   /**
+    * change_request_session
+    *
+    * @param
+    * @return void
+    */
+    function action_change_request_session() {
+        DB::model('PageModel')->reverseBool($this->pw_params['id'], 'is_request_session');
+        $this->redirectTo(['action' => 'list']);
+    }
+
+   /**
+    * fetch_list_values
+    *
+    * @param
+    * @return void
+    */
+    function action_change_fetch_list_values() {
+        DB::model('PageModel')->reverseBool($this->pw_params['id'], 'is_fetch_list_values');
+        $this->redirectTo(['action' => 'list']);
+    }
+
 }

@@ -163,7 +163,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     */
     function action_update_sort() {
 <? if ($values['model']): ?>
-        $this->updatSort('<?= $model->value['class_name'] ?>');
+        $this->updateSort('<?= $model->value['class_name'] ?>');
 <? endif ?>
         exit;
     }

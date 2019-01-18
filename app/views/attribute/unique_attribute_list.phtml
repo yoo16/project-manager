@@ -1,6 +1,5 @@
-
 <h4><?= $this->model->value['name'] ?></h4>
-<form action="<?= $this->urlActionFor('add_unique') ?>" method="post">
+<form action="<?= $this->urlFor(['action' => 'add_unique']) ?>" method="post">
   <table class="table table-sm">
     <thead>
       <tr>

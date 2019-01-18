@@ -139,7 +139,7 @@ class ApiController extends ProjectController {
     * @return void
     */
     function action_update_sort() {
-        $this->updatSort('Api');
+        $this->updatSorte('Api');
         exit;
     }
 

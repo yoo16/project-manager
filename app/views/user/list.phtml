@@ -17,7 +17,7 @@
   <? if ($this->user->values): ?>
   <? foreach ($this->user->values as $values): ?>
   <tr row-id="<?= $values['id'] ?>">
-    <td><?= PwForm::linkButton('edit', $values['id'], ['label' => LABEL_EDIT]) ?></td>
+    <td><?= PwForm::linkButton(['action' => 'edit', 'id' => $values['id']], ['label' => LABEL_EDIT]) ?></td>
     <td><?= $values['login_name'] ?></td>
   </tr>
   <? endforeach ?>
