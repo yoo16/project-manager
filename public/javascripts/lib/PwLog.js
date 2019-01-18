@@ -10,7 +10,7 @@ var pw_log;
 
 $(document).ready(function () {
     pw_log = new PwLog();
-    pw_log.base_url = pw_app.projectUrl()
+    //pw_log.base_url = pw_app.projectUrl()
 });
 
 var PwLog = function () {

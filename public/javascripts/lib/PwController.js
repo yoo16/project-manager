@@ -1,4 +1,4 @@
-/**
+pw_multi_sid/**
  * @author  Yohei Yoshikawa
  *
  * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
@@ -12,14 +12,19 @@ var pw_current_action = '';
 var pw_loading_selector = '#main';
 var pw_multi_sid = '';
 
+//TODO remove jquery
 $.support.cors = true;
-$(document).ready(function () {
-    pw_app = new PwController();
-    pw_current_controller = $('#pw-current-controller').val();
-    pw_current_action = $('#pw-current-action').val();
-    pw_app.multiSessionLink();
-});
 
+window.onload = function () {
+    pw_app = new PwController();
+    pw_app.multiSessionLink();
+    pw_app.pwLoad(); 
+
+    pw_current_controller = pw_app.dom({id: 'pw-current-controller'}).value();
+    pw_current_action = pw_app.dom({id: 'pw-current-action'}).value();
+};
+
+//TODO remove jquery
 $(document).on('change', ':file', function () {
     var input = $(this),
       numFiles = input.get(0).files ? input.get(0).files.length : 1,
@@ -28,8 +33,146 @@ $(document).on('change', ':file', function () {
 });
 
 var PwController = function () {
+    this.dom = function(params) {
+        pw_dom = new PwDom(params);
+        pw_dom.init();
+        return pw_dom;
+    }
+    this.urlFor = function (params, options) {
+        var url_queries = [];
+        if (params.controller) url_queries.push(params.controller);
+        if (params.action) url_queries.push(params.action);
+        if (params.id) url_queries.push(params.id);
+
+        var url_query = url_queries.join('/');
+        var url = projectUrl() + url_query;
+
+        if (options) url = url + '?' + query(options);
+        return url;
+    }
+    this.getHtml = function (params, values, options) {
+        var url = this.urlFor(params, values);
+        const header = new Headers();
+        header.append('Content-Type', 'application/xhtml+xml');
+        var header_options = { 
+            method: 'GET',
+            headers: header,
+            mode: 'cors',
+            cache: 'default',
+        };
+        fetchResponse(url, header_options, options);
+    }
+    this.post = function (dom, values, callback, data_format) {
+        var pw_dom = pw_app.dom({dom: dom});
+        var params = {
+            controller: pw_dom.controller(),
+            action: pw_dom.action(),
+        };
+        if (pw_multi_sid) values.pw_multi_sid = pw_multi_sid;
+        pw_app.postHtml(params, values, {callback: callback});
+    }
+    this.postHtml = function (params, values, options) {
+        var url = this.urlFor(params);
+        const header = new Headers();
+        header.append('Content-Type', 'application/x-www-form-urlencoded');
+        var header_options = { 
+            method: 'POST',
+            headers: header,
+            body: query(values),
+            mode: 'cors',
+            cache: 'default',
+        };
+        fetchResponse(url, header_options, options);
+    }
+    this.postJson = function (params, values, options) {
+        var url = this.urlFor(params);
+        const header = new Headers();
+        header.append('Content-Type', 'application/json');
+        var header_options = { 
+            method: 'POST',
+            headers: header,
+            body: query(values),
+            mode: 'cors',
+            cache: 'default',
+        };
+        fetchResponse(url, header_options, options);
+    }
+
+    /**
+     * 
+     * @param string url 
+     * @param Object options 
+     */
+    function fetchResponse(url, header_options, options) {
+        var callback = options.callback;
+        var error_callback = options.error_callback;
+        var is_show_loading = false;
+        if (options.is_show_loading) is_show_loading = options.is_show_loading;
+        if (is_show_loading) pw_app.showLoading();
+
+        fetch(url, header_options)
+        .catch(err => {
+            if (is_show_loading) pw_app.hideLoading();
+            throw new Error('post error')
+        })
+        .then(function(response) {
+            if (is_show_loading) pw_app.hideLoading();
+            const promise = response.text();
+            return promise.then(body => ({ body: body, response: response }))
+        }).then(({ body, response }) => {
+            if (response.ok) {
+                return body
+            } else {
+                if (error_callback) error_callback(response);
+            }
+        }).then(text => {
+            callback(text);
+        }); 
+    }
+
+    this.pwLoad = function() {
+        var $pw_load = document.getElementsByClassName('pw-load');
+        for (var $i = 0; $i < $pw_load.length; $i++) {
+            var dom = $pw_load[$i];
+            var name = dom.getAttribute('pw-controller');
+            if (!name) return;
+    
+            var function_name = dom.getAttribute('pw-function');
+            var action = dom.getAttribute('pw-action');
+    
+            var controller_name = pw_app.controllerClassName(name);
+            if (controller_name in window) {
+                var controller = new window[controller_name]();
+                if (action && (action in controller)) controller[action](dom);
+                if (function_name && (function_name in controller)) controller[function_name]();
+            }
+        }
+        //document.getElementById('pw-error').modal('show');
+        //TODO remove jquery
+        $('#pw-error').modal('show');
+    }
+
+    document.addEventListener('click', function(event) {
+        if (!event.target.classList.contains('pw-click')) return;
+        var pw_dom = pw_app.dom({dom: event.target});
+        var name = pw_dom.controller();
+        if (!name) return;
+
+        var action = pw_dom.action();
+        if (!action) return;
+
+        var controller_name = pw_dom.controllerClassName();
+        if (controller_name in window) {
+            var controller = new window[controller_name]();
+            if (action in controller) controller[action](pw_dom.dom);
+        }
+    });
+
+    //TODO remove jquery
     this.multiSessionLink = function(fileName, content) {
-        pw_multi_sid = $('#pw-multi-session-id').val();
+        var dom = pw_app.dom({id: 'pw-multi-session-id'});
+        if (!dom) return;
+        pw_multi_sid = dom.value('value');
         if (!pw_multi_sid) return;
 
         jQuery('a').each(function() {
@@ -55,10 +198,6 @@ var PwController = function () {
         if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
         window.location.href = pw_app.generateUrl(url, params);
     }
-    this.post = function (dom, params, callback, data_format) {
-        if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
-        post(postUrl(dom), params, callback, data_format);
-    }
     this.urlPost = function (url, params, callback, data_format) {
         if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
         post(url, params, callback, data_format);
@@ -83,14 +222,14 @@ var PwController = function () {
         if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
         download(url, file_name, params, callback);
     }
-    this.generateUrl = function(url, params) {
-        var url_param = $.param(params);
+    this.generateUrl = function (url, params) {
+        var url_param = query(params);
         url = url + '?' + url_param;
         return url;
     }
     this.generateProjectUrl = function(url, params) {
         url = pw_app.projectUrl() + url;
-        var url_param = $.param(params);
+        var url_param = query(params);
         url = url + '?' + url_param;
         return url;
     }
@@ -202,23 +341,22 @@ var PwController = function () {
             error_callback(xhr, status, errorThrown);
         });
     }
-    $(window).on('load', function () {
-        $('.pw-load').each(function() {
-            var name = $(this).attr('pw-controller');
-            if (!name) return;
-
-            var function_name = $(this).attr('pw-function');
-            var action = $(this).attr('pw-action');
-
-            var controller_name = controllerClassName(name);
-            if (controller_name in window) {
-                var controller = new window[controller_name]();
-                if (action && (action in controller)) controller[action](this);
-                if (function_name && (function_name in controller)) controller[function_name]();
-            }
+    /**
+     * controller class name
+     * 
+     * @param  string name
+     * @return string
+     */
+    this.controllerClassName = function(name) {
+        var class_name = '';
+        var names = name.split('_');
+        $.each(names, function (index, value) {
+            class_name += upperTopString(value);
         });
-        $('#pw-error').modal('show');
-    });
+        class_name += 'Controller';
+        return class_name;
+    }
+
     /**
      * confirm dialog
      */
@@ -242,21 +380,7 @@ var PwController = function () {
             }
         }
     });
-    $(document).on('click', '.pw-click', function () {
-        var name = $(this).attr('pw-controller');
-        if (!name) return;
 
-        var action = $(this).attr('pw-action');
-        if (!action) return;
-
-        var controller_name = controllerClassName(name);
-        if (controller_name in window) {
-            var controller = new window[controller_name]();
-            if (action in controller) {
-                controller[action](this);
-            }
-        }
-    });
     $(document).on('click', '.pw-lib', function () {
         var lib_name = $(this).attr('pw-lib');
         if (!lib_name) return;
@@ -280,6 +404,20 @@ var PwController = function () {
     $(document).on('click', '.action-loading', function() {
         pw_app.showLoading();
     });
+
+    /**
+     * query
+     * 
+     * @param  array params
+     * @return string
+     */
+    function query(params) {
+        if (!params) return;
+        var esc = encodeURIComponent;
+        var query = Object.keys(params).map(k => esc(k) + '=' + esc(params[k])).join('&');
+        return query;
+    }
+
     /**
      * controller class name
      * 
@@ -408,7 +546,7 @@ var PwController = function () {
     * @return void
     **/
    function download(url, file_name, params, callback) {
-        var url_param = $.param(params);
+        var url_param = query(params);
         url = url + '?' + url_param;
         $.ajax({
             download: file_name,
