@@ -7,7 +7,7 @@
 'use strict';
 var pw_form;
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function() {
     pw_form = new PwForm();
 });
 

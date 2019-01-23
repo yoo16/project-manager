@@ -6,7 +6,7 @@
 
 'use strict';
 var pw_scroller;
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function() {
     pw_scroller = new PwScroller();
 });
 

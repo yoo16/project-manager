@@ -5,9 +5,10 @@
  */
 
 var pw_sortable;
-$(document).ready(function(){
+document.addEventListener('DOMContentLoaded', function() {
     pw_sortable = new PwSortable();
 });
+
 
 var PwSortable = function() {
     this.is_show_sortable = false;
@@ -15,7 +16,7 @@ var PwSortable = function() {
     this.api_uri = '';
     this.selector = '';
     this.tr_selector = '';
-    this.sort_orders = {};
+    this.sort_orders;
     this.model_name = '';
     this.before_rows;
     this.row_id_column = 'row-id';
@@ -95,32 +96,30 @@ var PwSortable = function() {
     this.update_sort = function(dom) {
         if (!pw_sortable.sort_orders) return;
         
-        var params = {};
-        var sort_order = [];
-        $.each(pw_sortable.sort_orders, function(index, id) {
-            sort_order.push({id: id, order: index});
+        var orders = [];
+        var order = 0;
+        pw_sortable.sort_orders.forEach(function(id) {
+            if (id > 0) {
+                order++;
+                orders.push({id: id, order: order});
+            }
         });
-        params.sort_order = sort_order;
 
-        var table_id = '#' + pw_sortable.table_id;
-        if ($(table_id).attr('model-name')) {
-            params.model_name = $(table_id).attr('model-name');
-        }
-
-        if (pw_sortable.is_use_loading) $.LoadingOverlay("show");
-
-        if (pw_sortable.api_uri) {
-            pw_app.urlPost(pw_sortable.api_uri, params, callback);
-        } else {
-            pw_app.post(dom, params, callback);
-        }
+        var pw_dom = pw_app.dom({dom: dom});
+        console.log(pw_dom);
+        pw_app.postJson(
+            {
+                controller: pw_dom.controller(),
+                action: pw_dom.action()
+            },
+            JSON.stringify(orders),
+            {callback: callback, is_show_loading: true}
+        );
     
         function callback(data) {
             pw_sortable.before_rows = null;
             pw_sortable.is_show_sortable = false;
             pw_sortable.close(dom);
-
-            if (pw_sortable.is_use_loading) $.LoadingOverlay("hide");
 
             if (pw_sortable.callback) {
                 pw_sortable.callback(data);

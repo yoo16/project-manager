@@ -1151,14 +1151,18 @@ class Controller extends RuntimeException {
     function updateSort($model_name = null, $is_json = true) {
         if (!$model_name) exit('Not found model_name');
 
-        if ($_POST['sort_order']) $sort_order = $_POST['sort_order'];
-        if (!$sort_order) exit('Not found sort_order');
+        $posts = file_get_contents("php://input");
+        dump($_REQUEST);
+        dump($posts);
+        if (!$posts) exit;
+
+        $values = json_decode($posts, true);
+        if (!$values) exit('Not found sort_order');
         
+        dump($values);
         if (class_exists($model_name)) {
-            DB::model($model_name)->updateSortOrder($sort_order);
-            if ($is_json) {
-                $results['is_success'] = true;
-            }
+            DB::model($model_name)->updateSortOrder($values);
+            if ($is_json) $results['is_success'] = true;
         }
         if ($is_json) {
             $results = json_encode($results);

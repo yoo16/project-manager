@@ -26,6 +26,7 @@ class PwForm {
                               'unselect',
                               'unselct_label',
                               'unselct_value',
+                              'unused_hidden',
                               'effective-digit',
                             ];
 
@@ -661,7 +662,11 @@ class PwForm {
      * @return string
      */
     static function checkbox($params, $selected = null) {
-        $label = (isset($params['label'])) ? $params['label'] : LABEL_TRUE;
+        if (is_array($params['label'])) {
+            $label = implode(' ', $params['label']);
+        } else {
+            $label = (isset($params['label'])) ? $params['label'] : LABEL_TRUE;
+        }
         if (!isset($params['value'])) $params['value'] = 1;
 
         $attributes['type'] = 'checkbox';
@@ -670,8 +675,9 @@ class PwForm {
         $attributes['checked'] = self::checkedTag($params['value'], $selected);
         $attributes['id'] = $params['id'];
         $attributes['class'] = $params['class'];
+        if ($params['disable']) $attributes['disable'] = 'disable';
 
-        $tag.= self::hidden($params['name'], 0);
+        if (!$params['unused_hidden']) $tag.= self::hidden($params['name'], 0);
         $tag.= self::input($attributes);
         $tag = self::labelTag($tag.$label);
         return $tag;

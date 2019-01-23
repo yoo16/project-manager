@@ -2079,16 +2079,24 @@ class PwPgsql extends PwEntity
      * @param  array $params
      * @return PwPgsql
      */
-    public function join($join_class_name, $join_column, $column, $class_name = null, $params = null)
+    public function join($join_class_name, $join_column = null, $column = null, $class_name = null, $params = null)
     {
         //TODO join conditions
         if (!$join_class_name) return $this;
-        if (!$join_column) return $this;
-        if (!$column) return $this;
-        if (!$class_name) $class_name = get_class($this);
-
-        $origin_class = DB::model($class_name);
         $join_class = DB::model($join_class_name);
+        if (!$join_class) return $this;
+
+        if (!$join_column) {
+            $join_column = $join_class->id_column;
+            if (!$join_column) return $this;
+            return $this;
+        }
+        if (!$column) {
+            $column = $this->id_column;
+            if (!$column) return $this;
+        }
+        if (!$class_name) $class_name = get_class($this);
+        $origin_class = DB::model($class_name);
 
         $join['eq'] = ($params['eq']) ? $params['eq'] : '='; 
         $join['type'] = ($params['type']) ? $params['type'] : 'LEFT'; 

@@ -1,4 +1,4 @@
-pw_multi_sid/**
+/**
  * @author  Yohei Yoshikawa
  *
  * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
@@ -15,11 +15,14 @@ var pw_multi_sid = '';
 //TODO remove jquery
 $.support.cors = true;
 
-window.onload = function () {
+document.addEventListener('DOMContentLoaded', function() {
     pw_app = new PwController();
     pw_app.multiSessionLink();
     pw_app.pwLoad(); 
+    pw_app.pwAddClick();
+});
 
+window.onload = function () {
     pw_current_controller = pw_app.dom({id: 'pw-current-controller'}).value();
     pw_current_action = pw_app.dom({id: 'pw-current-action'}).value();
 };
@@ -27,16 +30,20 @@ window.onload = function () {
 //TODO remove jquery
 $(document).on('change', ':file', function () {
     var input = $(this),
-      numFiles = input.get(0).files ? input.get(0).files.length : 1,
+      //numFiles = input.get(0).files ? input.get(0).files.length : 1,
       label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
     input.parent().parent().next(':text').val(label);
 });
 
 var PwController = function () {
+    this.init = function(params) {
+
+    }
+
     this.dom = function(params) {
-        pw_dom = new PwDom(params);
-        pw_dom.init();
-        return pw_dom;
+        var instance = new PwNode(params);
+        instance.init();
+        return instance;
     }
     this.urlFor = function (params, options) {
         var url_queries = [];
@@ -84,14 +91,21 @@ var PwController = function () {
         };
         fetchResponse(url, header_options, options);
     }
-    this.postJson = function (params, values, options) {
+    this.postJson = function (params, json, options) {
+        if (!params) return;
+        if (!params.controller) return;
+        if (!params.action) return;
+        if (!json) return;
         var url = this.urlFor(params);
         const header = new Headers();
-        header.append('Content-Type', 'application/json');
+        header.append('Content-Type', 'application/x-www-form-urlencoded');
+        //TODO PHP header: not work with 'application/json'
+        //header.append('Content-Type', 'application/json');
+
         var header_options = { 
             method: 'POST',
             headers: header,
-            body: query(values),
+            body: json,
             mode: 'cors',
             cache: 'default',
         };
@@ -152,9 +166,10 @@ var PwController = function () {
         $('#pw-error').modal('show');
     }
 
-    document.addEventListener('click', function(event) {
-        if (!event.target.classList.contains('pw-click')) return;
-        var pw_dom = pw_app.dom({dom: event.target});
+    //TODO remove jquery
+    $(document).on('click', '.pw-click', function () {
+        console.log('ok');
+        var pw_dom = pw_app.dom({dom: this});
         var name = pw_dom.controller();
         if (!name) return;
 
@@ -167,6 +182,36 @@ var PwController = function () {
             if (action in controller) controller[action](pw_dom.dom);
         }
     });
+
+    this.pwAddClick = function() {
+        // var elements = document.getElementsByClassName('pw-click');
+        // if (!elements) return;
+        // Array.from(elements).map(function(dom) {
+        //     dom.addEventListener('click', doClick);
+            
+        //     function doClick(event) {
+        //         //dom.removeEventListener('click', doClick);
+        //         var pw_dom = pw_app.dom({dom: dom});
+        //         if (dom.classList.contains('confirm-dialog')) {
+        //             if (message = pw_dom.attr('message'));
+        //             if (!window.confirm(message)) return;
+        //         }
+    
+        //         var name = pw_dom.controller();
+        //         if (!name) return;
+    
+        //         var action = pw_dom.action();
+        //         if (!action) return;
+    
+        //         var controller_name = pw_dom.controllerClassName();
+        //         if (controller_name in window) {
+        //             console.log(controller_name);
+        //             var controller = new window[controller_name]();
+        //             if (action in controller) controller[action](pw_dom.dom);
+        //         }
+        //     }
+        // });
+    }
 
     //TODO remove jquery
     this.multiSessionLink = function(fileName, content) {
@@ -357,14 +402,6 @@ var PwController = function () {
         return class_name;
     }
 
-    /**
-     * confirm dialog
-     */
-    $(document).on('click', '.confirm-dialog', function() {
-        var message = '';
-        if ($(this).attr('message')) message = $(this).attr('message');
-        return (window.confirm(message));
-    });
     $(document).on('change', '.pw-change', function () {
         var name = $(this).attr('pw-controller');
         if (!name) return;
@@ -395,12 +432,20 @@ var PwController = function () {
             }
         }
     });
+
     $(document).on('click', '.confirm-delete', function() {
         $('#from_delete_id').val($(this).attr('delete_id'));
         var title = $(this).attr('title');
         if (title) $('#from-delete-title').html(title);
         $('.delete-window').modal();
     });
+
+    $(document).on('click', '.confirm-dialog', function () {
+        var pw_dom = pw_app.dom({dom: dom});
+        if (message = pw_dom.attr('message'));
+        if (!window.confirm(message)) return;
+    });
+
     $(document).on('click', '.action-loading', function() {
         pw_app.showLoading();
     });

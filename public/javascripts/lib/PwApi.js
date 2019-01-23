@@ -5,7 +5,7 @@
  */
 
 var pw_api;
-$(document).ready(function(){
+document.addEventListener('DOMContentLoaded', function() {
     pw_api = new Api();
 });
 

@@ -6,6 +6,8 @@
 
 'use strict';
 
+var pw_node;
+
 var PwDom = function (params) {
     this.params = params;
     this.init = function() {
@@ -15,17 +17,38 @@ var PwDom = function (params) {
             this.dom = this.params.dom;
         }
     }
-    this.value = function() {
+    this.setValue = function(value) {
+        if (this.dom) {
+            this.dom.setAttribute('value', value);
+            return this;
+        }
+    }
+    this.setAttr = function(key, value) {
+        if (this.dom) {
+            this.dom.setAttribute(key, value);
+            return this;
+        }
+    }
+    this.bind = function(params) {
+        if (!params) return;
+        if (this.dom) Object.keys(params).map(function(key) { this.dom.setAttribute(key, params[key]) });
+    }
+    this.value = function(value) {
         if (this.dom) return this.dom.getAttribute('value');
     }
     this.attr = function(selector) {
+        if (!selector) return;
         if (this.dom) return this.dom.getAttribute(selector);
     }
     this.html = function(html) {
         if (this.dom) return this.dom.innerHTML = html;
     }
     this.toggle = function(class_name) {
-        if (this.dom) return this.dom.classList.toggle(class_name);
+        if (!class_name) return;
+        if (this.dom) {
+            this.dom.classList.toggle(class_name);
+            return this;
+        }
     }
     this.controller = function() {
         if (this.dom) return this.attr('pw-controller');
@@ -46,8 +69,9 @@ var PwDom = function (params) {
 
         var class_name = '';
         var names = controller_name.split('_');
-        $.each(names, function (index, value) {
-            class_name += upperTopString(value);
+        if (!names) return;
+        names.forEach(function(name) {
+            class_name += upperTopString(name);
         });
         class_name += 'Controller';
         return class_name;
@@ -61,6 +85,7 @@ var PwDom = function (params) {
     * @return string
     **/
    function upperTopString(string) {
+        if (!string) return;
         var value = string.charAt(0).toUpperCase() + string.slice(1);
         var value = string.substring(0, 1).toUpperCase() + string.substring(1);
         var value = string.replace(/^[a-z]/g, function (val) { return val.toUpperCase(); });

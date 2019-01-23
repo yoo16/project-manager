@@ -7,7 +7,7 @@
 'use strict';
 var pw_migrate_report;
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function() {
     pw_migrate_report = new PwMigrateReport();
 });
 

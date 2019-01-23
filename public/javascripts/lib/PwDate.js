@@ -5,7 +5,7 @@
  */
 
 var pw_date;
-$(document).ready(function(){
+document.addEventListener('DOMContentLoaded', function() {
     pw_date = new PwDate();
 });
 

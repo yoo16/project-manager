@@ -90,3 +90,5 @@ define('LABEL_USER_PROJECT_SETTINGS', 'ユーザプロジェクト設定');
 define('LABEL_MODELS_CSV', 'CSV');
 define('LABEL_MODELS_NAME', 'テーブル名');
 define('LABEL_MODELS_CLASS_NAME', 'モデルクラス名');
+
+define('LABEL_RECORD_ITEMS_VALUE_EN', '英語');
