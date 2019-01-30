@@ -390,6 +390,7 @@ class PwForm {
             $instance = DB::model($params['model']);
 
             if (isset($params['select_columns'])) $instance->select($params['select_columns']);
+            //TODO refectoring
             if (isset($params['where'])) {
                 if (is_array($params['where'])) {
                     if (isset($params['where'][2])) {

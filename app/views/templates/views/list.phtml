@@ -31,7 +31,7 @@
 
   <? Tag::init()->ifs('$this->'.$values['model']['entity_name'].'->values') ?>
   <? Tag::init()->foreachs('$this->'.$values['model']['entity_name'].'->values as $values') ?>
-  <tr id="<?= Tag::init()->valuesId() ?>">
+  <tr row-id="<?= Tag::init()->valuesId() ?>">
     <td><? Tag::init()->php('$this->'.$values['model']['entity_name'].'->linkEdit([], $values)') ?></td>
 <? foreach ($values['view']['view_item'] as $view_item): ?>
 <? if (!Model::$required_columns[$view_item['name']]): ?>

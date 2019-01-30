@@ -609,10 +609,13 @@ class Controller extends RuntimeException {
      *
      * @param  array $params
      * @param  array $html_params
-     * @return string
+     * @return bool
      */
     function checkLinkActive($params, $html_params) {
         if (!$html_params['is_use_selected']) return;
+        if ($html_params['selected_key']) {
+            return ($html_params['selected_key'] == $html_params['selected_value']);
+        }
         if (($params['controller'] == $this->name)) return true;  
 
         if ($html_params['menu_group'] && $this->menu_group) {

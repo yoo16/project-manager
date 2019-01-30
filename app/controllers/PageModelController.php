@@ -97,6 +97,7 @@ class PageModelController extends ProjectController {
         $page_model = DB::model('PageModel')->insert($posts);
 
         if ($page_model->errors) {
+            $this->addErrorByModel($page_model);
             $this->redirectTo(['action' => 'new']);;
         } else {
             $this->redirectTo();

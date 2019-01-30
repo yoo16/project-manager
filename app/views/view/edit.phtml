@@ -30,7 +30,7 @@
       </div>
 
       <?= PwForm::submit(LABEL_UPDATE) ?>
-      <?= PwForm::linkButton('list', null, ['label' => LABEL_CANCEL]) ?>
+      <?= PwForm::linkButton(['action' => 'list'], ['label' => LABEL_CANCEL]) ?>
       <?= $this->view->confirmDelete() ?>
     </form>
   </div>
