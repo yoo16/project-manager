@@ -730,7 +730,7 @@ class PwPgsql extends PwEntity
         $type = $this->sqlColumnType($options['type'], $options['length']);
         $option = $option = self::columnOptionSql($options);
 
-        $sql = "ALTER TABLE \"{$table_name}\" ADD COLUMN \"{$column}\" {$type}{$option};";
+        $sql = "ALTER TABLE \"{$table_name}\" ADD COLUMN \"{$column}\" {$type} {$option};";
         return $sql;
     }
 

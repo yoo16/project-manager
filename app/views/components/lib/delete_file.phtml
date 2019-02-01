@@ -12,16 +12,15 @@
         <?= MESSAGE_DELETE ?>
       </div>
       <div class="modal-footer">
-        <?= $this->linkJs(
-              [
-              'id' => 'link_delete_image',
-              'class' => 'pw-click btn btn-danger',
-              'label' => LABEL_DELETE,
-              'message' => MESSAGE_DELETE,
-              ]
-            ) ?>
+          <?= $this->linkJs(
+            [
+            'id' => 'link_delete_image',
+            'class' => 'pw-click btn btn-danger',
+            'label' => LABEL_DELETE,
+            'message' => MESSAGE_DELETE,
+            ]
+          ) ?>
         <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
-
       </div>
     </div>
   </div>
