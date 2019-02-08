@@ -1286,4 +1286,73 @@ class PwEntity {
         return $values;
     }
 
+    /**
+     * validate alphabet
+     *
+     * @param string $column
+     * @return boolean
+     */
+    function validateAlphabet($column) {
+        if (!isset($this->value[$column])) return;
+        $is_alpha = ctype_alpha($this->value[$column]);
+        if (!$is_alpha) {
+            $this->addError($column, 'invalid');
+        }
+    }
+
+    /**
+     * validate alphabet
+     *
+     * @param string $column
+     * @return boolean
+     */
+    function validateNumber($column) {
+        if (!isset($this->value[$column])) return;
+        $is_alpha = is_numeric($this->value[$column]);
+        if (!$is_alpha) {
+            $this->addError($column, 'invalid');
+        }
+    }
+
+    /**
+     * validate alphabetNum and number
+     *
+     * @param string $column
+     * @return boolean
+     */
+    function validateAlphabetNumber($column) {
+        if (!$this->value[$column]) return;
+        $is_num = ctype_alnum($this->value[$column]);
+        if (!$is_num) {
+            $this->addError($column, 'invalid');
+        }
+    }
+
+    /**
+     * validate Alphanumeric
+     *
+     * @param string $column
+     * @param integer $min
+     * @param integer $max
+     * @return boolean
+     */
+    function validtePassword($column, $min = 4, $max = 50) {
+        if (!$this->value[$column]) return;
+        if (!PwHelper::validtePassword($this->value[$column], $min, $max)) {
+            $this->addError($column, 'invalid');
+        }
+    }
+
+    /**
+     * validate Alphanumeric
+     *
+     * @param string $column
+     * @return boolean
+     */
+    function validteAlphanumeric($column) {
+        if (!$this->value[$column]) return;
+        if (!PwHelper::validteAlphanumeric($this->value[$column], $min, $max)) {
+            $this->addError($column, 'invalid');
+        }
+    }
 }

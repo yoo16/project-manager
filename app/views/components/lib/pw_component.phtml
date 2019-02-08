@@ -2,5 +2,5 @@
 <? include('views/components/lib/form_delete.phtml') ?>
 <? include('pw_scroller.phtml') ?>
 
-<span id="pw-current-controller" value="<?= $this->pw_controller ?>"></span>
-<span id="pw-current-action" value="<?= $this->pw_action ?>"></span>
+<input id="pw-current-controller" type="hidden" value="<?= $this->pw_controller ?>">
+<input id="pw-current-action" type="hidden" value="<?= $this->pw_action ?>">

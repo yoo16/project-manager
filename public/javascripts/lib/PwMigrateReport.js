@@ -5,17 +5,14 @@
  */
 
 'use strict';
-var pw_migrate_report;
-
-document.addEventListener('DOMContentLoaded', function() {
-    pw_migrate_report = new PwMigrateReport();
-});
+//TODO remove jquery
 
 var PwMigrateReport = function () {
+    this.log_contents;
 
-    this.show_errors = function(dom) {
+    this.show_errors = function(node) {
         var params = {};
-        params.migrate_report_id = $(dom).attr('migrate_report_id');
+        params.migrate_report_id = node.attr('migrate_report_id');
         pw_app.controllerPost('migrate_report', 'api_error', params, callback);
 
         function callback(json) {
@@ -49,15 +46,15 @@ var PwMigrateReport = function () {
                         });
                     }
                 }
-                $('#log-contents').html(html);
+                log_contents.html(html);
                 $('#migrate_error_modal').modal('show');
             }
         }
     }
 
-    this.show_sql = function(dom) {
+    this.show_sql = function(node) {
         var params = {};
-        params.migrate_report_id = $(dom).attr('migrate_report_id');
+        params.migrate_report_id = node.attr('migrate_report_id');
         pw_app.controllerPost('migrate_report', 'api_sql', params, callback);
 
         function callback(json) {
@@ -70,16 +67,21 @@ var PwMigrateReport = function () {
                         html+= '<div></div>' + sql + '</div>';
                     });
                 }
-                $('#log-contents').html(html);
+                log_contents.html(html);
                 $('#migrate_error_modal').modal('show');
             }
         }
     }
-    this.deletes = function(dom) {
-        var message = $(dom).attr('message');
+    this.deletes = function(node) {
+        var message = node.attr('message');
         if (!window.confirm(message)) return;
 
         location.href = 'deletes';
     }
 
 }
+
+var pw_migrate_report = new PwMigrateReport();
+document.addEventListener('DOMContentLoaded', function() {
+    pw_migrate_report.log_contents = PwNode.instance({id: 'log-contents'}).html(html);
+});

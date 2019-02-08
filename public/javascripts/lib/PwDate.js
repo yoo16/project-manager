@@ -4,9 +4,7 @@
  * Copyright (c) 2018 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
-var pw_date;
 document.addEventListener('DOMContentLoaded', function() {
-    pw_date = new PwDate();
 });
 
 var PwDate = function() {
@@ -139,3 +137,5 @@ var PwDate = function() {
     }
 
 }
+
+var pw_date = new PwDate();

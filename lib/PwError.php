@@ -1,17 +1,17 @@
 <?php
 /**
- * エラーメッセージ
+ * PwError
  *
  * @param
- * @return String
+ * @return string
  */
 
 class PwError {
     /**
-     * エラー
+     * display
      *
      * @param
-     * @return String
+     * @return string
      */
     static function display($values, $params, $model) {
         return PwError::get($values, $params, $model);
@@ -21,7 +21,7 @@ class PwError {
      * 
      *
      * @param
-     * @return String
+     * @return string
      */
     static function defaultMessage() {
         return $errors;
@@ -30,10 +30,10 @@ class PwError {
     /**
      * メッセージ取得
      *
-     * @param Array $values
-     * @param Array $params
-     * @param Array $model
-     * @return String
+     * @param  array $values
+     * @param  array $params
+     * @param  array $model
+     * @return string
      */
     static function get($values, $params, $model) {
         $messages = PwError::defaultMessage();
@@ -57,10 +57,10 @@ class PwError {
     }
 
     /**
-    * error優先順位
+    * error message
     *
-    * @param Array $errors
-    * @return Array
+    * @param  array $errors
+    * @return array 
     **/
     static function unify_error_messages($errors) {
         foreach($errors as $key => $error) {

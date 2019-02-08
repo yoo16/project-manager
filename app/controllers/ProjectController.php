@@ -239,8 +239,10 @@ class ProjectController extends AppController
         $pgsql = $database->pgsql();
 
         $this->project->exportPHPModels($pgsql);
+        $this->project->exportAttributeLabels();
 
         $params['project_id'] = $this->project->value['id'];
+
         $this->redirectTo(['controller' => 'attribute', 'action' => 'list'], $params);
     }
 
@@ -255,6 +257,10 @@ class ProjectController extends AppController
         $this->model = DB::model('Model')->fetch($this->pw_posts['model_id']);
         $this->project = DB::model('Project')->fetch($this->model->value['project_id']);
         $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
+
+        //localize import & export
+        LocalizeString::importByModel($this->model, $this->project);
+        $this->project->exportAttributeLabels();
 
         $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();

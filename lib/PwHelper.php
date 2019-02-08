@@ -47,6 +47,42 @@ class PwHelper
         return '';
     }
     
+    /**
+     * validate email
+     *
+     * @param string $email
+     * @return boolean
+     */
+    static function validateEmail($email)
+    {
+        if (!$email) return true;
+        return preg_match("/^\w+[\w\-\.]*@([\w\-]+\.)+\w{2,4}$/", $email) == 1;
+    }
+
+    /**
+     * validate Alphanumeric
+     *
+     * @param string $column
+     * @return boolean
+     */
+    static function validtePassword($value, $min= 4, $max = 50) {
+        if (!$value) return true;
+        $pattern = "/^[0-9a-zA-Z\\-\\_\\@\\.]{".$min."," .$max."}$/i";
+        return preg_match($pattern, $value);
+    }
+
+    /**
+     * validate Alphanumeric
+     *
+     * @param string $column
+     * @return boolean
+     */
+    function validteAlphanumeric($value, $min= 4, $max = 50) {
+        if (!$value) return true;
+        $pattern = "/[0-9a-zA-Z\\-\\_\\@\\.]/";
+        return preg_match($pattern, $value);
+    }
+
 }
 
 /**
@@ -89,6 +125,12 @@ function dump(&$object, $file = null, $line = null)
     error_log("<DUMP> {$file}:{$line}\n{$dump}");
 }
 
+/**
+ * email validate
+ *
+ * @param string $email
+ * @return boolean
+ */
 function email_valid($email)
 {
     return preg_match("/^\w+[\w\-\.]*@([\w\-]+\.)+\w{2,4}$/", $email) == 1;

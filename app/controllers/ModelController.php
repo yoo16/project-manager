@@ -576,7 +576,7 @@ class ModelController extends ProjectController {
         if ($model->value['class_name']) {
             $database->pgsql()->table($model->value['name'])->deleteRecords();
         }
-        $this->redirectTo('values'); 
+        $this->redirectTo(['action' => 'values']); 
     }
 
    /**

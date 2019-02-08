@@ -4,12 +4,7 @@
  * Copyright (c) 2018 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
-var pw_sortable;
-document.addEventListener('DOMContentLoaded', function() {
-    pw_sortable = new PwSortable();
-});
-
-
+//TODO remove jquery
 var PwSortable = function() {
     this.is_show_sortable = false;
     this.table_id = 'sortable-table';
@@ -23,10 +18,10 @@ var PwSortable = function() {
     this.callback;
     this.is_use_loading = true;
 
-    this.init = function() {
+    this.init = function(node) {
         pw_sortable.is_show_sortable = true;
         sort_order = 1;
-        if ($(pw_sortable).attr('table-id')) pw_sortable.table_id = $(pw_sortable).attr('table-id');
+        if (node.attr('table-id')) pw_sorable.table_id = node.attr('table-id');
         pw_sortable.selector = '#' + pw_sortable.table_id + ' tbody';
         pw_sortable.sortable_table_tr_selector = pw_sortable.selector + ' tr';
         pw_sortable.before_rows = $(pw_sortable.sortable_table_tr_selector);
@@ -42,16 +37,16 @@ var PwSortable = function() {
             if (params.hasOwnProperty('is_use_loading')) pw_sortable.is_use_loading = params.is_use_loading;
         }
     }
-    this.reset = function(dom) {
+    this.reset = function(node) {
         if (pw_sortable.before_rows) {
             $(pw_sortable.selector).html(pw_sortable.before_rows);
         }
-        pw_sortable.close(dom);
+        pw_sortable.close(node);
     }
-    this.edit = function(dom) {
+    this.edit = function(node) {
         if (pw_sortable.is_show_sortable) return;
 
-        this.init();
+        this.init(node);
 
         $('.pw-sortable-control').show();
 
@@ -69,9 +64,9 @@ var PwSortable = function() {
                 pw_sortable.sort_orders = $(pw_sortable.selector).sortable('toArray', { attribute: pw_sortable.row_id_column} );
             }
         });
-        pw_sortable.showControl(dom);
+        pw_sortable.showControl(node);
     }
-    this.showControl = function(dom) {
+    this.showControl = function(node) {
         table_id = pw_sortable.table_id;
         $('.sortable-control').show();
 
@@ -93,7 +88,7 @@ var PwSortable = function() {
         $('td.sortable-control').html(link_tag);
         $('.sortable-control').show();
     }
-    this.update_sort = function(dom) {
+    this.update_sort = function(node) {
         if (!pw_sortable.sort_orders) return;
         
         var orders = [];
@@ -105,12 +100,10 @@ var PwSortable = function() {
             }
         });
 
-        var pw_dom = pw_app.dom({dom: dom});
-        console.log(pw_dom);
         pw_app.postJson(
             {
-                controller: pw_dom.controller(),
-                action: pw_dom.action()
+                controller: node.controller(),
+                action: node.action()
             },
             JSON.stringify(orders),
             {callback: callback, is_show_loading: true}
@@ -119,30 +112,32 @@ var PwSortable = function() {
         function callback(data) {
             pw_sortable.before_rows = null;
             pw_sortable.is_show_sortable = false;
-            pw_sortable.close(dom);
+            pw_sortable.close(node);
 
             if (pw_sortable.callback) {
                 pw_sortable.callback(data);
             }
         }
     }
-    this.top = function(dom) {
+    //TODO
+    this.top = function(node) {
         var first_tr = $(pw_sortable.sortable_table_tr_selector).first();
         if (first_tr) {
-            var row = $(dom).closest('tr');
+            var row = $(node.element).closest('tr');
             row.insertBefore(first_tr);
             pw_sortable.sort_orders = $(pw_sortable.selector).sortable('toArray', { attribute: pw_sortable.row_id_column} );
         }
     }
-    this.bottom = function(dom) {
+    //TODO
+    this.bottom = function(node) {
         var last_tr = $(pw_sortable.sortable_table_tr_selector).last();
         if (last_tr) {
-            var row = $(dom).closest('tr');
+            var row = $(node.element).closest('tr');
             row.insertAfter(last_tr);
             pw_sortable.sort_orders = $(pw_sortable.selector).sortable('toArray', { attribute: pw_sortable.row_id_column} );
         }
     }
-    this.close = function(dom) {
+    this.close = function(node) {
         pw_sortable.is_show_sortable = false;
         $(pw_sortable.selector).sortable('disable');
         $('.pw-sortable-control').hide();
@@ -150,3 +145,7 @@ var PwSortable = function() {
         $('.sortable-control').remove();
     }
 }
+
+var pw_sortable = new PwSortable();
+document.addEventListener('DOMContentLoaded', function() {
+});

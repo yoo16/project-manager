@@ -7,6 +7,10 @@
 
 class PwTag {
 
+    static $pw_controller = 'pw-controller';
+    static $pw_action = 'pw-action';
+    static $stylesheet_dir = 'stylesheets';
+
     /**
      * base url
      *
@@ -42,6 +46,8 @@ class PwTag {
     /**
      * image url
      * 
+     * @param string $image_name
+     * @param string $image_dir
      * @return string
      */
     static function image($image_name, $image_dir = 'images') {
@@ -53,6 +59,9 @@ class PwTag {
     /**
      * fileUrl
      * 
+     * @param string $dir_name
+     * @param string $name
+     * @param string $ext
      * @return string
      */
     static function fileUrl($dir_name, $name, $ext) {
@@ -65,11 +74,12 @@ class PwTag {
     /**
      * serialUrl
      * 
+     * @param string $url
      * @return string
      */
     static function serialUrl($url) {
         $serial = time();
-        $url = "{$url}?serial={$serial}";
+        $url = "{$url}?pw_serial={$serial}";
         return $url;
     }
 
@@ -126,8 +136,10 @@ class PwTag {
      * @param  string $ext
      * @return string
      */
-    static function stylesheet($name, $attributes = null, $dir_name = 'stylesheets', $ext = 'css') {
-        $attributes['href'] = PwTag::fileUrl($dir_name, $name, $ext);
+    static function stylesheet($name, $attributes = null, $stylesheet_dir = null, $ext = 'css') {
+        if (!$name) return;
+        if (!$stylesheet_dir) $stylesheet_dir = PwTag::$stylesheet_dir;
+        $attributes['href'] = PwTag::fileUrl($stylesheet_dir, $name, $ext);
         $attributes['rel'] = 'stylesheet';
         $attributes['type'] = 'text/css';
         return PwForm::singleTag('link', $attributes);
@@ -142,9 +154,10 @@ class PwTag {
      * @param  string $ext
      * @return string
      */
-    static function stylesheetPrint($name, $attributes = null, $dir_name = 'stylesheets', $ext = 'css') {
+    static function stylesheetPrint($name, $attributes = null, $stylesheet_dir = null, $ext = 'css') {
         if (!$name) return;
-        $href = PwTag::fileUrl($dir_name, $name, $ext);
+        if (!$stylesheet_dir) $stylesheet_dir = PwTag::$stylesheet_dir;
+        $attributes['href'] = PwTag::fileUrl($stylesheet_dir, $name, $ext);
         $attributes['rel'] = 'stylesheet';
         $attributes['type'] = 'text/css';
         $attributes['media'] = 'print';
@@ -232,7 +245,16 @@ class PwTag {
      */
     static function attribute($params) {
         if (is_array($params)) {
-            $escape_columns = ['label', 'icon_name', 'http_params', 'is_use_selected', 'is_confirm', 'is_check_delete'];
+            $escape_columns = ['label',
+                               'icon_name',
+                               'http_params',
+                               'menu_group',
+                               'is_use_selected',
+                               'selected_key',
+                               'selected_value',
+                               'is_confirm',
+                               'is_check_delete'
+                            ];
             foreach ($params as $key => $value) {
                 if (!in_array($key, $escape_columns)) {
                     $attributes[] = "{$key}=\"{$value}\"";
@@ -252,19 +274,26 @@ class PwTag {
      * @return string
      */
     static function a($params) {
-        if (!$params['label'] && !$params['icon_name']) $params['label'] = 'Link';
-        if ($params['is_use_selected']) {
-            if ($params['is_selected']) $params['class'].= ' active';
-            if ($params['selected_key'] && $params['selected_key'] == $params['selected_value']) $params['class'].= ' active';
-        }
-        unset($html_params['menu_group']);
-        unset($html_params['is_use_selected']);
-        unset($html_params['is_use_action_selected']);
-
+        $params = PwTag::checkActive($params);
         $attribute = PwTag::attribute($params);
         if (isset($params['icon_name'])) $icon_tag = PwTag::iconTag($params['icon_name']);
+        if (!$params['label'] && !$params['icon_name']) $params['label'] = 'Link';
         $tag = "<a {$attribute}>{$icon_tag}{$params['label']}</a>";
         return $tag;
+    }
+
+    /**
+     * active class
+     * 
+     * @param  array $params
+     * @return string
+     */
+    static function checkActive($params) {
+        if (!$params['is_use_selected']) return $params;
+        if ($params['is_selected'] || 
+            ($params['selected_key'] && $params['selected_key'] == $params['selected_value'])
+           ) $params['class'].= ' active';
+        return $params;
     }
 
     /**
@@ -282,8 +311,10 @@ class PwTag {
                 }
             }
         }
-        if ($attributes) $attribute = implode(' ', $attributes);
-        $tag = "<img {$attribute}>";
+        if ($attributes) {
+            $attribute = implode(' ', $attributes);
+            $tag = "<img {$attribute}>";
+        }
         return $tag;
     }
 
@@ -303,6 +334,7 @@ class PwTag {
 
         if ($controller && $action) $params['href'] = Controller::url($controller, $action, null, $params['http_params']);
 
+        //TODO bootstrap function
         if ($is_active) {
             $params['label'] = "<span class=\"btn btn-sm btn-danger\">{$labels['valid']}</span>";
         } else {
@@ -321,6 +353,7 @@ class PwTag {
      */
     static function iconTag($name) {
         if ($name) {
+            //TODO fontawesome function
             $icon_class_name = "fa fa-{$name}";
             $icon_tag = "<i class=\"{$icon_class_name}\"></i>&nbsp;";
         }
@@ -345,7 +378,7 @@ class PwTag {
      * pw project name
      *
      * @param string $name
-     * @return void
+     * @return string
      */
     static function pwProjectName($name) {
         $tag.= '<script type="text/javascript">';
@@ -487,15 +520,13 @@ class PwTag {
      * button
      *
      * @param array $params
-     * @return void
+     * @return string
      */
     static function button($params)
     {
-        $label = $params['label'];
-        $attribute = PwTag::attribute($params);
         if (!$params['class']) $params['class'] = 'btn btn-outline-primary';
-        if (isset($params['icon_name'])) $icon_tag = PwTag::iconTag($params['icon_name']);
-        $tag = "<button {$attribute} class=\"{$params['class']}\">{$icon_tag}{$label}</button>";
+        $attribute = PwTag::attribute($params);
+        $tag = PwTag::buttonTag($params);
         return $tag;
     }
 
@@ -503,13 +534,46 @@ class PwTag {
      * close modal button
      *
      * @param array $params
-     * @return void
+     * @return string
      */
     static function closeModalButton($params = null)
     {
-        $label = LABEL_CLOSE;
-        $class = 'btn btn-outline-primary';
-        $tag = "<button type=\"button\" class=\"{$class}\" data-dismiss=\"modal\">{$label}</button>";
+        if (!$params['class']) $params['class'] = 'btn btn-outline-primary';
+        $params['label'] = LABEL_CLOSE;
+        $params['type'] = 'button';
+        $params['data-dismiss'] = 'modal';
+        $params['label'] = PwTag::htmlLabel($params);
+        $tag = PwTag::buttonTag($params);
         return $tag;
+    }
+
+    /**
+     * button
+     *
+     * @param array $params
+     * @return string
+     */
+    static function buttonTag($params)
+    {
+        $label = PwTag::htmlLabel($params);
+        $attribute = PwTag::attribute($params);
+        $tag = "<button {$attribute}>{$label}</button>";
+        return $tag;
+    }
+
+    /**
+     * html label
+     *
+     * @param array $params
+     * @return string
+     */
+    static function htmlLabel($params)
+    {
+        $label = $params['label'];
+        if ($params['icon_name']) {
+            $icon_tag = PwTag::iconTag($params['icon_name']);
+            $label = "{$icon_tag}{$label}";
+        }
+        return $label;
     }
 }

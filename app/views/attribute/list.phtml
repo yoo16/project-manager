@@ -26,6 +26,14 @@
     ]
     ) ?>
 
+    <?= $this->linkTo(['controller' => 'model', 'action' => 'values', 'id' => $this->model->value['id'] ],
+      [
+      'class' => 'btn btn-outline-primary',
+      'label' => 'Data',
+      'icon_name' => 'list',
+      ]
+    ) ?>
+
     <form action="<?= $this->urlFor(['controller' => 'page', 'action' => 'create_page_from_model']) ?>" method="post">
       <? if ($this->page->value): ?>
       <?= $this->linkTo(['controller' => 'view'],

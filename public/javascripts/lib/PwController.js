@@ -5,33 +5,12 @@
  */
 
 'use strict';
-var pw_app;
-var pw_base_url = '';
-var pw_current_controller = '';
-var pw_current_action = '';
-var pw_loading_selector = '#main';
-var pw_multi_sid = '';
-
-//TODO remove jquery
-$.support.cors = true;
-
-document.addEventListener('DOMContentLoaded', function() {
-    pw_app = new PwController();
-    pw_app.multiSessionLink();
-    pw_app.pwLoad(); 
-    pw_app.pwAddClick();
-});
-
-window.onload = function () {
-    pw_current_controller = pw_app.dom({id: 'pw-current-controller'}).value();
-    pw_current_action = pw_app.dom({id: 'pw-current-action'}).value();
-};
 
 //TODO remove jquery
 $(document).on('change', ':file', function () {
     var input = $(this),
-      //numFiles = input.get(0).files ? input.get(0).files.length : 1,
-      label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    //numFiles = input.get(0).files ? input.get(0).files.length : 1,
+    label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
     input.parent().parent().next(':text').val(label);
 });
 
@@ -40,10 +19,37 @@ var PwController = function () {
 
     }
 
+    this.isIE = function() {
+        var userAgent = window.navigator.userAgent.toLowerCase();
+        if( userAgent.match(/(msie|MSIE)/) || userAgent.match(/(T|t)rident/) ) {
+            return true;
+        }
+        return false;
+    }
+
+    this.ieVersion = function() {
+        var userAgent = window.navigator.userAgent.toLowerCase();
+        if (this.isIE()) return userAgent.match(/((msie|MSIE)\s|rv:)([\d\.]+)/)[3];
+        return '';
+    }
+
+    this.isEdge = function() {
+        var userAgent = window.navigator.userAgent.toLowerCase();
+        if (userAgent.indexOf('edge') != -1) {
+            return true;
+        }
+    }
+
+    this.currentController = function() {
+        return PwNode.instance({id: 'pw-current-controller'}).value();
+    }
     this.dom = function(params) {
         var instance = new PwNode(params);
         instance.init();
         return instance;
+    }
+    this.urlQuery = function(params) {
+        return query(params);
     }
     this.urlFor = function (params, options) {
         var url_queries = [];
@@ -57,39 +63,62 @@ var PwController = function () {
         if (options) url = url + '?' + query(options);
         return url;
     }
-    this.getHtml = function (params, values, options) {
-        var url = this.urlFor(params, values);
-        const header = new Headers();
-        header.append('Content-Type', 'application/xhtml+xml');
-        var header_options = { 
+    this.headerGet = function() {
+        var header = { 
             method: 'GET',
-            headers: header,
+            headers: {'Content-Type': 'application/xhtml+xml'},
+            credentials: 'include',
+            body: body,
             mode: 'cors',
             cache: 'default',
         };
-        fetchResponse(url, header_options, options);
+        return header;
     }
-    this.post = function (dom, values, callback, data_format) {
-        var pw_dom = pw_app.dom({dom: dom});
+    this.headerPostValues = function(values) {
+        var header = { 
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            credentials: 'include',
+            body: query(values),
+            mode: 'cors',
+            cache: 'default',
+        };
+        return header;
+    }
+    this.headerPostJson = function(json) {
+        var header = { 
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            credentials: 'include',
+            body: json,
+            mode: 'cors',
+            cache: 'default',
+        };
+        return header;
+    }
+    this.getHtml = function (params, values, options) {
+        var url = this.urlFor(params, values);
+        if (this.isIE()) {
+            ajaxGet(url, values, options);
+        } else {
+            fetchRequest(url, this.headerGet(), options);
+        }
+    }
+    this.post = function (node, values, callback) {
         var params = {
-            controller: pw_dom.controller(),
-            action: pw_dom.action(),
+            controller: node.controller(),
+            action: node.action(),
         };
         if (pw_multi_sid) values.pw_multi_sid = pw_multi_sid;
         pw_app.postHtml(params, values, {callback: callback});
     }
     this.postHtml = function (params, values, options) {
         var url = this.urlFor(params);
-        const header = new Headers();
-        header.append('Content-Type', 'application/x-www-form-urlencoded');
-        var header_options = { 
-            method: 'POST',
-            headers: header,
-            body: query(values),
-            mode: 'cors',
-            cache: 'default',
-        };
-        fetchResponse(url, header_options, options);
+        if (this.isIE()) {
+            ajaxPost(url, values, options);
+        } else {
+            fetchRequest(url, this.headerPostValues(values), options);
+        }
     }
     this.postJson = function (params, json, options) {
         if (!params) return;
@@ -97,19 +126,33 @@ var PwController = function () {
         if (!params.action) return;
         if (!json) return;
         var url = this.urlFor(params);
-        const header = new Headers();
-        header.append('Content-Type', 'application/x-www-form-urlencoded');
-        //TODO PHP header: not work with 'application/json'
-        //header.append('Content-Type', 'application/json');
-
-        var header_options = { 
-            method: 'POST',
-            headers: header,
-            body: json,
-            mode: 'cors',
-            cache: 'default',
-        };
-        fetchResponse(url, header_options, options);
+        if (this.isIE()) {
+            //options.data_format = 'json';
+            ajaxPost(url, json, options);
+        } else {
+            fetchRequest(url, this.headerPostJson(json), options);
+        }
+    }
+    this.postByUrl = function (url, params, callback, data_format) {
+        if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
+        var options = {callback:callback, data_format:data_format};
+        ajaxPost(url, params, options);
+    }
+    this.controllerPost = function (controller, action, params, callback, data_format) {
+        if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
+        var url = this.urlFor({controller: controller, action: action});
+        var options = {callback:callback, data_format:data_format};
+        ajaxPost(url, params, options);
+    }
+    this.actionGet = function (node, action, params, callback, data_format) {
+        if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
+        var url = this.urlFor({controller: node.controller(), action: action});
+        var options = {callback:callback, data_format:data_format};
+        ajaxGet(url, params, options);
+    }
+    this.download = function (url, file_name, params, callback) {
+        if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
+        download(url, file_name, params, callback);
     }
 
     /**
@@ -117,47 +160,47 @@ var PwController = function () {
      * @param string url 
      * @param Object options 
      */
-    function fetchResponse(url, header_options, options) {
+    function fetchRequest(url, header_options, options) {
         var callback = options.callback;
         var error_callback = options.error_callback;
         var is_show_loading = false;
         if (options.is_show_loading) is_show_loading = options.is_show_loading;
         if (is_show_loading) pw_app.showLoading();
 
-        fetch(url, header_options)
-        .catch(err => {
+        fetch(url, header_options).catch(function(err) {
             if (is_show_loading) pw_app.hideLoading();
             throw new Error('post error')
-        })
-        .then(function(response) {
+        }).then(function(response) {
             if (is_show_loading) pw_app.hideLoading();
-            const promise = response.text();
-            return promise.then(body => ({ body: body, response: response }))
-        }).then(({ body, response }) => {
+            //const promise = response.text();
             if (response.ok) {
-                return body
+                return response.text().then(function(text) {
+                    return text;
+                });
             } else {
                 if (error_callback) error_callback(response);
             }
-        }).then(text => {
+        }).then(function(text) {
             callback(text);
         }); 
     }
 
     this.pwLoad = function() {
+    //$(document).on('load', '.pw-load', function () {
         var $pw_load = document.getElementsByClassName('pw-load');
         for (var $i = 0; $i < $pw_load.length; $i++) {
-            var dom = $pw_load[$i];
-            var name = dom.getAttribute('pw-controller');
+            var element = $pw_load[$i];
+            var pw_node = PwNode.instance({element: element});
+            var name = pw_node.controller();
             if (!name) return;
     
-            var function_name = dom.getAttribute('pw-function');
-            var action = dom.getAttribute('pw-action');
+            var function_name = pw_node.functionName();
+            var action = pw_node.action();
     
-            var controller_name = pw_app.controllerClassName(name);
+            var controller_name = pw_node.controllerClassName();
             if (controller_name in window) {
                 var controller = new window[controller_name]();
-                if (action && (action in controller)) controller[action](dom);
+                if (action && (action in controller)) controller[action](pw_node);
                 if (function_name && (function_name in controller)) controller[function_name]();
             }
         }
@@ -168,67 +211,51 @@ var PwController = function () {
 
     //TODO remove jquery
     $(document).on('click', '.pw-click', function () {
-        console.log('ok');
-        var pw_dom = pw_app.dom({dom: this});
-        var name = pw_dom.controller();
+        var pw_node = PwNode.instance({element: this});
+        var name = pw_node.controller();
         if (!name) return;
 
-        var action = pw_dom.action();
+        var action = pw_node.action();
         if (!action) return;
 
-        var controller_name = pw_dom.controllerClassName();
+        var controller_name = pw_node.controllerClassName();
         if (controller_name in window) {
             var controller = new window[controller_name]();
-            if (action in controller) controller[action](pw_dom.dom);
+            if (action in controller) controller[action](pw_node);
         }
     });
 
-    this.pwAddClick = function() {
-        // var elements = document.getElementsByClassName('pw-click');
-        // if (!elements) return;
-        // Array.from(elements).map(function(dom) {
-        //     dom.addEventListener('click', doClick);
-            
-        //     function doClick(event) {
-        //         //dom.removeEventListener('click', doClick);
-        //         var pw_dom = pw_app.dom({dom: dom});
-        //         if (dom.classList.contains('confirm-dialog')) {
-        //             if (message = pw_dom.attr('message'));
-        //             if (!window.confirm(message)) return;
-        //         }
-    
-        //         var name = pw_dom.controller();
-        //         if (!name) return;
-    
-        //         var action = pw_dom.action();
-        //         if (!action) return;
-    
-        //         var controller_name = pw_dom.controllerClassName();
-        //         if (controller_name in window) {
-        //             console.log(controller_name);
-        //             var controller = new window[controller_name]();
-        //             if (action in controller) controller[action](pw_dom.dom);
-        //         }
-        //     }
-        // });
-    }
+
+    $(document).on('change', '.pw-change', function () {
+        var pw_node = PwNode.instance({element: this});
+        var name = pw_node.controller();
+        if (!name) return;
+
+        var action = pw_node.action();
+        if (!action) return;
+
+        var controller_name = pw_node.controllerClassName();
+        if (controller_name in window) {
+            var controller = new window[controller_name]();
+            if (action in controller) controller[action](pw_node);
+        }
+    });
 
     //TODO remove jquery
     this.multiSessionLink = function(fileName, content) {
-        var dom = pw_app.dom({id: 'pw-multi-session-id'});
-        if (!dom) return;
-        pw_multi_sid = dom.value('value');
+        var pw_multi_session_id = PwNode.instance({id: 'pw-multi-session-id'});
+        if (!pw_multi_session_id) return;
+        pw_multi_sid = pw_multi_session_id.value();
         if (!pw_multi_sid) return;
 
-        jQuery('a').each(function() {
-            if ($(this).attr('is_not_pw_multi_sid')) return;
-            var link = $(this).attr("href");
-            if (link) {
-                if (link.indexOf('pw_multi_sid') > 0) {
-
-                } else {
+        [].forEach.call(document.getElementsByTagName('a'), function(element) {
+            var node = PwNode.instance({element: element});
+            var link = '';
+            if (node.attr('is_not_pw_multi_sid')) return;
+            if (link = node.attr('href')) {
+                if (link.indexOf('pw_multi_sid') == -1) {
                     link = link + "&pw_multi_sid=" + pw_multi_sid;
-                    $(this).attr('href', link);
+                    node.setAttr('href', link);
                 }
             }
         });
@@ -242,30 +269,6 @@ var PwController = function () {
     this.requestPage = function (url, params, callback) {
         if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
         window.location.href = pw_app.generateUrl(url, params);
-    }
-    this.urlPost = function (url, params, callback, data_format) {
-        if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
-        post(url, params, callback, data_format);
-    }
-    this.controllerPost = function (controller, action, params, callback, data_format) {
-        if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
-        post(controllerUrl(controller, action), params, callback, data_format);
-    }
-    this.actionPost = function (dom, action, params, callback, data_format) {
-        if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
-        post(actionUrl(dom, action), params, callback, data_format);
-    }
-    this.controllerGet = function (controller, action, params, callback, data_format) {
-        if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
-        requestGet(controllerUrl(controller, action), params, callback, data_format);
-    }
-    this.actionGet = function (dom, action, params, callback, data_format) {
-        if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
-        requestGet(actionUrl(dom, action), params, callback, data_format);
-    }
-    this.download = function (url, file_name, params, callback) {
-        if (pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
-        download(url, file_name, params, callback);
     }
     this.generateUrl = function (url, params) {
         var url_param = query(params);
@@ -291,18 +294,21 @@ var PwController = function () {
         return value;
     }
     this.showLoading = function(selector) {
-        if (selector) {
-            $(selector).LoadingOverlay("show");
-        } else {
-            $(pw_loading_selector).LoadingOverlay("show");
-        }
+        if (!selector) selector = pw_loading_selector;
+        selector = this.jqueryId(selector);
+        $(selector).LoadingOverlay('show');
     }
     this.hideLoading = function(selector) {
-        if (selector) {
-            $(selector).LoadingOverlay("hide");
-        } else {
-            $(pw_loading_selector).LoadingOverlay("hide");
+        if (!selector) selector = pw_loading_selector;
+        selector = this.jqueryId(selector);
+        $(selector).LoadingOverlay('hide');
+    }
+    this.jqueryId = function(id) {
+        if (id) {
+            var start = id.slice(0, 1)
+            if (start != '#') id = '#' + id;
         }
+        return id;
     }
     this.checkImageLoading = function(class_name, count) {
         var displayed_count = 0;
@@ -325,41 +331,72 @@ var PwController = function () {
             }
         });
     }
-    this.loadingDom = function(dom, callback, error_callback) {
+    //TODO removejquery
+    this.loadingDom = function(node, callback, error_callback) {
         var selector = '';
-        if ($(dom).attr('id')) selector = '#' + $(dom).attr('id');
+        if (node.attr('id')) selector = '#' + node.attr('id');
         pw_app.showLoading(selector);
-        $(dom).on('error', function(e) {
+        $(node.element).on('error', function(e) {
             pw_app.hideLoading(selector);
-            $(dom).off('error');
+            $(node.element).off('error');
             if (error_callback) error_callback();
         });
-        $(dom).on('load', function() {
+        $(node.element).on('load', function() {
             pw_app.hideLoading(selector);
-            $(dom).off('load');
+            $(node.element).off('load');
             if (callback) callback();
         });
     }
-    this.loadImage = function(url, dom, callback, error_callback) {
-        $(dom).attr('src', url);
-        pw_app.loadingDom(dom, callback, error_callback);
+    this.loadImage = function(url, node, callback, error_callback) {
+        node.setAttr('src', url);
+        pw_app.loadingDom(node);
 
         var selector = '';
-        if ($(dom).attr('id')) selector = '#' + $(dom).attr('id');
-        $(dom).on('error', function(e) {
+        if (node.attr('id')) selector = '#' + node.attr('id');
+        $(node.element).on('error', function(e) {
             pw_app.hideLoading(selector);
-            $(dom).attr('src', null);
-            $(dom).hide();
-            $(dom).off('error');
+            node.attr('src', null);
+            node.hide();
+            $(node.element).off('error');
             if (error_callback) error_callback();
         });
-        $(dom).on('load', function() {
+        $(node.element).on('load', function() {
             pw_app.hideLoading(selector);
-            $(dom).show();
-            $(dom).off('load');
+            node.show();
+            $(node.element).off('load');
             if (callback) callback();
         });
     }
+    this.confirmDeleteImage = function(controller, node, delete_id_column) {
+        var link_delete_image = PwNode.instance({id: 'link_delete_image'});
+        link_delete_image.setAttr('pw-controller', controller);
+        link_delete_image.setAttr('pw-action', 'delete_image');
+        link_delete_image.setAttr(delete_id_column, node.attr(delete_id_column));
+        $('.delete-file-window').modal('show');
+    }
+    //TODO
+    this.deleteImage = function(params) {
+        $('.delete-file-window').modal('hide');
+
+        var delete_id_column = params.delete_id_column;
+        var url = pw_app.urlFor(
+            {controller: params.controller, action: 'delete_image'},
+            {delete_id_column: params.node.attr(delete_id_column)}
+            );
+
+        pw_app.postByUrl(url, null, 
+            function (data, status, xhr) {
+                if (params.image && params.callback) params.callback(params.image);
+            }
+        );
+    }
+    this.showDeleteConfrimImage = function() {
+        PwNode.instance({id: 'link_confirm_delete_image'}).show();
+    }
+    this.hideDeleteConfirmImage = function() {
+        PwNode.instance({id: 'link_confirm_delete_image'}).hide();
+    }
+
     this.fileUpload = function(url, form_id, callback, error_callback)
     {
         if (!$(form_id)) return;
@@ -402,33 +439,18 @@ var PwController = function () {
         return class_name;
     }
 
-    $(document).on('change', '.pw-change', function () {
-        var name = $(this).attr('pw-controller');
-        if (!name) return;
-
-        var action = $(this).attr('pw-action');
-        if (!action) return;
-
-        var controller_name = controllerClassName(name);
-        if (controller_name in window) {
-            var controller = new window[controller_name]();
-            if (action in controller) {
-                controller[action](this);
-            }
-        }
-    });
-
     $(document).on('click', '.pw-lib', function () {
-        var lib_name = $(this).attr('pw-lib');
+        var node = PwNode.instance({element: this});
+        var lib_name = node.attr('pw-lib');
         if (!lib_name) return;
 
-        var action = $(this).attr('pw-action');
+        var action = node.attr('pw-action');
         if (!action) return;
 
         if (lib_name in window) {
             var controller = new window[lib_name]();
             if (action in controller) {
-                controller[action](this);
+                controller[action](node);
             }
         }
     });
@@ -440,10 +462,13 @@ var PwController = function () {
         $('.delete-window').modal();
     });
 
-    $(document).on('click', '.confirm-dialog', function () {
-        var pw_dom = pw_app.dom({dom: dom});
-        if (message = pw_dom.attr('message'));
-        if (!window.confirm(message)) return;
+    /**
+     * confirm dialog
+     */
+    $(document).on('click', '.confirm-dialog', function() {
+        var message = '';
+        if ($(this).attr('message')) message = $(this).attr('message');
+        return (window.confirm(message));
     });
 
     $(document).on('click', '.action-loading', function() {
@@ -459,7 +484,10 @@ var PwController = function () {
     function query(params) {
         if (!params) return;
         var esc = encodeURIComponent;
-        var query = Object.keys(params).map(k => esc(k) + '=' + esc(params[k])).join('&');
+        //var query = Object.keys(params).map(k => esc(k) + '=' + esc(params[k])).join('&');
+        var queryArray = [];
+        Object.keys(params).forEach(function (key) { return queryArray.push(key + '=' + encodeURIComponent(params[key])); });
+        var query = queryArray.join('&');
         return query;
     }
 
@@ -505,51 +533,7 @@ var PwController = function () {
     function projectUrl() {
         var pw_base_url = httpBase();
         var url = pw_base_url;
-        if (pw_project_name) {
-            url += pw_project_name + '/';
-        }
-        return url;
-    }
-
-    /**
-    * controller URL
-    *
-    * @param controller
-    * @param action
-    * @return string
-    **/
-    function controllerUrl(controller, action) {
-        if (!controller) return;
-        if (!action) return;
-        var url = projectUrl() + controller + '/' + action;
-        return url;
-    }
-
-    /**
-    * action URL
-    *
-    * @param action
-    * @return string
-    **/
-    function actionUrl(dom, action) {
-        var controller = $(dom).attr('pw-controller');
-        if (!controller) return;
-        if (!action) return;
-        var url = projectUrl() + controller + '/' + action;
-        return url;
-    }
-
-    /**
-    * Post URL for dom
-    *
-    * @return string
-    **/
-    function postUrl(dom) {
-        var controller = $(dom).attr('pw-controller');
-        var action = $(dom).attr('pw-action');
-        if (!controller) return;
-        if (!action) return;
-        var url = projectUrl() + controller + '/' + action;
+        if (pw_project_name) url += pw_project_name + '/';
         return url;
     }
 
@@ -557,24 +541,56 @@ var PwController = function () {
     * post api
     *
     * @param string url
-    * @param object params
-    * @param function callback
-    * @param string data_type
+    * @param object data 
+    * @param object options 
     * @return void
     **/
-    function post(url, params, callback, data_format) {
-        if (!data_format) data_format = 'html';
+    function ajaxPost(url, data, options) {
+        options.method = 'POST';
+        ajaxRequest(url, data, options);
+    }
+
+    /**
+    * ajax Get    
+    *
+    * @param string url
+    * @param object data
+    * @param object options 
+    * @return void
+    **/
+    function ajaxGet(url, data, options) {
+        options.method = 'GET';
+        ajaxRequest(url, data, options);
+    }
+
+    /**
+    * ajax Get    
+    *
+    * @param string url
+    * @param object data
+    * @param object options 
+    * @return void
+    **/
+   function ajaxRequest(url, data, options) {
+        var data_format = 'html';
+        var callback;
+        var method = 'GET';
+        if (options) {
+            if (options.data_format) data_format = options.data_format;
+            if (options.callback) callback = options.callback;
+            if (options.method) method = options.method;
+        }
         $.ajax({
-            type: 'POST',
+            type: method,
             cache: false,
             url: url,
-            data: params,
+            data: data,
             dataType: data_format,
             xhrFields: {
                 withCredentials: true
             },
-            success: function (data) {
-                if (callback) callback(data);
+            success: function (result) {
+                if (callback) callback(result);
             },
             error: function () {
             }
@@ -605,31 +621,6 @@ var PwController = function () {
     }
 
     /**
-    * post api
-    *
-    * @param string url
-    * @param object params
-    * @param function callback
-    * @param String data_type
-    * @return void
-    **/
-   function requestGet(url, params, callback, data_type) {
-    if (!data_type) data_type = 'html';
-        $.ajax({
-            type: 'GET',
-            cache: false,
-            url: url,
-            data: params,
-            dataType: data_type,
-            success: function (data) {
-                if (callback) callback(data);
-            },
-            error: function () {
-            }
-        });
-    }
-
-    /**
     * upper string for top
     *
     * @param string string
@@ -641,57 +632,21 @@ var PwController = function () {
         var value = string.replace(/^[a-z]/g, function (val) { return val.toUpperCase(); });
         return value;
     }
-
-    /**
-    * request ajax
-    *
-    * @param array values
-    * @return object
-    **/
-    var requestAjax = function (values) {
-        var $ajax = $.ajax(values);
-        var defer = new $.Deferred();
-        $ajax.done(function (data, status, $ajax) {
-            defer.resolveWith(this, arguments);
-        });
-        $ajax.fail(function (data, status, $ajax) {
-            defer.resolveWith(this, arguments);
-        });
-        return $.extend({}, $ajax, defer.promise());
-    };
-
-    function parallelAjax(requests, callback) {
-        var results = [];
-        $.each(requests, function (index, value) {
-            var $ajax = requestAjax({ url: value.url, data: value.params }).done(function (res, status) {
-                if (value.callback) {
-                    value.callback(res);
-                }
-            });
-            results.push($ajax);
-        });
-        $.when.apply(null, results).done(function () {
-            if (callback) callback(results);
-        });
-        $.when.apply(null, results).fail(function () {
-        });
-    }
-
-    function parallelRequest(requests, callback) {
-        var XHRList = [];
-        $.each(requests, function (index, value) {
-            XHRList.push($.ajax({
-                type: "POST",
-                cache: false,
-                url: value.url,
-                data: value.params,
-            }));
-        });
-        $.when.apply($, XHRList).done(function () {
-            callback(arguments);
-        }).fail(function (ex) {
-            alert('ajax error');
-        });
-    }
-
 }
+
+//TODO remove jquery
+$.support.cors = true;
+
+var pw_app = new PwController();
+var pw_base_url = '';
+var pw_current_controller = '';
+var pw_current_action = '';
+var pw_loading_selector = 'main';
+var pw_multi_sid = '';
+
+document.addEventListener('DOMContentLoaded', function() {
+    pw_app.multiSessionLink();
+    pw_app.pwLoad(); 
+    if (PwNode.instance({id: 'pw-current-controller'}).value()) pw_app.pw_current_controller = PwNode.instance({id: 'pw-current-controller'}).value();
+    if (PwNode.instance({id: 'pw-current-action'}).value()) pw_app.pw_current_action = PwNode.instance({id: 'pw-current-action'}).value();
+});

@@ -28,6 +28,7 @@ class PwForm {
                               'unselct_value',
                               'unused_hidden',
                               'effective-digit',
+                              'is_associative_array',
                             ];
 
     //TODO refactoring
@@ -437,11 +438,15 @@ class PwForm {
 
         $tag = self::unselectOption($params);
 
-        foreach ($values as $value) {
-            $attributes['value'] = $value[$value_key];
+        foreach ($values as $key => $value) {
+            if ($params['is_key_value_array']) {
+                $attributes['value'] = $key;
+                $label = $value;
+            } else {
+                $attributes['value'] = $value[$value_key];
+                $label = self::convertLabel($value, $params);
+            }
             $attributes['selected'] = self::selectedTag($attributes['value'], $selected);
-
-            $label = self::convertLabel($value, $params);
             if ($params['label_unit']) $label.= $params['label_unit'];
             $tag.= self::optionTag($label, $attributes);
         }

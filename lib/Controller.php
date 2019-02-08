@@ -598,7 +598,7 @@ class Controller extends RuntimeException {
      * @return string
      */
     function linkTo($params, $html_params = null) {
-        if ($this->checkLinkActive($params, $html_params)) $html_params['class'].= ' active';
+        $html_params['is_selected'] = $this->checkLinkActive($params, $html_params);
         $html_params['href'] = $this->urlFor($params, $html_params['http_params']);
         $tag = PwTag::a($html_params);
         return $tag;
@@ -1053,6 +1053,20 @@ class Controller extends RuntimeException {
      */
     function loadDefaultCsvOptions($lang = null) {
         $this->csv_options = PwLocalize::loadCsvOptions($lang);
+    }
+
+    /**
+     * check model id
+     * When invalid, redirect.
+     *
+     * @param Entity $model
+     * @param array $params
+     * @param array $http_params
+     * @return void
+     */
+    function checkModel($model, $params = null, $http_params = null) {
+        if (!$params) $params['controller'] = $model->entity_name;
+        if (!$model->value['id']) $this->redirectTo($params, $http_params);
     }
 
     /**
