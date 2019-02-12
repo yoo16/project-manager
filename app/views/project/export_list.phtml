@@ -26,7 +26,9 @@
         <? if (file_exists($user_project_setting['project_path'])): ?>
         <? if (file_exists($user_project_setting['project_path']."app/")): ?><label class="badge badge-success">exists</label><? else: ?>
         <label class="badge badge-danger">not found php-work</label>
-        <div><?= PHP_WORK_GIT_URL ?></div>
+        <div>
+          <a href="<?= PHP_WORK_GIT_URL ?>" target="_blank"><?= PHP_WORK_GIT_URL ?></a>
+        </div>
       <? endif ?>
     <? else: ?>
     <label class="badge badge-danger">not exists</label>

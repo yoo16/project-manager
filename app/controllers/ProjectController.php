@@ -102,16 +102,16 @@ class ProjectController extends AppController
      */
     function action_edit()
     {
-        $this->project = DB::model('Project')
-            ->fetch($this->pw_params['id'])
-            ->takeValues($this->pw_posts['project']);
+        $this->project = DB::model('Project');
+        $this->project->fetch($this->pw_params['id'])
+                      ->takeValues($this->pw_posts['project']);
 
         $this->database = DB::model('Database')->fetch($this->project->value['database_id']);
 
         $this->user_project_setting = DB::model('UserProjectSetting');
-        $this->user_project_setting->where("user_id = {$this->login_user->value['id']}")
-            ->where("project_id = {$this->project->value['id']}")
-            ->first();
+        $this->user_project_setting->where('user_id', $this->login_user->value['id'])
+                                   ->where('project_id', $this->project->value['id'])
+                                   ->first();
         if (!$this->user_project_setting->value) {
             $posts['user_id'] = $this->login_user->value['id'];
             $posts['project_id'] = $this->project->value['id'];
@@ -125,13 +125,13 @@ class ProjectController extends AppController
      */
     function action_add()
     {
-        $project = DB::model('Project')
-            ->fetch($this->pw_params['id'])
-            ->post()
-            ->insert();
+        $project = DB::model('Project');
+        $project->fetch($this->pw_params['id'])
+                ->post()
+                ->insert();
 
-        if (!$project->errors) {
-            $this->clearPwPosts();
+        if ($project->errors) {
+            $this->addErrorByModel($project);
         }
         $this->redirectTo(['action' => 'list']);;
     }

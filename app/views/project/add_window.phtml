@@ -1,8 +1,7 @@
-
 <div id="add-window" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <form method="post" action="<?= $this->urlFor('add') ?>">
+      <form method="post" action="<?= $this->urlFor(['action' => 'add']) ?>">
         <div class="modal-header">
           <h5 class="modal-title">Project</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -10,17 +9,29 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="form-group row">
-            <label for="" class="col-3 col-form-label">Name</label>
-            <?= DB::model('Project')->formInput('name') ?>
-          </div>
-
-          <div class="form-group row">
-            <label for="" class="col-3 col-form-label">Database</label>
-            <?= DB::model('Project')->formSelect('database_id', ['values' => $this->database->values, 'value' => 'id', 'label' => 'name', 'class' => 'form-control col-8']) ?>
-          </div>
-
+          <dl>
+            <dt>Name</dt>
+            <dd>
+              <?= DB::model('Project')->formInput('name',
+            [
+            'class' => 'form-control'
+            ]
+            ) ?>
+            </dd>
+            <dt>Database</dt>
+            <dd>
+              <?= DB::model('Project')->formSelect('database_id', 
+            [
+            'values' => $this->database->values,
+            'value' => 'id', 'label' => 'name',
+            'class' => 'form-control',
+            'unselect' => true
+            ]
+            ) ?>
+            </dd>
+          </dl>
         </div>
+
         <div class="modal-footer">
           <?= PwForm::submit(LABEL_ADD) ?>
           <?= $this->linkJs(['label' => LABEL_CLOSE, 'class' => 'btn btn-outline-primary', 'data-dismiss' => 'modal']) ?>
