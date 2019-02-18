@@ -18,7 +18,6 @@ var AttributeController = function() {
     }
 
     this.relation_attribute_list = function(node) {
-        console.log(node);
         var params = {};
         params.fk_model_id = node.attr('fk_model_id');
         params.attribute_id = node.attr('attribute_id');
