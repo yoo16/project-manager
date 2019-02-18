@@ -36,6 +36,7 @@ class PwPgsql extends PwEntity
     public $is_bulk_select = false;
     public $is_old_table = false;
     public $is_sort_order = true;
+    public $is_sort_order_column = true;
     public $is_excute_sql = true;
     public $is_value_object = false;
     public $is_use_select_column = false;
@@ -135,8 +136,36 @@ class PwPgsql extends PwEntity
         return $sequence_name;
     }
 
+
     /**
-     * sequenceName
+     * index list
+     * 
+     * @param string $table_name
+     * @param array $conditions
+     * @param string $schama_name
+     * @return string
+     */
+    function pgIndexesByTableName($table_name, $conditions = null, $schama_name = 'public')
+    {
+        $conditions[] = "tablename = '{$table_name}'";
+        return $this->pgIndexes($conditions, $schama_name);
+    }
+
+    /**
+     * index list
+     * 
+     * @param string $schama_name
+     * @param array $conditions
+     * @return string
+     */
+    function pgIndexes($conditions = null, $schama_name = 'public')
+    {
+        $sql = self::indexSql($conditions, $schama_name);
+        return $this->fetchRows($sql);
+    }
+    
+    /**
+     * create sequence
      * 
      * @param string $table_name
      * @param string $id_column
@@ -147,6 +176,52 @@ class PwPgsql extends PwEntity
         $sequence_name = self::sequenceName($table_name, $id_column);
         $sql = "CREATE SEQUENCE {$sequence_name};";
         return $this->query($sql);
+    }
+
+    /**
+     * create index
+     * 
+     * @param string $table_name
+     * @param string $column_name
+     * @return string
+     */
+    function createIndex($table_name, $column_name)
+    {
+        $sql = self::createIndexSql($table_name, $column_name);
+        return $this->query($sql);
+    }
+
+    /**
+     * Create INDEX SQL
+     *
+     * @param  string $table_name
+     * @param  string $column_name
+     * @return string
+     */
+    static function createIndexSql($table_name, $column_name) {
+        if (is_array($column_name)) {
+            $name = implode('_', $column_name);
+            $index_name = "{$table_name}_{$name}";
+            $column_name = $name = implode(',', $column_name);
+        } else {
+            $index_name = "{$table_name}_{$column_name}";
+        }
+        $sql = "CREATE INDEX {$index_name} ON {$table_name} ({$column_name});".PHP_EOL;
+        return $sql;
+    }
+
+    /**
+     * SQL index
+     *
+     * @param  string $table_name
+     * @return string
+     */
+    static function indexSql($conditions = null, $schema_name = 'public')
+    {
+        $conditions[] = "schemaname = '{$schema_name}'";
+        $condition = implode(' AND ', $conditions);
+        $sql = "SELECT * FROM pg_indexes WHERE {$condition};".PHP_EOL;
+        return $sql;
     }
 
     /**
@@ -1296,16 +1371,19 @@ class PwPgsql extends PwEntity
      * 
      * @return PwPgsql
      */
-    public function all()
+    public function all($is_id_index = false)
     {
+        if ($is_id_index) $this->idIndex();
         $this->values = null;
         if ($this->is_bulk_select) {
             return $this->bulkAll($this->limit);
         } else {
             if (!$this->is_old_table) {
-                if (!$this->orders && $this->columns['sort_order']) {
-                    $this->order('sort_order');
-                    if ($this->id_column) $this->order($this->id_column);
+                if ($this->is_sort_order_column) {
+                    if (!$this->orders && $this->columns['sort_order']) {
+                        $this->order('sort_order');
+                        if ($this->id_column) $this->order($this->id_column);
+                    }
                 }
             }
             $sql = $this->selectSql();
@@ -2899,6 +2977,7 @@ class PwPgsql extends PwEntity
      **/
     function sqlOrders($orders)
     {
+        if (!$this->is_sort_order) return;
         if (!$orders) return;
         foreach ($orders as $order) {
             if ($order['column']) {
@@ -3112,17 +3191,21 @@ class PwPgsql extends PwEntity
 
         return $values;
     }
+
     /**
      * databases
      * 
+     * @param array $conditions
      * @return array
      **/
-    function pgDatabases()
+    function pgDatabases($conditions = null)
     {
         $this->dbname = null;
         $this->loadDBInfo();
         //$sql = "SELECT * FROM pg_database WHERE datacl IS NULL;";
-        $sql = "SELECT * FROM pg_database;";
+        $conditions[] = 'datistemplate = false';
+        $where = implode('AND', $conditions);
+        $sql = "SELECT * FROM pg_database WHERE {$where};";
         return $this->fetchRows($sql);
     }
 
@@ -3593,29 +3676,6 @@ class PwPgsql extends PwEntity
         }
         $sql.= ';';
         return $this->fetchRow($sql);
-    }
-
-    /**
-     * pg indexes
-     *
-     * @param  string $table_name
-     * @param  string $schema_name
-     * @return array
-     */
-    function pgIndexes($table_name = null, $schema_name = 'public')
-    {
-        if (!$pg_class_id) return;
-
-        $sql = "SELECT * FROM pg_indexes WHERE schemaname = '{$schema_name}'";
-
-        $conditions[] = "schemaname = '{$schema_name}'";
-        if ($table_name) $conditions[] = "table_name = '{$table_name}'";
-        if ($conditions) {
-            $condition = $this->sqlConditions($conditions);
-            $sql.= " WHERE {$condition}";
-        }
-        $sql.= ';';
-        return $this->fetchRows($sql);
     }
 
     /**

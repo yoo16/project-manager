@@ -348,11 +348,12 @@ var PwController = function () {
         });
     }
     this.loadImage = function(url, node, callback, error_callback) {
+        url+= '&serial=' + new Date().getTime();
         node.setAttr('src', url);
         pw_app.loadingDom(node);
 
         var selector = '';
-        if (node.attr('id')) selector = '#' + node.attr('id');
+        if (node.attr('id')) selector = node.attr('id');
         $(node.element).on('error', function(e) {
             pw_app.hideLoading(selector);
             node.attr('src', null);
@@ -390,7 +391,7 @@ var PwController = function () {
             }
         );
     }
-    this.showDeleteConfrimImage = function() {
+    this.showDeleteConfirmImage = function() {
         PwNode.instance({id: 'link_confirm_delete_image'}).show();
     }
     this.hideDeleteConfirmImage = function() {

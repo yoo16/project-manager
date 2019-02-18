@@ -323,6 +323,29 @@ class PwEntity {
     }
 
     /**
+     * set is sort order
+     * 
+     * @param  boolean $is_sort_order
+     * @return PwEntity
+     */
+    public function setIsSortOrder($is_sort_order) {
+        $this->is_sort_order = $is_sort_order;
+        return $this;
+    }
+
+    /**
+     * set is sort order column
+     * 
+     * @param  boolean $is_sort_order
+     * @return PwEntity
+     */
+    public function setIsSortOrderColumn($is_sort_order) {
+        $this->is_sort_order_column = $is_sort_order_column;
+        return $this;
+    }
+
+
+    /**
      * setValue By id
      * 
      * @param  integer $id

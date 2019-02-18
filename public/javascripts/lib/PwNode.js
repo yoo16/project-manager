@@ -25,9 +25,7 @@ var PwNode = /** @class */ (function () {
             if (this.element) return this.element.value;
         };
         this.selected = function () {
-            if (this.element) {
-                return this.element.value;
-            }
+            if (this.element) return this.element.value;
         }
         this.selectValue = function (value) {
             if (this.element) {
@@ -166,6 +164,13 @@ var PwNode = /** @class */ (function () {
         instance.init();
         return instance;
     };
+    PwNode.id = function (id) {
+        if (!id) return;
+        var instance = new PwNode({id: id});
+        instance.init();
+        return instance;
+    };
+
     /**
     * upper string for top
     *

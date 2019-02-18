@@ -29,6 +29,7 @@ class PwForm {
                               'unused_hidden',
                               'effective-digit',
                               'is_associative_array',
+                              'is_key_value_array',
                             ];
 
     //TODO refactoring

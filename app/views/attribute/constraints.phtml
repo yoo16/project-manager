@@ -1,4 +1,3 @@
-
 <? include('unique_attribute_window.phtml') ?>
 
 <div class="card">
@@ -6,7 +5,7 @@
 
   <div class="card-body">
 
-    <div class="p-4">
+    <div class="p-2">
       <? include('constraints_primary.phtml') ?>
     </div>
 
@@ -20,7 +19,7 @@
 
   <div class="card-body">
 
-    <div class="p-4">
+    <div class="p-2">
       <? include('constraints_foreign.phtml') ?>
     </div>
 
@@ -38,14 +37,14 @@
       'pw-action' => 'unique_attribute_list',
       'model_id' => $this->model->value['id'],
       ]) ?>
-    </div>
+  </div>
 
-    <div class="card-body">
+  <div class="card-body">
 
-      <div class="p-4">
-        <? include('constraints_unique.phtml') ?>
-      </div>
-
+    <div class="p-2">
+      <? include('constraints_unique.phtml') ?>
     </div>
 
   </div>
+
+</div>

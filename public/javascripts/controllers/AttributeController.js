@@ -12,8 +12,8 @@ var AttributeController = function() {
 
         pw_app.post(node, params, callback);
 
-        function callback(data) {
-            $('#relation_list').html(data);
+        function callback(html) {
+            PwNode.id('relation_list').html(html);
         }
     }
 
@@ -25,8 +25,19 @@ var AttributeController = function() {
 
         pw_app.post(node, params, callback);
 
-        function callback(data) {
-            $('#relation_list').html(data);
+        function callback(html) {
+            PwNode.id('relation_list').html(html);
+        }
+    }
+
+    this.index_list = function(node) {
+        var params = {};
+        params.model_id = node.attr('model_id');
+
+        pw_app.post(node, params, callback);
+
+        function callback(html) {
+            PwNode.id('index_list').html(html);
         }
     }
 
@@ -36,8 +47,8 @@ var AttributeController = function() {
 
         pw_app.post(node, params, callback);
 
-        function callback(data) {
-            $('#unique_attribute_list').html(data);
+        function callback(html) {
+            PwNode.id('unique_attribute_list').html(html);
         }
     }
 
@@ -47,8 +58,8 @@ var AttributeController = function() {
         params.model_id = node.attr('model_id');
         pw_app.post(node, params, callback);
 
-        function callback(data) {
-            $('#old_attribute_list').html(data);
+        function callback(html) {
+            PwNode.id('old_attribute_list').html(html);
         }
     }
 

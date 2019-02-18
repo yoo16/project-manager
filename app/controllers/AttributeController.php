@@ -50,12 +50,13 @@ class AttributeController extends ModelController {
 
         $this->pg_attributes = $pgsql->attributeArray($this->model->value['name']); 
 
-        $this->attribute = DB::model('Attribute')
-                                ->where("model_id = {$this->model->value['id']}")
-                                ->order('name', 'asc')
-                                ->all()
-                                ->bindValuesArray($this->pg_attributes, 'pg_attribute', 'attnum');
+        $this->pg_indexes = $this->database->pgsql()->pgIndexesByTableName($this->model->value['name']);
 
+        $this->attribute = DB::model('Attribute');
+        $this->attribute->where('model_id', $this->model->value['id'])
+                        ->order('name', 'asc')
+                        ->all()
+                        ->bindValuesArray($this->pg_attributes, 'pg_attribute', 'attnum');
     }
 
     function action_new() {
@@ -404,6 +405,20 @@ class AttributeController extends ModelController {
     }
 
     /**
+     * list for index
+     *
+     * @return void
+     */
+    function action_index_list() {
+        $this->layout = null;
+
+        $this->model = DB::model('Model')->fetch($_REQUEST['model_id']);
+        if ($this->model->value['id']) {
+            $this->model->bindMany('Attribute');
+        }
+    }
+
+    /**
      * list for unique key
      *
      * @return void
@@ -415,6 +430,29 @@ class AttributeController extends ModelController {
         if ($this->model->value['id']) {
             $this->model->bindMany('Attribute');
         }
+    }
+
+    /**
+     * add index
+     *
+     * @return void
+     */
+    function action_add_index() {
+        if (!isPost()) exit;
+
+        $model = DB::model('Model')->fetch($_REQUEST['model_id'])->value;
+
+        foreach ($_REQUEST['attribute_id'] as $attribute_id => $selected) {
+            if ($selected) {
+                $column_names[] = DB::model('Attribute')->fetch($attribute_id)->value['name'];
+            }
+        }
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
+
+        $pgsql = $database->pgsql();
+        $result = $pgsql->createIndex($model['name'], $column_names);
+
+        $this->redirectTo(['action' => 'list']);;
     }
 
     /**
