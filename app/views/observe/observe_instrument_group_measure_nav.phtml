@@ -1,0 +1,49 @@
+<div class="col-12">
+  <div class="row">
+
+    <nav class="navbar bg-faded">
+      <ul class="nav nav-pills">
+        <li class="nav-item nav-element">
+          <?= $this->linkTo(['action' => 'default_group_measure_graph'], ['label' => LABEL_GRAPH, 'class' => 'nav-link', 'selected_action' => 'measure_graph', 'http_params' => ['instrument_id' => $this->instrument->value['id']]]) ?>
+        </li>
+        <li class="nav-item nav-element">
+          <?= $this->linkTo(['action' => 'default_group_measure_list'], ['label' => LABEL_LIST, 'class' => 'nav-link', 'selected_action' => 'measure_list', 'http_params' => ['instrument_id' => $this->instrument->value['id']]]) ?>
+        </li>
+      </ul>
+    </nav>
+    <nav class="navbar bg-faded">
+      <ul class="nav nav-pills">
+        <li class="nav-item nav-title">
+          <?= LABEL_DOWNLOAD ?>
+        </li>
+        <li class="nav-item nav-element">
+            <?= PwTag::a(
+            [
+              'label' => LABEL_GRAPH,
+              'icon_name' => 'download',
+              'class' => 'pw-click btn btn-outline-primary',
+              'message' => MESSAGE_DOWNLOAD,
+              'pw-controller' => $this->js_controller,
+              'pw-action' => 'graph_download',
+            ]
+          )
+          ?>
+        </li>
+        <li class="nav-item nav-element">
+            <?= PwTag::a(
+            [
+              'label' => LABEL_CSV,
+              'icon_name' => 'download',
+              'class' => 'pw-click btn btn-outline-primary',
+              'message' => MESSAGE_DOWNLOAD,
+              'pw-controller' => $this->js_controller,
+              'pw-action' => 'csv_download',
+            ]
+          )
+          ?>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+</div>

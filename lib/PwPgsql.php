@@ -182,12 +182,12 @@ class PwPgsql extends PwEntity
      * create index
      * 
      * @param string $table_name
-     * @param string $column_name
+     * @param any $column_name
      * @return string
      */
-    function createIndex($table_name, $column_name)
+    function createPgIndex($table_name, $column_name)
     {
-        $sql = self::createIndexSql($table_name, $column_name);
+        $sql = self::createPgIndexSql($table_name, $column_name);
         return $this->query($sql);
     }
 
@@ -195,10 +195,12 @@ class PwPgsql extends PwEntity
      * Create INDEX SQL
      *
      * @param  string $table_name
-     * @param  string $column_name
+     * @param  any $column_name
      * @return string
      */
-    static function createIndexSql($table_name, $column_name) {
+    static function createPgIndexSql($table_name, $column_name) {
+        if (!$table_name) return;
+        if (!$column_name) return;
         if (is_array($column_name)) {
             $name = implode('_', $column_name);
             $index_name = "{$table_name}_{$name}";

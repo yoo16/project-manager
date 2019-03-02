@@ -485,7 +485,6 @@ var PwController = function () {
     function query(params) {
         if (!params) return;
         var esc = encodeURIComponent;
-        //var query = Object.keys(params).map(k => esc(k) + '=' + esc(params[k])).join('&');
         var queryArray = [];
         Object.keys(params).forEach(function (key) { return queryArray.push(key + '=' + encodeURIComponent(params[key])); });
         var query = queryArray.join('&');

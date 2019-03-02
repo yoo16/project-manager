@@ -1,0 +1,31 @@
+<? include('observe_spot.phtml') ?>
+
+<div class="col-12">
+  <div class="row">
+    <nav class="navbar bg-faded">
+      <ul class="nav nav-pills">
+        <li class="nav-item nav-title">
+          <?= LABEL_INSTRUMENT_GROUPS ?>
+        </li>
+        <li class="nav-item nav-element pt-1 pl-1">
+          <?= PwForm::select([
+          'name' => 'instrument_group_id',
+          'label' => 'name',
+          'value' => 'id',
+          'model' => 'InstrumentGroup',
+          'wheres' => [
+            ['spot_id', $this->spot->value['id']],
+            ['instrument_type', $this->instrument_type]
+          ],
+          'id' => 'instrument_group_id',
+          'class' => 'form-control pw-change',
+          'pw-controller' => 'instrument_group_measure',
+          'pw-action' => 'change',
+        ],
+        $this->instrument_group->value['id']
+        ) ?>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

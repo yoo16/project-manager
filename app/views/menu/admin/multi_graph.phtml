@@ -1,0 +1,53 @@
+<? include('views/components/menu/admin/spot.phtml') ?>
+<? if ($this->multi_graph->value['id']): ?>
+
+<div id="change-multi_graph-window" class="modal"></div>
+
+<div class="p-2">
+  <h2>
+    <?= $this->multi_graph->value['name'] ?>
+    <input id="multi_graph_id" type="hidden" value="<?= $this->multi_graph->value['id'] ?>">
+  </h2>
+</div>
+
+<nav class="navbar bg-faded">
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+      <?= $this->linkTo(
+        [
+        'controller' => 'multi_graph',
+        'action' => 'edit',
+        'id' => $this->multi_graph->value['id'],
+        ],
+        [
+          'label' => LABEL_SETTING,
+          'icon_name' => 'edit',
+          'class' => 'nav-link',
+          'is_use_selected' => true,
+          'http_params' => 
+          [
+            'multi_graph_id' => $this->multi_graph->value['id'],
+          ]
+        ]
+      )
+      ?>
+    </li>
+
+    <li class="nav-item">
+      <?= $this->linkTo(['controller' => 'multi_graph_member'],
+          [
+            'label' => LABEL_MULTI_GRAPH_MEMBERS,
+            'icon_name' => 'chart-bar',
+            'class' => 'nav-link',
+            'is_use_selected' => true,
+            'http_params' => 
+            [
+              'multi_graph_id' => $this->multi_graph->value['id'],
+            ]
+          ]
+        )
+        ?>
+    </li>
+  </ul>
+</nav>
+<? endif ?>

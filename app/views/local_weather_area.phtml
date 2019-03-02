@@ -1,0 +1,16 @@
+<div class="pt-3">
+  <h3>
+    <span id="local_weather_area_name">
+      <?= $this->local_weather_area->value['name'] ?>
+    </span>
+    <?= $this->linkJs(
+    [
+      'class' => 'pw-click btn btn-sm btn-outline-primary',
+      'label' => LABEL_SELECT,
+      'pw-controller' => 'local_weather',
+      'pw-action' => 'change_select',
+    ]) ?>
+  </h3>
+  <input id="local_weather_area_id" type="hidden" value="<?= $this->local_weather_area->value['id'] ?>">
+</div>
+<div id="change-local_weather_area-window" class="modal"></div>

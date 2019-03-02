@@ -1,0 +1,29 @@
+<? include('views/components/menu/admin/spot.phtml') ?>
+
+<? if ($this->spot_group->value['id']): ?>
+
+  <div class="d-flex p-2">
+    <h2><?= $this->spot_group->value['name'] ?></h2>
+  </div>
+
+  <nav class="navbar bg-faded">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <?= $this->linkTo(
+          [
+          'controller' => 'spot_group',
+          'action' => 'edit',
+          'id' => $this->spot_group->value['id']
+          ],
+          [
+            'label' => LABEL_SETTING,
+            'icon_name' => 'sitemap',
+            'class' => 'nav-link',
+            'is_use_selected' => true,
+          ]
+        )
+        ?>
+      </li>
+    </ul>
+  </nav>
+<? endif ?>

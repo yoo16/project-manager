@@ -57,6 +57,7 @@ class Controller extends RuntimeException {
         'PwTimer',
         'PwError',
         'PwColor',
+        'PwPython',
         ];
 
     function __construct($name = null) {
@@ -263,7 +264,8 @@ class Controller extends RuntimeException {
             $errors['controller'] = $params['controller'];
             $errors['signature'] = $_SERVER['SERVER_SIGNATURE'];
 
-            if ($controller) $controller->renderError($errors);
+            $controller = new Controller();
+            $controller->renderError($errors);
         }
     }
 
@@ -1198,6 +1200,18 @@ class Controller extends RuntimeException {
     function recordValue($csv_name, $key) {
         $value = $this->csv_options[$csv_name][$key];
         return $value;
+    }
+
+    /**
+     * record value
+     *
+     * @param  string $csv_name
+     * @param  string $key
+     * @return string
+     */
+    function recordValues($csv_name) {
+        $values = $this->csv_options[$csv_name];
+        return $values;
     }
 
     /**

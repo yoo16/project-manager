@@ -1,0 +1,18 @@
+<div>
+  <?= $this->linkTo(['controller' => 'ftp_setting'],
+    [
+      'label' => LABEL_INSTRUMENTS,
+      'class' => 'btn btn-outline-primary',
+    ]
+  )
+  ?>
+  <?= $this->linkTo(['controller' => 'weather_ftp_setting'],
+    [
+      'label' => LABEL_WEATHERS,
+      'class' => 'btn btn-outline-primary',
+      'http_params' => [
+      ]
+    ]
+  )
+  ?>
+</div>

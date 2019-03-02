@@ -11,10 +11,15 @@ var PwNode = /** @class */ (function () {
             } else if (this.params.element) {
                 this.element = this.params.element;
             }
+            if (this.params.name) {
+                this.setName(this.params.name);
+                this.node_list = document.getElementsByName(this.params.name);
+            }
+            return this;
         };
         this.setValue = function (value) {
             if (this.element) {
-                this.element.setAttribute('value', value);
+                this.element.value = value;
                 return this;
             }
         };
@@ -24,8 +29,29 @@ var PwNode = /** @class */ (function () {
         this.value = function () {
             if (this.element) return this.element.value;
         };
+        this.name = function (name) {
+            if (this.name) return this.element.name;
+        };
+        this.setName = function (name) {
+            if (name) this.name = name;
+        };
         this.selected = function () {
             if (this.element) return this.element.value;
+        }
+        this.check = function() {
+            if (this.element) return this.element.checked;
+        }
+        this.checked = function () {
+            if (this.node_list) {
+                var selected = null;
+                this.node_list.forEach(function (element) {
+                    if (element.checked) {
+                        selected = element.value;
+                        return;
+                    }
+                });
+            }
+            return selected;
         }
         this.selectValue = function (value) {
             if (this.element) {
@@ -64,7 +90,6 @@ var PwNode = /** @class */ (function () {
             var rect = this.element.getBoundingClientRect();
             var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             var top = rect.top + scrollTop;
-            console.log(top);
             return this;
         }
         this.height = function () {
@@ -92,9 +117,6 @@ var PwNode = /** @class */ (function () {
         }
         this.hide = function () {
             if (this.element) this.element.style.display = 'none';
-        }
-        this.check = function() {
-            if (this.element) return this.element.checked;
         }
         this.disabled = function () {
             if (this.element) this.element.disabled = true;
@@ -125,7 +147,6 @@ var PwNode = /** @class */ (function () {
             setTimeout(function() { dom.style.display = "block"; }, 1000);
         }
         this.closest = function(target) {
-            console.log(target);
             for (let item = el; item; item = item.parentElement) {
                 if (item.classList.contains(target)) {
                     return item
@@ -167,6 +188,12 @@ var PwNode = /** @class */ (function () {
     PwNode.id = function (id) {
         if (!id) return;
         var instance = new PwNode({id: id});
+        instance.init();
+        return instance;
+    };
+    PwNode.byName = function (name) {
+        if (!name) return;
+        var instance = new PwNode({name: name});
         instance.init();
         return instance;
     };

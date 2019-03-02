@@ -1,0 +1,95 @@
+<div class="col-12">
+  <div class="row">
+    <nav class="navbar bg-faded">
+      <ul class="nav nav-pills">
+        <li class="nav-item nav-title"><?= LABEL_SENSOR_GRAPHS ?></li>
+        <li class="nav-item nav-element">
+          <?= $this->linkTo(['controller' => 'observe_sensor_measure', 'action' => 'default_graph'],
+          [
+            'label' => LABEL_GRAPH,
+            'class' => 'nav-link',
+            'selected_controller' => 'observe_sensor_measure',
+            'selected_action' => 'graph',
+            'http_params' => ['sensor_id' => $this->sensor->value['id']]
+          ])
+          ?>
+        </li>
+        <li class="nav-item nav-element">
+          <?= $this->linkTo(['controller' => 'observe_sensor_measure', 'action' => 'default_list'],
+          [
+            'label' => LABEL_LIST,
+            'class' => 'nav-link',
+            'selected_controller' => 'observe_sensor_measure',
+            'selected_action' => 'list',
+            'http_params' => ['sensor_id' => $this->sensor->value['id']
+          ]
+          ])
+          ?>
+        </li>
+        <li class="nav-item nav-title">
+          <?= LABEL_DISPLACE ?>
+        </li>
+        <li class="nav-item nav-element">
+          <?= $this->linkTo(['controller' => 'observe_sensor_displace', 'action' => 'default_graph'],
+          [
+            'label' => LABEL_GRAPH,
+            'class' => 'nav-link',
+            'selected_controller' => 'observe_sensor_displace',
+            'selected_action' => 'graph',
+            'http_params' => ['sensor_id' => $this->sensor->value['id']]
+          ])
+          ?>
+        </li>
+        <li class="nav-item nav-element">
+          <?= $this->linkTo(['controller' => 'observe_sensor_displace', 'action' => 'default_list'],
+          [
+            'label' => LABEL_LIST,
+            'class' => 'nav-link',
+            'selected_controller' => 'observe_sensor_displace',
+            'selected_action' => 'list',
+            'http_params' => ['sensor_id' => $this->sensor->value['id']]
+          ])
+          ?>
+        </li>
+        <li class="nav-item nav-title"><?= LABEL_DOWNLOAD ?></li>
+        <li class="nav-item nav-element">
+          &nbsp;
+          <?= PwTag::a(
+            [
+              'label' => LABEL_GRAPH,
+              'icon_name' => 'download',
+              'class' => 'pw-click btn btn-outline-primary',
+              'message' => MESSAGE_DOWNLOAD,
+              'pw-controller' => $this->js_controller,
+              'pw-action' => 'graph_download',
+            ]
+          )
+          ?>
+          <?= PwTag::a(
+            [
+              'label' => LABEL_CSV,
+              'icon_name' => 'download',
+              'class' => 'pw-click btn btn-outline-primary',
+              'message' => MESSAGE_DOWNLOAD,
+              'pw-controller' => $this->js_controller,
+              'pw-action' => 'csv_download',
+            ]
+          )
+          ?>
+          <?= PwTag::a([
+            'class' => 'pw-click btn btn-outline-primary',
+            'label' => LABEL_BATCH_DOWNLOAD,
+            'pw-controller' => 'batchdownload',
+            'pw-action' => 'setting',
+            'spot_id' => $this->spot->value['id'],
+            'batchdownload_type' => 'sensor',
+            'icon_name' => 'file-archive',
+          ]); ?>
+        </li>
+      </ul>
+    </nav>
+
+  </div>
+</div>
+
+<? include('views/batchdownload/sensor.phtml') ?>

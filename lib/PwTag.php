@@ -278,6 +278,7 @@ class PwTag {
         $attribute = PwTag::attribute($params);
         if (isset($params['icon_name'])) $icon_tag = PwTag::iconTag($params['icon_name']);
         if (!$params['label'] && !$params['icon_name']) $params['label'] = 'Link';
+        if (is_array($params['label'])) $params['label'] = implode(' ', $params['label']);
         $tag = "<a {$attribute}>{$icon_tag}{$params['label']}</a>";
         return $tag;
     }

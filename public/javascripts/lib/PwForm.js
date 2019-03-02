@@ -13,6 +13,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 var PwForm = function () {
     this.value = {}
+
+    PwForm.getByName = function(name) {
+        var elements = document.forms[name].elements;
+        if (!elements) return;
+        var length = elements.length;
+        var model_name = '';
+        var values = {};
+        for (var i = 0; i <= length; i++) {
+            var element = PwNode.instance({element: elements[i]});
+            if (model_name = element.attr('pw-model')) {
+                var name = element.name();
+                values[name] = element.value();
+            }
+        }
+        return values;
+    }
     this.init = function(selector_id) {
         this.initInput(selector_id)
         this.initSelect(selector_id)

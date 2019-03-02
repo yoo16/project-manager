@@ -955,10 +955,21 @@ class PwEntity {
     */
     function recordValue($csv_name, $column, $params = null) {
         if (!isset($this->value[$column])) return;
-        $csv_records = PwSession::getWithKey('app', 'csv_options');
-        if ($records = $csv_records[$csv_name]) {
+        if ($records = $this->recordValues($csv_name, $params)) {
             return $records[$this->value[$column]];
         }
+    }
+
+   /**
+    * record values
+    *
+    * @param string $column
+    * @param array $params
+    * @return string
+    */
+    function recordValues($csv_name, $params = null) {
+        $csv_records = PwSession::getWithKey('app', 'csv_options');
+        return $csv_records[$csv_name];
     }
 
    /**

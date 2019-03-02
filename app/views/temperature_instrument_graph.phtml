@@ -1,0 +1,6 @@
+
+<? if ($this->temperature_instrument->value): ?>
+<div class="graph_image" magnification="<?= $this->magnification ?>">
+  <img id="temperature_instrument_graph" src="" temperature_instrument_id="<?= $this->temperature_instrument->value['id'] ?>">
+</div>
+<? endif ?>
