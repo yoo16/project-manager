@@ -37,6 +37,7 @@ class Controller extends RuntimeException {
     public $pw_admin_escapes = ['login', 'auth'];
     public $pw_login_escapes = ['login', 'auth'];
     public $pw_login_controller = 'login';
+    public $is_force_get_update = false;
 
     static $libs = [
         'PwHelper',
@@ -283,6 +284,7 @@ class Controller extends RuntimeException {
         if (isset($params['action'])) $this->pw_params['action'] = $params['action'];
         if (isset($params['id'])) $this->pw_params['id'] = $params['id'];
         $this->pw_gets = $this->pw_params;
+        PwSession::set('pw_gets', $this->pw_gets);
 
         $this->loadPwPosts();
         $this->errors = $this->getErrors();
@@ -860,15 +862,24 @@ class Controller extends RuntimeException {
         $this->pw_posts = PwSession::get('pw_posts');
     }
 
-
     /**
-     * clear $_POST
+     * clear $_POST & $_GET
      *
      * @return void
      */
     function clearPwPosts() {
-        PwSession::clear('pw_posts');
+        self::clearPwPostsSession();
         unset($this->pw_posts);
+    }
+
+    /**
+     * clear clear $_POST & $_GET session
+     *
+     * @return void
+     */
+    static function clearPwPostsSession() {
+        PwSession::clear('pw_posts');
+        PwSession::clear('pw_gets');
     }
 
     /**
@@ -1077,9 +1088,9 @@ class Controller extends RuntimeException {
      * @param string $redirect_action
      * @return void
      */
-    function checkEdit($redirect_action = 'new') {
+    function checkEdit($params = ['action' => 'index']) {
         if (!$this->pw_params['id']) {
-            $this->redirectTo(['controller' => $this->name, 'action' => $redirect_action]);
+            $this->redirectTo($params);
             exit;
         }
     }
@@ -1091,6 +1102,79 @@ class Controller extends RuntimeException {
      */
     function checkPost() {
         if ($_SERVER['REQUEST_METHOD'] != 'POST') exit;
+    }
+
+    /**
+     * check model error
+     * 
+     * @param PwEntity $model
+     * @param array $valid_params
+     * @param array $invalid_params
+     * @return void
+     */
+    function redirectByModel($model, $valid_params = null, $invalid_params = null) {
+        if (!$invalid_params) $invalid_params = $valid_params;
+        if ($model->errors) {
+            $this->addErrorByModel($model);
+            if ($invalid_params) $this->redirectTo($invalid_params);
+        } else {
+            if ($valid_params) $this->redirectTo($valid_params);
+        }
+    }
+
+    /**
+     * insert model
+     * 
+     * @param string $class_name
+     * @param array $posts
+     * @return PwEntity
+     */
+    function insertByModel($class_name, $posts = null) {
+        if (!$this->is_force_get_update) $this->checkPost();
+        if (class_exists($class_name)) {
+            $model = DB::model($class_name);
+            if (!$posts) $posts = $this->pw_posts[$model->entity_name];
+            $model->defaultValue()->insert($posts);
+            if (!$model->errors) $this->clearPwPosts();
+            return $model;
+        }
+    }
+
+    /**
+     * update model by request
+     * 
+     * @param string $class_name
+     * @param integer $id
+     * @param array $posts
+     * @return PwEntity
+     */
+    function updateByModel($class_name, $id = null, $posts = null) {
+        $this->checkPost();
+        if (class_exists($class_name)) {
+            $model = DB::model($class_name);
+            if (!$posts) $posts = $this->pw_posts[$model->entity_name];
+            if (!$id) $id = $this->pw_gets['id'];
+            $model->update($posts, $id);
+            if (!$model->errors) $this->clearPwPosts();
+            return $model;
+        }
+    }
+
+    /**
+     * delete model by request
+     * 
+     * @param string $class_name
+     * @param integer $id
+     * @return PwEntity
+     */
+    function deleteByModel($class_name, $id = null) {
+        $this->checkPost();
+        if (class_exists($class_name)) {
+            $model = DB::model($class_name);
+            if (!$id) $id = $this->pw_gets['id'];
+            $model->delete($id);
+            return $model;
+        }
     }
 
    /**
@@ -1148,6 +1232,17 @@ class Controller extends RuntimeException {
     }
 
    /**
+    * cancel
+    *
+    * @param
+    * @return void
+    */
+    function action_cancel() {
+        $this->clearPwPosts();
+        $this->redirectTo(['action' => 'list']);
+    }
+
+   /**
     * update sort order
     *
     * @param
@@ -1171,14 +1266,11 @@ class Controller extends RuntimeException {
         if (!$model_name) exit('Not found model_name');
 
         $posts = file_get_contents("php://input");
-        dump($_REQUEST);
-        dump($posts);
         if (!$posts) exit;
 
         $values = json_decode($posts, true);
         if (!$values) exit('Not found sort_order');
         
-        dump($values);
         if (class_exists($model_name)) {
             DB::model($model_name)->updateSortOrder($values);
             if ($is_json) $results['is_success'] = true;

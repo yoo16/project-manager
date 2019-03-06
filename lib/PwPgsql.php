@@ -993,6 +993,24 @@ class PwPgsql extends PwEntity
     }
 
     /**
+     * bind object by fetch
+     * 
+     * @param  string $model_name
+     * @param  string $foreign_key
+     * @return PwPgsql
+     */
+    public function bindFetch($model_name, $foreign_key = null)
+    {
+        if (!is_string($model_name)) return $this;
+        $relation = DB::model($model_name);
+        $column_name = $relation->entity_name;
+        if (!$foreign_key) $foreign_key = "{$column_name}_id";
+        if ($id = $this->value[$foreign_key]) $relation = $relation->fetch($id);
+        $this->$column_name = $relation;
+        return $this;
+    }
+
+    /**
      * relation by model
      * 
      * @param  string $model_name
@@ -1069,9 +1087,7 @@ class PwPgsql extends PwEntity
 
         $value = $this->value[$value_key];
         if (is_null($value)) return $this;
-
-        $condition = "{$foreign_key} = '{$value}'";
-        return $relation->where($condition)->one();
+        return $relation->where($foreign_key, $value)->one();
     }
 
     //TODO delete function

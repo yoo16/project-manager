@@ -50,17 +50,6 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     }
 
    /**
-    * cancel
-    *
-    * @param
-    * @return void
-    */
-    function action_cancel() {
-        PwSession::clear('posts');
-        $this->redirectTo(['action' => 'list']);;
-    }
-
-   /**
     * list
     *
     * @param
@@ -81,7 +70,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     */
     function action_new() {
 <? if ($model = $values['model']): ?>
-        $this-><?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->init()->takeValues($this->pw_posts['<?= $model->value['entity_name'] ?>']);
+        $this-><?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->new();
 <? endif ?>
     }
 
@@ -93,11 +82,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     */
     function action_edit() {
 <? if ($model = $values['model']): ?>
-        $this->checkEdit();
-
-        $this-><?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')
-                    ->fetch($this->pw_params['id'])
-                    ->takeValues($this->pw_posts['<?= $model->value['entity_name'] ?>']);
+        $this-><?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->edit();
 <? endif ?>
     }
 
@@ -108,18 +93,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_add() {
-        if (!isPost()) exit;
-<? if ($model = $values['model']): ?>
-        $posts = $this->pw_posts["<?= $model->value['entity_name'] ?>"];
-        $<?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->insert($posts);
-
-        if ($<?= $model->value['entity_name'] ?>->errors) {
-            $this->addErrorByModel($<?= $model->value['entity_name'] ?>);
-            $this->redirectTo(['action' => 'new']);
-        } else {
-            $this->redirectTo(['action' => 'index']);
-        }
-<? endif ?>
+        $this->redirectByModel($this->insertByModel('<?= $model->value['class_name'] ?>''), ['action' => 'list'], ['action' => 'new']);
     }
 
    /**
@@ -129,16 +103,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_update() {
-        if (!isPost()) exit;
-<? if ($model = $values['model']): ?>
-        $posts = $this->pw_posts["<?= $model->value['entity_name'] ?>"];
-        $<?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->update($posts, $this->pw_params['id']);
-
-        if ($<?= $model->value['entity_name'] ?>->errors) {
-            $this->addErrorByModel($<?= $model->value['entity_name'] ?>);
-        }
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
-<? endif ?>
+        $this->redirectByModel($this->updateByModel('<?= $model->value['class_name'] ?>'), ['action' => 'edit', 'id' => $this->pw_gets['id']]);
     }
 
    /**
@@ -148,11 +113,9 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_delete() {
-        if (!isPost()) exit;
 <? if ($values['model']): ?>
-        DB::model('<?= $model->value['class_name'] ?>')->delete($this->pw_params['id']);
+        $this->redirectByModel($this->deleteByModel('<?= $model->value['class_name'] ?>'), ['action' => 'list'], ['action' => 'edit', 'id' => $this->pw_gets['id']]);
 <? endif ?>
-        $this->redirectTo();
     }
 
    /**
@@ -165,7 +128,6 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
 <? if ($values['model']): ?>
         $this->updateSort('<?= $model->value['class_name'] ?>');
 <? endif ?>
-        exit;
     }
 
 }

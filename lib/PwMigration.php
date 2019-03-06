@@ -75,13 +75,12 @@ class PwMigration {
             } else {
                 $id = $ids[$posts['old_id']];
             }
-
             if ($posts['old_db']) {
                 $new_model = DB::model($class_name)->save($posts, $id);
                 $migrate_report->addReport($new_model, $posts);
             }
         }
-        $migrate_report->create();
+        //$migrate_report->create();
     }
 
     /**
@@ -431,7 +430,7 @@ class PwMigration {
      * @param  string $old_id_column
      * @return void
      */
-    function updateModelFromOldModel($class_name, $find_columns = null, $old_id_column = null) {
+    function updateByModelFromOldModel($class_name, $find_columns = null, $old_id_column = null) {
         $model = DB::model($class_name);
         if (!$model->old_name) {
             echo('Not found $old_name.').PHP_EOL;

@@ -13,7 +13,7 @@ var PwSortable = function() {
     this.tr_selector = '';
     this.sort_orders;
     this.model_name = '';
-    this.before_rows;
+    this.before_rows = [];
     this.row_id_column = 'row-id';
     this.callback;
     this.is_use_loading = true;
@@ -21,12 +21,20 @@ var PwSortable = function() {
     this.init = function(node) {
         pw_sortable.is_show_sortable = true;
         sort_order = 1;
-        if (node.attr('table-id')) pw_sorable.table_id = node.attr('table-id');
+        if (node && node.attr('pw_sortable_table_id')) {
+            pw_sortable.table_id = node.attr('pw_sortable_table_id');
+        } else {
+            pw_sortable.table_id = 'sortable-table';
+        }
         pw_sortable.selector = '#' + pw_sortable.table_id + ' tbody';
         pw_sortable.sortable_table_tr_selector = pw_sortable.selector + ' tr';
-        pw_sortable.before_rows = $(pw_sortable.sortable_table_tr_selector);
-        $.each(pw_sortable.before_rows, function(index, row) {
-            $(row).attr('order', index);
+        pw_sortable.before_rows = [];
+        $.each($(pw_sortable.sortable_table_tr_selector), function(index, row) {
+            pw_sortable.before_rows.push(row);
+            row_node = PwNode.instance({element: row});
+            if (row_node.attr('row-id')) {
+                $(row).attr('order', index);
+            }
         });
     }
     this.set = function(params) {
@@ -38,12 +46,18 @@ var PwSortable = function() {
         }
     }
     this.reset = function(node) {
-        if (pw_sortable.before_rows) {
-            $(pw_sortable.selector).html(pw_sortable.before_rows);
-        }
+        //TODO
+        // if (pw_sortable.before_rows) {
+            //$(pw_sortable.selector).html(pw_sortable.before_rows);
+        // }
         pw_sortable.close(node);
     }
     this.edit = function(node) {
+        if (node && node.attr('pw_sortable_table_id')) {
+            pw_sortable.table_id = node.attr('pw_sortable_table_id');
+        } else {
+            pw_sortable.table_id = 'sortable-table';
+        }
         if (pw_sortable.is_show_sortable) return;
 
         this.init(node);
@@ -77,8 +91,10 @@ var PwSortable = function() {
 
         $(pw_sortable.sortable_table_tr_selector).map(function() {
             row_id = $(this).attr(pw_sortable.row_id_column);
-            var sortable_control_tag = '<td class="sortable-control" nowrap="nowrap" row-id="' + row_id + '"></td>';
-            $(this).prepend(sortable_control_tag);
+            if ($(this).attr('row-id')) {
+                var sortable_control_tag = '<td class="sortable-control" nowrap="nowrap" row-id="' + row_id + '"></td>';
+                $(this).prepend(sortable_control_tag);
+            }
         });
 
         var link_tag = '';

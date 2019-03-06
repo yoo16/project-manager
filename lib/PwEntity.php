@@ -983,12 +983,13 @@ class PwEntity {
         if (!$this->values) return $this;
 
         //TODO join SQL?
-        $model = DB::model($model_name)->idIndex()->all();
-        if (!$model->values) return $this;
-        if (!$value_key) $value_key = "{$model->entity_name}_id";
-
-        foreach ($this->values as $index => $value) {
-            if ($id = $value[$value_key]) $this->values[$index][$model->entity_name] = $model->values[$id];
+        if (class_exists($model_name)) {
+            $model = DB::model($model_name)->idIndex()->all();
+            if (!$model->values) return $this;
+            if (!$value_key) $value_key = "{$model->entity_name}_id";
+            foreach ($this->values as $index => $value) {
+                if ($id = $value[$value_key]) $this->values[$index][$model->entity_name] = $model->values[$id];
+            }
         }
         return $this;
     }
@@ -1388,5 +1389,30 @@ class PwEntity {
         if (!PwHelper::validteAlphanumeric($this->value[$column], $min, $max)) {
             $this->addError($column, 'invalid');
         }
+    }
+
+    /**
+     * edit
+     *
+     * @return PwEntity
+     */
+    function new() {
+        $pw_posts = PwSession::get('pw_posts');
+        $this->init()->takeValues($pw_posts[$this->entity_name]);
+        return $this;
+    }
+
+    /**
+     * edit
+     *
+     * @param integer $id
+     * @return PwEntity
+     */
+    function edit($id = null) {
+        if (!$id) $id = PwSession::getWithKey('pw_gets', 'id');
+        if (!$id) exit('Not found id');
+        $pw_posts = PwSession::get('pw_posts');
+        $this->fetch($id)->takeValues($pw_posts[$this->entity_name]);
+        return $this;
     }
 }
