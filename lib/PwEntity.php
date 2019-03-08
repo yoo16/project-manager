@@ -374,8 +374,6 @@ class PwEntity {
                 $column = $this->columns[$column_name];
                 $type = $column['type'];
                 $this->value[$column_name] = $this->cast($type, $values[$column_name]);
-                // if (!in_array($column_name, self::$except_columns)) {
-                // }
             }
         }
         return $this;
@@ -418,7 +416,7 @@ class PwEntity {
      * @return bool
      */
     public function hasChanges() {
-        if (isset($this->after_value)) {
+        if (isset($this->before_value)) {
             $changes = $this->changes();
             return count($changes) > 0;
         } else {
@@ -432,12 +430,12 @@ class PwEntity {
      * @return array
      */
     public function changes() {
-        if (isset($this->after_value)) {
+        if (isset($this->before_value)) {
             $changes = array();
-            foreach ($this->after_value as $column_name => $after_value) {
+            foreach ($this->value as $column_name => $value) {
                 if (!in_array($column_name, self::$except_columns)) {
-                    if ($after_value !== $this->before_value[$column_name]) {
-                        $changes[$column_name] = $this->after_value[$column_name];
+                    if ($value !== $this->before_value[$column_name]) {
+                        $changes[$column_name] = $this->value[$column_name];
                     }
                 }
             }
@@ -533,9 +531,7 @@ class PwEntity {
      * @return void
      */
     private function castNumber($value) {
-        if (is_numeric(strpos($value, ','))) {
-            $value = str_replace(',', '', $value);
-        }
+        if (is_numeric(strpos($value, ','))) $value = str_replace(',', '', $value);
         if (!is_numeric($value)) return;
         return $value;
     }

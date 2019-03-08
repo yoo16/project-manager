@@ -69,8 +69,7 @@ class Controller extends RuntimeException {
             $this->name = $name;
         }
         if (isset($_REQUEST['pw_multi_sid'])) {
-            $this->pw_multi_sid = $_REQUEST['pw_multi_sid'];
-            $this->session_name = $_REQUEST['pw_multi_sid'];
+            $this->session_name = $this->pw_multi_sid = $_REQUEST['pw_multi_sid'];
         }
     }
 
@@ -147,31 +146,6 @@ class Controller extends RuntimeException {
     }
 
     /**
-     * generate url
-     *
-     * @param  array $params
-     * @return string
-     */
-    static function generateUrl($params) {
-        $url = '';
-        if ($params['controller'] == ROOT_CONTROLLER_NAME) unset($params['controller']);
-        if ($params['action'] == 'index') unset($params['action']);
-
-        if (isset($params) && isset($params['controller'])) $url.= "{$params['controller']}/";
-        if (isset($params['action'])) {
-            $url.= "{$params['action']}";
-            if (isset($params['id'])) $url.= "/{$params['id']}";
-        }
-
-        if (!$url) $url = './';
-        if (isset($params['params']) && is_array($params['params'])) {
-            $url_params = http_build_query($params['params']);
-            $url = "{$url}?{$url_params}";
-        }
-        return $url;
-    }
-
-    /**
      * query string
      * 
      * @param  string $query
@@ -182,7 +156,6 @@ class Controller extends RuntimeException {
             $request = $_SERVER['REQUEST_URI'];
             $query = $_SERVER['QUERY_STRING'];
         }
-       
         $query_url = parse_url($query);
         $values = explode('&', $query_url['path']);
         if ($values[0]) {
@@ -438,9 +411,7 @@ class Controller extends RuntimeException {
         }
         if (!$errors) return;
         $error_layout = BASE_DIR."app/views/layouts/error.phtml";
-        if (file_exists($error_layout)) {
-            include $error_layout;
-        }
+        if (file_exists($error_layout)) include $error_layout;
         $error_template = BASE_DIR."app/views/components/lib/php_error.phtml";
         if (file_exists($error_template)) {
             ob_start();
@@ -762,7 +733,7 @@ class Controller extends RuntimeException {
      * @return string
      */
     private function pwController() {
-        $this->pw_controller = $this->pw_params['controller'];
+        $this->pw_controller = $this->pw_gets['controller'];
         return $this->pw_controller;
     }
 
@@ -772,7 +743,7 @@ class Controller extends RuntimeException {
      * @return string
      */
     private function pwAction() {
-        $this->pw_action = $this->pw_params['action'];
+        $this->pw_action = $this->pw_gets['action'];
         if (!isset($this->pw_action) || $this->pw_action === '') {
             $this->pw_action = 'index';
         } else if ($pos = strpos($this->pw_action, '.')) {
@@ -815,6 +786,7 @@ class Controller extends RuntimeException {
             error_log("IP: {$_SERVER['REMOTE_ADDR']}");
         }
 
+        $this->pw_prev_request_uri = PwSession::get('pw_prev_request_uri', null, $this->pw_multi_sid);
         $this->base = $this->baseUrl();
         $this->relativeBaseURL();
 
@@ -850,6 +822,7 @@ class Controller extends RuntimeException {
             $errors['signature'] = $_SERVER['SERVER_SIGNATURE'];
             $this->renderError($errors);
         }
+        $this->after_action();
     }
 
     /**
@@ -1060,6 +1033,22 @@ class Controller extends RuntimeException {
     function before_invocation() {}
 
     /**
+     * after action
+     *
+     * @param string $action
+     * @return void
+     */
+    function after_action() {
+        $url = $_SERVER['REQUEST_URI'];
+        if (isset($_SERVER['HTTPS'])) {
+            $pw_prev_request_uri = "https://{$url}";
+        } else {
+            $pw_prev_request_uri = "http://{$url}";
+        }
+        PwSession::set('pw_prev_request_uri', $pw_prev_request_uri, $this->pw_multi_sid);
+    } 
+
+    /**
      * load Csv values
      * 
      * @return void
@@ -1105,21 +1094,87 @@ class Controller extends RuntimeException {
     }
 
     /**
-     * check model error
+     * redirect by model
      * 
      * @param PwEntity $model
      * @param array $valid_params
      * @param array $invalid_params
      * @return void
      */
-    function redirectByModel($model, $valid_params = null, $invalid_params = null) {
-        if (!$invalid_params) $invalid_params = $valid_params;
+    function redirectByModel($model, $params = null) {
+        if ($params) {
+            if (!$params['invalid']) $params['invalid'] = $params['valid'];
+        }
         if ($model->errors) {
             $this->addErrorByModel($model);
-            if ($invalid_params) $this->redirectTo($invalid_params);
+            if ($params['invalid']) $this->redirectTo($params['invalid']);
         } else {
-            if ($valid_params) $this->redirectTo($valid_params);
+            if ($params['valid']) $this->redirectTo($params['valid']);
         }
+    }
+
+    /**
+     * redirect for add by model
+     * 
+     * @param PwEntity $model
+     * @param array $params
+     * @return void 
+     */
+    function redirectForAdd($model, $params = null) {
+        if (!$params['valid']) $params['valid'] = ['action' => 'list'];
+        if (!$params['invalid']) $params['invalid'] = ['action' => 'new'];
+        $this->redirectByModel($model, $params);
+    }
+
+    /**
+     * redirect for update by model
+     * 
+     * @param PwEntity $model
+     * @param array $params
+     * @return void 
+     */
+    function redirectForUpdate($model, $params = null) {
+        if (!$params['valid']) $params['valid'] = ['action' => 'edit', 'id' => $this->pw_gets['id']];
+        if (!$params['invalid']) $params['invalid'] = ['action' => 'new'];
+        $this->redirectByModel($model, $params);
+    }
+
+    /**
+     * redirect for delete by model
+     * 
+     * @param PwEntity $model
+     * @param array $params
+     * @return void 
+     */
+    function redirectForDelete($model, $params = null) {
+        if (!$params['valid']) $params['valid'] = ['action' => 'list'];
+        if (!$params['invalid']) $params['invalid'] = ['action' => 'edit', 'id' => $this->pw_gets['id']];
+        $this->redirectByModel($model, $params);
+    }
+
+    /**
+     * bind pw posts
+     * 
+     * @param array $values
+     * @param string $key
+     * @return void
+     */
+    function bindPwPosts($values, $key = null) {
+        if (!$values) return;
+        if (!$key) $key = $this->name;
+        foreach ($values as $column => $value) {
+            $this->pw_posts[$key][$column] =  $value;
+        }
+    }
+
+    /**
+     * pw prev
+     * 
+     * //TODO building
+     */
+    function pwPrev() {
+        header("Location: {$this->pw_prev_request_uri}");
+        exit;
     }
 
     /**
@@ -1149,7 +1204,7 @@ class Controller extends RuntimeException {
      * @return PwEntity
      */
     function updateByModel($class_name, $id = null, $posts = null) {
-        $this->checkPost();
+        if (!$this->is_force_get_update) $this->checkPost();
         if (class_exists($class_name)) {
             $model = DB::model($class_name);
             if (!$posts) $posts = $this->pw_posts[$model->entity_name];
@@ -1168,7 +1223,7 @@ class Controller extends RuntimeException {
      * @return PwEntity
      */
     function deleteByModel($class_name, $id = null) {
-        $this->checkPost();
+        if (!$this->is_force_get_update) $this->checkPost();
         if (class_exists($class_name)) {
             $model = DB::model($class_name);
             if (!$id) $id = $this->pw_gets['id'];

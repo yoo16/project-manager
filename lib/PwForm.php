@@ -1018,6 +1018,26 @@ class PwForm {
     }
 
     /**
+    * change label
+    *
+    * @param array $params
+    * @param boolean $is_active
+    * @param string $valid_label
+    * @param string $invalid_label
+    * @return string
+    */ 
+    static function changeActiveLabel($is_active, $params = null, $valid_label = LABEL_TRUE, $invalid_label = LABEL_FALSE) {
+        if ($is_active) {
+            $icon_tag = PwTag::iconTag('check');
+            $tag = "<span class=\"btn btn-sm btn-danger\">{$icon_tag}{$valid_label}</span>";
+        } else {
+            $icon_tag = PwTag::iconTag('times');
+            $tag = "<span class=\"btn btn-sm btn-outline-primary\">{$icon_tag}{$invalid_label}</span>";
+        }
+        return $tag;
+    }
+
+    /**
      * label badge tag
      *
      * @param object $value

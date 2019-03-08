@@ -1538,17 +1538,16 @@ class PwPgsql extends PwEntity
      */
     public function update($posts = null, $id = null)
     {
+        if (!$id) $id = $this->id;
         if ($posts[$this->id_column]) unset($posts[$this->id_column]);
         if ($id > 0) $this->fetch($id);
         if (!$this->id) return $this;
         if ($posts) $this->takeValues($posts);
 
-        $this->after_value = $this->value;
         $this->validate();
         if ($this->errors) return $this;
 
         $sql = $this->updateSql();
-        $this->after_value = null;
         if (!$sql) return $this;
 
         $result = $this->query($sql);
