@@ -1,0 +1,9 @@
+<? if ($this->spot->value['id']): ?>
+  <div class="pt-2">
+    <h2>
+      <?= $this->spot->value['code'] ?>
+      <?= $this->spot->value['name'] ?>
+      <input id="spot-id" type="hidden" value="<?= $this->spot->value['id'] ?>">
+    </h2>
+  </div>
+<? endif ?>

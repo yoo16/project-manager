@@ -1,0 +1,94 @@
+<div class="col-12">
+  <div class="row">
+    <nav class="navbar bg-faded">
+      <ul class="nav nav-pills">
+        <li class="nav-item nav-title"><?= LABEL_VECTOR_DIAGRAMS ?></li>
+        <li class="nav-item nav-element p-1">
+          <?= PwForm::select(
+          [
+          'name' => 'vector_diagram_id',
+          'unselect' => false,
+          'label' => ['name'],
+          'value' => 'id',
+          'id' => 'vector_diagram_id',
+          'class' => 'form-control pw-change vector_diagram_id',
+          'model' => 'VectorDiagram',
+          'wheres' => [
+              ['spot_id', $this->spot->value['id']],
+              ['diagram_type', 'V'],
+          ],
+          'pw-controller' => 'observe_vector_diagram',
+          'pw-action' => 'change',
+          'pw-callback' => $this->pw_action
+          ],
+          $this->vector_diagram->value['id']
+          ) ?>
+        </li>
+        <li class="nav-item nav-element">
+          <?= $this->linkTo(['controller' => 'observe_vector_diagram', 'action' => 'default_diagram'], ['label' => LABEL_VECTOR_DIAGRAMS, 'class' => 'nav-link', 'selected_action' => 'diagram']) ?>
+        </li>
+        <li class="nav-item nav-element">
+          <?= $this->linkTo(['controller' => 'observe_vector_diagram', 'action' => 'default_graph'], ['label' => LABEL_GRAPH, 'class' => 'nav-link', 'selected_action' => 'graph']) ?>
+        </li>
+        <li class="nav-item nav-element">
+          <?= $this->linkTo(['controller' => 'observe_vector_diagram', 'action' => 'default_list'], ['label' => LABEL_LIST, 'class' => 'nav-link', 'selected_action' => 'list']) ?>
+        </li>
+      </ul>
+    </nav>
+
+    <nav class="navbar bg-faded">
+      <ul class="nav nav-pills">
+        <li class="nav-item nav-title">
+          <?= LABEL_DOWNLOAD ?>
+        </li>
+        <li class="nav-item nav-element">
+          <?= PwTag::a(
+            [
+              'label' => LABEL_DIAGRAM,
+              'icon_name' => 'download',
+              'class' => 'pw-click btn btn-outline-primary',
+              'message' => MESSAGE_DOWNLOAD,
+              'pw-controller' => $this->js_controller,
+              'pw-action' => 'diagram_download',
+            ]
+          )
+          ?>
+          <?= PwTag::a(
+            [
+              'label' => LABEL_GRAPH,
+              'icon_name' => 'download',
+              'class' => 'pw-click btn btn-outline-primary',
+              'message' => MESSAGE_DOWNLOAD,
+              'pw-controller' => $this->js_controller,
+              'pw-action' => 'graph_download',
+            ]
+          )
+          ?>
+          <?= PwTag::a(
+            [
+              'label' => LABEL_CSV,
+              'icon_name' => 'download',
+              'class' => 'pw-click btn btn-outline-primary',
+              'message' => MESSAGE_DOWNLOAD,
+              'pw-controller' => $this->js_controller,
+              'pw-action' => 'csv_download',
+            ]
+          )
+          ?>
+          <?= PwTag::a([
+            'class' => 'pw-click btn btn-outline-primary',
+            'label' => LABEL_BATCH_DOWNLOAD,
+            'pw-controller' => 'batchdownload',
+            'pw-action' => 'setting',
+            'spot_id' => $this->spot->value['id'],
+            'batchdownload_type' => 'vector',
+            'icon_name' => 'file-archive',
+          ]); ?>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+</div>
+
+<? include('views/batchdownload/vector.phtml') ?>

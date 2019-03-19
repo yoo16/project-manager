@@ -1,0 +1,20 @@
+<div class="col-12">
+  <div class="row">
+    <div class="btn-group btn-group-toggle">
+    <? if ($this->spot_display_day->values): ?>
+      <? foreach ($this->spot_display_day->values as $this->spot_display_day->value): ?>
+        <?= $this->linkJs( 
+        [
+          'class' => 'pw-click btn btn-outline-primary display-day-group',
+          'label' => SpotDisplayDay::displayDay($this->spot_display_day->value['day']),
+          'pw-controller' => $this->jsControllerName(),
+          'pw-action' => 'js_days_graph',
+          'latest-days' => $this->spot_display_day->value['day'],
+        ]
+        )
+        ?>
+      <? endforeach ?>
+    <? endif ?>
+    </div>
+  </div>
+</div>

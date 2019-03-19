@@ -1,0 +1,15 @@
+<? include('views/components/observe/spot.phtml') ?>
+
+<? if ($this->instrument->value['id']): ?>
+<div id="change-instrument-window" class="modal"></div>
+
+<div class="p-2 text-nowrap">
+  <h2>
+    <?= $this->instrument->value['name'] ?>
+    (<?= $this->csv_options['instrument_type'][$this->instrument->value['instrument_type']] ?>)
+    <button type="button" class="pw-click btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#change-instrument-window" pw-controller="observe_instrument" pw-action="change_select" spot-id="<?= $this->spot->value['id'] ?>" instrument-type="<?= $this->instrument_type ?>"><?= LABEL_SELECT ?></button>
+    <input id="instrument-id" type="hidden" value="<?= $this->instrument->value['id'] ?>">
+  </h2>
+</div>
+<? endif ?>
+

@@ -74,11 +74,6 @@ define('LABEL_YELLOW', '黄');
 define('LABEL_PINK', '桃');
 define('LABEL_ORANGE', '橙');
 
-define('DEPTH_GRAPH_Y_TITLE', LABEL_INSTRUMENTS_DEPTH.'(GL.-m)');
-define('DEPTH_TIME_GRAPH_Y_TITLE', LABEL_INSTRUMENTS_DEPTH.'(GL.-m)');
-define('GRAPH_Y_TITLE', LABEL_DISPLACEMENT);
-define('GRAPH_X_TITLE', LABEL_DATE_TITLE);
-
 define('MESSAGE_DELETE', '削除しますか？');
 define('MESSAGE_CONFIRM', 'この内容でよろしいですか？');
 define('MESSAGE_REQUIRED', 'を入力してください。');

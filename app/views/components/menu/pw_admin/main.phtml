@@ -1,0 +1,29 @@
+<nav id="header" class="navbar navbar-toggleable fixed-top">
+
+  <div>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#nav-header"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon">
+        <i class="fa fa-bars"></i>
+      </span>
+    </button>
+  </div>
+
+  <div class="collapse navbar-collapse" id="nav-header">
+    <ul class="navbar-nav mr-auto">
+
+      <li class="nav-item text-nowrap">
+        <?= $this->linkTo(
+              ['controller' => 'pw_admin', 'action' => 'log'],
+              [
+                'label' => 'Log',
+                'class' => 'nav-link',
+                'icon_name' => 'desktop',
+                'is_use_selected' => true
+              ]
+            )
+            ?>
+      </li>
+    </ul>
+  </div>
+</nav>

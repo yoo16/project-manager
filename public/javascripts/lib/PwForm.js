@@ -21,7 +21,7 @@ var PwForm = function () {
         var model_name = '';
         var values = {};
         for (var i = 0; i <= length; i++) {
-            var element = PwNode.instance({element: elements[i]});
+            var element = PwNode.byElement(elements[i]);
             if (model_name = element.attr('pw-model')) {
                 var name = element.name();
                 values[name] = element.value();

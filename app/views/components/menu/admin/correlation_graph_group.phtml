@@ -1,0 +1,46 @@
+<? include('views/components/menu/admin/spot.phtml') ?>
+
+<? if ($this->correlation_graph_group->value['id']): ?>
+<div class="p-2">
+  <h2>
+    <?= $this->correlation_graph_group->value['name'] ?>
+  </h2>
+</div>
+
+<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+      <?= $this->linkTo(
+            [
+            'controller' => 'correlation_graph_group',
+            'action' => 'edit',
+            'id' => $this->correlation_graph_group->value['id']
+            ],
+            [
+              'label' => LABEL_SETTING,
+              'class' => 'nav-link action-loading',
+              'icon_name' => 'edit',
+              'is_use_selected' => true
+            ]
+          )
+          ?>
+    </li>
+    <li class="nav-item">
+        <?= $this->linkTo(
+              [
+              'controller' => 'correlation_graph',
+              'action' => 'list',
+              'id' => $this->correlation_graph_group->value['id']
+              ],
+              [
+                'label' => LABEL_GRAPH,
+                'class' => 'nav-link action-loading',
+                'icon_name' => 'list',
+                'is_use_selected' => true
+              ]
+            )
+            ?>
+      </li>
+  </ul>
+</nav>
+<? endif ?>

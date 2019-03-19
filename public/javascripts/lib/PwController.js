@@ -41,7 +41,7 @@ var PwController = function () {
     }
 
     this.currentController = function() {
-        return PwNode.instance({id: 'pw-current-controller'}).value();
+        return PwNode.id('pw-current-controller').value();
     }
     this.dom = function(params) {
         var instance = new PwNode(params);
@@ -165,7 +165,7 @@ var PwController = function () {
         var error_callback = options.error_callback;
         var is_show_loading = false;
         if (options.is_show_loading) is_show_loading = options.is_show_loading;
-        if (is_show_loading) pw_app.showLoading();
+        if (is_show_loading) pw_app.showLoading(options.loading_selector);
 
         fetch(url, header_options).catch(function(err) {
             if (is_show_loading) pw_app.hideLoading();
@@ -185,23 +185,24 @@ var PwController = function () {
         }); 
     }
 
-    this.pwLoad = function() {
+    this.pwLoad = function(params) {
     //$(document).on('load', '.pw-load', function () {
         var $pw_load = document.getElementsByClassName('pw-load');
         for (var $i = 0; $i < $pw_load.length; $i++) {
             var element = $pw_load[$i];
-            var pw_node = PwNode.instance({element: element});
-            var name = pw_node.controller();
-            if (!name) return;
+            var pw_node = PwNode.byElement(element);
+            var controller_name = pw_node.controller();
+            if (!controller_name) return;
     
             var function_name = pw_node.functionName();
-            var action = pw_node.action();
-    
-            var controller_name = pw_node.controllerClassName();
-            if (controller_name in window) {
-                var controller = new window[controller_name]();
-                if (action && (action in controller)) controller[action](pw_node);
-                if (function_name && (function_name in controller)) controller[function_name]();
+            var controller_class_name = pw_node.controllerClassName();
+            if (controller_class_name in window) {
+                var controller = new window[controller_class_name]();
+                if (function_name && (function_name in controller)) {
+                    var is_run = true;
+                    if (params) is_run = (params.controller == controller_name && params.function == function_name);
+                    if (is_run) controller[function_name](pw_node);
+                }
             }
         }
         //document.getElementById('pw-error').modal('show');
@@ -209,9 +210,12 @@ var PwController = function () {
         $('#pw-error').modal('show');
     }
 
+    $.load = function () {
+    }
+
     //TODO remove jquery
     $(document).on('click', '.pw-click', function () {
-        var pw_node = PwNode.instance({element: this});
+        var pw_node = PwNode.byElement(this);
         var name = pw_node.controller();
         if (!name) return;
 
@@ -227,7 +231,7 @@ var PwController = function () {
 
 
     $(document).on('change', '.pw-change', function () {
-        var pw_node = PwNode.instance({element: this});
+        var pw_node = PwNode.byElement(this);
         var name = pw_node.controller();
         if (!name) return;
 
@@ -243,13 +247,13 @@ var PwController = function () {
 
     //TODO remove jquery
     this.multiSessionLink = function(fileName, content) {
-        var pw_multi_session_id = PwNode.instance({id: 'pw-multi-session-id'});
+        var pw_multi_session_id = PwNode.id('pw-multi-session-id');
         if (!pw_multi_session_id) return;
         pw_multi_sid = pw_multi_session_id.value();
         if (!pw_multi_sid) return;
 
         [].forEach.call(document.getElementsByTagName('a'), function(element) {
-            var node = PwNode.instance({element: element});
+            var node = PwNode.byElement(element);
             var link = '';
             if (node.attr('is_not_pw_multi_sid')) return;
             if (link = node.attr('href')) {
@@ -369,7 +373,7 @@ var PwController = function () {
         });
     }
     this.confirmDeleteImage = function(controller, node, delete_id_column) {
-        var link_delete_image = PwNode.instance({id: 'link_delete_image'});
+        var link_delete_image = PwNode.id('link_delete_image');
         link_delete_image.setAttr('pw-controller', controller);
         link_delete_image.setAttr('pw-action', 'delete_image');
         link_delete_image.setAttr(delete_id_column, node.attr(delete_id_column));
@@ -392,10 +396,10 @@ var PwController = function () {
         );
     }
     this.showDeleteConfirmImage = function() {
-        PwNode.instance({id: 'link_confirm_delete_image'}).show();
+        PwNode.id('link_confirm_delete_image').show();
     }
     this.hideDeleteConfirmImage = function() {
-        PwNode.instance({id: 'link_confirm_delete_image'}).hide();
+        PwNode.id('link_confirm_delete_image').hide();
     }
 
     this.fileUpload = function(url, form_id, callback, error_callback)
@@ -441,7 +445,7 @@ var PwController = function () {
     }
 
     $(document).on('click', '.pw-lib', function () {
-        var node = PwNode.instance({element: this});
+        var node = PwNode.byElement(this);
         var lib_name = node.attr('pw-lib');
         if (!lib_name) return;
 
@@ -647,6 +651,6 @@ var pw_multi_sid = '';
 document.addEventListener('DOMContentLoaded', function() {
     pw_app.multiSessionLink();
     pw_app.pwLoad(); 
-    if (PwNode.instance({id: 'pw-current-controller'}).value()) pw_app.pw_current_controller = PwNode.instance({id: 'pw-current-controller'}).value();
-    if (PwNode.instance({id: 'pw-current-action'}).value()) pw_app.pw_current_action = PwNode.instance({id: 'pw-current-action'}).value();
+    if (PwNode.id('pw-current-controller').value()) pw_app.pw_current_controller = PwNode.id('pw-current-controller').value();
+    if (PwNode.id('pw-current-action').value()) pw_app.pw_current_action = PwNode.id('pw-current-action').value();
 });

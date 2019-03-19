@@ -83,5 +83,5 @@ var PwMigrateReport = function () {
 
 var pw_migrate_report = new PwMigrateReport();
 document.addEventListener('DOMContentLoaded', function() {
-    pw_migrate_report.log_contents = PwNode.instance({id: 'log-contents'}).html(html);
+    pw_migrate_report.log_contents = PwNode.id('log-contents').html(html);
 });

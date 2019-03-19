@@ -15,6 +15,10 @@ var PwNode = /** @class */ (function () {
                 this.setName(this.params.name);
                 this.node_list = document.getElementsByName(this.params.name);
             }
+            if (this.params.class_name) {
+                this.setClassName(this.params.class_name);
+                this.node_list = document.getElementsByClassName(this.params.class_name);
+            }
             return this;
         };
         this.setValue = function (value) {
@@ -35,6 +39,9 @@ var PwNode = /** @class */ (function () {
         this.setName = function (name) {
             if (name) this.name = name;
         };
+        this.setClassName = function (name) {
+            if (name) this.class_name = name;
+        };
         this.selected = function () {
             if (this.element) return this.element.value;
         }
@@ -45,17 +52,50 @@ var PwNode = /** @class */ (function () {
             if (this.node_list) {
                 var selected = null;
                 this.node_list.forEach(function (element) {
-                    if (element.checked) {
-                        selected = element.value;
-                        return;
-                    }
+                    if (element.checked) return selected = element.value;
                 });
             }
             return selected;
         }
+        this.checkAll = function () {
+            if (this.node_list) {
+                this.node_list.forEach(function (element) {
+                    element.checked = 1;
+                });
+            }
+        }
+        this.checkValues = function () {
+            var values = new Array();
+            if (this.node_list) {
+                this.node_list.forEach(function (element) {
+                    if (element.checked) {
+                        values.push(element.value);
+                        return;
+                    }
+                });
+            }
+            return values;
+        }
+        this.uncheckAll = function () {
+            if (this.node_list) {
+                this.node_list.forEach(function (element) {
+                    element.checked = null;
+                });
+            }
+        }
         this.selectValue = function (value) {
             if (this.element) {
                 this.element.value = value;
+                return this;
+            }
+        }
+        this.checkValue = function (value) {
+            if (this.element) {
+                if (value) {
+                    this.element.checked = 1;
+                } else {
+                    this.element.checked = null;
+                }
                 return this;
             }
         }
@@ -192,8 +232,17 @@ var PwNode = /** @class */ (function () {
         return instance;
     };
     PwNode.byName = function (name) {
-        if (!name) return;
         var instance = new PwNode({name: name});
+        instance.init();
+        return instance;
+    };
+    PwNode.byElement = function (element) {
+        var instance = new PwNode({element: element});
+        instance.init();
+        return instance;
+    };
+    PwNode.byClass = function (class_name) {
+        var instance = new PwNode({class_name: class_name});
         instance.init();
         return instance;
     };

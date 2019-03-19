@@ -1,0 +1,255 @@
+<? include('views/components/login_user.phtml') ?>
+
+<nav id="header" class="navbar navbar-toggleable fixed-top">
+
+  <div>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#nav-header"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon">
+        <i class="fa fa-bars"></i>
+      </span>
+    </button>
+  </div>
+
+  <div class="collapse navbar-collapse" id="nav-header">
+    <ul class="navbar-nav mr-auto">
+
+      <li class="nav-item text-nowrap">
+        <?= $this->linkTo(
+          [
+          'controller' => 'spot',
+          'action' => 'list',
+          ],
+          [
+            'label' => LABEL_SPOTS,
+            'class' => 'nav-link action-loading',
+            'icon_name' => 'home',
+            'is_use_selected' => true
+          ]
+        )
+        ?>
+      </li>
+      <li class="nav-item text-nowrap">
+          <?= $this->linkTo(
+            ['controller' => 'rainfall_area'], 
+            [
+              'label' => LABEL_RAINFALL_AREAS,
+              'class' => 'nav-link action-loading',
+              'icon_name' => 'umbrella',
+              'is_use_selected' => true
+            ]
+          )
+          ?>
+      </li>
+
+      <li class="nav-item dropdown text-nowrap">
+        <?= PwTag::a(
+            [
+              'id' => 'dropdown-login_info',
+              'class' => 'nav-link dropdown-toggle',
+              'label' => LABEL_LOGIN_INFORMATION,
+              'icon_name' => 'users',
+              'href' => '#',
+              'data-toggle' => 'dropdown',
+              'aria-haspopup' => 'true',
+              'aria-expanded' => 'false',
+              'is_use_selected' => true,
+              'selected_key' => 'login_setting',
+              'selected_value' => $this->group_name,
+            ]
+          )
+          ?>
+        <div class="dropdown-menu" aria-labelledby="dropdown-login_info">
+          <?= $this->linkTo(
+          ['controller' => 'staff'], 
+          [
+            'label' => LABEL_STAFFS,
+            'class' => 'nav-link action-loading',
+            'icon_name' => 'users',
+            'is_use_selected' => true
+          ]
+        )
+        ?>
+          <?= $this->linkTo(
+          ['controller' => 'spot_manager'], 
+          [
+            'label' => LABEL_SPOT_MANAGERS,
+            'class' => 'nav-link action-loading',
+            'icon_name' => 'id-card',
+            'is_use_selected' => true
+          ]
+        )
+        ?>
+        </div>
+      </li>
+
+      <li class="nav-item dropdown text-nowrap">
+        <?= PwTag::a(
+          [
+            'id' => 'dropdown-ftp',
+            'class' => 'nav-link dropdown-toggle',
+            'label' => LABEL_FTP_SETTING,
+            'icon_name' => 'cloud-download-alt',
+            'href' => '#',
+            'data-toggle' => 'dropdown',
+            'aria-haspopup' => 'true',
+            'aria-expanded' => 'false',
+            'is_use_selected' => true,
+            'selected_key' => 'ftp_setting',
+            'selected_value' => $this->group_name,
+          ]
+        )
+        ?>
+        <div class="dropdown-menu" aria-labelledby="dropdown-ftp">
+          <?= $this->linkTo(
+            ['controller' => 'weather_ftp_setting'], 
+            [
+              'label' => LABEL_WEATHERS,
+              'icon_name' => 'tint',
+              'class' => 'nav-link action-loading',
+              'is_use_selected' => true
+            ]
+          )
+          ?>
+          <?= $this->linkTo(
+            ['controller' => 'ftp_setting'], 
+            [
+              'label' => LABEL_INSTRUMENTS,
+              'icon_name' => 'tachometer-alt',
+              'class' => 'nav-link action-loading',
+              'is_use_selected' => true
+            ]
+          )
+          ?>
+        </div>
+      </li>
+
+      <li class="nav-item dropdown text-nowrap">
+        <a class="nav-link dropdown-toggle" href="#" id="dropdown-system" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?= PwTag::iconTag('cog') ?><?= LABEL_OTHER ?></a>
+        <div class="dropdown-menu" aria-labelledby="dropdown-system">
+          <?= $this->linkTo(
+            ['controller' => 'domain'], 
+            [
+              'label' => LABEL_DOMAINS,
+              'icon_name' => 'globe',
+              'class' => 'dropdown-item action-loading',
+              'is_use_selected' => true
+            ]
+          )
+          ?>
+          <?= $this->linkTo(
+            ['controller' => 'data_host'], 
+            [
+              'label' => LABEL_DATA_HOSTS,
+              'icon_name' => 'database',
+              'class' => 'dropdown-item action-loading',
+              'is_use_selected' => true
+            ]
+          )
+          ?>
+          <?= $this->linkTo(
+            ['controller' => 'area'], 
+            [
+              'label' => LABEL_AREAS,
+              'icon_name' => 'map-marker-alt',
+              'class' => 'dropdown-item action-loading',
+              'is_use_selected' => true
+            ]
+          )
+          ?>
+          <?= $this->linkTo(
+            ['controller' => 'instrument_type_setting'], 
+            [
+              'label' => LABEL_INSTRUMENT_TYPE_SETTINGS,
+              'icon_name' => 'tachometer-alt',
+              'class' => 'dropdown-item action-loading',
+              'is_use_selected' => true
+            ]
+          )
+          ?>
+          <?= $this->linkTo(
+            ['controller' => 'logger_type'], 
+            [
+              'label' => LABEL_LOGGER_TYPES,
+              'icon_name' => 'file-alt',
+              'class' => 'dropdown-item action-loading',
+              'is_use_selected' => true
+            ]
+          )
+          ?>
+          <?= $this->linkTo(
+            ['controller' => 'water_flow_formula'], 
+            [
+              'label' => LABEL_WATER_FLOW_FORMULAS,
+              'icon_name' => 'calculator',
+              'class' => 'dropdown-item action-loading',
+              'is_use_selected' => true
+            ]
+          )
+          ?>
+          <?= $this->linkTo(
+            ['controller' => 'config'], 
+            [
+              'label' => LABEL_CONFIGS,
+              'icon_name' => 'cog',
+              'class' => 'dropdown-item action-loading',
+              'is_use_selected' => true
+            ]
+          )
+          ?>
+        </div>
+      </li>
+      <li class="nav-item nav-border text-nowrap">
+        <?= $this->linkTo(
+            ['controller' => 'observe_spot'], 
+            [
+              'label' => LABEL_OBSERVER,
+              'class' => 'nav-link',
+              'icon_name' => 'eye',
+              'is_use_selected' => true
+            ]
+          )
+          ?>
+      </li>
+    </ul>
+
+    <div class="p-2 text-nowrap">
+
+      <?= $this->linkTo(
+        ['controller' => 'root'], 
+        [
+          'label' => LABEL_JA,
+          'class' => 'pl-2',
+          'http_params' => ['lang' => 'ja', 'is_change_lang' => 1]
+        ]
+      )
+      ?>
+      <?= $this->linkTo(
+        ['controller' => 'root'], 
+        [
+          'label' => LABEN_EN,
+          'class' => 'pl-2',
+          'http_params' => ['lang' => 'en', 'is_change_lang' => 1]
+        ]
+      )
+      ?>
+
+      <?= PwTag::a(
+        [
+        'icon_name' => 'address-card',
+        'data-toggle' => 'modal',
+        'data-target' => '#login_user',
+        ]) ?>
+
+      <?= $this->linkTo(
+        ['controller' => 'staff', 'action' => 'logout'],
+        [
+        'label' => LABEL_LOGOUT,
+        'class' => 'confirm-dialog',
+        'message' => MESSAGE_LOGOUT,
+        'icon_name' => 'sign-out-alt',
+        ]
+      ) ?>
+    </div>
+  </div>
+</nav>

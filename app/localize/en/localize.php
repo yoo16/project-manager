@@ -65,11 +65,6 @@ define('LABEL_USER', 'User');
 define('LABEL_STAFF', 'Staff');
 define('LABEL_ADMIN', 'Admin');
 
-define('DEPTH_GRAPH_Y_TITLE', LABEL_INSTRUMENTS_DEPTH.'(GL.-m)');
-define('DEPTH_TIME_GRAPH_Y_TITLE', LABEL_INSTRUMENTS_DEPTH.'(GL.-m)');
-define('GRAPH_Y_TITLE', LABEL_DISPLACEMENT);
-define('GRAPH_X_TITLE', LABEL_DATE_TITLE);
-
 define('LABEL_BLUE', 'Blue');
 define('LABEL_RED', 'Red');
 define('LABEL_YELLOW', 'Yewllow');

@@ -1,0 +1,14 @@
+<script>
+    $(function() {
+      $('#graph_control_window').draggable();
+      $('#graph_control_window').offset({ top: 100, left: 300 });
+    })
+    $(document).on('click', '.btn-close', function () {
+      var selector = '#' + $(this).attr('target-window');
+      $(selector).hide();
+    });
+    $(document).on('click', '.btn-graph-setting', function () {
+      var selector = '#' + $(this).attr('target-window');
+      $(selector).show();
+    });
+</script>

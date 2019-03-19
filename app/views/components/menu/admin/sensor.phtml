@@ -1,0 +1,127 @@
+<? include('views/components/menu/admin/spot.phtml') ?>
+
+<? if ($this->sensor->value['id']): ?>
+
+<div id="change-sensor-window" class="modal"></div>
+
+<div class="p-2">
+  <h2>
+    <?= $this->sensor->value['code'] ?>
+    <?= $this->sensor->value['name'] ?>
+    <?= $this->sensor->value['interval'] ?>
+    <?= LABEL_MINUTES ?>
+    <?= $this->csv_options['average_type'][$this->sensor->value['average_type']] ?>
+    <button type="button" class="pw-click btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#change-sensor-window"
+      pw-controller="sensor" pw-action="change_select" spot-id="<?= $this->spot->value['id'] ?>">
+      <?= LABEL_SELECT ?></button>
+    <input id="sensor-id" type="hidden" value="<?= $this->sensor->value['id'] ?>">
+  </h2>
+</div>
+
+<nav class="navbar bg-faded">
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+      <?= $this->linkTo(
+        [
+        'controller' => 'sensor',
+        'action' => 'edit',
+        'id' => $this->sensor->value['id']
+        ],
+        [
+          'label' => LABEL_SETTING,
+          'icon_name' => 'edit',
+          'class' => 'nav-link',
+          'is_use_selected' => true,
+          'http_params' => 
+          [
+            'sensor_id' => $this->sensor->value['id'],
+          ]
+        ]
+      )
+      ?>
+    </li>
+
+    <li class="nav-item">
+      <?= $this->linkTo(['controller' => 'sensor_graph'],
+        [
+          'label' => LABEL_CALCULATE_GRAPHS,
+          'icon_name' => 'chart-bar',
+          'class' => 'nav-link',
+          'is_use_selected' => true,
+          'http_params' => 
+          [
+            'sensor_id' => $this->sensor->value['id'],
+          ]
+        ]
+      )
+      ?>
+    </li>
+    <li class="nav-item">
+      <?= $this->linkTo(['controller' => 'sensor_displace_type'],
+        [
+          'label' => LABEL_DISPLACE_TYPES,
+          'icon_name' => 'chart-line',
+          'class' => 'nav-link',
+          'is_use_selected' => true,
+          'http_params' => 
+          [
+            'sensor_id' => $this->sensor->value['id'],
+          ]
+        ]
+      )
+      ?>
+    </li>
+    <li class="nav-item">
+      <?= $this->linkTo(['controller' => 'filter'],
+        [
+          'label' => LABEL_FILTERS,
+          'icon_name' => 'filter',
+          'class' => 'nav-link',
+          'is_use_selected' => true,
+          'http_params' => 
+          [
+            'sensor_id' => $this->sensor->value['id'],
+          ]
+        ]
+      )
+      ?>
+    </li>
+
+  </ul>
+</nav>
+<? endif ?>
+<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+    <?= $this->linkTo(['controller' => 'sensor_group'],
+            [
+              'class' => 'nav-link',
+              'label' => LABEL_SENSOR_GROUPS,
+              'icon_name' => 'sitemap',
+              'is_use_selected' => true,
+              'selected_key' => 'sensor_group',
+              'selected_value' => $this->group_name,
+              'http_params' => 
+              [
+                'instrument_group_id' => $this->instrument_group->value['id']
+              ]
+            ]
+          )
+    ?>
+    </li>
+    <? if ($this->has_measure_table): ?>
+    <li class="nav-item">
+        <?= PwTag::a(
+          [
+            'class' => 'nav-link',
+            'label' => 'DB Table',
+            'icon_name' => 'database',
+            'data-toggle' => 'modal',
+            'data-target' => '#table-info',
+          ]
+        )
+      ?>
+    </li>
+    <? endif ?>
+  </ul>
+</nav>

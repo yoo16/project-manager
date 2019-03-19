@@ -1,0 +1,15 @@
+<? include('views/components/observe/spot.phtml') ?>
+
+<? if ($this->sensor->value['id']): ?>
+
+  <div id="change-sensor-window" class="modal"></div>
+
+  <div class="p-2">
+    <h2>
+      <?= $this->sensor->value['code'] ?> <?= $this->sensor->value['name'] ?> <?= $this->sensor->value['interval'] ?> <?= LABEL_MINUTES ?> <?= $this->csv_options['average_type'][$this->sensor->value['average_type']] ?>
+      <button type="button" class="pw-click btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#change-sensor-window" pw-controller="observe_sensor" pw-action="change_select" spot-id="<?= $this->spot->value['id'] ?>"><?= LABEL_SELECT ?></button>
+      <input id="sensor-id" type="hidden" value="<?= $this->sensor->value['id'] ?>">
+    </h2>
+  </div>
+
+<? endif ?>

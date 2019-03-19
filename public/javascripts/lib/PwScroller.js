@@ -11,7 +11,7 @@ var PwScroller = function () {
     this.speed = 500;
 
     $(document).on('click', '.pw-scroller', function() {
-        var node = PwNode.instance({element: this});
+        var node = PwNode.byElement(this);
         var action = node.action();
         if (action) pw_scroller[action](node)
 
@@ -38,8 +38,9 @@ var PwScroller = function () {
         $('body,html').animate({ scrollTop: node.top() }, pw_scroller.speed);
     }
     this.bottom = function(node) {
-        var height  =  window.parent.screen.height;
-        $('body,html').animate({ scrollTop: height }, pw_scroller.speed);
+        var element = document.documentElement;
+        var y = element.scrollHeight - element.clientHeight;
+        $('body,html').animate({ scrollTop: y }, pw_scroller.speed);
     }
 }
 

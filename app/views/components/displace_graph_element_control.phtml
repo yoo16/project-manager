@@ -1,0 +1,37 @@
+<div>
+<?= PwTag::a([
+  'class' => 'pw-click btn',
+  'pw-controller' => $this->jsControllerName(),
+  'pw-action' => 'zoomOut',
+  'element_graph_id' => $element_graph_id,
+  'icon_name' => 'search-minus',
+  ]) ?>
+<?= PwTag::a([
+  'class' => 'pw-click btn',
+  'pw-controller' => $this->jsControllerName(),
+  'pw-action' => 'zoomIn',
+  'element_graph_id' => $element_graph_id,
+  'icon_name' => 'search-plus',
+  ]) ?>
+<?= PwTag::a([
+  'class' => 'pw-click btn',
+  'pw-controller' => $this->jsControllerName(),
+  'pw-action' => 'slideUp',
+  'element_graph_id' => $element_graph_id,
+  'icon_name' => 'minus-square',
+  ]) ?>
+<?= PwTag::a([
+  'class' => 'pw-click btn',
+  'pw-controller' => $this->jsControllerName(),
+  'pw-action' => 'slideDown',
+  'element_graph_id' => $element_graph_id,
+  'icon_name' => 'plus-square',
+  ]) ?>
+<?= PwTag::a([
+  'class' => 'pw-click btn',
+  'pw-controller' => $this->jsControllerName(),
+  'pw-action' => 'zoomClear',
+  'element_graph_id' => $element_graph_id,
+  'icon_name' => 'times-circle',
+  ]) ?>
+</div>

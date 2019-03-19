@@ -1,0 +1,87 @@
+<? include('views/components/menu/admin/spot.phtml') ?>
+
+<? if ($this->vector_diagram->value['id']): ?>
+  <h2><?= $this->vector_diagram->value['name'] ?></h2>
+
+  <nav class="navbar bg-faded">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <?= $this->linkTo(
+          [
+          'controller' => 'vector_diagram',
+          'action' => 'edit',
+          'id' => $this->vector_diagram->value['id']
+          ],
+          [
+            'label' => LABEL_SETTING,
+            'icon_name' => 'edit',
+            'class' => 'nav-link',
+            'is_use_selected' => true,
+          ]
+        )
+        ?>
+      </li>
+
+      <li class="nav-item">
+        <?= $this->linkTo(['controller' => 'vector_diagram_member'],
+          [
+            'label' => LABEL_SENSORS,
+            'icon_name' => 'compass',
+            'class' => 'nav-link',
+            'is_use_selected' => true,
+            'http_params' => ['vector_diagram_id' => $this->vector_diagram->value['id']]
+          ]
+        )
+        ?>
+      </li>
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle <?= PwTag::classActive('instrument', $this->sub_menu_name) ?>" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?= PwTag::iconTag('tachometer-alt') ?><?= LABEL_INSTRUMENTS ?></a>
+        <div class="dropdown-menu" aria-labelledby="dropdown01">
+          <? foreach ($this->csv_options['instrument_type'] as $instrument_type => $label): ?>
+            <?= Instrument::pageLinkForVectorDiagram($this, $instrument_type, $label, $this->vector_diagram_instrument_type) ?>
+          <? endforeach ?>
+        </div>
+      </li>
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle <?= PwTag::classActive('depth_group', $this->sub_menu_name) ?>" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?= PwTag::iconTag('sitemap') ?><?= LABEL_DEPTH_GROUPS ?></a>
+        <div class="dropdown-menu" aria-labelledby="dropdown01">
+        <?= $this->linkTo(['controller' => 'vector_diagram_slope_group'],
+          [
+            'label' => LABEL_SLOPE_MEASURES,
+            'icon_name' => 'compass',
+            'class' => 'nav-link action-loading',
+            'is_use_selected' => true,
+            'http_params' => ['vector_diagram_id' => $this->vector_diagram->value['id']]
+          ]
+        )
+        ?>
+        <?= $this->linkTo(['controller' => 'vector_diagram_pipe_group'],
+          [
+            'label' => LABEL_PIPE_MEASURES,
+            'icon_name' => 'compass',
+            'class' => 'nav-link action-loading',
+            'is_use_selected' => true,
+            'http_params' => ['vector_diagram_id' => $this->vector_diagram->value['id']]
+          ]
+        )
+        ?>
+        </div>
+      </li>
+
+      <li class="nav-item">
+        <?= $this->linkTo(['controller' => 'vector_cross_section_line'],
+          [
+            'label' => LABEL_CROSS_SECTION_LINES,
+            'icon_name' => 'arrows-alt-h',
+            'class' => 'nav-link',
+            'is_use_selected' => true,
+            'http_params' => ['vector_diagram_id' => $this->vector_diagram->value['id']]
+          ]
+        )
+        ?>
+      </li>
+    </ul>
+  </nav>
+<? endif ?>

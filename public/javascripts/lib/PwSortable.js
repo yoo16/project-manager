@@ -31,7 +31,7 @@ var PwSortable = function() {
         pw_sortable.before_rows = [];
         $.each($(pw_sortable.sortable_table_tr_selector), function(index, row) {
             pw_sortable.before_rows.push(row);
-            row_node = PwNode.instance({element: row});
+            row_node = PwNode.byElement(row);
             if (row_node.attr('row-id')) {
                 $(row).attr('order', index);
             }
@@ -105,6 +105,7 @@ var PwSortable = function() {
         $('.sortable-control').show();
     }
     this.update_sort = function(node) {
+        console.log(node);
         if (!pw_sortable.sort_orders) return;
         
         var orders = [];

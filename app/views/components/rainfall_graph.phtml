@@ -1,0 +1,7 @@
+
+<? if ($this->rainfall_area->value): ?>
+<div id="graph_rainfall"></div>
+
+<?= PwTag::javascript('controllers/ObserveRainfallController') ?>
+<?= PwTag::javascript('graph/RainfallGraph') ?>
+<? endif ?>

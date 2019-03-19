@@ -117,15 +117,7 @@ class PageController extends ProjectController {
      * @return void
      */
     function action_delete() {
-        if (!isPost()) exit;
-        $page = DB::model('Page')->delete($this->pw_params['id']);
-
-        if ($page->errors) {
-            $this->addErrorByModel($page);
-            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
-        } else {
-            $this->redirectTo();
-        }
+        $this->redirectForDelete($this->deleteByModel('Page'));
     }
 
     function action_import_from_models() {

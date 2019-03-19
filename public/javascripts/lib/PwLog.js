@@ -107,8 +107,8 @@ var log_file_name = '';
 var pw_log = new PwLog();
 
 document.addEventListener('DOMContentLoaded', function() {
-    pw_log.log_window = PwNode.instance({id: 'log-window'});
-    pw_log.log_title = PwNode.instance({id: 'log-title'});
-    pw_log.log_contents = PwNode.instance({id: 'log-contents'});
+    pw_log.log_window = PwNode.id('log-window');
+    pw_log.log_title = PwNode.id('log-title');
+    pw_log.log_contents = PwNode.id('log-contents');
     //pw_log.base_url = pw_app.projectUrl()
 });

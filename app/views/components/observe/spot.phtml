@@ -1,0 +1,75 @@
+<? if ($this->spot->value['id']): ?>
+<div class="p-2">
+  <span id="side_btn">
+    <?= $this->linkJs([
+            'class' => 'pw-click',
+            'icon_name' => 'bars',
+            'pw-controller' => 'shamen',
+            'pw-action' => 'change_side_bar',
+            ]) ?>
+  </span>
+  <span class="title">
+    <?= $this->spot->value['code'] ?>
+    <?= $this->spot->value['name'] ?>
+  </span>
+  <input id="spot-id" type="hidden" value="<?= $this->spot->value['id'] ?>">
+</div>
+<nav class="navbar">
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+      <?= $this->linkTo(
+          [
+          'controller' => 'observe_spot',
+          'action' => 'detail',
+          'id' => $this->spot->id
+          ],
+          [
+            'class' => 'nav-link',
+            'label' => LABEL_DETAIL,
+            'icon_name' => 'info',
+            'is_use_selected' => true,
+          ]
+        )
+        ?>
+    </li>
+    <li class="nav-item">
+      <?= $this->linkTo(['controller' => 'observe_update_schedule'],
+          [
+            'class' => 'nav-link',
+            'label' => LABEL_UPDATE_SCHEDULES,
+            'icon_name' => 'clock',
+            'is_use_selected' => true,
+            'menu_group' => 'spot_menu',
+            'http_params' => ['spot_id' => $this->spot->value['id']]
+          ]
+        )
+        ?>
+    </li>
+    <li class="nav-item">
+      <?= $this->linkTo(['controller' => 'observe_information'],
+            [
+              'class' => 'nav-link',
+              'label' => LABEL_INFORMATIONS,
+              'icon_name' => 'comment',
+              'is_use_selected' => true,
+              'menu_group' => 'spot_menu',
+              'http_params' => ['spot_id' => $this->spot->value['id']]
+            ]
+          )
+          ?>
+    </li>
+    <li class="nav-item">
+      <?= $this->linkTo(['controller' => 'observe_customer'],
+      [
+        'class' => 'nav-link',
+        'label' => LABEL_CONTACTS,
+        'icon_name' => 'users',
+        'is_use_selected' => true,
+        'http_params' => ['spot_id' => $this->spot->value['id']]
+      ]
+    )
+    ?>
+    </li>
+  </ul>
+</nav>
+<? endif ?>

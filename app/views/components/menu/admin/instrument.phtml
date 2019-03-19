@@ -1,0 +1,151 @@
+<? include('views/components/menu/admin/spot.phtml') ?>
+
+<? if ($this->instrument_type): ?>
+  <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+    <ul class="nav nav-pills">
+
+      <? if (!$this->is_not_instrument_group): ?>
+        <li class="nav-item">
+          <?= $this->linkTo(['controller' => "{$this->instrument_type}_instrument_group"],
+            [
+              'class' => 'nav-link',
+              'label' => LABEL_INSTRUMENT_GROUPS,
+              'icon_name' => 'sitemap',
+              'is_use_selected' => true,
+              'menu_groups' => 'instrument_group',
+              'http_params' => [ 'instrument_group_id' => $this->instrument_group->value['id'] ]
+            ]
+          )
+          ?>
+        </li>
+      <? endif ?>
+
+      <? if ($this->instrument_type == 'slope'): ?>
+        <li class="nav-item">
+          <?= $this->linkTo(['controller' => 'slope_group'],
+            [
+              'label' => LABEL_SLOPE_GROUPS,
+              'icon_name' => 'sitemap',
+              'class' => 'nav-link',
+              'is_use_selected' => true,
+              'menu_groups' => 'slope_group',
+              'http_params' => [ 'instrument_group_id' => $this->instrument_group->value['id'] ]
+            ]
+          )
+          ?>
+        </li>
+      <? endif ?>
+
+      <? if ($this->instrument_type == 'pipe'): ?>
+        <li class="nav-item">
+          <?= $this->linkTo(['controller' => 'pipe_group'],
+            [
+              'label' => LABEL_PIPE_GROUPS,
+              'icon_name' => 'sitemap',
+              'class' => 'nav-link',
+              'is_use_selected' => true,
+              'menu_groups' => 'pipe_group',
+              'http_params' => [ 'instrument_group_id' => $this->instrument_group->value['id'] ]
+            ]
+          )
+          ?>
+        </li>
+      <? endif ?>
+
+      <? if (InstrumentMultiGroup::isMultiGroup($this->instrument_type)): ?>
+        <li class="nav-item">
+          <?= $this->linkTo(['controller' => "{$this->instrument_type}_instrument_multi_group"],
+            [
+              'label' => LABEL_INSTRUMENT_MULTI_GROUPS,
+              'icon_name' => 'object-group',
+              'class' => 'nav-link',
+              'is_use_selected' => true,
+              'menu_groups' => "instrument_multi_group",
+              'http_params' => [ 'instrument_group_id' => $this->instrument_group->value['id'] ]
+            ]
+          )
+          ?>
+        </li>
+      <? endif ?>
+
+    </ul>
+  </nav>
+<? endif ?>
+
+<? if ($this->instrument->value['id']): ?>
+  <div id="change-instrument-window" class="modal"></div>
+  <div class="d-flex p-2">
+    <h2>
+      <?= $this->instrument->value['name'] ?>
+      (<?= $this->csv_options['instrument_type'][$this->instrument->value['instrument_type']] ?>)
+      <button type="button" class="pw-click btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#change-instrument-window" pw-controller="instrument" pw-action="change_select" spot-id="<?= $this->spot->value['id'] ?>" instrument-type="<?= $this->instrument_type ?>"><?= LABEL_SELECT ?></button>
+      <input id="instrument-id" type="hidden" value="<?= $this->instrument->value['id'] ?>">
+    </h2>
+  </div>
+
+  <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <?= $this->linkTo
+        (
+          [
+          'controller' => "{$this->instrument->value['instrument_type']}_instrument",
+          'action' => 'edit',
+          'id' => $this->instrument->value['id'],
+          ],
+          [
+            'label' => LABEL_SETTING,
+            'icon_name' => 'edit',
+            'class' => 'nav-link',
+            'is_use_selected' => true,
+          ]
+        )
+        ?>
+      </li>
+      <li class="nav-item">
+        <?= $this->linkTo
+        (
+          ['controller' => 'instrument_graph'],
+          [
+            'label' => LABEL_INSTRUMENT_GRAPHS,
+            'icon_name' => 'chart-bar',
+            'class' => 'nav-link',
+            'is_use_selected' => true,
+            'http_params' => ['instrument_id' => $this->instrument->value['id']],
+          ]
+        )
+        ?>
+      </li>
+      <li class="nav-item">
+        <?= $this->linkTo
+        (
+          ['controller' => 'instrument_reference_value'],
+          [
+            'label' => LABEL_REFERENCE_VALUE,
+            'icon_name' => 'sliders-h',
+            'class' => 'nav-link',
+            'is_use_selected' => true,
+            'http_params' => ['instrument_id' => $this->instrument->value['id']],
+          ]
+        )
+        ?>
+      </li>
+      <li class="nav-item">
+        <?= $this->linkTo
+        (
+          ['controller' => 'instrument_displace_type'],
+          [
+            'label' => LABEL_DISPLACE_TYPES,
+            'icon_name' => 'chart-line',
+            'class' => 'nav-link',
+            'is_use_selected' => true,
+            'http_params' => ['instrument_id' => $this->instrument->value['id']],
+          ]
+        )
+        ?>
+      </li>
+
+    </ul>
+  </nav>
+<? endif ?>
+
