@@ -380,7 +380,7 @@ class PwFile {
      *
      * @param string $to_path
      * @param string $key
-     * @return string
+     * @return boolean
      */
     static function uploadFile($to_path, $key='file') {
         $files = $_FILES[$key];
@@ -389,6 +389,7 @@ class PwFile {
             self::removeFile($to_path);
             self::moveFile($files['tmp_name'], $to_path);
         }
+        return file_exists($to_path);
     }
 
     /**

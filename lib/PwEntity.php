@@ -5,19 +5,26 @@
  * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
+//namespace Libs;
+
 class PwEntity {
-    public $is_cast = true;
     public $id_column = 'id';
-    public $columns = [];
-    public $conditions = [];
-    public $errors = [];
-    public $values = null;
-    public $value = null;
     public $id = null;
     public $id_index = false;
+    public $is_cast = true;
+    public $values = [];
+    public $value = [];
+    public $conditions = [];
+    public $or_wheres = [];
+    public $orders = [];
+    public $group_by_columns = [];
+    public $limit = null;
+    public $joins = [];
+    public $sql = null;
+    public $sqls = [];
+    public $errors = [];
     public $posts = null;
     public $session = null;
-    public $limit = null;
     public $values_index_column = null;
     public $values_index_column_type = null;
 
@@ -50,13 +57,14 @@ class PwEntity {
      * @return PwEntity
      */
     public function init() {
-        $this->conditions = null;
+        $this->id = null;
+        $this->id_index = false;
+        $this->conditions = [];
+        $this->or_conditions = [];
         $this->errors = null;
         $this->values = null;
         $this->value = null;
-        $this->id = null;
-        $this->id_index = false;
-        $this->pw_posts = null;
+        $this->pw_posts = [];
         $this->session = null;
         $this->limit = null;
         $this->values_index_column = null;
@@ -1268,6 +1276,7 @@ class PwEntity {
 
         if (!$this->auth_columns) exit('Not found auth columns in model');
         foreach ($this->auth_columns as $column => $options) {
+            dump($options);
             $value = $_POST[$column];
             if ($options['hash']) $value = $this->convertHash($value, $options['hash']);
             $this->where($column, $value);
@@ -1392,7 +1401,7 @@ class PwEntity {
      *
      * @return PwEntity
      */
-    function new() {
+    function new_page() {
         $pw_posts = PwSession::get('pw_posts');
         $this->init()->takeValues($pw_posts[$this->entity_name]);
         return $this;
@@ -1404,11 +1413,13 @@ class PwEntity {
      * @param integer $id
      * @return PwEntity
      */
-    function edit($id = null) {
+    function edit_page($id = null) {
         if (!$id) $id = PwSession::getWithKey('pw_gets', 'id');
         if (!$id) exit('Not found id');
-        $pw_posts = PwSession::get('pw_posts');
-        $this->fetch($id)->takeValues($pw_posts[$this->entity_name]);
+        $this->fetch($id);
+        if ($this->entity_neme && $pw_posts = PwSession::get('pw_posts')) {
+            $this->takeValues($pw_posts[$this->entity_name]);
+        }
         return $this;
     }
 }

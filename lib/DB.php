@@ -31,7 +31,7 @@ class DB {
     * @return PwEntity
     */
     static function model($name) {
-        if (!class_exists($name)) exit;
+        if (!class_exists($name)) echo('Not found class');
         $instance = new $name();
         return $instance;
     }

@@ -265,7 +265,7 @@ class Tag {
             foreach ($page_model->values as $page_model_value) {
                 if ($page_model_value['is_request_session']) {
                     $instance = '$this->'.$page_model_value['entity_name'];
-                    $tag = "{$instance} = DB::model('{$page_model_value['class_name']}')->requestSession();";
+                    $tag = "{$instance} = ".'$this->model'."('{$page_model_value['class_name']}');";
                     echo($tag).PHP_EOL;
                 }
             }

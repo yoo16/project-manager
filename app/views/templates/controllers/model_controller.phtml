@@ -22,9 +22,6 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
 <? if ($values['page']->value['layout_name']): ?>
     public $layout = '<?= $values['page']->value['layout_name'] ?>';
 <? endif ?>
-<? if ($values['page_filter']): ?>
-    <? Tag::init()->pageFilters($values['page_filter']) ?>
-<? endif ?>
 
    /**
     * before_action
@@ -93,7 +90,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_add() {
-        $this->redirectByModel($this->insertByModel('<?= $model->value['class_name'] ?>''), ['action' => 'list'], ['action' => 'new']);
+        $this->redirectForAdd($this->insertByModel('<?= $model->value['class_name'] ?>'));
     }
 
    /**
@@ -103,7 +100,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_update() {
-        $this->redirectByModel($this->updateByModel('<?= $model->value['class_name'] ?>'), ['action' => 'edit', 'id' => $this->pw_gets['id']]);
+        $this->redirectForUpdate($this->updateByModel('<?= $model->value['class_name'] ?>'));
     }
 
    /**
@@ -114,7 +111,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     */
     function action_delete() {
 <? if ($values['model']): ?>
-        $this->redirectByModel($this->deleteByModel('<?= $model->value['class_name'] ?>'), ['action' => 'list'], ['action' => 'edit', 'id' => $this->pw_gets['id']]);
+        $this->redirectForDelete($this->deleteByModel('<?= $model->value['class_name'] ?>'));
 <? endif ?>
     }
 

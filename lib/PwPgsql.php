@@ -1,10 +1,13 @@
 <?php
-
 /**
  * PwPgsql 
  *
  * @copyright  Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
+
+//namespace Libs;
+
+
 require_once 'PwEntity.php';
 
 //TODO pg_escape_identifier
@@ -24,15 +27,6 @@ class PwPgsql extends PwEntity
     public $is_pconnect = false;
     public $is_connect_forece_new = false;
     public $table_name = null;
-    public $values = null;
-    public $value = null;
-    public $conditions = null;
-    public $orders = null;
-    public $group_by_columns = null;
-    public $limit = null;
-    public $joins = [];
-    public $sql = null;
-    public $sqls = null;
     public $is_bulk_select = false;
     public $is_old_table = false;
     public $is_sort_order = true;
@@ -864,10 +858,9 @@ class PwPgsql extends PwEntity
         //TODO init ?
         $this->conditions = null;
         $this->orders = null;
-        $this->limit = null;
+        //$this->limit = null;
         $this->joins = null;
         $this->group_by_columns = null;
-
         return $results;
     }
 
@@ -1514,6 +1507,7 @@ class PwPgsql extends PwEntity
         if ($posts) $this->takeValues($posts);
 
         $this->validate();
+        dump($this->errors);
         if ($this->errors) return $this;
 
         $sql = $this->insertSql();
@@ -1538,10 +1532,11 @@ class PwPgsql extends PwEntity
      */
     public function update($posts = null, $id = null)
     {
+        if (!$id) $id = $this->value[$this->id_column];
         if (!$id) $id = $this->id;
-        if ($posts[$this->id_column]) unset($posts[$this->id_column]);
         if ($id > 0) $this->fetch($id);
         if (!$this->id) return $this;
+        if ($posts[$this->id_column]) unset($posts[$this->id_column]);
         if ($posts) $this->takeValues($posts);
 
         $this->validate();
@@ -1804,7 +1799,7 @@ class PwPgsql extends PwEntity
     public function delete($id = null)
     {
         if (is_numeric($id)) $this->id = (int)$id;
-        if (is_numeric($this->id)) $this->initWhere()->where("{$this->id_column} = {$this->id}");
+        if (is_numeric($this->id)) $this->initWhere()->where($this->id_column, $this->id);
         if (!is_numeric($this->id)) return $this;
 
         $sql = $this->deleteSql();
@@ -1893,6 +1888,128 @@ class PwPgsql extends PwEntity
             }
         }
         $this->conditions = array_unique($this->conditions);
+        $this->or_wheres = [];
+        return $this;
+    }
+
+    /**
+     * where
+     * 
+     * @param  mixed $condition
+     * @param  string $value
+     * @param  string $eq
+     * @return PwPgsql
+     */
+    public function orWhere($condition, $value = null, $eq = '=')
+    {
+        if (!$condition) return $this;
+        if (isset($value)) {
+            if (is_bool($value)) $value = ($value === true) ? 'TRUE' : 'FALSE';
+            $this->or_wheres[] = "{$condition} {$eq} '{$value}'";
+        } else {
+            if (is_array($condition)) {
+                $column = $condition[0];
+                $value = $condition[1];
+                $eq = (isset($conditions[3])) ? $conditions[3] : '=';
+                if (is_bool($value)) $value = ($value === true) ? 'TRUE' : 'FALSE';
+                $this->or_wheres[] = "{$column} {$eq} '{$value}'";
+            } else {
+                $this->or_wheres[] = $condition;
+            }
+        }
+        $this->or_wheres = array_unique($this->or_wheres);
+        return $this;
+    }
+
+    /**
+     * load where OR
+     * 
+     * @return array
+     */
+    public function initOR()
+    {
+        $this->or_wheres = [];
+    }
+
+    /**
+     * where null
+     * 
+     * @param  string $column
+     * @param  array $values
+     * @return PwPgsql
+     */
+    public function whereNull($column)
+    {
+        if (!$column) return $this;
+        $this->where("{$column} IS NULL");
+        return $this;
+    }
+
+    /**
+     * where LIKE
+     * 
+     * @param  string $column
+     * @param  string $value
+     * @param  array $params
+     * @return PwPgsql
+     */
+    public function whereLike($column, $value, $params = null)
+    {
+        if (!$column) return $this;
+        $sql = $this->whereLikeSql($column, $value, $params);
+        $this->where($sql);
+        return $this;
+    }
+
+    /**
+     * where LIKE
+     * 
+     * @param  array $key_values
+     * @param  string $value
+     * @param  array $params
+     * @return PwPgsql
+     */
+    public function wheresLike($columns, $params = null)
+    {
+        if (!$columns) return $this;
+        foreach ($columns as $column => $value) {
+            $conditions[] = $this->whereLikeSql($column, $value, $params);
+        }
+        $connection = ($params['connection']) ? " {$params['connection']} " : ' AND ';
+        $sql = implode($connection, $conditions);
+        $this->where($sql);
+        return $this;
+    }
+
+    /**
+     * where LIKE
+     * 
+     * @param  string $column
+     * @param  string $value
+     * @param  array $params
+     * @return string
+     */
+    public function whereLikeSql($column, $value, $params = null)
+    {
+        if (!$column) return;
+        if ($params['before']) $before = $params['before'];
+        if ($params['after']) $after = $params['after'];
+        if (!$before && !$after) $before = '%';
+        return "{$column} LIKE '{$before}{$value}{$after}'";
+    }
+
+
+    /**
+     * where in
+     * 
+     * @param  string $column
+     * @param  array $values
+     * @return PwPgsql
+     */
+    public function whereNotNull($column)
+    {
+        if (!$column) return $this;
+        $this->where("{$column} IS NOT NULL");
         return $this;
     }
 
@@ -1906,10 +2023,24 @@ class PwPgsql extends PwEntity
     public function whereIn($column, $values)
     {
         if (!$column) return $this;
-        foreach ($values as $value) {
-            $_values[] = $this->sqlValue($value);
-        }
+        foreach ($values as $value) $_values[] = $this->sqlValue($value);
         $condition = PwPgsql::whereInConditionSQL($column, $_values);
+        $this->where($condition);
+        return $this;
+    }
+
+    /**
+     * where in
+     * 
+     * @param  string $column
+     * @param  array $values
+     * @return PwPgsql
+     */
+    public function whereNotIn($column, $values)
+    {
+        if (!$column) return $this;
+        foreach ($values as $value) $_values[] = $this->sqlValue($value);
+        $condition = PwPgsql::whereNotInConditionSQL($column, $_values);
         $this->where($condition);
         return $this;
     }
@@ -1935,10 +2066,24 @@ class PwPgsql extends PwEntity
      */
     static function whereInConditionSQL($column, $values)
     {
-        if (is_array($values)) {
-            $value = implode(', ', $values);
-            $condition = "{$column} in ({$value})";
-        }
+        if (!is_array($values)) return;
+        $value = implode(', ', $values);
+        $condition = "{$column} IN ({$value})";
+        return $condition;
+    }
+
+    /**
+     * where not in conditon
+     * 
+     * @param  string $column
+     * @param  array $values
+     * @return string
+     */
+    static function whereNotInConditionSQL($column, $values)
+    {
+        if (!is_array($values)) return;
+        $value = implode(', ', $values);
+        $condition = "{$column} NOT IN ({$value})";
         return $condition;
     }
 
@@ -1998,7 +2143,7 @@ class PwPgsql extends PwEntity
         foreach ($days as $day) {
             $conditions[] = $this->dayCondition($day, $column);
         }
-        $condition = $this->sqlOrConditions($conditions);
+        $condition = $this->sqlOR($conditions);
         $this->where($condition);
         return $this;
     }
@@ -2027,7 +2172,7 @@ class PwPgsql extends PwEntity
         foreach ($hours as $hour) {
             $conditions[] = $this->hourCondition($hour, $column);
         }
-        $condition = $this->sqlOrConditions($conditions);
+        $condition = $this->sqlOR($conditions);
         $this->where($condition);
         return $this;
     }
@@ -2975,7 +3120,7 @@ class PwPgsql extends PwEntity
      * @param array $conditions
      * @return string
      **/
-    function sqlOrConditions($conditions)
+    function sqlOR($conditions)
     {
         if (is_null($conditions)) return;
         if (is_string($conditions)) {
@@ -3221,7 +3366,7 @@ class PwPgsql extends PwEntity
         $this->loadDBInfo();
         //$sql = "SELECT * FROM pg_database WHERE datacl IS NULL;";
         $conditions[] = 'datistemplate = false';
-        $where = implode('AND', $conditions);
+        $where = implode(' AND ', $conditions);
         $sql = "SELECT * FROM pg_database WHERE {$where};";
         return $this->fetchRows($sql);
     }
@@ -4071,10 +4216,13 @@ class PwPgsql extends PwEntity
         $model_path = BASE_DIR . "app/models/vo/*.php";
         foreach (glob($model_path) as $model_file) {
             $path_info = pathinfo($model_file);
-            $model = new $path_info['filename'];
 
-            $pg_class = $this->pgClassByRelname($model->name);
-
+            $model = null;
+            $pg_class = null;
+            if (class_exists($path_info['filename'])) {
+                $model = new $path_info['filename'];
+                $pg_class = $this->pgClassByRelname($model->name);
+            }
             if (!$pg_class) {
                 $sql = $this->createTableSql($model);
                 $sql .= $this->constraintSql($model);
@@ -4090,7 +4238,7 @@ class PwPgsql extends PwEntity
                 $status .= $sql_error->sql . PHP_EOL;
 
                 echo ($status);
-            } else if ($model->columns) {
+            } else if ($model && $model->columns) {
                 $pg_attributes = null;
                 if ($attributes = $this->pgAttributes($model->name)) {
                     foreach ($attributes as $pg_attribute) {

@@ -38,6 +38,7 @@ class Controller extends RuntimeException {
     public $pw_login_escapes = ['login', 'auth'];
     public $pw_login_controller = 'login';
     public $is_force_get_update = false;
+    public $session_by_models = null;
 
     static $libs = [
         'PwHelper',
@@ -579,6 +580,24 @@ class Controller extends RuntimeException {
         return $tag;
     }
 
+   /**
+    * link change bool
+    *
+    * @param array $params
+    * @param array $values
+    * @return string
+    */
+    function linkReverseBool($params, $values) {
+        $tag = PwForm::changeActiveLabelTag(
+            [
+            'controller' => $this->name,
+            'action' => 'reverse_boolean',
+            'id' => $values['id'],
+            'http_params' => ['model' => $params['model'], 'column' => $params['column']]
+            ], $values[$params['column']]);
+        return $tag;
+    }
+
     /**
      * check link active
      *
@@ -786,7 +805,7 @@ class Controller extends RuntimeException {
             error_log("IP: {$_SERVER['REMOTE_ADDR']}");
         }
 
-        $this->pw_prev_request_uri = PwSession::get('pw_prev_request_uri', null, $this->pw_multi_sid);
+        //$this->pw_prev_request_uri = PwSession::get('pw_prev_request_uri', null, $this->pw_multi_sid);
         $this->base = $this->baseUrl();
         $this->relativeBaseURL();
 
@@ -893,6 +912,56 @@ class Controller extends RuntimeException {
         return DB::model($model_name)->clearSession($this->pw_multi_sid);
     }
 
+
+    /**
+     * load session by Model
+     *
+     * @return void
+     */
+    function loadModelSession() {
+        if (is_array($this->session_by_models)) {
+            foreach ($this->session_by_models as $class_name) {
+                if (class_exists($class_name)) {
+                    $model = PwSession::getWithKey('app', DB::model($class_name)->entity_name);
+                    if (!$model->entity_name) {
+                        $model = DB::model($class_name)->all(true);
+                        $entity_name = $model->entity_name;
+                        PwSession::setWithKey('app', $entity_name, $model);
+                    }
+                    if ($model->entity_name) {
+                        $entity_name = $model->entity_name;
+                        $this->$entity_name = $model;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * session values by Model
+     *
+     * @return void
+     */
+    function sessionModel($model_name) {
+        if (class_exists($model_name)) {
+            $model = DB::model($model_name);
+            return PwSession::getWithKey('app', $model->entity_name);
+        }
+    }
+
+    /**
+     * session values by Model
+     *
+     * @return void
+     */
+    function sessionModelValue($model_name, $index) {
+        $model = $this->sessionModel($model_name);
+        if ($model->values) {
+            $value = $model->values[$index]; 
+            return $value;
+        }
+    }
+
     /**
      * load session values
      *
@@ -900,13 +969,13 @@ class Controller extends RuntimeException {
      * @return void
      */
     function modelForSession($model_name, $conditions = null) {
-        $instance = DB::model($model_name);
-        $instance->values = PwSession::getWithKey('app', $instance->entity_name);
-        if (!$instance->values) {
-            $instance->idIndex()->wheres($conditions)->all();
-            PwSession::setWithKey('app', $instance->entity_name, $instance->values);
+        $model = DB::model($model_name);
+        $model->values = PwSession::getWithKey('app', $model->entity_name);
+        if (!$model->values) {
+            $model->idIndex()->wheres($conditions)->all();
+            PwSession::setWithKey('app', $model->entity_name, $model->values);
         }
-        return $instance;
+        return $model;
     }
 
     /**
@@ -916,8 +985,8 @@ class Controller extends RuntimeException {
      * @return void
      */
     function clearModelForSession($model_name) {
-        $instance = DB::model($model_name);
-        PwSession::clearWithKey('app', $instance->entity_name);
+        $model = DB::model($model_name);
+        PwSession::clearWithKey('app', $model->entity_name);
     }
 
     /**
@@ -1026,6 +1095,7 @@ class Controller extends RuntimeException {
      */
     function before_action($action) {
         $this->loadrequestSession();
+        $this->loadModelSession();
         if ($this->name == $this->pw_admin_controller) $this->checkPwAdmin($action);
     } 
 
@@ -1039,13 +1109,13 @@ class Controller extends RuntimeException {
      * @return void
      */
     function after_action() {
-        $url = $_SERVER['REQUEST_URI'];
-        if (isset($_SERVER['HTTPS'])) {
-            $pw_prev_request_uri = "https://{$url}";
-        } else {
-            $pw_prev_request_uri = "http://{$url}";
-        }
-        PwSession::set('pw_prev_request_uri', $pw_prev_request_uri, $this->pw_multi_sid);
+        // $url = $_SERVER['REQUEST_URI'];
+        // if (isset($_SERVER['HTTPS'])) {
+        //     $pw_prev_request_uri = "https://{$url}";
+        // } else {
+        //     $pw_prev_request_uri = "http://{$url}";
+        // }
+        // PwSession::set('pw_prev_request_uri', $pw_prev_request_uri, $this->pw_multi_sid);
     } 
 
     /**
@@ -1239,6 +1309,7 @@ class Controller extends RuntimeException {
     * @return void
     */
     function loadRequestSession() {
+        if (!$this->session_request_columns) return;
         if ($this->session_request_columns) {
             foreach ($this->session_request_columns as $session_request_column) {
                 if ($this->name) {
@@ -1272,17 +1343,30 @@ class Controller extends RuntimeException {
         }
     }
 
+    /**
+     * reverse_boolean
+     *
+     * @return void
+     */
+    function reverse_boolean($redirect_params = null) {
+        $this->changeBoolean($this->pw_gets['model'], $this->pw_gets['column']);
+        if (!$redirect_params) $redirect_params = ['action' => 'list'];
+        if ($this->pw_gets['redirect_action']) $redirect_params = ['action' => $this->pw_gets['redirect_action']];
+        $this->redirectTo($redirect_params);
+    }
+
    /**
     * change boolean
     *
-    * @param string $model_name
+    * @param string $name
     * @param string $column
     * @param string $id_column
     * @return void
     */
-    function changeBoolean($model_name, $column, $id_column = 'id') {
-        if (isset($this->pw_params[$id_column])) {
-            DB::model($model_name)->reverseBool($this->pw_params[$id_column], $column);
+    function changeBoolean($name, $column, $id_column = 'id') {
+        $model_name = PwFile::phpClassName($name);
+        if (isset($this->pw_gets[$id_column])) {
+            DB::model($model_name)->reverseBool($this->pw_gets[$id_column], $column);
         }
     }
 
@@ -1336,7 +1420,17 @@ class Controller extends RuntimeException {
             exit;
         }
     }
-    
+
+    /**
+     * session values by Model
+     *
+     * @return void
+     */
+    function sessionValueByModel($class_name, $index) {
+        $values = $this->sessionValuesByModel($class_name);
+        if (is_array($values)) return $values[$index];
+    }
+
     /**
      * record value
      *
@@ -1359,6 +1453,19 @@ class Controller extends RuntimeException {
     function recordValues($csv_name) {
         $values = $this->csv_options[$csv_name];
         return $values;
+    }
+
+    /**
+     * record value
+     *
+     * @param  string $csv_name
+     * @param  string $key
+     * @return string
+     */
+    function recordKeys($csv_name) {
+        $values = $this->csv_options[$csv_name];
+        if ($values) $keys = array_keys($values);
+        return $keys;
     }
 
     /**
