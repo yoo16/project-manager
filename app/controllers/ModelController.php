@@ -134,7 +134,6 @@ class ModelController extends ProjectController {
         }
         if ($model->errors) {
             $this->flash['errors'] = $model->errors;
-            var_dump($model->errors);
             exit;
         } else {
             unset($this->session['posts']);

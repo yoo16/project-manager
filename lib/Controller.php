@@ -153,24 +153,10 @@ class Controller extends RuntimeException {
      * @return string
      */
     static function queryString($query = null) {
-        if (is_null($query)) {
-            $request = $_SERVER['REQUEST_URI'];
-            $query = $_SERVER['QUERY_STRING'];
-        }
+        if (is_null($query)) $query = $_SERVER['QUERY_STRING'];
         $query_url = parse_url($query);
         $values = explode('&', $query_url['path']);
-        if ($values[0]) {
-            $paths = explode('/', $values[0]);
-            if (count($paths) == 1) {
-                $params['controller'] = ROOT_CONTROLLER_NAME;
-                $params['action'] = $paths[0];
-            } else {
-                foreach ($paths as $key => $path) {
-                    $column = Controller::$routes[$key];
-                    if ($column && $path) $params[$column] = $path;
-                }
-            }
-        } 
+        $params = self::pathToParams($values[0]);
         if (isset($_REQUEST['id'])) $params['id'] = $_REQUEST['id'];
         return $params;
     }
@@ -1729,4 +1715,43 @@ class Controller extends RuntimeException {
         return $url;
     }
 
+    /**
+     * redirect for request
+     *
+     * @param array $params
+     * @return void
+     */
+    public function redirectForRequest($params = null) {
+        if ($_REQUEST['redirect']) $params = $this->pathTo($_REQUEST['redirect']);
+        if (!$params) return;
+        $this->redirectTo($params);
+    }
+
+    /**
+     * path to request params
+     *
+     * @param string $path
+     * @return array
+     */
+    public function pathTo($path) {
+        return self::pathToParams($path);
+    }
+
+    /**
+     * path to request params
+     *
+     * @param string $string
+     * @return array
+     */
+    static function pathToParams($path) {
+        if (!$path) return;
+        $request = explode('/', $path);
+        if (is_array($request)) {
+            $params = [];
+            foreach (self::$routes as $index => $key) {
+                if ($value = $request[$index]) $params[$key] = $value;
+            }
+            return $params;
+        }
+    }
 }
