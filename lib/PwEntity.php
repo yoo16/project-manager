@@ -147,6 +147,26 @@ class PwEntity {
     }
 
     /**
+     * reload session
+     * 
+     * @param  string $sid
+     * @param  string $session_key
+     * @return PwEntity
+     */
+    public function reloadSession($sid = 0, $session_key = null) {
+        if ($this->id) {
+            $model = $this->fetch($this->id);
+            if ($model->value) {
+                if ($session_key) {
+                    PwSession::setWithKey($session_key, $this->entity_name, $model, $sid);
+                } else {
+                    PwSession::set($this->entity_name, $model, $sid);
+                }
+            }
+        }
+    }
+
+    /**
      * load session
      * 
      * @param integer $sid
@@ -550,9 +570,9 @@ class PwEntity {
      * @param  object $value
      * @return string
      */
-    private function castArray($value) {
+    private function castArray($value, $is_array = true) {
         if (is_array($value)) return $value;
-        $val = json_decode($value, true);
+        $val = json_decode($value, $is_array);
         return $val;
     }
 
@@ -560,10 +580,31 @@ class PwEntity {
      * castJson
      * 
      * @param  object $value
-     * @return string
+     * @return array
      */
-    private function castJson($value) {
-        return json_decode($value);
+    private function castJson($value, $is_array = true) {
+        return json_decode($value, $is_array);
+    }
+
+    /**
+     * json to
+     * 
+     * @param  object $value
+     * @return array
+     */
+    public function jsonTo($column_name, $is_array = true) {
+        return json_decode($this->value[$column_name], $is_array);
+    }
+
+    /**
+     * json for key
+     * 
+     * @param  object $value
+     * @return mixed
+     */
+    public function jsonForKey($column_name, $key, $is_array = true) {
+        $values = $this->jsonTo($column_name, $is_array);
+        if ($values && $value = $values[$key]) return $value;
     }
 
     /**

@@ -8,6 +8,10 @@
 
 class PwDate {
 
+    public $datetime;
+    public $number;
+    public $string;
+    public $time;
     public $from_date;
     public $to_date;
     public $from_datetime;
@@ -25,23 +29,74 @@ class PwDate {
     }
 
     /**
+     * set from_at
+     * 
+     * TODO validate for format
+     *
+     * @param integer $number
+     */
+    function setNumber($number, $format = 'Y/m/d 00:00') {
+        $this->number = $number;
+        $this->string = PwDate::numberToString($this->number);
+        $this->time = strtotime($this->string);
+        $this->datetime = new Datetime($this->string);
+    }
+
+    /**
+     * set string
+     *
+     * @param string $string
+     */
+    function setString($string) {
+        $this->string = $string;
+        $this->time = strtotime($this->string);
+        $this->number = PwDate::stringToNumber($this->string);
+        $this->datetime = new Datetime($this->string);
+    }
+
+    /**
+     * set time
+     *
+     * @param string $time
+     */
+    function setTime($time, $format = 'Y/m/d 00:00') {
+        $this->time = $time;
+        $this->string = date($format, $this->time);
+        $this->number = PwDate::stringToNumber($this->string);
+        $this->datetime = new Datetime($this->string);
+    }
+
+    /**
+     * diff
+     *
+     * @param integer $value
+     * @param string $unit
+     * @return PwDate
+     */
+    function interval($value, $unit) {
+        $formatter = "{$value} {$unit}";
+        $time = strtotime($this->string, $formatter);
+
+        $interval = DateInterval::createFromDateString($formatter);
+        $diff_date = date_sub($this->datetime, $interval);
+        $string = date_format($diff_date, 'Y/m/d H:i');
+
+        $diff = new PwDate();
+        $diff->setString($string);
+        return $diff;
+    }
+
+    /**
      * init
      *
      * @return void
      */
     function init() {
+        $this->setString(date('Y/m/d 00:00'));
         $this->setFromAt(date('Y/m/d 00:00'));
         $this->setOneDay();
         $this->setStartAt(date('Y/m/d 00:00'));
         $this->setEndAt($this->to_at);
-    }
-
-    static function instance($from_at, $to_at)
-    {
-        $date = new PwDate();
-        $date->setToAt($to_at);
-        $date->setFromAt($from_at);
-        return $date;
     }
 
     /**
@@ -137,7 +192,7 @@ class PwDate {
         if (!$start_at) return;
         $this->start_at = $start_at;
         $this->start_datetime = strtotime($this->start_at);
-        $this->start_date = PwDate::datetimeToNumber($this->start_at);
+        $this->start_date = PwDate::stringToNumber($this->start_at);
     }
 
     /**
@@ -149,7 +204,7 @@ class PwDate {
         if (!$end_at) return;
         $this->end_at = $end_at;
         $this->end_datetime = strtotime($this->end_at);
-        $this->end_date = PwDate::datetimeToNumber($this->end_at);
+        $this->end_date = PwDate::stringToNumber($this->end_at);
     }
 
     /**
@@ -215,7 +270,7 @@ class PwDate {
     function setFromAt($from_at) {
         $this->from_at = $from_at;
         $this->from_datetime = strtotime($this->from_at);
-        $this->from_date = PwDate::datetimeToNumber($this->from_at);
+        $this->from_date = PwDate::stringToNumber($this->from_at);
     }
 
     /**
@@ -226,7 +281,7 @@ class PwDate {
     function setToAt($to_at) {
         $this->to_at = $to_at;
         $this->to_datetime = strtotime($this->to_at);
-        $this->to_date = PwDate::datetimeToNumber($this->to_at);
+        $this->to_date = PwDate::stringToNumber($this->to_at);
     }
 
     /**
@@ -236,7 +291,7 @@ class PwDate {
      */
     function setFromDate($from_date) {
         $this->from_date = $from_date;
-        $this->from_at = PwDate::numberToDatetime($this->from_date);
+        $this->from_at = PwDate::numberToString($this->from_date);
         $this->from_datetime = strtotime($this->from_at);
     }
 
@@ -247,7 +302,7 @@ class PwDate {
      */
     function setToDate($to_at) {
         $this->to_date = $to_at;
-        $this->to_at = PwDate::numberToDatetime($this->to_date);
+        $this->to_at = PwDate::numberToString($this->to_date);
         $this->to_datetime = strtotime($this->to_at);
     }
 
@@ -376,7 +431,7 @@ class PwDate {
     function setFromDatetime($from_datetime) {
         $this->from_datetime = $from_datetime;
         $this->from_at = date('Y/m/d H:i', $from_datetime);
-        $this->from_date = PwDate::datetimeToNumber($this->from_at);
+        $this->from_date = PwDate::stringToNumber($this->from_at);
     }
 
     /**
@@ -387,7 +442,7 @@ class PwDate {
     function setToDatetime($to_datetime) {
         $this->to_datetime = $to_datetime;
         $this->to_at = date('Y/m/d H:i', $to_datetime);
-        $this->to_date = PwDate::datetimeToNumber($this->to_at);
+        $this->to_date = PwDate::stringToNumber($this->to_at);
     }
 
     /**
@@ -401,37 +456,39 @@ class PwDate {
             $interval_string = "-{$interval}{$unit}";
             $this->prev_datetime = strtotime($interval_string, $this->from_datetime);
             $this->prev_at = date('Y/m/d H:i', $this->prev_datetime);
-            $this->prev_date = PwDate::datetimeToNumber($this->prev_at);
+            $this->prev_date = PwDate::stringToNumber($this->prev_at);
 
             $interval_string = "+{$interval}{$unit}";
             $this->next_datetime = strtotime($interval_string, $this->from_datetime);
             $this->next_at = date('Y/m/d H:i', $this->next_datetime);
-            $this->next_date = PwDate::datetimeToNumber($this->next_at);
+            $this->next_date = PwDate::stringToNumber($this->next_at);
         }
     }
 
     /**
-     * interval fro to_date
+     * interval for datetimes
      *
      * @param integer $interval
      * @param string $unit
      * @param integer $limit_time
      */
     function calculateDatetimes($interval, $unit, $limit_time = null) {
+        if (!is_numeric($interval)) return;
+        if (!$unit) return;
         if ($this->from_datetime) {
-            $this->datetimes = null;
+            $this->datetimes = [];
             $interval_string = "+{$interval}{$unit}";
-
             $datetime = $this->from_datetime;
-
             $now = time();
             while ($datetime < $this->to_datetime) {
                 if ($limit_time && $datetime > $limit_time) {
-
+                    break;
                 } else {
                     $this->datetimes[] = $datetime;
                     $datetime = strtotime($interval_string, $datetime);
                 }
+                $i++;
+                if ($i > 100000) break;
             }
         }
     }
@@ -457,7 +514,7 @@ class PwDate {
     static function intervalDatetime($date_at, $interval, $unit = 'day', $locale = LOCALE) {
         if ($date_at && is_numeric($interval)) {
             $interval = "{$interval} {$unit}";
-            $format = self::datetimeFormatForLang($locale);
+            $format = self::formatForLang($locale);
             return date($format, strtotime($interval, strtotime($date_at)));
         }
     }
@@ -469,7 +526,7 @@ class PwDate {
      * @param integer $interval
      * @return string
      **/
-    static function datetimeFormatForLang($lang = 'ja', $has_time = true) {
+    static function formatForLang($lang = 'ja', $has_time = true) {
         if ($has_time) $time = ' H:i';
         $formats['ja'] = 'Y/m/d';
         $formats['en'] = 'd M Y';
@@ -508,14 +565,12 @@ class PwDate {
     * @param string $number
     * @return string
     */
-    static function numberToDatetime($number) {
+    static function numberToString($number, $format = 'Y/m/d H:i') {
         if ($number) {
             $pattern = "/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})$/";
             $replacement = "\$1-\$2-\$3 \$4:\$5";
             $string = preg_replace($pattern, $replacement, $number);
-
-            $time = strtotime($string);
-            $date = date("Y/m/d H:i", $time);
+            $date = date($format, strtotime($string));
             return $date;
         }
     }
@@ -524,16 +579,20 @@ class PwDate {
     * datetime to number
     *
     * @param string $value
+    * @param string $format
     * @return string
     */
-    static function datetimeToNumber($string) {
+    static function stringToNumber($string, $format = 'YmdHi') {
         if ($string) {
-            return date('YmdHi', strtotime($string));
+            return date($format, strtotime($string));
         }
     }
 
     /**
     * graph label format
+    *
+    * TODO function name
+    * TODO format lang list
     *
     * @param int $datetime
     * @return string
@@ -643,21 +702,4 @@ class PwDate {
         }
     }
 
-    /**
-     * number to string
-     *
-     * @param string $number
-     * @return string
-     **/
-    static function numberToDate($number) {
-        if ($number) {
-            $pattern = "/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})$/";
-            $replacement = "\$1-\$2-\$3 \$4:\$5";
-            $date_str = preg_replace($pattern, $replacement, $number);
-
-            $time = strtotime($date_str);    
-            $date = date("Y/m/d H:i", $time);
-            return $date;
-        }
-    }
 }

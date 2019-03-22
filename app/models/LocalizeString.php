@@ -45,7 +45,7 @@ class LocalizeString extends _LocalizeString {
      */
     function importByModel($model) {
         if (!$model->value) return;
-        $attribute = DB::model('Attribute')->where("model_id = {$model->value['id']}")->all();
+        $attribute = $model->relation('Attribute')->all();
 
         $model_name = strtoupper($model->value['name']);
         $posts['name'] = "LABEL_{$model_name}";
@@ -55,8 +55,8 @@ class LocalizeString extends _LocalizeString {
         $posts['label'] = json_encode($label);
 
         $localize_string = DB::model('LocalizeString')
-                                    ->where("name = '{$posts['name']}'")
-                                    ->where("project_id = '{$posts['project_id']}'")
+                                    ->where('name', $posts['name'])
+                                    ->where('project_id', $posts['project_id'])
                                     ->one();
         if ($localize_string->value['id']) {
             $localize_string->update($posts);
@@ -71,14 +71,15 @@ class LocalizeString extends _LocalizeString {
                 if (mb_substr($attribute->value['name'], -3) != '_id') {
                     $label['ja'] = $attribute->value['label'];
 
+                    $posts = null;
                     $attribute_name = strtoupper($attribute->value['name']);
                     $posts['name'] = "LABEL_{$model_name}_{$attribute_name}";
                     $posts['lang'] = 'ja';
                     $posts['project_id'] = $model->value['project_id'];
                     $posts['label'] = json_encode($label);
                     $localize_string = DB::model('LocalizeString')
-                                                ->where("name = '{$posts['name']}'")
-                                                ->where("project_id = '{$posts['project_id']}'")
+                                                ->where('name', $posts['name'])
+                                                ->where('project_id', $posts['project_id'])
                                                 ->one();
                     if ($localize_string->value['id']) {
                         $localize_string->update($posts);
@@ -88,6 +89,5 @@ class LocalizeString extends _LocalizeString {
                 }
             }
         }
-
     }
 }

@@ -159,18 +159,7 @@ class Controller extends RuntimeException {
         }
         $query_url = parse_url($query);
         $values = explode('&', $query_url['path']);
-        if ($values[0]) {
-            $paths = explode('/', $values[0]);
-            if (count($paths) == 1) {
-                $params['controller'] = ROOT_CONTROLLER_NAME;
-                $params['action'] = $paths[0];
-            } else {
-                foreach ($paths as $key => $path) {
-                    $column = Controller::$routes[$key];
-                    if ($column && $path) $params[$column] = $path;
-                }
-            }
-        } 
+        $params = self::pathToParam($values[0]);
         if (isset($_REQUEST['id'])) $params['id'] = $_REQUEST['id'];
         return $params;
     }
@@ -1727,6 +1716,31 @@ class Controller extends RuntimeException {
         $url = self::imageBaseUrl($dir);
         $url = "{$url}{$file_name}";
         return $url;
+    }
+
+    /**
+     * url path to params
+     *
+     * @return array
+     */
+    static function pathToParam($path) {
+        if (!$path) return;
+        $params = [];
+        $paths = explode('/', $path);
+        foreach (self::$routes as $index => $route) {
+            if (isset($paths[$index])) $params[$route] = $paths[$index];
+        }
+        return $params;
+    }
+
+    /**
+     * rereirect params
+     *
+     * @return array
+     */
+    public function redirectParams() {
+        $params = self::pathToParam($_REQUEST['redirect']);
+        return $params;
     }
 
 }

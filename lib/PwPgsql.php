@@ -1932,10 +1932,48 @@ class PwPgsql extends PwEntity
     }
 
     /**
+     * where true
+     * 
+     * @param  string $column
+     * @return PwPgsql
+     */
+    public function whereTrue($column)
+    {
+        if (!$column) return $this;
+        $this->where($column, true);
+        return $this;
+    }
+
+    /**
+     * where true
+     * 
+     * @param  string $column
+     * @return PwPgsql
+     */
+    public function whereFalse($column)
+    {
+        if (!$column) return $this;
+        $this->where($column, false);
+        return $this;
+    }
+
+    /**
+     * where true
+     * 
+     * @param  string $column
+     * @return PwPgsql
+     */
+    public function whereNotTrue($column)
+    {
+        if (!$column) return $this;
+        $this->where("{$column} IS NOT TRUE");
+        return $this;
+    }
+
+    /**
      * where null
      * 
      * @param  string $column
-     * @param  array $values
      * @return PwPgsql
      */
     public function whereNull($column)

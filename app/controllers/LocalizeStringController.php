@@ -67,16 +67,11 @@ class LocalizeStringController extends ProjectController {
             $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
         }
 
-        if ($_REQUEST['model_id']) {
-            $model = DB::model('Model')->fetch($_REQUEST['model_id']);
-            LocalizeString::importByModel($model, $this->project);
-        } else {
-            $model = $this->project->hasMany('Model');
-            LocalizeString::importsByModel($model, $this->project);
-        }
+        $model = DB::model('Model')->fetch($_REQUEST['model_id']);
+        LocalizeString::importByModel($model, $this->project);
 
         if ($_REQUEST['redirect']) {
-            $this->redirectTo(['action' => $_REQUEST['redirect']]);
+            $this->redirectTo($this->redirectParams());
         } else {
             $this->redirectTo(['action' => 'list']);
         }
