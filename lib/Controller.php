@@ -153,10 +153,7 @@ class Controller extends RuntimeException {
      * @return string
      */
     static function queryString($query = null) {
-        if (is_null($query)) {
-            $request = $_SERVER['REQUEST_URI'];
-            $query = $_SERVER['QUERY_STRING'];
-        }
+        if (is_null($query)) $query = $_SERVER['QUERY_STRING'];
         $query_url = parse_url($query);
         $values = explode('&', $query_url['path']);
         $params = self::pathToParam($values[0]);

@@ -107,7 +107,6 @@ class ViewController extends ProjectController {
 
 
         if ($view->errors) {
-            var_dump($view->errors);
             exit;      
         }
         $this->redirectTo(['action' => 'list']);;

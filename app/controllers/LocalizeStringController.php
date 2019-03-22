@@ -63,9 +63,9 @@ class LocalizeStringController extends ProjectController {
     * @return void
     */
     function action_import_from_model() {
-        if ($_REQUEST['user_project_setting_id']) {
-            $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
-        }
+        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+        $model = DB::model('Model')->where('id', $_REQUEST['model_id'])->all();
+        DB::model('LocalizeString')->importsByModel($model, $this->project);
 
         $model = DB::model('Model')->fetch($_REQUEST['model_id']);
         LocalizeString::importByModel($model, $this->project);

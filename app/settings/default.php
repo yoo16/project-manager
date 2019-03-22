@@ -12,7 +12,7 @@ define('PROJECT_DIR', BASE_DIR);
 define('TMP_DIR', BASE_DIR . 'tmp/');
 define('DB_DIR', BASE_DIR.'db/');
 
-define('DEBUG', false);
+define('DEBUG', true);
 define('SQL_LOG', false);
 
 define('MAIL_SETTING_FILE', DB_DIR.'mail/default.csv');
