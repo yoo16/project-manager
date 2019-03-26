@@ -291,7 +291,7 @@ class PwFtp
         $this->is_success_download = false;
         if (!$this->is_login) return $this;
         ftp_pasv($this->connect, true);
-        $this->is_success_download = ftp_get($this->connect, $file_path, $remote_path, $upload_mode);
+        $this->is_success_download = @ftp_get($this->connect, $file_path, $remote_path, $upload_mode);
 
         $this->changeMod($file_path);
         return $this;

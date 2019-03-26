@@ -2,6 +2,8 @@
 /**
  * PwDate 
  *
+ * TODO: use DateTime in all
+ * 
  * @author Yohei Yoshikawa
  * @create   
  */
@@ -31,11 +33,25 @@ class PwDate {
     /**
      * set from_at
      * 
+     * @param integer $number
+     * @param string $unit
+     */
+    function ago($number, $unit)
+    {
+        $number = -$number;
+        $formatter = "{$number}{$unit}";
+        $time = strtotime($formatter, strtotime($this->string));
+        $this->setTime($time);
+    }
+
+    /**
+     * set from_at
+     * 
      * TODO validate for format
      *
      * @param integer $number
      */
-    function setNumber($number, $format = 'Y/m/d 00:00') {
+    function setNumber($number, $format = 'Y/m/d H:i') {
         $this->number = $number;
         $this->string = PwDate::numberToString($this->number);
         $this->time = strtotime($this->string);
@@ -59,7 +75,7 @@ class PwDate {
      *
      * @param string $time
      */
-    function setTime($time, $format = 'Y/m/d 00:00') {
+    function setTime($time, $format = 'Y/m/d H:i') {
         $this->time = $time;
         $this->string = date($format, $this->time);
         $this->number = PwDate::stringToNumber($this->string);
@@ -74,15 +90,15 @@ class PwDate {
      * @return PwDate
      */
     function interval($value, $unit) {
-        $formatter = "{$value} {$unit}";
-        $time = strtotime($this->string, $formatter);
+        $formatter = "{$value}{$unit}";
+        $time = strtotime($formatter, strtotime($this->string));
 
-        $interval = DateInterval::createFromDateString($formatter);
-        $diff_date = date_sub($this->datetime, $interval);
-        $string = date_format($diff_date, 'Y/m/d H:i');
-
+        //$interval = DateInterval::createFromDateString($formatter);
+        //$diff_date = date_sub($this->datetime, $interval);
+        //$string = date_format($diff_date, 'Y/m/d H:i');
+        //$diff->setString($string);
         $diff = new PwDate();
-        $diff->setString($string);
+        $diff->setTime($time);
         return $diff;
     }
 

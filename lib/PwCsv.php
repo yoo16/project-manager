@@ -147,7 +147,7 @@ class PwCsv {
     }
     
     /**
-     * 配列からCSV行に変換（カラム用）
+     * array to csv for columns
      *
      * @param array $values
      * @param array $columns
@@ -162,7 +162,7 @@ class PwCsv {
         }
         if(is_array($values)) {
             foreach ($values as $key => $row) {
-                $row_array = null;
+                $row_array = [];
                 foreach($keys as $column) { 
                     $value = $row[$column];
                     if ($csv_callbacks && $csv_callbacks[$column]) {
@@ -188,11 +188,12 @@ class PwCsv {
      **/
     static function arrayToCsv($values) {
         if (is_array($values)) {
+            $csv = '';
             $columns = array_keys($values[0]);
             $csv.= implode(',', $columns);
             $csv.= "\n";
             foreach ($values as $key => $value) {
-                $csv_values = null;
+                $csv_values = [];
                 foreach ($value as $column => $_value) {
                     if (self::$from_encode && self::$to_encode) {
                         $_value = mb_convert_encoding($_value, self::$to_encode, self::$from_encode);
@@ -467,7 +468,7 @@ class PwCsv {
 
         if(is_array($values)) {
             foreach ($values as $key => $row) {
-                $row_array = null;
+                $row_array = [];
                 foreach($this->columns as $column_key => $column) { 
                     $row_array[] = "\"{$row[$column]}\"";
                 }
