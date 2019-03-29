@@ -276,10 +276,14 @@ class PwTag {
     static function a($params) {
         $params = PwTag::checkActive($params);
         $attribute = PwTag::attribute($params);
+        $label = '';
+        $icon_tag = '';
         if (isset($params['icon_name'])) $icon_tag = PwTag::iconTag($params['icon_name']);
-        if (!$params['label'] && !$params['icon_name']) $params['label'] = 'Link';
-        if (is_array($params['label'])) $params['label'] = implode(' ', $params['label']);
-        $tag = "<a {$attribute}>{$icon_tag}{$params['label']}</a>";
+        if (!isset($params['label']) && !isset($params['icon_name'])) $params['label'] = 'Link';
+        if (isset($params['label']) && is_array($params['label'])) $params['label'] = implode(' ', $params['label']);
+
+        if (isset($params['label'])) $label = $params['label'];
+        $tag = "<a {$attribute}>{$icon_tag}{$label}</a>";
         return $tag;
     }
 
@@ -290,10 +294,8 @@ class PwTag {
      * @return string
      */
     static function checkActive($params) {
-        if (!$params['is_use_selected']) return $params;
-        if ($params['is_selected'] || 
-            ($params['selected_key'] && $params['selected_key'] == $params['selected_value'])
-           ) $params['class'].= ' active';
+        if (isset($params['is_use_selected']) && !$params['is_use_selected']) return $params;
+        if ($params['is_selected'] && ($params['selected_key'] == $params['selected_value'])) $params['class'].= ' active';
         return $params;
     }
 
@@ -369,9 +371,8 @@ class PwTag {
      * @return string
      */
     static function classActive($key, $selected = null) {
-        if ($key == $selected) {
-            $tag.=' active';
-        }
+        $tag = '';
+        if ($key == $selected) $tag.=' active';
         return $tag;
     }
 
@@ -382,6 +383,7 @@ class PwTag {
      * @return string
      */
     static function pwProjectName($name) {
+        $tag = '';
         $tag.= '<script type="text/javascript">';
         $tag.= "var pw_project_name = '{$name}'";
         $tag.= '</script>';
@@ -396,6 +398,7 @@ class PwTag {
      * @return string
      */
     static function actionActive($controller_name, $action_name) {
+        $tag = '';
         $controller = $GLOBALS['controller'];
         if (!$controller) return;
         if ($controller->pw_controller == $controller_name && $controller->pw_action == $action_name) {

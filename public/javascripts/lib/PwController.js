@@ -464,7 +464,7 @@ var PwController = function () {
         var delete_id = PwNode.byElement(this).attr('delete_id');
         if (!delete_id) return;
         PwNode.id('from_delete_id').setValue(delete_id);
-        if (title = PwNode.byElement(this).attr('title')) PwNode.id('from-delete-title').html(title);
+        //if (title = PwNode.byElement(this).attr('title')) PwNode.id('from-delete-title').html(title);
         $('.delete-window').modal();
     });
 

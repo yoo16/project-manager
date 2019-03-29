@@ -47,8 +47,6 @@ class PwForm {
         if (!isset($params['class'])) $params['class'] = 'form-control';
         $tag = self::selectOptions($params, $selected);
         if ($tag) $tag = self::selectTag($tag, $params);
-
-        $controller = $GLOBALS['controller'];
         return $tag;
     }
 
@@ -399,6 +397,8 @@ class PwForm {
                         $instance->where($params['where'][0], $params['where'][1], $params['where'][2]);
                     } else if (isset($params['where'][1])) {
                         $instance->where($params['where'][0], $params['where'][1]);
+                    } else {
+                        return;
                     }
                 } else {
                     $instance->where($params['where']);
@@ -413,7 +413,7 @@ class PwForm {
             $values = $params['values'];
         }
 
-        if ($values && is_array($params['filter_values']) && $params['value']) {
+        if (isset($params['filter_values']) && $values && is_array($params['filter_values']) && $params['value']) {
             foreach ($values as $index => $value) {
                 $_value = $value[$params['value']];
                 if (in_array($_value, $params['filter_values'])) {
@@ -432,6 +432,7 @@ class PwForm {
      * @return string
      */
     static function selectOptions($params, $selected = null) {
+        $label = '';
         $values = self::values($params);
         if (!is_array($values)) return;
 
@@ -440,7 +441,7 @@ class PwForm {
         $tag = self::unselectOption($params);
 
         foreach ($values as $key => $value) {
-            if ($params['is_key_value_array']) {
+            if (isset($params['is_key_value_array']) && $params['is_key_value_array']) {
                 $attributes['value'] = $key;
                 $label = $value;
             } else {
@@ -448,7 +449,7 @@ class PwForm {
                 $label = self::convertLabel($value, $params);
             }
             $attributes['selected'] = self::selectedTag($attributes['value'], $selected);
-            if ($params['label_unit']) $label.= $params['label_unit'];
+            if (isset($params['label_unit'])) $label.= $params['label_unit'];
             $tag.= self::optionTag($label, $attributes);
         }
         return $tag;
@@ -567,7 +568,7 @@ class PwForm {
             foreach ($label_keys as $label_key) {
                 $labels[] = $values[$label_key];
             }
-            $label_separate = ($params['label_separate']) ? $params['label_separate'] : ' ';
+            $label_separate = (isset($params['label_separate'])) ? $params['label_separate'] : ' ';
             $label = implode($label_separate, $labels);
         } else {
             $label = $values[$label_keys];

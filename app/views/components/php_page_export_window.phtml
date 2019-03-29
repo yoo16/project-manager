@@ -114,7 +114,12 @@
 
         </table>
         <? else: ?>
-        <?= PwForm::linkButton(['controller' => 'project', 'action' => 'export_list'], LABEL_EXPORT.LABEL_SETTING, $this->project->value['id']) ?>
+        <?= $this->linkTo(
+          ['controller' => 'project', 'action' => 'export_list', 'id' => $this->project->value['id']],
+          [
+          'label' => LABEL_EXPORT.LABEL_SETTING
+          ]
+          ) ?>
         <? endif ?>
 
       </div>

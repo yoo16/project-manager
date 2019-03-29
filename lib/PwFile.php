@@ -839,6 +839,7 @@ class PwFile {
      * @return void
      */
     static function phpClassName($name) {
+        $class_name = '';
         $names = explode('_', $name);
         if (is_array($names)) {
             foreach ($names as $key => $value) {

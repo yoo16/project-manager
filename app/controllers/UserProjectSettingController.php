@@ -73,11 +73,7 @@ class UserProjectSettingController extends AppController {
     * @return void
     */
     function action_edit() {
-        $this->checkEdit();
-
-        $this->user_project_setting = DB::model('UserProjectSetting')
-                    ->fetch($this->pw_params['id'])
-                    ->takeValues($this->pw_posts['user_project_setting']);
+        $this->user_project_setting = DB::model('UserProjectSetting')->edit_page();
     }
 
    /**

@@ -27,6 +27,7 @@ class PwEntity {
     public $session = null;
     public $values_index_column = null;
     public $values_index_column_type = null;
+    public $child_relations = [];
 
     public static $except_columns = ['id', 'created_at', 'updated_at'];
     public static $app_columns = ['id', 'created_at', 'updated_at', 'sort_order', 'old_db', 'old_host', 'old_id'];
@@ -817,8 +818,8 @@ class PwEntity {
         $params['action'] = 'edit';
         $params['id'] = $value['id'];
 
-        if (!$http_params['label']) $http_params['label'] = LABEL_EDIT;
-        if (!$http_params['class']) $http_params['class'] = 'btn btn-outline-primary';
+        if (!isset($http_params['label'])) $http_params['label'] = LABEL_EDIT;
+        if (!isset($http_params['class'])) $http_params['class'] = 'btn btn-outline-primary';
 
         $tag = $controller->linkTo($params, $http_params);
         return $tag;

@@ -10,7 +10,7 @@ require_once "PwSetting.php";
 PwSetting::load();
 Controller::loadLib();
 //TODO use $_REQUEST ?
-if ($lang) PwLocalize::loadLocalizeFile($lang);
+if (isset($lang)) PwLocalize::loadLocalizeFile($lang);
 PwLoader::autoloadModel();
 PwSetting::loadApplication();
 
@@ -41,6 +41,9 @@ class Controller extends RuntimeException {
     public $pw_login_controller = 'login';
     public $is_force_get_update = false;
     public $session_by_models = null;
+    public $group_name;
+    public $pw_multi_sid = null;
+    public $view_dir = '';
 
     static $libs = [
         'PwHelper',
@@ -534,6 +537,7 @@ class Controller extends RuntimeException {
      * @return string
      */
     function linkJs($params = null) {
+        if (!isset($params['is_use_selected'])) return;
         if ($params['is_use_selected'] && $params['controller']) $params['class'].= PwForm::linkActive($params['controller'], $this->name);
         unset($params['is_use_selected']);
 
@@ -598,16 +602,16 @@ class Controller extends RuntimeException {
      */
     function checkLinkActive($params, $html_params) {
         if (!$html_params['is_use_selected']) return;
-        if ($html_params['selected_key']) {
+        if (isset($html_params['selected_key'])) {
             return ($html_params['selected_key'] == $html_params['selected_value']);
         }
-        if (($params['controller'] == $this->name)) return true;  
+        if (isset($params['controller']) && ($params['controller'] == $this->name)) return true;  
 
-        if ($html_params['menu_group'] && $this->menu_group) {
+        if (isset($html_params['menu_group']) && $this->menu_group) {
             return ($html_params['menu_group'] == $this->menu_group);
         }
 
-        if ($html_params['menu_groups'] && $this->menu_groups) {
+        if (isset($html_params['menu_groups']) && $this->menu_groups) {
             return (in_array($html_params['menu_groups'], $this->menu_groups));
         }
     }
