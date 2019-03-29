@@ -537,7 +537,6 @@ class Controller extends RuntimeException {
      * @return string
      */
     function linkJs($params = null) {
-        if (!isset($params['is_use_selected'])) return;
         if ($params['is_use_selected'] && $params['controller']) $params['class'].= PwForm::linkActive($params['controller'], $this->name);
         unset($params['is_use_selected']);
 
