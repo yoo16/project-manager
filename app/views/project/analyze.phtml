@@ -1,0 +1,38 @@
+<? include('_header.phtml') ?>
+
+<h2 class="h2">DB</h2>
+<table class="table table-auto">
+  <tr>
+    <th>DB Host</th>
+    <td><?= $this->pgsql->host ?></td>
+  </tr>
+
+  <tr>
+    <th>DB Name</th>
+    <td><?= $this->pgsql->dbname ?></td>
+  </tr>
+
+  <tr>
+    <th>Table count</th>
+    <td><?= count($this->tables) ?></td>
+  </tr>
+
+  <tr>
+    <th>Attribute count</th>
+    <td><?= count($this->attributes) ?></td>
+  </tr>
+
+</table>
+
+<h2 class="h2">File</h2>
+<table class="table table-auto">
+  <? foreach ($this->documents as $type => $documents): ?>
+  <tr>
+    <th><?= $type ?></th>
+    <td>
+      <?= count($this->documents[$type]) ?>
+    </td>
+  </tr>
+  <? endforeach ?>
+
+</table>

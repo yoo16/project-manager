@@ -3457,7 +3457,6 @@ class PwPgsql extends PwEntity
         return $values;
     }
 
-
     /**
      * pgFields
      * 

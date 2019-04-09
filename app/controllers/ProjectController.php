@@ -29,7 +29,7 @@ class ProjectController extends AppController
             }
         }
 
-        $this->project = DB::model('Project')->requestSession();
+        $this->project = $this->model('Project');
         if ($this->project->value) {
             $this->database = DB::model('Database')->fetch($this->project->value['database_id']);
             $this->user_project_setting = $this->project->hasMany('UserProjectSetting');
@@ -594,4 +594,76 @@ class ProjectController extends AppController
         $this->updateSort('Project');
     }
 
+
+    function analyze()
+    {
+        $this->database = $this->project->belongsTo('Database');
+        $this->pgsql = new PwPgsql();
+        $this->pgsql->setDBName($this->database->value['name']);
+        $this->pgsql->setDBHost($this->database->value['hostname']);
+
+        $this->tables = $this->pgsql->pgTables();
+        $this->attributes = $this->pgsql->pgAttributes();
+
+        $this->user_project_setting = $this->project->relation('UserProjectSetting');
+        $this->user_project_setting->all();
+        if (count($this->user_project_setting->vlaues) == 0) $this->user_project_setting->value = $this->user_project_setting->values[0];
+
+        if ($this->user_project_setting->value) {
+            if (file_exists($this->user_project_setting->value['project_path'])) {
+                $project_path = $this->user_project_setting->value['project_path'];
+
+                //php controller
+                $app_path = "{$project_path}app/models/";
+                $this->project->getDocuments($app_path, 'model', 'php');
+
+                //php model
+                $app_path = "{$project_path}app/controllers/";
+                $this->project->getDocuments($app_path, 'controller', 'php');
+
+                //php views
+                $app_path = "{$project_path}app/views/";
+                $this->project->getDocuments($app_path, 'view', 'phtml');
+
+                //php lib
+                $app_path = "{$project_path}lib/";
+                $this->project->getDocuments($app_path, 'lib', 'php');
+
+                //php localize
+                $app_path = "{$project_path}app/localize/";
+                $this->project->getDocuments($app_path, 'localize', 'php');
+
+                //php helper
+                $app_path = "{$project_path}app/helper/";
+                $this->project->getDocuments($app_path, 'helper', 'php');
+
+                //php setting
+                $app_path = "{$project_path}app/settings/";
+                $this->project->getDocuments($app_path, 'setting', 'php');
+
+                //js controller
+                $app_path = "{$project_path}public/javascripts/controllers/";
+                $this->project->getDocuments($app_path, 'js-controller', 'js');
+
+                //js lib
+                $app_path = "{$project_path}public/javascripts/lib/";
+                $this->project->getDocuments($app_path, 'js-lib', 'js');
+
+                //sass
+                $app_path = "{$project_path}public/sass/";
+                $this->project->getDocuments($app_path, 'sass', 'scss');
+
+                //csv
+                $app_path = "{$project_path}db/";
+                $this->project->getDocuments($app_path, 'db', 'csv');
+
+                //sql
+                $app_path = "{$project_path}db/";
+                $this->project->getDocuments($app_path, 'sql', 'sql');
+
+                $this->documents = $this->project->documents;
+            }
+        }
+    }
+    
 }

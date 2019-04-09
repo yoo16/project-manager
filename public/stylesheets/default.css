@@ -1,5 +1,6 @@
 @charset "UTF-8";
 body {
+  margin-top: 60px;
   font-family: "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", Arial, sans-serif;
 }
 
@@ -65,6 +66,10 @@ select.form-control:not([size]):not([multiple]) {
 
 .table.table-form {
   table-layout: fixed;
+}
+
+.table.table-auto {
+  width: auto;
 }
 
 .table td,

@@ -8,6 +8,7 @@ tmp
 .DS_Store
 .DS_Store
 .phpintel
+.vscode/
 composer.json
 db/records/db_hosts_debian8.csv
 script/upload_git_kona

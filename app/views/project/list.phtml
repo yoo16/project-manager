@@ -18,6 +18,7 @@
         <th>Name</th>
         <th>DB</th>
         <th>&nbsp;</th>
+        <th>&nbsp;</th>
       </tr>
     </thead>
 
@@ -42,6 +43,14 @@
       <td>
         <?= $this->linkTo(['action' => 'export_list', 'id' => $values['id']],
           ['label' => LABEL_EXPORT.LABEL_SETTING]
+        ) ?>
+      </td>
+      <td>
+        <?= $this->linkTo(['action' => 'analyze'],
+        [
+        'http_params' => ['project_id' => $values['id']],
+        'label' => analyze
+        ]
         ) ?>
       </td>
     </tr>

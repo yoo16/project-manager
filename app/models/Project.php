@@ -388,4 +388,60 @@ class Project extends _Project {
         }
     }
 
+    /**
+     * function of getting documents
+     *
+     * @param string $path directory
+     * @return array
+     */
+    public function getDocuments($path, $type, $ext, $is_analyze = false) {
+        if (!$path) return;
+        if (!$type) return;
+        if (!$ext) return;
+        if (!file_exists($path)) return;
+        $dir = opendir($path);
+
+        //TODO globe?
+        while ($file_name = readdir($dir)) {
+            $is_except = in_array($file_name, $this->except_dirs);
+            if ($file_name == '.' || $file_name == '..' || $is_except) {
+
+            } else {
+                $_path = $path.$file_name;
+
+                if (is_dir($_path)) {
+                    $_path.= '/';
+                    $this->getDocuments($_path, $type, $ext, $is_analyze);
+                } else {
+                    $pattern = "/{$ext}$/";
+                    if (preg_match($pattern, $file_name)) {
+                        $file['file_name'] = $file_name;
+                        $file['file_path'] = $_path;
+                        $file['base_path'] = $path;
+
+                        if (is_dir($path)) {
+                            $dir_elements = explode('/', $path);
+                            $element_index = count($dir_elements) - 2;
+                            $file['dir'] = $dir_elements[$element_index];
+                        }
+
+                        if ($is_analyze) {
+                            if ($this->do_analyze[$type]) {
+                                $file['documents'] = $this->analyzeFile($_path);
+                            } else {
+                                $file['documents'] = $this->_loadFile($_path);
+                            }
+                        }
+
+                        if (is_file($_path)) {
+                            $this->total_file_count++;
+                            $this->documents[$type][] = $file;
+                        }
+                    }
+                }
+            }
+        }
+        return $this->documents;
+    }
+
 }
