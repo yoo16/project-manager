@@ -1331,15 +1331,15 @@ class PwPgsql extends PwEntity
         return $this;
     }
 
-    //TODO GROUP BY
     /**
      * count
+     * 
+     * TODO GROUP BY
      * 
      * @return integer
      **/
     public function count($column = null)
     {
-        //TODO GROUP BY
         $sql = $this->selectCountSql($column);
         $count = $this->fetchResult($sql);
         if (is_null($count)) $count = 0;
@@ -1551,6 +1551,22 @@ class PwPgsql extends PwEntity
         $sql = $this->updateSql();
         if (!$sql) return $this;
 
+        $result = $this->query($sql);
+        if ($result === false) $this->addError('save', 'error');
+        if (!$this->errors) PwSession::clear('pw_posts');
+        return $this;
+    }
+
+    /**
+     * update all
+     * 
+     * @param  array $posts
+     * @return PwPgsql
+     */
+    public function updateAll($posts)
+    {
+        $sql = $this->updateAllSql($posts);
+        if (!$sql) return $this;
         $result = $this->query($sql);
         if ($result === false) $this->addError('save', 'error');
         if (!$this->errors) PwSession::clear('pw_posts');
@@ -1935,6 +1951,19 @@ class PwPgsql extends PwEntity
     public function initOR()
     {
         $this->or_wheres = [];
+    }
+
+    /**
+     * where true
+     * 
+     * @param  string $column
+     * @return PwPgsql
+     */
+    public function whereNot($column, $value)
+    {
+        if (!$column) return $this;
+        $this->where("{$column} != '{$value}'");
+        return $this;
     }
 
     /**
@@ -2964,6 +2993,31 @@ class PwPgsql extends PwEntity
             if (!$this->conditions) $this->conditions[] = "{$this->id_column} = {$this->id}";
             $condition = $this->sqlConditions($this->conditions);
             $sql = "UPDATE {$this->table_name} SET {$set_value} WHERE {$condition};";
+        }
+        return $sql;
+    }
+
+
+    /**
+     * updateSql
+     * 
+     * @return string
+     */
+    private function updateAllSql($posts)
+    {
+        $sql = '';
+        foreach ($posts as $key => $value) {
+            if (isset($this->columns[$key])) {
+                $value = $this->sqlValue($value);
+                $set_values[] = "{$key} = {$value}";
+            }
+        }
+        if (isset($this->columns['updated_at'])) $set_values[] = "updated_at = current_timestamp";
+        if ($set_values) $set_value = implode(',', $set_values);
+        if ($set_value) {
+            $sql = "UPDATE {$this->table_name} SET {$set_value}";
+            if ($condition = $this->sqlConditions($this->conditions)) $sql.= "WHERE {$condition}";
+            $sql.= ";";
         }
         return $sql;
     }
@@ -4302,8 +4356,6 @@ class PwPgsql extends PwEntity
                 $status .= "{$path_info['filename']}" . PHP_EOL;
                 $status .= "{$model->name}" . PHP_EOL;
                 $status .= $sql . PHP_EOL;
-                $status .= $sql_error->sql . PHP_EOL;
-
                 echo ($status);
             } else if ($model && $model->columns) {
                 $pg_attributes = null;
@@ -4330,7 +4382,6 @@ class PwPgsql extends PwEntity
                             $status = "---- Not found column----" . PHP_EOL;
                             $status .= "{$model->name}.{$column_name}" . PHP_EOL;
                             $status .= $this->sql . PHP_EOL;
-                            $status .= $sql_error->sql . PHP_EOL;
                         } else if ($column['type'] != $attribute['udt_name']) {
                             $options['type'] = $column['type'];
                             $options['length'] = $column['length'];
@@ -4341,7 +4392,6 @@ class PwPgsql extends PwEntity
                             $status = "---- Alter column type ----" . PHP_EOL;
                             $status .= "{$model->name}.{$column_name} : {$column['type']} != {$attribute['udt_name']}" . PHP_EOL;
                             $status .= $this->sql . PHP_EOL;
-                            $status .= $sql_error->sql . PHP_EOL;
                         }
                         echo ($status);
                     }
@@ -4377,25 +4427,22 @@ class PwPgsql extends PwEntity
         $this->deletes();
 
         if ($this->sql_error) {
-            echo($class_name).PHP_EOL;
             echo($this->sql_error).PHP_EOL;
             exit;
         }
         if ($this->errors) {
-            echo($class_name).PHP_EOL;
+            var_export($this->errors);
             exit;
         }
 
         if ($is_drop_primary) {
             $result = $this->deletePgPrimaryKey($this->name);
             if (!$result) {
-                echo($class_name).PHP_EOL;
                 echo("Error: delete primary key").PHP_EOL;
                 exit;
             }
-            $result = $this->addPgPrimaryKey($this->name);
+            $result = $this->addPgPrimaryKey($this->name, $this->id_column);
             if (!$result) {
-                echo($class_name).PHP_EOL;
                 echo("Error: add primary key").PHP_EOL;
                 exit;
             }
@@ -4403,8 +4450,6 @@ class PwPgsql extends PwEntity
         $result = $this->resetSequence($this->name);
         if (!$result) {
             $sequence_name = PwPgsql::sequenceName($this->name);
-
-            echo($class_name).PHP_EOL;
             echo($sequence_name).PHP_EOL;
             echo("Error: reset sequence").PHP_EOL;
             exit;

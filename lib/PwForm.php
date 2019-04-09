@@ -712,7 +712,7 @@ class PwForm {
      * @param array $values
      * @return string
      */
-    function multiCheckbox($params, $selected=null, $value_key=null, $label_key=null, $values=null) {
+    static function multiCheckbox($params, $selected=null, $value_key=null, $label_key=null, $values=null) {
         $params = self::checkParams($params, $selected, $value_key, $label_key, $values);
 
         $value_key = $params['value'];

@@ -38,7 +38,7 @@ class PwMail {
      */
     function init($params) {
         if ($params['subject']) $this->subject = $params['subject'];
-        if ($params['to']) $this->to = $this->multipleAddress($params['to']);
+        if ($params['to'] || defined('IS_PW_TEST_MAIL')) $this->to = $this->multipleAddress($params['to']);
         if ($params['cc']) $this->cc = $this->multipleAddress($params['cc']);
         if ($params['bcc']) $this->bcc = $this->multipleAddress($params['bcc']);
         if ($params['from']) $this->from = $this->convertAddress($params['from'], $params['from_name']);

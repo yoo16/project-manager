@@ -447,6 +447,7 @@ class PwEntity {
     public function hasChanges() {
         if (isset($this->before_value)) {
             $changes = $this->changes();
+            if (!$changes) return;
             return count($changes) > 0;
         } else {
             return true;
@@ -1301,6 +1302,7 @@ class PwEntity {
                 if ($filter_values) $count = count($filter_values);
             }
         } else {
+            if (!$this->values) return 0;
             $count = count($this->values);
         }
         return $count;
@@ -1318,7 +1320,6 @@ class PwEntity {
 
         if (!$this->auth_columns) exit('Not found auth columns in model');
         foreach ($this->auth_columns as $column => $options) {
-            dump($options);
             $value = $_POST[$column];
             if ($options['hash']) $value = $this->convertHash($value, $options['hash']);
             $this->where($column, $value);

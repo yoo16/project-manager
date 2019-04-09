@@ -294,7 +294,7 @@ class PwTag {
      * @return string
      */
     static function checkActive($params) {
-        if (isset($params['is_use_selected']) && !$params['is_use_selected']) return $params;
+        if (!$params['is_use_selected']) return $params;
         if ($params['is_selected'] && ($params['selected_key'] == $params['selected_value'])) $params['class'].= ' active';
         return $params;
     }

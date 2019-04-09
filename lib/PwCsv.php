@@ -112,7 +112,7 @@ class PwCsv {
     }
 
     /**
-     * key value
+     * key values
      *
      * @param string $file_path
      * @param string $id_column
@@ -130,6 +130,20 @@ class PwCsv {
             }
         }
         return $results;
+    }
+
+    /**
+     * key value
+     *
+     * @param string $key
+     * @param string $file_path
+     * @param string $id_column
+     * @param string $label_column
+     * @return array
+     **/
+    static function valueByKey($key, $file_path, $id_column='value', $label_column='label', $lang = 'ja') {
+        $key_values = self::keyValues($file_path, $id_column, $label_column, $lang);
+        return $key_values[$key];
     }
 
    /**
