@@ -425,15 +425,8 @@ class Project extends _Project {
                             $file['dir'] = $dir_elements[$element_index];
                         }
 
-                        if ($is_analyze) {
-                            if ($this->do_analyze[$type]) {
-                                $file['documents'] = $this->analyzeFile($_path);
-                            } else {
-                                $file['documents'] = $this->_loadFile($_path);
-                            }
-                        }
-
                         if (is_file($_path)) {
+                            if ($is_analyze) $file['analyze'] = $this->analyzeFile($_path);
                             $this->total_file_count++;
                             $this->documents[$type][] = $file;
                         }
@@ -442,6 +435,11 @@ class Project extends _Project {
             }
         }
         return $this->documents;
+    }
+
+    function analyzeFile($path)
+    {
+
     }
 
 }

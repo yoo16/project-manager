@@ -19,6 +19,7 @@ class PwMail {
     public $convert_encode = 'JIS';
     public $iso_character = 'ISO-2022-JP';
     public $is_debug = false;
+    public $is_test = false;
 
     /**
      * construct
@@ -27,7 +28,7 @@ class PwMail {
      * @return void
      **/
     function __construct($params = null) {
-        $this->init($params);
+        if ($params) $this->init($params);
     }
 
     /**
@@ -37,11 +38,19 @@ class PwMail {
      * @return void
      */
     function init($params) {
-        if ($params['subject']) $this->subject = $params['subject'];
-        if ($params['to'] || defined('IS_PW_TEST_MAIL')) $this->to = $this->multipleAddress($params['to']);
+        if ($params['is_test']) $this->is_test = true;
+
+        $this->subject = $params['subject'];
+        $this->to = $this->multipleAddress($params['to']);
         if ($params['cc']) $this->cc = $this->multipleAddress($params['cc']);
         if ($params['bcc']) $this->bcc = $this->multipleAddress($params['bcc']);
-        if ($params['from']) $this->from = $this->convertAddress($params['from'], $params['from_name']);
+        if ($params['from']) {
+            if ($this->is_test){
+                $this->from = PW_TEST_MAIL_FROM;
+            } else {
+                $this->from = self::convertAddress($params['from'], $params['from_name']);
+            }
+        }
         if ($params['template']) $this->template = BASE_DIR."app/pw_mail/{$this->type}.phtml";
     }
 
@@ -99,6 +108,7 @@ class PwMail {
         if (!$this->subject) return;
         if (!$this->to) return;
         if (!$this->from) return;
+        if ($this->cc) $this->cc = mb_convert_encoding($this->bcc, $this->convert_encode, $$this->encode);
         if ($this->bcc) $this->bcc = mb_convert_encoding($this->bcc, $this->convert_encode, $$this->encode);
         $this->loadBody($params);
 
@@ -112,8 +122,10 @@ class PwMail {
             echo($header).PHP_EOL;
             echo($this->to).PHP_EOL;
             echo($this->body).PHP_EOL;
+            exit;
         } else {
-            return mb_send_mail($this->to, $this->subject, $this->body, $header, $option);
+            $is_send = mb_send_mail($this->to, $this->subject, $this->body, $header, $option);
+            return $is_send;
         }
     }
 
@@ -158,7 +170,7 @@ class PwMail {
      * @return string
      **/
     function multipleAddress($values) {
-        if (defined('IS_PW_TEST_MAIL') && IS_PW_TEST_MAIL && defined('PW_TEST_MAIL_TO')) return PW_TEST_MAIL_TO;
+        if ($this->is_test) return PW_TEST_MAIL_TO;
         if (is_array($values)) return implode(',', $values); 
         return $values;
     }
@@ -170,7 +182,7 @@ class PwMail {
      * @param string $name
      * @return string
      **/
-    function convertAddress($email, $name = null){
+    static function convertAddress($email, $name = null){
         if ($name) $email = mb_encode_mimeheader($name)."<{$email}>";
         return $email;
     }

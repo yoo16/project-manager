@@ -1127,6 +1127,21 @@ class PwEntity {
     }
 
     /**
+     * value by key and column
+     *
+     * @param string $key
+     * @param string $column
+     * @return PwEntity
+     */
+    function valueBy($key, $column) {
+        if (!$key) return;
+        if (!$this->values) return $this;
+        if (isset($this->values[$key])) {
+            if (isset($this->values[$key][$column])) return $this->values[$key][$column];
+        }
+    }
+
+    /**
      * value From index values
      *
      * @param string $key
@@ -1331,6 +1346,8 @@ class PwEntity {
 
     /**
      * remember session pw_auth
+     * 
+     * TODO multi auth
      *
      * @param PwEntity $model
      * @return void
@@ -1339,6 +1356,8 @@ class PwEntity {
         if (!$this->entity_name) exit('Error remember auth : Not defined $entity_name');
         if (!$this->value) return;
 
+        $pw_auth = PwSession::get('pw_auth');
+        if (!$pw_auth) $pw_auth = [];
         $pw_auth[$this->entity_name] = $this;
         PwSession::set('pw_auth', $pw_auth);
     }

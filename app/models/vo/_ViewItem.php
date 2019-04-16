@@ -5,8 +5,6 @@
  * @create  2017/08/21 13:46:27 
  */
 
-//namespace project_manager;
-
 require_once 'PwPgsql.php';
 
 class _ViewItem extends PwPgsql {
@@ -41,6 +39,30 @@ class _ViewItem extends PwPgsql {
 
     public $primary_key = 'view_items_pkey';
     public $foreign = array(
+            'view_items_link_param_id_attribute_id_fkey' => [
+                                  'column' => 'link_param_id_attribute_id',
+                                  'class_name' => 'Attribute',
+                                  'foreign_table' => 'attributes',
+                                  'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'c',
+                                  ],
+            'view_items_where_attribute_id_fkey' => [
+                                  'column' => 'where_attribute_id',
+                                  'class_name' => 'Attribute',
+                                  'foreign_table' => 'attributes',
+                                  'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'c',
+                                  ],
+            'view_items_attribute_id_fkey' => [
+                                  'column' => 'attribute_id',
+                                  'class_name' => 'Attribute',
+                                  'foreign_table' => 'attributes',
+                                  'foreign_column' => 'id',
+                                  'cascade_update_type' => 'a',
+                                  'cascade_delete_type' => 'c',
+                                  ],
             'view_items_where_model_id_fkey' => [
                                   'column' => 'where_model_id',
                                   'class_name' => 'Model',
@@ -69,30 +91,6 @@ class _ViewItem extends PwPgsql {
                                   'column' => 'view_id',
                                   'class_name' => 'View',
                                   'foreign_table' => 'views',
-                                  'foreign_column' => 'id',
-                                  'cascade_update_type' => 'a',
-                                  'cascade_delete_type' => 'c',
-                                  ],
-            'view_items_link_param_id_attribute_id_fkey' => [
-                                  'column' => 'link_param_id_attribute_id',
-                                  'class_name' => 'Attribute',
-                                  'foreign_table' => 'attributes',
-                                  'foreign_column' => 'id',
-                                  'cascade_update_type' => 'a',
-                                  'cascade_delete_type' => 'c',
-                                  ],
-            'view_items_where_attribute_id_fkey' => [
-                                  'column' => 'where_attribute_id',
-                                  'class_name' => 'Attribute',
-                                  'foreign_table' => 'attributes',
-                                  'foreign_column' => 'id',
-                                  'cascade_update_type' => 'a',
-                                  'cascade_delete_type' => 'c',
-                                  ],
-            'view_items_attribute_id_fkey' => [
-                                  'column' => 'attribute_id',
-                                  'class_name' => 'Attribute',
-                                  'foreign_table' => 'attributes',
                                   'foreign_column' => 'id',
                                   'cascade_update_type' => 'a',
                                   'cascade_delete_type' => 'c',

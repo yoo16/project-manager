@@ -111,6 +111,7 @@ class PwDate {
      * @param string $string 
      */
     function setFromString($string) {
+        if (!$string) return;
         $this->from_string = $string;
         $this->from_time = strtotime($string);
         $this->from_number = PwDate::stringToNumber($string);
@@ -129,6 +130,7 @@ class PwDate {
      * @param string $string
      */
     function setToString($string) {
+        if (!$string) return;
         $this->to_string = $string;
         $this->to_time = strtotime($string);
         $this->to_number = PwDate::stringToNumber($string);
@@ -147,6 +149,7 @@ class PwDate {
      * @param string $number 
      */
     function setFromNumber($number) {
+        if (!is_numeric($number)) return;
         $this->from_number = $number;
         $this->from_string = PwDate::numberToString($number);
         $this->from_time = strtotime($this->from_string);
@@ -165,6 +168,7 @@ class PwDate {
      * @param string $to_string
      */
     function setToNumber($number) {
+        if (!is_numeric($number)) return;
         $this->to_number = $number;
         $this->to_string = PwDate::numberToString($number);
         $this->to_time = strtotime($this->to_string);

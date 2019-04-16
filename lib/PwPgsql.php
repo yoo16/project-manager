@@ -1406,6 +1406,24 @@ class PwPgsql extends PwEntity
         }
     }
 
+
+    /**
+     * select all
+     * 
+     * @return PwPgsql
+     */
+    public function byAll($column)
+    {
+        $columns = array_keys($this->columns);
+        
+        if (!in_array($column, $columns)) {
+            exit("Not found column: {$column}");
+        }
+        $this->values_index_column = $column;
+        $this->all();
+        return $this;
+    }
+
     /**
      * selectAll test method
      * 
@@ -1494,6 +1512,17 @@ class PwPgsql extends PwEntity
     public function oneValue()
     {
         return $this->one()->value;
+    }
+
+    /**
+     * refresh
+     * 
+     * @return PwPgsql
+     */
+    public function refresh()
+    {
+        if ($this->value['id']) $this->fetch($this->value['id']);
+        return $this;
     }
 
     /**
@@ -2067,8 +2096,12 @@ class PwPgsql extends PwEntity
         if (!$column) return;
         if ($params['before']) $before = $params['before'];
         if ($params['after']) $after = $params['after'];
-        if (!$before && !$after) $before = '%';
-        return "{$column} LIKE '{$before}{$value}{$after}'";
+        if (!$before && !$after) {
+            $before = '%';
+            $after = '%';
+        }
+        $condition =  "{$column} LIKE '{$before}{$value}{$after}'";
+        return $condition;
     }
 
 
@@ -3456,6 +3489,7 @@ class PwPgsql extends PwEntity
         }
         return $values;
     }
+
 
     /**
      * pgFields

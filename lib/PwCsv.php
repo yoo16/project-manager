@@ -141,7 +141,7 @@ class PwCsv {
      * @param string $label_column
      * @return array
      **/
-    static function valueByKey($key, $file_path, $id_column='value', $label_column='label', $lang = 'ja') {
+    static function valueByKey($key, $file_path, $lang = 'ja', $id_column='value', $label_column='label') {
         $key_values = self::keyValues($file_path, $id_column, $label_column, $lang);
         return $key_values[$key];
     }

@@ -655,7 +655,7 @@ class ProjectController extends AppController
 
                 //csv
                 $app_path = "{$project_path}db/";
-                $this->project->getDocuments($app_path, 'db', 'csv');
+                $this->project->getDocuments($app_path, 'csv', 'csv');
 
                 //sql
                 $app_path = "{$project_path}db/";
