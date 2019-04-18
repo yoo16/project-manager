@@ -4,8 +4,7 @@
  *
  * TODO: use DateTime in all
  * 
- * @author Yohei Yoshikawa
- * @create   
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
 class PwDate {
@@ -559,8 +558,17 @@ class PwDate {
         }
         if (!$this->to_time) return;
         $now = time();
-        if ($this->to_time > $now) $this->to_time = $now;
-        $this->setToTime($this->to_time);
+        if ($this->to_time > $now) {
+            $this->to_time = $now;
+        } else {
+            return;
+        }
+        if ($params['formatter']) $formatter = $params['formatter'];
+        if ($formatter) {
+            $this->setToTime($this->to_time, $formatter);
+        } else {
+            $this->setToTime($this->to_time);
+        }
     }
 
     /**
@@ -615,8 +623,8 @@ class PwDate {
      */
     function setIntervalByFromString($string, $interval_string, $is_limit_now = true) {
         $this->setFromString($string);
-        $time = strtotime($interval_string, $this->from_time);
-        $this->setToTime($time);
+        $to_time = strtotime($interval_string, $this->from_time);
+        $this->setToTime($to_time);
         if ($is_limit_now) $this->limitNow();
     }
 

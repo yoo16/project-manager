@@ -3,7 +3,7 @@
  * FileMnager.php
  *
  * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
- **/
+ */
 
 class PwFile {
     public $base_dir;
@@ -487,8 +487,8 @@ class PwFile {
      * @return void
      */
     static function removeSameImagesFileExt($path) {
-        $types = self::getImageExt();
-        foreach ($types as $type => $ext) {
+        $types = self::getImageExts();
+        foreach ($types as $ext) {
             $path = "{$path}.{$ext}";
             if (file_exists($path)) {
                 if (defined('PHP_FUNCTION_MODE') && PHP_FUNCTION_MODE) {

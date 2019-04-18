@@ -7,7 +7,6 @@
 
 //namespace Libs;
 
-
 require_once 'PwEntity.php';
 
 //TODO pg_escape_identifier

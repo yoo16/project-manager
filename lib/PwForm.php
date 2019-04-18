@@ -2,8 +2,8 @@
 /**
  * PwForm
  *
- * @copyright 2017 copyright Yohei Yoshikawa (http://yoo-s.com)
- */
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
+ **/
 
 class PwForm {
     //TODO refactoring

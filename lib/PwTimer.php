@@ -2,12 +2,11 @@
 /**
  * PwTimer
  *
- * Version      : 0.1
- * Author       : Yohei Yoshikawa
- * created      : 2011-01-28
- **/
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
+ */
 
-class PwTimer {
+class PwTimer
+{
 
     public $current_time = 0;
     public $start_time = 0;
@@ -18,20 +17,20 @@ class PwTimer {
     public $rap_times = array();
     public $timestamp = null;
 
-    function __construct() {
-
-    }
+    function __construct()
+    { }
 
     /**
      * init
      * 
      * @return void
      */
-    function init() {
-        $this->start_time = 0;    
-        $this->end_time = 0;    
-        $this->current_time = 0;    
-        $this->current_second = 0;    
+    function init()
+    {
+        $this->start_time = 0;
+        $this->end_time = 0;
+        $this->current_time = 0;
+        $this->current_second = 0;
         $this->diff_time = 0;
     }
 
@@ -40,7 +39,8 @@ class PwTimer {
      * 
      * @return void
      */
-    function start() {
+    function start()
+    {
         $this->start_time = microtime(true);
     }
 
@@ -50,9 +50,10 @@ class PwTimer {
      * @param  string $key [description]
      * @return void
      */
-    function mark($key = null) {
+    function mark($key = null)
+    {
         $this->current_time = microtime(true);
-        $this->rap_time = (float) $this->current_time - (float) $this->start_time;
+        $this->rap_time = (float)$this->current_time - (float)$this->start_time;
 
         if ($key) {
             $this->rap_times[$key] = $this->rap_time;
@@ -66,10 +67,10 @@ class PwTimer {
      * 
      * @return void
      */
-    function stop() {
+    function stop()
+    {
         $this->current_time = microtime(true);
         $this->end_time = $this->current_time;
-        $this->diff_time = (float) $this->end_time - (float) $this->start_time;
+        $this->diff_time = (float)$this->end_time - (float)$this->start_time;
     }
-
 }

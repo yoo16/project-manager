@@ -2,8 +2,7 @@
 /**
  * PwLocalize 
  *
- * @author  Yohei Yoshikawa
- * @create  2012/10/03 
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 class PwLogger {
 

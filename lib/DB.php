@@ -7,6 +7,11 @@
 
 class DB {
 
+    /**
+     * constructor
+     *
+     * @param array $params
+     */
     function __construct($params = null) {
     }
 

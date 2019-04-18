@@ -348,6 +348,7 @@ class PwEntity {
      */
     public function setValue($value) {
         $this->value = $value;
+        if ($this->id_column) $this->id = $value[$this->id_column];
         return $this;
     }
 
@@ -1231,7 +1232,7 @@ class PwEntity {
      */
     function convertCopyRows($rows, $columns) {
         foreach ($rows as $row) {
-            $values = null;
+            $values = [];
             foreach ($columns as $column => $meta) {
                 $value = $row[$column];
                 if (is_null($value)) {

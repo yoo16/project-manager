@@ -607,6 +607,7 @@ class ProjectController extends AppController
 
         $this->user_project_setting = $this->project->relation('UserProjectSetting');
         $this->user_project_setting->all();
+
         if (count($this->user_project_setting->vlaues) == 0) $this->user_project_setting->value = $this->user_project_setting->values[0];
 
         if ($this->user_project_setting->value) {

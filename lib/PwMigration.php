@@ -2,13 +2,18 @@
 /**
  * PwMigration 
  *
- * @create   
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
 class PwMigration {
     public $from_pgsql;
     public $used_old_host = false;
 
+    /**
+     * constructor
+     *
+     * @param array $params
+     */
     function __construct($params = null) {
         $this->pgsql($params);
     }
@@ -97,8 +102,8 @@ class PwMigration {
     /**
      * search reduplication
      * 
-     * @param  array $db_infos   [description]
-     * @param  string $class_name [description]
+     * @param  array $db_infos
+     * @param  string $class_name
      * @return void
      */
     function searchReduplication($db_infos, $class_name) {
@@ -141,7 +146,7 @@ class PwMigration {
      *
      * @param  PwPgsql $db_info
      * @param  string $class_name
-     * @param  int $old_id
+     * @param  integer $old_id
      * @return PwPgsql
      */
     function updateValuesFromOldDB($db_info, $class_name, $foreign_classes = null, $search_columns = null) {
@@ -226,7 +231,7 @@ class PwMigration {
      *
      * @param  PwPgsql $old_pgsql
      * @param  string $class_name
-     * @param  int $old_id
+     * @param  integer $old_id
      * @return PwPgsql
      */
     static function fetchByOldId($old_pgsql, $class_name, $old_id) {
@@ -440,6 +445,7 @@ class PwMigration {
         $values = DB::model($class_name)->valuesFromOldTable($this->from_pgsql);
         $fk_ids = $this->fkIds($class_name);
 
+        $contents = '';
         foreach ($values as $value) {
             $value = $this->bindFkIdsByFkIds($fk_ids, $value);
 
@@ -499,8 +505,9 @@ class PwMigration {
 
     /**
      * export error log
-     * @param  String $contents
-     * @param  String $class_name
+     * 
+     * @param  string $contents
+     * @param  string $class_name
      * @return void
      */
     function exportErrorLog($contents, $class_name) {

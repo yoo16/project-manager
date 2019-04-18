@@ -2,9 +2,8 @@
 /**
  * PwError
  *
- * @param
- * @return string
- */
+ * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
+ **/
 
 class PwError {
     /**
