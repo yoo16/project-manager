@@ -62,6 +62,7 @@ class PwDate {
         $formatter = "{$number}{$unit}";
         $time = strtotime($formatter, strtotime($this->string));
         $this->setTime($time);
+        return $this;
     }
 
     /**
@@ -76,6 +77,7 @@ class PwDate {
         $this->string = PwDate::numberToString($this->number);
         $this->time = strtotime($this->string);
         $this->datetime = new Datetime($this->string);
+        return $this;
     }
 
     /**
@@ -88,6 +90,7 @@ class PwDate {
         $this->time = strtotime($this->string);
         $this->number = PwDate::stringToNumber($this->string);
         $this->datetime = new Datetime($this->string);
+        return $this;
     }
 
     /**
@@ -100,6 +103,7 @@ class PwDate {
         $this->string = date($format, $this->time);
         $this->number = PwDate::stringToNumber($this->string);
         $this->datetime = new Datetime($this->string);
+        return $this;
     }
 
     /**
@@ -119,6 +123,7 @@ class PwDate {
         $this->from_at = $this->from_string;
         $this->from_datetime = $this->from_time;
         $this->from_date = $this->from_number;
+        return $this;
     }
 
     /**
@@ -138,6 +143,7 @@ class PwDate {
         $this->to_at = $this->to_string;
         $this->to_datetime = $this->to_time;
         $this->to_date = $this->to_number;
+        return $this;
     }
 
     /**
@@ -157,6 +163,7 @@ class PwDate {
         $this->from_at = $this->from_string;
         $this->from_datetime = $this->from_time;
         $this->from_date = $this->from_number;
+        return $this;
     }
 
     /**
@@ -176,6 +183,7 @@ class PwDate {
         $this->to_at = $this->to_string;
         $this->to_datetime = $this->to_time;
         $this->to_date = $this->to_number;
+        return $this;
     }
 
     /**
@@ -194,6 +202,7 @@ class PwDate {
         $this->from_at = $this->from_string;
         $this->from_datetime = $this->from_time;
         $this->from_date = $this->from_number;
+        return $this;
     }
 
     /**
@@ -212,6 +221,7 @@ class PwDate {
         $this->to_at = $this->to_string;
         $this->to_datetime = $this->to_time;
         $this->to_date = $this->to_number;
+        return $this;
     }
 
     /**
@@ -229,6 +239,7 @@ class PwDate {
         $this->start_at = $this->start_string;
         $this->start_datetime = $this->start_time;
         $this->start_date = $this->start_number;
+        return $this;
     }
 
     /**
@@ -246,6 +257,7 @@ class PwDate {
         $this->end_at = $this->end_string;
         $this->end_datetime = $this->end_time;
         $this->end_date = $this->end_number;
+        return $this;
     }
 
     //old
@@ -258,6 +270,7 @@ class PwDate {
      */
     function setFromAt($string) {
         $this->setFromString($string);
+        return $this;
     }
 
     /**
@@ -269,6 +282,7 @@ class PwDate {
      */
     function setToAt($string) {
         $this->setToString($string);
+        return $this;
     }
 
     /**
@@ -280,6 +294,7 @@ class PwDate {
      */
     function setFromDate($number) {
         $this->setFromNumber($number);
+        return $this;
     }
 
     /**
@@ -291,6 +306,7 @@ class PwDate {
      */
     function setToDate($number) {
         $this->setToNumber($number);
+        return $this;
     }
 
     /**
@@ -302,6 +318,7 @@ class PwDate {
      */
     function setFromDatetime($time) {
         $this->setFromTime($time);
+        return $this;
     }
 
     /**
@@ -313,6 +330,7 @@ class PwDate {
      */
     function setToDatetime($time) {
         $this->setFromTime($time);
+        return $this;
     }
 
     /**
@@ -325,6 +343,7 @@ class PwDate {
         $this->start_at = $start_at;
         $this->start_datetime = strtotime($this->start_at);
         $this->start_date = PwDate::stringToNumber($this->start_at);
+        return $this;
     }
 
     /**
@@ -337,6 +356,7 @@ class PwDate {
         $this->end_at = $end_at;
         $this->end_datetime = strtotime($this->end_at);
         $this->end_date = PwDate::stringToNumber($this->end_at);
+        return $this;
     }
 
     /**
@@ -350,10 +370,6 @@ class PwDate {
         $formatter = "{$value}{$unit}";
         $time = strtotime($formatter, strtotime($this->string));
 
-        //$interval = DateInterval::createFromDateString($formatter);
-        //$diff_date = date_sub($this->datetime, $interval);
-        //$string = date_format($diff_date, 'Y/m/d H:i');
-        //$diff->setString($string);
         $diff = new PwDate();
         $diff->setTime($time);
         return $diff;
@@ -370,6 +386,7 @@ class PwDate {
         $this->setOneDay();
         $this->setStartString(date('Y/m/d 00:00'));
         $this->setEndString($this->to_string);
+        return $this;
     }
 
     /**
@@ -543,6 +560,7 @@ class PwDate {
 
         $this->setOneDay($days);
         $this->setNextPrevDatesForFromDate($days, 'days');
+        return $this;
     }
 
     /**
@@ -556,12 +574,12 @@ class PwDate {
             if ($this->time > $now) $this->time = $now;
             $this->setTime($this->time, $params['formatter']);
         }
-        if (!$this->to_time) return;
+        if (!$this->to_time) return $this;
         $now = time();
         if ($this->to_time > $now) {
             $this->to_time = $now;
         } else {
-            return;
+            return $this;
         }
         if ($params['formatter']) $formatter = $params['formatter'];
         if ($formatter) {
@@ -569,6 +587,7 @@ class PwDate {
         } else {
             $this->setToTime($this->to_time);
         }
+        return $this;
     }
 
     /**
@@ -599,6 +618,7 @@ class PwDate {
             $string = date('Y/m/d 00:00', $this->from_time);
             $this->setIntervalByFromString($string, '+1day');
         }
+        return $this;
     }
 
     /**
@@ -612,6 +632,7 @@ class PwDate {
             $format = "{$days}day";
             $this->setIntervalByFromString($string, $format);
         }
+        return $this;
     }
 
     /**
@@ -626,6 +647,7 @@ class PwDate {
         $to_time = strtotime($interval_string, $this->from_time);
         $this->setToTime($to_time);
         if ($is_limit_now) $this->limitNow();
+        return $this;
     }
 
     /**
@@ -638,6 +660,7 @@ class PwDate {
         $this->setToString($string);
         $time = strtotime($interval_string, $this->to_time);
         $this->setFromTime($time);
+        return $this;
     }
 
     /**
@@ -652,6 +675,7 @@ class PwDate {
             $this->setFromTime($time);
             if ($is_zero_hours) $this->setFromString(date('Y/m/d 00:00', $this->from_time));
         }
+        return $this;
     }
 
     /**
@@ -672,6 +696,7 @@ class PwDate {
             $this->next_at = date('Y/m/d H:i', $this->next_datetime);
             $this->next_date = PwDate::stringToNumber($this->next_at);
         }
+        return $this;
     }
 
     /**
@@ -700,15 +725,17 @@ class PwDate {
                 if ($i > 100000) break;
             }
         }
+        return $this;
     }
 
     /**
      * reverse datetimes
      *
-     * @return void
+     * @return PwDate
      */
     function reverseDatetimes() {
         $this->datetimes = array_reverse($this->datetimes);
+        return $this;
     }
 
     /**

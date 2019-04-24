@@ -48,11 +48,8 @@ class PwMigration {
         }
         $ids = DB::model($class_name)->where('old_db', $old_db_info['dbname'])->ids('old_id', 'id');
         foreach ($old_model->values as $old_model->value) {
-            $old_value = $old_model->value;
-
             $old_id = $old_model->value[$old_id_column];
             $posts = $old_model->oldValueToValue()->value;
-            $old_posts = $posts;
 
             $posts['old_db'] = $old_db_info['dbname'];
             $posts['old_id'] = $old_id;
@@ -82,7 +79,7 @@ class PwMigration {
             }
             if ($posts['old_db']) {
                 $new_model = DB::model($class_name)->save($posts, $id);
-                $migrate_report->addReport($new_model, $posts);
+                //$migrate_report->addReport($new_model, $posts);
             }
         }
         //$migrate_report->create();

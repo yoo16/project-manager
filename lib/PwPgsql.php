@@ -2364,12 +2364,16 @@ class PwPgsql extends PwEntity
      */
     public function orders($sort_orders)
     {
-        $this->orders = null;
+        $this->orders = [];
         foreach ($sort_orders as $sort_order) {
-            if ($sort_order[1]) {
-                $this->order($sort_order[0], $sort_order[1]);
+            if (is_array($sort_order)) {
+                if ($sort_order[1]) {
+                    $this->order($sort_order[0], $sort_order[1]);
+                } else {
+                    $this->order($sort_order[0]);
+                }
             } else {
-                $this->order($sort_order[0]);
+                $this->order($sort_order);
             }
         }
         return $this;

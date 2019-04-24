@@ -439,7 +439,6 @@ class PwForm {
         $value_key = isset($params['value']) ? $params['value'] : 'value';
 
         $tag = self::unselectOption($params);
-
         foreach ($values as $key => $value) {
             if (isset($params['is_key_value_array']) && $params['is_key_value_array']) {
                 $attributes['value'] = $key;
@@ -448,7 +447,9 @@ class PwForm {
                 $attributes['value'] = $value[$value_key];
                 $label = self::convertLabel($value, $params);
             }
-            $attributes['selected'] = self::selectedTag($attributes['value'], $selected);
+            $selected_string = self::selectedTag($attributes['value'], $selected);
+            unset($attributes['selected']);
+            if ($selected_string) $attributes['selected'] = $selected_string;
             if (isset($params['label_unit'])) $label.= $params['label_unit'];
             $tag.= self::optionTag($label, $attributes);
         }
@@ -459,11 +460,12 @@ class PwForm {
      * date option
      *
      * @param array $params
-     * @param string $selected
+     * @param mixed $selected
      * @param string $label_formatter
      * @return string
      */
-    static function dateOptions($params, $selected=null, $label_formatter='%02d') {
+    static function dateOptions($params, $selected = null, $label_formatter='%02d') {
+        $tag = '';
         $tag.= self::unselectOption($params);
         $values = $params['values'];
         if (!($values)) return;
@@ -620,9 +622,12 @@ class PwForm {
         if (isset($params['selected'])) $selected = $params['selected'];
 
         $value_key = isset($params['value']) ? $params['value'] : 'value';
+        $tag = '';
         foreach ($values as $value) {
             $params['value'] = $index = $value[$value_key];
-            $params['checked'] = self::checkedTag($params['value'], $selected);
+            unset($params['checked']);
+            $checked = self::checkedTag($params['value'], $selected);
+            if ($checked) $params['checked'] = $checked;
             $params['id'] = "{$params['name']}_{$params['value']}";
             $tag.= self::radioTag($params, $value);
 
@@ -682,9 +687,9 @@ class PwForm {
         }
         if (!isset($params['value'])) $params['value'] = 1;
 
-        if ($params['disable']) $attributes['disable'] = 'disable';
+        $tag = '';
         if (!$params['unused_hidden']) $tag.= self::hidden($params['name'], 0);
-        $id = ($params['id']) ? "{$params['id']}_{$value}" : $params['value'];
+        $id = ($params['id']) ? "{$params['id']}_{$params['value']}" : $params['value'];
         $checkbox_attributes = [
             'id' => $id,
             'class' => $params['class'],
@@ -692,8 +697,9 @@ class PwForm {
             'type' => 'checkbox',
             'value' => $params['value']
         ];
-        //$attributes['checked'] = self::checkedTag($params['value'], $selected);
+        if ($params['disable']) $checkbox_attributes['class'].= ' d-none';
         if ($selected) $checkbox_attributes['checked'] = 'checked';
+        $tag = '';
         $tag.= self::input($checkbox_attributes);
 
         $label_attributes['class'] = 'checkbox';
@@ -785,6 +791,7 @@ class PwForm {
         if (!$params) return;
         foreach ($params as $key => $param) {
             if (is_array($param)) $param = implode(' ', $param);
+            $param = trim($param);
             if (isset($param)) $attributes[] = "{$key}=\"{$param}\"";
         }
         if ($attributes) $attribute = implode(' ', $attributes);
@@ -1113,6 +1120,7 @@ class PwForm {
      * @return string
      */
     static function linkActive($key, $selected = null) {
+        $tag = '';
         if (!$selected) $selected = $GLOBALS['controller']->name;
         if ($key == $selected) $tag.=' active';
         return $tag;

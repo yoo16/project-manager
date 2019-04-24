@@ -31,22 +31,6 @@ class PwEntity {
 
     public static $except_columns = ['id', 'created_at', 'updated_at'];
     public static $app_columns = ['id', 'created_at', 'updated_at', 'sort_order', 'old_db', 'old_host', 'old_id'];
-    public static $cast_functions = [
-                                    'int' => 'castInt',
-                                    'int2' => 'castInt',
-                                    'int4' => 'castInt',
-                                    'int8' => 'castInt',
-                                    'real' => 'castInt',
-                                    'float' => 'castFloat',
-                                    'float4' => 'castFloat',
-                                    'float8' => 'castFloat',
-                                    'double' => 'castFloat',
-                                    'double precision' => 'castFloat',
-                                    'bool' => 'castBool',
-                                    'varchar' => 'castString',
-                                    'text' => 'castString',
-                                    'timestamp' => 'castTimestamp',
-                                ];
 
     function __construct($params = null) {
 
@@ -399,13 +383,18 @@ class PwEntity {
      */
     public function takeValues($values) {
         if (!$values) return $this;
-        foreach ($this->columns as $column_name => $value) {
-            if (array_key_exists($column_name, $values)) {
-                $column = $this->columns[$column_name];
-                $type = $column['type'];
-                $this->value[$column_name] = $this->cast($type, $values[$column_name]);
+        foreach ($values as $column_name => $value) {
+            if (array_key_exists($column_name, $this->columns)) {
+                $this->value[$column_name] = $this->cast($this->columns[$column_name]['type'], $values[$column_name]);
             }
         }
+        // foreach ($this->columns as $column_name => $value) {
+        //     if (array_key_exists($column_name, $values)) {
+        //         $column = $this->columns[$column_name];
+        //         $type = $column['type'];
+        //         $this->value[$column_name] = $this->cast($type, $values[$column_name]);
+        //     }
+        // }
         return $this;
     }
 
@@ -524,6 +513,7 @@ class PwEntity {
      * @return int
      */
     private function castInt($value) {
+        if (is_null($value)) return;
         if (is_int($value)) return $value;
         $value = $this->castNumber($value);
         if (!is_numeric($value)) return;
@@ -537,6 +527,7 @@ class PwEntity {
      * @return float
      */
     private function castFloat($value) {
+        if (is_null($value)) return;
         if (is_float($value)) return $value;
         $value = $this->castNumber($value);
         if (!is_numeric($value)) return;
@@ -550,6 +541,7 @@ class PwEntity {
      * @return double
      */
     private function castDouble($value) {
+        if (is_null($value)) return;
         if (is_double($value)) return $value;
         $value = $this->castNumber($value);
         if (!is_numeric($value)) return;
@@ -562,6 +554,7 @@ class PwEntity {
      * @return void
      */
     private function castNumber($value) {
+        if (is_null($value)) return;
         if (is_numeric(strpos($value, ','))) $value = str_replace(',', '', $value);
         if (!is_numeric($value)) return;
         return $value;
@@ -905,7 +898,7 @@ class PwEntity {
     }
 
     /**
-     * selectタグ
+     * select date
      *
      * @param array $params
      * @param string $selected
@@ -920,7 +913,7 @@ class PwEntity {
     }
 
    /**
-    * formSelect
+    * form radio
     *
     * @param string $column
     * @param array $params
@@ -938,7 +931,7 @@ class PwEntity {
     }
 
    /**
-    * formCheckbox
+    * form checkbox
     *
     * @param string $column
     * @param array $params
@@ -954,7 +947,7 @@ class PwEntity {
     }
 
    /**
-    * formDelete
+    * form delete
     *
     * @param array $params
     * @return string
@@ -994,7 +987,7 @@ class PwEntity {
     }
 
    /**
-    * record value
+    * record value(csv)
     *
     * @param string $column
     * @param string $csv_name
@@ -1009,7 +1002,7 @@ class PwEntity {
     }
 
    /**
-    * record values
+    * record values(csv)
     *
     * @param string $column
     * @param array $params

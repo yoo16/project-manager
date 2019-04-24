@@ -290,12 +290,20 @@ class PwTag {
     /**
      * active class
      * 
+     * TODO is_select: not only controller 
+     * 
      * @param  array $params
      * @return string
      */
     static function checkActive($params) {
         if (!$params['is_use_selected']) return $params;
-        if ($params['is_selected'] && ($params['selected_key'] == $params['selected_value'])) $params['class'].= ' active';
+        if ($params['is_selected'] && ($params['selected_key'] == $params['selected_value'])) {
+            if (isset($params['active_class'])) {
+                $params['class'].= ' '.$params['active_class'];
+            } else {
+                $params['class'].= ' active';
+            }
+        }
         return $params;
     }
 
@@ -347,7 +355,6 @@ class PwTag {
         return $tag;
     }
 
-
     /**
      * icon tag
      * 
@@ -374,6 +381,24 @@ class PwTag {
         $tag = '';
         if ($key == $selected) $tag.=' active';
         return $tag;
+    }
+
+    /**
+     * active btn class
+     *
+     * @param mixed $value
+     * @param mixed $selected
+     * @return void
+     */
+    static function activeBtnClass($value, $selected)
+    {
+        $class = '';
+        if ($value == $selected) {
+            $class = "btn btn-danger";
+        } else {
+            $class = "btn btn-outline-primary";
+        }
+        return $class;
     }
 
     /**
