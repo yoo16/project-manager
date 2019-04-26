@@ -390,13 +390,13 @@ class PwTag {
      * @param mixed $selected
      * @return void
      */
-    static function activeBtnClass($value, $selected)
+    static function activeBtnClass($value, $selected, $active_class = null, $default_class = null)
     {
         $class = '';
         if ($value == $selected) {
-            $class = "btn btn-danger";
+            $class = ($active_class) ? $active_class : "btn btn-danger";
         } else {
-            $class = "btn btn-outline-primary";
+            $class = ($default_class) ? $default_class : "btn btn-outline-primary";
         }
         return $class;
     }

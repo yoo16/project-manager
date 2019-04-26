@@ -1736,7 +1736,7 @@ class PwPgsql extends PwEntity
                     $sql_values[] = 'current_timestamp';
                 } else {
                     if (isset($row[$column_name])) $value = $row[$column_name];
-                    $sql_values[] = $this->sqlValue($value);
+                    $sql_values[] = self::sqlValue($value);
                 }
             }
             $value = implode(', ', $sql_values);
@@ -2149,10 +2149,7 @@ class PwPgsql extends PwEntity
     {
         if (!$column) return $this;
         if (!is_array($values)) return $this;
-        foreach ($values as $value) {
-            $_values[] = $this->sqlValue($value);
-        }
-        $condition = PwPgsql::whereInConditionSQL($column, $_values);
+        $condition = PwPgsql::whereInConditionSQL($column, $values);
         $this->where($condition);
         return $this;
     }
@@ -2167,7 +2164,7 @@ class PwPgsql extends PwEntity
     public function whereNotIn($column, $values)
     {
         if (!$column) return $this;
-        foreach ($values as $value) $_values[] = $this->sqlValue($value);
+        foreach ($values as $value) $_values[] = self::sqlValue($value);
         $condition = PwPgsql::whereNotInConditionSQL($column, $_values);
         $this->where($condition);
         return $this;
@@ -2195,7 +2192,10 @@ class PwPgsql extends PwEntity
     static function whereInConditionSQL($column, $values)
     {
         if (!is_array($values)) return;
-        $value = implode(', ', $values);
+        foreach ($values as $value) {
+            $_values[] = self::sqlValue($value);
+        }
+        $value = implode(', ', $_values);
         $condition = "{$column} IN ({$value})";
         return $condition;
     }
@@ -2506,7 +2506,7 @@ class PwPgsql extends PwEntity
      * @param  Object $value
      * @return string
      */
-    public function sqlValue($value, $type = null)
+    static function sqlValue($value, $type = null)
     {
         if (is_null($value)) {
             return "NULL";
@@ -2996,7 +2996,7 @@ class PwPgsql extends PwEntity
         if (!$this->value) return;
         if (!$this->columns) return;
         foreach ($this->columns as $column_name => $type) {
-            $value = $this->sqlValue($this->value[$column_name]);
+            $value = self::sqlValue($this->value[$column_name]);
             if ($column_name == 'created_at') $value = 'current_timestamp';
             $columns[] = $column_name;
             $values[] = $value;
@@ -3020,7 +3020,7 @@ class PwPgsql extends PwEntity
         if (!$changes) return;
 
         foreach ($changes as $key => $org_value) {
-            $value = $this->sqlValue($this->value[$key]);
+            $value = self::sqlValue($this->value[$key]);
             $set_values[] = "{$key} = {$value}";
         }
         if (isset($this->columns['updated_at'])) $set_values[] = "updated_at = current_timestamp";
@@ -3044,7 +3044,7 @@ class PwPgsql extends PwEntity
         $sql = '';
         foreach ($posts as $key => $value) {
             if (isset($this->columns[$key])) {
-                $value = $this->sqlValue($value);
+                $value = self::sqlValue($value);
                 $set_values[] = "{$key} = {$value}";
             }
         }
@@ -3067,7 +3067,7 @@ class PwPgsql extends PwEntity
     {
         if (!$posts) return;
         foreach ($posts as $key => $value) {
-            $value = $this->sqlValue($value);
+            $value = self::sqlValue($value);
             $set_values[] = "{$key} = {$value}";
         }
         if (isset($this->columns['updated_at'])) $set_values[] = "updated_at = current_timestamp";
@@ -3092,7 +3092,7 @@ class PwPgsql extends PwEntity
         $sql = '';
         foreach ($posts as $column_name => $value) {
             if (isset($this->columns[$column_name])) {
-                $value = $this->sqlValue($value);
+                $value = self::sqlValue($value);
                 $set_values[] = "{$column_name} = {$value}";
             }
         }
@@ -3144,7 +3144,7 @@ class PwPgsql extends PwEntity
 
         //insert
         foreach ($this->columns as $key => $type) {
-            $value = $this->sqlValue($this->value[$key]);
+            $value = self::sqlValue($this->value[$key]);
             if ($key == 'created_at') $value = 'current_timestamp';
             $columns[] = $key;
             $values[] = $value;
@@ -3156,7 +3156,7 @@ class PwPgsql extends PwEntity
         //update
         foreach ($this->value as $key => $value) {
             if (isset($this->columns[$key])) {
-                $value = $this->sqlValue($value);
+                $value = self::sqlValue($value);
                 if ($key == 'created_at') {
 
                 } else if ($key == 'updated_at') {
