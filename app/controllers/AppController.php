@@ -18,6 +18,7 @@ class AppController extends Controller {
 
     function before_action($action = null) {
         $pgsql_entity = new PwPgsql();
+
         if (!$pgsql_entity->connection()) {
             $this->redirectTo(['controller' => 'setting']);
             exit;

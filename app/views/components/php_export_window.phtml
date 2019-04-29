@@ -66,7 +66,7 @@
                   <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
                 </form>
                 &nbsp;
-                <form action="<?= $this->urlFor(['controller' => 'localize_string', 'action' => 'csv_export']) ?>"
+                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'csv_export']) ?>"
                   method="post">
                   <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export CSV files?">CSV</button>
                   <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
@@ -75,21 +75,28 @@
                 &nbsp;
                 <? if (defined('IS_DEVELOPER') && IS_DEVELOPER): ?>
                 &nbsp;
-                <form action="<?= $this->urlFor(['controller' => 'localize_string', 'action' => 'export_php_view_edit']) ?>"
+                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_php_view_edit']) ?>"
                   method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP View edit files?">View
-                    Edit</button>
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP View edit files?">View Edit</button>
                   <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
                   <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
                 </form>
                 <? endif ?>
-                <form action="<?= $this->urlFor(['controller' => 'localize_string', 'action' => 'export_python_models']) ?>"
+
+                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_python_models']) ?>"
                   method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Python Models?">Python
-                    Model</button>
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Python Models?">Python Model</button>
                   <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
                   <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
                 </form>
+
+                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_laravel_models']) ?>"
+                  method="post">
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Laravel Models?">Laravel Model</button>
+                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+                </form>
+
                 &nbsp;
               </div>
               <? endif ?>

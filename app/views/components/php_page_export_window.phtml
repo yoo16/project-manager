@@ -48,15 +48,19 @@
 
                 <? if ($this->model->value): ?>
                 <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_php_model']) ?>" method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP model?">PHP
-                    Model</button>
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP model?">PHP Model</button>
                   <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
                   <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
                 </form>
 
                 <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_python_model']) ?>" method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Python model?">Python
-                    Model</button>
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Python model?">Python Model</button>
+                  <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
+                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+                </form>
+
+                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_laravel_model']) ?>" method="post">
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Laravel model?">Laravel Model</button>
                   <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
                   <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
                 </form>

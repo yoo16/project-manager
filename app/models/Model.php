@@ -381,8 +381,37 @@ class Model extends _Model {
      * @param array $model
      * @return string
      */
-    static function pythonVoTemplateFilePath() {
+    static function pythonVoTemplateFilePatprojectPythonVoFilePathh() {
         $path = TEMPLATE_DIR.'models/python_vo.phtml';
+        return $path;
+    }
+
+    /**
+     * project laravel path
+     * 
+     * @param array $user_project_setting
+     * @param array $model
+     * @return string
+     */
+    static function projectLaravelMigrateFilePath($user_project_setting, $model) {
+        if (!$user_project_setting) return;
+        if (!$model['name']) return;
+        if (!file_exists($user_project_setting['project_path'])) return;
+
+        $name = $model['entity_name'];
+        $date_string = date('Y_m_d_000000'); 
+        $file_name = "{$date_string}_create_{}_table.php";
+        $path = $user_project_setting['project_path']."app/laravel/migrate/{$file_name}";
+        return $path;
+    }
+
+    /**
+     * laravel migration template path
+     * 
+     * @return string
+     */
+    static function laravelMigrationCreateTemplateFilePath() {
+        $path = TEMPLATE_DIR.'laravel/migrate/create.phtml';
         return $path;
     }
 

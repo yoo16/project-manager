@@ -384,6 +384,47 @@ class ProjectController extends AppController
         $this->redirectTo(['controller' => 'attribute', 'action' => 'list'], $params);
     }
 
+    /**
+     * export laravel models
+     *
+     * @return void
+     */
+    function action_export_laravel_models()
+    {
+        if (!isPost()) exit;
+        $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
+        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
+
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
+        $pgsql = $database->pgsql();
+
+        $this->project->exportLaravelModels($pgsql);
+
+        $params['project_id'] = $this->project->value['id'];
+        $this->redirectTo(['controller' => 'model', 'action' => 'list'], $params);
+    }
+
+    /**
+     * export laravel models
+     *
+     * @return void
+     */
+    function action_export_laravel_model()
+    {
+        if (!isPost()) exit;
+        $this->model = DB::model('Model')->fetch($this->pw_posts['model_id']);
+        $this->project = DB::model('Project')->fetch($this->model->value['project_id']);
+        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
+
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
+        $pgsql = $database->pgsql();
+
+        $this->project->exportLaravelModel($pgsql, $this->model);
+
+        $params['model_id'] = $this->pw_posts['model_id'];
+        $this->redirectTo(['controller' => 'attribute', 'action' => 'list'], $params);;
+    }
+
 
     function action_export()
     {

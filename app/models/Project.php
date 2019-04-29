@@ -206,6 +206,67 @@ class Project extends _Project {
         file_put_contents($python_vo_model_path, $contents);
     }
 
+
+    /**
+     * export laravel models1
+     * @return bool
+     */
+    function exportLaravelModels($pgsql) {
+        //model
+        $this->bindMany('Model');
+
+        $relation_database = $this->hasMany('RelationDatabase')->all();
+        foreach ($relation_database->values as $relation_database) {
+            $old_database = DB::model('Database')->fetch($relation_database['old_database_id']);
+        }
+
+        if ($this->model->values) {
+            foreach ($this->model->values as $model) {
+                $this->model->value = $model;
+                $this->exportLaravelModel($pgsql, $this->model);
+            }
+        }
+    }
+
+    /**
+     * export laravel model
+     * 
+     * @param Model $model
+     * @return bool
+     */
+    function exportLaravelModel($pgsql, $model) {
+        $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
+
+        $values = null;
+        $values['project'] = $this->value;
+        
+        $attribute = $model->relation('Attribute')->order('name')->all();
+
+        $values['model'] = $model->value;
+        $values['attribute'] = $attribute->values;
+        
+        $pg_constraints = $this->pgConstraintValues($pg_class);
+        $values['unique'] = $pg_constraints['unique'];
+        $values['foreign'] = $pg_constraints['foreign'];
+        $values['primary'] = $pg_constraints['primary'];
+
+        $model_path = Model::projectPythonFilePath($this->user_project_setting->value, $model->value);
+        if (!file_exists($model_path)) {
+            $model_template_path = Model::pythonTemplateFilePath();
+            $contents = PwFile::bufferFileContetns($model_template_path, $values);
+            file_put_contents($model_path, $contents);
+        }
+
+        $create_migrate_file_path = Model::projectLaravelMigrateFilePath($this->user_project_setting->value, $model->value);
+        $create_migrate_template_file_path = Model::laravelMigrationCreateTemplateFilePath();
+        $contents = PwFile::bufferFileContetns($create_migrate_template_file_path, $create_migrate_file_path);
+        var_dump($create_migrate_file_path);
+        var_dump($create_migrate_template_file_path);
+        var_dump($contents);
+        exit;
+        file_put_contents($create_migrate_file_path, $contents);
+    }
+
     //controllers
     function exportPHPControllers($is_overwrite = false) {
         $page = $this->hasMany('Page');

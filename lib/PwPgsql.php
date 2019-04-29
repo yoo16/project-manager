@@ -897,7 +897,7 @@ class PwPgsql extends PwEntity
     function fetchRows($sql)
     {
         if ($rs = $this->query($sql)) {
-            $rows = pg_fetch_all($rs, PGSQL_ASSOC);
+            $rows = pg_fetch_all($rs);
             if ($this->is_cast && $this->columns) $rows = $this->castRows($rows);
             return $rows;
         } else {
