@@ -29,15 +29,17 @@ class Project extends _Project {
 
     function pgConstraintValues($pg_class) {
         foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
-            foreach ($pg_constraints as $pg_constraint) {
-                if ($type == 'unique') {
-                    foreach ($pg_constraint as $pg_constraint_unique) {
-                        $unique[$pg_constraint_unique['conname']][] = $pg_constraint_unique;
+            if ($pg_constraints) {
+                foreach ($pg_constraints as $pg_constraint) {
+                    if ($type == 'unique') {
+                        foreach ($pg_constraint as $pg_constraint_unique) {
+                            $unique[$pg_constraint_unique['conname']][] = $pg_constraint_unique;
+                        }
+                    } else if ($type == 'foreign') {
+                        $foreign[$pg_constraint['conname']] = $pg_constraint;
+                    } else if ($type == 'primary') {
+                        $primary = $pg_constraint['conname'];
                     }
-                } else if ($type == 'foreign') {
-                    $foreign[$pg_constraint['conname']] = $pg_constraint;
-                } else if ($type == 'primary') {
-                    $primary = $pg_constraint['conname'];
                 }
             }
         }
@@ -214,12 +216,6 @@ class Project extends _Project {
     function exportLaravelModels($pgsql) {
         //model
         $this->bindMany('Model');
-
-        $relation_database = $this->hasMany('RelationDatabase')->all();
-        foreach ($relation_database->values as $relation_database) {
-            $old_database = DB::model('Database')->fetch($relation_database['old_database_id']);
-        }
-
         if ($this->model->values) {
             foreach ($this->model->values as $model) {
                 $this->model->value = $model;
@@ -235,6 +231,8 @@ class Project extends _Project {
      * @return bool
      */
     function exportLaravelModel($pgsql, $model) {
+        $escapes = ['migration', 'password_resets'];
+        if (in_array($model->value['entity_name'], $escapes)) return;
         $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
 
         $values = null;
@@ -250,20 +248,9 @@ class Project extends _Project {
         $values['foreign'] = $pg_constraints['foreign'];
         $values['primary'] = $pg_constraints['primary'];
 
-        $model_path = Model::projectPythonFilePath($this->user_project_setting->value, $model->value);
-        if (!file_exists($model_path)) {
-            $model_template_path = Model::pythonTemplateFilePath();
-            $contents = PwFile::bufferFileContetns($model_template_path, $values);
-            file_put_contents($model_path, $contents);
-        }
-
         $create_migrate_file_path = Model::projectLaravelMigrateFilePath($this->user_project_setting->value, $model->value);
         $create_migrate_template_file_path = Model::laravelMigrationCreateTemplateFilePath();
         $contents = PwFile::bufferFileContetns($create_migrate_template_file_path, $create_migrate_file_path);
-        var_dump($create_migrate_file_path);
-        var_dump($create_migrate_template_file_path);
-        var_dump($contents);
-        exit;
         file_put_contents($create_migrate_file_path, $contents);
     }
 

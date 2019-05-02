@@ -400,8 +400,10 @@ class Model extends _Model {
 
         $name = $model['entity_name'];
         $date_string = date('Y_m_d_000000'); 
-        $file_name = "{$date_string}_create_{}_table.php";
-        $path = $user_project_setting['project_path']."app/laravel/migrate/{$file_name}";
+        $file_name = "{$date_string}_create_{$name}_table.php";
+        $dir = $path = $user_project_setting['project_path']."database/migrations/";
+        if (!file_exists($dir)) PwFile::createDir($dir);
+        $path = "{$dir}{$file_name}";
         return $path;
     }
 
