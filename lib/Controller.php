@@ -884,7 +884,11 @@ class Controller extends RuntimeException {
             $this->renderError($errors);
             exit;
         }
-        return DB::model($model_name)->requestSession($this->pw_multi_sid, $session_name);
+        if ($this->is_use_multi_sid) {
+            return DB::model($model_name)->requestSession($this->pw_multi_sid, $session_name);
+        } else {
+            return DB::model($model_name)->requestSession();
+        }
     }
 
     /**

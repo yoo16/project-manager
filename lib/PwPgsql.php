@@ -843,7 +843,7 @@ class PwPgsql extends PwEntity
      */
     function query($sql)
     {
-        if (!$sql) return;
+        if (!$this->checkSQL($sql)) return false;
         $this->sql_error = null;
         $this->sql = $sql;
         if (defined('SQL_LOG') && SQL_LOG) error_log("SQL: {$sql}");
@@ -855,7 +855,7 @@ class PwPgsql extends PwEntity
         }
         if ($pg) pg_close($pg);
 
-        //TODO init ?
+        $this->finaly();
         return $results;
     }
 
@@ -1399,8 +1399,6 @@ class PwPgsql extends PwEntity
             }
             $sql = $this->selectSql();
             $this->values = $this->fetchRows($sql);
-
-            $this->finaly();
             return $this;
         }
     }
@@ -1479,7 +1477,6 @@ class PwPgsql extends PwEntity
             $i++;
         }
         $this->values = $values;
-        $this->finaly();
         return $this;
     }
 
@@ -1543,7 +1540,9 @@ class PwPgsql extends PwEntity
         if ($posts) $this->takeValues($posts);
 
         $this->validate();
-        if ($this->errors) return $this;
+        if ($this->errors) {
+            return $this;
+        }
 
         $sql = $this->insertSql();
         if ($this->id = $this->fetchResult($sql)) {
@@ -1575,14 +1574,13 @@ class PwPgsql extends PwEntity
         if ($posts) $this->takeValues($posts);
 
         $this->validate();
+        //TODO function
         if ($this->errors) return $this;
-
         $sql = $this->updateSql();
-        if (!$sql) return $this;
-
         $result = $this->query($sql);
         if ($result === false) $this->addError('save', 'error');
         if (!$this->errors) PwSession::clear('pw_posts');
+
         return $this;
     }
 
@@ -1595,7 +1593,6 @@ class PwPgsql extends PwEntity
     public function updateAll($posts)
     {
         $sql = $this->updateAllSql($posts);
-        if (!$sql) return $this;
         $result = $this->query($sql);
         if ($result === false) $this->addError('save', 'error');
         if (!$this->errors) PwSession::clear('pw_posts');
@@ -1610,8 +1607,6 @@ class PwPgsql extends PwEntity
     public function updateByWhere($posts)
     {
         $sql = $this->updateByWhereSql($posts);
-        if (!$sql) return $this;
-
         $result = $this->query($sql);
         if ($result === false) $this->addError('save', 'error');
         return $this;
@@ -1630,8 +1625,6 @@ class PwPgsql extends PwEntity
     public function updateById($id, $posts)
     {
         $sql = $this->updateSqlById($id, $posts);
-        if (!$sql) return $this;
-
         $result = $this->query($sql);
         if ($result === false) $this->addError('save', 'error');
         return $this;
@@ -1649,7 +1642,6 @@ class PwPgsql extends PwEntity
         if (!$this->table_name) return $this;
         $this->takeValues($posts);
         $sql = $this->upsertSql();
-
         $result = $this->query($sql);
         if ($result === false) $this->addError('save', 'error');
         return $this;
@@ -1665,8 +1657,6 @@ class PwPgsql extends PwEntity
     {
         if (!$posts) return;
         $sql = $this->updatesSql($posts);
-        if (!$sql) return $this;
-
         $result = $this->query($sql);
         if ($result === false) $this->addError('save', 'error');
         return $this;
@@ -1747,8 +1737,7 @@ class PwPgsql extends PwEntity
         $value = implode(', ', $values);
 
         $sql = "INSERT INTO {$this->table_name} ({$column}) VALUES {$value}";
-        $result = $this->query($sql);
-
+        $this->query($sql);
         return $this;
     }
 
@@ -2665,6 +2654,7 @@ class PwPgsql extends PwEntity
     {
         $column = '';
         if (is_array($columns)) $column = implode(", ", $columns);
+        if (!$column) $column = '*';
         return $column;
     }
 
@@ -2691,32 +2681,27 @@ class PwPgsql extends PwEntity
                     $column_name = $as_column['column_name'];
                     $clazz = new $class_name();
                     $as_name = $as_column['as_name'];
-                    if ($as_name) {
-                        $column = "{$clazz->name}.{$column_name} AS {$as_name}";
-                    } else {
-                        $column = "{$clazz->name}.{$column_name}";
-                    }
-                    if ($column) $columns[] = $column;
-
+                    $column = "{$clazz->name}.{$column_name}";
+                    if ($as_name) $column.= " AS {$as_name}";
+                    $columns[] = $column;
                     if ($clazz->columns) {
                         $cast_column = ($as_name) ? $as_name : $column_name;
                         $this->extra_casts[$class_name][$cast_column] = $clazz->columns[$column_name]['type'];
                     }
                 }
             }
-            //dump($this->extra_casts);
         }
         $select_column = $this->selectColumnString($columns);
         $sql = "SELECT {$select_column} FROM {$this->table_name}";
 
         if ($this->joins) $sql .= $this->joinSql();
 
-        $sql .= $this->whereSql();
-        $sql .= $this->groupBySql();
-        if (!$this->group_by_columns) $sql .= $this->orderBySql();
-        $sql .= $this->limitSql();
-        $sql .= $this->offsetSql();
-        $sql .= ";";
+        $sql.= $this->whereSql();
+        $sql.= $this->groupBySql();
+        if (!$this->group_by_columns) $sql.= $this->orderBySql();
+        $sql.= $this->limitSql();
+        $sql.= $this->offsetSql();
+        $sql.= ";";
         return $sql;
     }
 

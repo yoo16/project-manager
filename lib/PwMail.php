@@ -20,6 +20,8 @@ class PwMail {
     public $iso_character = 'ISO-2022-JP';
     public $is_debug = false;
     public $is_test = false;
+    public $boundary = '';
+    public $is_attachment = false;
 
     /**
      * construct
@@ -72,14 +74,19 @@ class PwMail {
      * @return void
      */
     public function loadBody($params) {
-        $this->loadPwMailTemplate($params);
-        if (file_exists($this->template)) {
-            ob_start();
-            include $this->template;
-            $this->body = ob_get_contents();
-            ob_end_clean();
+        if ($params['body']) {
+            $this->body = $params['body'];
+        } else {
+            $this->loadPwMailTemplate($params);
+            if (file_exists($this->template)) {
+                ob_start();
+                include $this->template;
+                $this->body = ob_get_contents();
+                ob_end_clean();
+            }
         }
         if ($params['signature']) $this->body.= "\n{$params['signature']}";
+        if ($params['attachment_files']) $this->setAttachementFiles($params['attachment_files']);
         return $this;
     }
 
@@ -106,6 +113,98 @@ class PwMail {
     }
 
     /**
+     * boundary
+     *
+     * @return array
+     **/
+    function createBoundary() {
+        $this->boundary = "__Boundary__" . uniqid(rand(), true) . "__";
+    }
+
+    /**
+     * create header
+     *
+     * @return void
+     **/
+    function createHeader() {
+        $value = "";
+        $value.= "From: {$this->from}\nCc: {$this->cc}\nBcc: {$this->bcc}";
+        $value.= "MIME-Version: 1.0\n";
+        $value.= "Content-Type: Multipart/Mixed; boundary=\"{$this->boundary}\"\n";
+        $value.= "Content-Transfer-Encoding: 7bit"; 
+        $this->header = $value;
+    }
+
+    /**
+     * set attachements
+     *
+     * @param array $files
+     * @return array
+     **/
+    public function setAttachementFiles($files) {
+        if (!$files) return;
+
+        $this->is_attachment = true;
+
+        $body = "--__BOUNDARY__\n";
+        $body.= "Content-Type: text/plain; charset=\"ISO-2022-JP\"\n\n";
+        $body.= "{$this->body}\n";
+        $body.= "--__BOUNDARY__\n";
+
+        foreach ($files as $file) {
+            $file_name = mb_convert_encoding($file['name'], "ISO-2022-JP", 'auto');
+            $file_name = mb_encode_mimeheader($file_name);
+
+            //TODO ssl
+            $options['ssl']['verify_peer'] = false;
+            $options['ssl']['verify_peer_name'] = false;
+            $contents = file_get_contents($file['url'], false, stream_context_create($options));
+            //$contents = file_get_contents($file['url']);
+            if ($contents) {
+                $body.= "Content-Type: application/octet-stream; name=\"{$file_name}\"\n";
+                $body.= "Content-Disposition: attachment; filename=\"{$file_name}\"\n";
+                $body.= "Content-Transfer-Encoding: base64\n";
+                $body.= "\n";
+                $body.= chunk_split(base64_encode($contents));
+                $body.= "--__BOUNDARY__\n";
+            }
+        }
+        $this->body = $body;
+
+    }
+
+    /**
+     * load header
+     *
+     * @param array $params
+     * @return void
+     */
+    public function loadHeader($params) {
+        $header = '';
+        if ($this->cc) $this->cc = mb_convert_encoding($this->cc, $this->convert_encode, $this->encode);
+        if ($this->bcc) $this->bcc = mb_convert_encoding($this->bcc, $this->convert_encode, $this->encode);
+        if ($this->is_attachment) {
+            $header.= "Content-Type: multipart/mixed;boundary=\"__BOUNDARY__\"\n";
+            if ($params['return_path']) $header.= "Return-Path: {$params['return_path']} \n";
+            $header.= "From: " . $this->from ." \n";
+            if ($this->cc) $header.= "Cc: {$this->cc}\n";
+            if ($this->bcc) $header.= "Bcc: {$this->bcc}\n";
+            $header.= "Sender: " . $this->from ." \n";
+            $header.= "Reply-To: " . $this->from . " \n";
+            if ($org = $params['org']) {
+                $header.= "Organization: {$org} \n";
+                $header.= "X-Sender: {$org} \n";
+            }
+            $header.= "X-Priority: 3 \n";
+        } else {
+            $header = "From: {$this->from}\n";
+            if ($this->cc) $header.= "Cc: {$this->cc}\n";
+            if ($this->bcc) $header.= "Bcc: {$this->bcc}";
+        }
+        $this->header = $header;
+    }
+
+    /**
      * send
      * 
      * TODO localize
@@ -121,27 +220,18 @@ class PwMail {
         if (!$this->subject) return;
         if (!$this->to) return;
         if (!$this->from) return;
-        if ($this->cc) $this->cc = mb_convert_encoding($this->bcc, $this->convert_encode, $$this->encode);
-        if ($this->bcc) $this->bcc = mb_convert_encoding($this->bcc, $this->convert_encode, $$this->encode);
-        if ($params['body']) {
-            $this->body = $params['body'];
-        } else {
-            $this->loadBody($params);
-        }
 
-        $option = null;
-        $header = "From: {$this->from}\n";
-        if ($this->cc) $header.= "Cc: {$this->cc}\n";
-        if ($this->bcc) $header.= "Bcc: {$this->bcc}";
+        $this->loadBody($params);
+        $this->loadHeader($params);
 
         if ($this->is_debug) {
             echo($this->subject).PHP_EOL;
-            echo($header).PHP_EOL;
+            echo($this->header).PHP_EOL;
             echo($this->to).PHP_EOL;
             echo($this->body).PHP_EOL;
             exit;
         } else {
-            $is_send = mb_send_mail($this->to, $this->subject, $this->body, $header, $option);
+            $is_send = mb_send_mail($this->to, $this->subject, $this->body, $this->header);
             return $is_send;
         }
     }
@@ -152,7 +242,7 @@ class PwMail {
      * @param array $params
      * @return void
      */
-    function sendForISO($params) {
+    public function sendForISO($params) {
         if ($this->localize = 'ja') mb_language('Japanese');
         mb_internal_encoding($this->encode);
 

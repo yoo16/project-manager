@@ -64,6 +64,17 @@ class PwEntity {
     }
 
     /**
+     * check SQL
+     *
+     * @param string
+     * @return boolean
+     */
+    function checkSQL($sql) {
+        if ($sql) return true;
+        return false;
+    }
+
+    /**
      * finally
      * 
      * @return PwEntity
