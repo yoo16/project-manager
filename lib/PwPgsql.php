@@ -32,7 +32,6 @@ class PwPgsql extends PwEntity
     public $is_sort_order_column = true;
     public $is_excute_sql = true;
     public $is_value_object = false;
-    public $is_use_select_column = false;
 
     public static $pg_info_columns = ['dbname', 'user', 'host', 'port', 'password'];
     public static $constraint_keys = [
@@ -857,11 +856,6 @@ class PwPgsql extends PwEntity
         if ($pg) pg_close($pg);
 
         //TODO init ?
-        $this->conditions = null;
-        $this->orders = null;
-        //$this->limit = null;
-        $this->joins = null;
-        $this->group_by_columns = null;
         return $results;
     }
 
@@ -897,7 +891,7 @@ class PwPgsql extends PwEntity
     function fetchRows($sql)
     {
         if ($rs = $this->query($sql)) {
-            $rows = pg_fetch_all($rs);
+            $rows = pg_fetch_all($rs, PGSQL_ASSOC);
             if ($this->is_cast && $this->columns) $rows = $this->castRows($rows);
             return $rows;
         } else {
@@ -1252,13 +1246,17 @@ class PwPgsql extends PwEntity
     /**
      * select
      * 
-     * @param  array $params
+     * @param  array $columns
+     * @param  array $as_columns
      * @return PwPgsql
      */
-    public function select($params = null)
+    public function select($columns = null, $as_columns = null)
     {
-        $this->select_columns = null;
-        if (is_array($params)) $this->select_columns = $params;
+        $this->select_columns = [];
+        if (is_array($columns)) $this->select_columns = $columns;
+
+        $this->select_as_columns = [];
+        if (is_array($as_columns)) $this->select_as_columns = $as_columns;
         unset($this->id);
         return $this;
     }
@@ -1401,6 +1399,8 @@ class PwPgsql extends PwEntity
             }
             $sql = $this->selectSql();
             $this->values = $this->fetchRows($sql);
+
+            $this->finaly();
             return $this;
         }
     }
@@ -1479,6 +1479,7 @@ class PwPgsql extends PwEntity
             $i++;
         }
         $this->values = $values;
+        $this->finaly();
         return $this;
     }
 
@@ -2453,6 +2454,7 @@ class PwPgsql extends PwEntity
      */
     public function join($join_class_name, $join_column = null, $column = null, $class_name = null, $params = null)
     {
+        //TODO Bug: join custom column value can't change cast.
         //TODO join conditions
         if (!$join_class_name) return $this;
         $join_class = DB::model($join_class_name);
@@ -2473,9 +2475,11 @@ class PwPgsql extends PwEntity
         $join['eq'] = ($params['eq']) ? $params['eq'] : '='; 
         $join['type'] = ($params['type']) ? $params['type'] : 'LEFT'; 
 
+        $join['origin_class_name'] = $class_name;
         $join['origin_table_name'] = $origin_class->table_name;
         $join['origin_column'] = $column;
 
+        $join['join_class_name'] = $join_class_name;
         $join['join_table_name'] = $join_class->table_name;
         $join['join_column'] = $join_column;
 
@@ -2483,6 +2487,7 @@ class PwPgsql extends PwEntity
         $join['join_as_name'] = $params['join_as_name'];
         $join['join_entity_name'] = $join_class->entity_name;
        
+        $this->join_columns[$join_class->name] = $join_class->columns;
         $this->joins[] = $join;
         return $this;
     }
@@ -2679,8 +2684,30 @@ class PwPgsql extends PwEntity
         } else {
             $columns[] = '*';
         }
-        $column = $this->selectColumnString($columns);
-        $sql = "SELECT {$column} FROM {$this->table_name}";
+        //for join
+        if (isset($this->select_as_columns) && is_array($this->select_as_columns)) {
+            foreach ($this->select_as_columns as $class_name => $as_column) {
+                if (class_exists($class_name)) {
+                    $column_name = $as_column['column_name'];
+                    $clazz = new $class_name();
+                    $as_name = $as_column['as_name'];
+                    if ($as_name) {
+                        $column = "{$clazz->name}.{$column_name} AS {$as_name}";
+                    } else {
+                        $column = "{$clazz->name}.{$column_name}";
+                    }
+                    if ($column) $columns[] = $column;
+
+                    if ($clazz->columns) {
+                        $cast_column = ($as_name) ? $as_name : $column_name;
+                        $this->extra_casts[$class_name][$cast_column] = $clazz->columns[$column_name]['type'];
+                    }
+                }
+            }
+            //dump($this->extra_casts);
+        }
+        $select_column = $this->selectColumnString($columns);
+        $sql = "SELECT {$select_column} FROM {$this->table_name}";
 
         if ($this->joins) $sql .= $this->joinSql();
 

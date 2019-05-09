@@ -28,6 +28,11 @@ class PwEntity {
     public $values_index_column = null;
     public $values_index_column_type = null;
     public $child_relations = [];
+    public $select_columns;
+    public $select_as_columns;
+    public $extra_casts;
+    public $join_columns = [];
+    public $is_use_select_column = false;
 
     public static $except_columns = ['id', 'created_at', 'updated_at'];
     public static $app_columns = ['id', 'created_at', 'updated_at', 'sort_order', 'old_db', 'old_host', 'old_id'];
@@ -56,6 +61,32 @@ class PwEntity {
         $this->values_index_column_type = null;
         $this->defaultValue();
         return $this;
+    }
+
+    /**
+     * finally
+     * 
+     * @return PwEntity
+     */
+    public function finaly() {
+        $this->conditions = null;
+        $this->orders = null;
+        //$this->limit = null;
+        $this->joins = null;
+        $this->group_by_columns = null;
+        return $this;
+    }
+
+    /**
+     * set is_use_select_column
+     * 
+     * SQL select: table_name.column
+     * 
+     * @param  boolean $is_use_select_column
+     * @return PwEntity
+     */
+    public function isUseSelectColumn($is_use_select_column) {
+        $this->is_use_select_column = $is_use_select_column;
     }
 
     /**
@@ -127,7 +158,7 @@ class PwEntity {
         if ($session_key) {
             return PwSession::getWithKey($session_key, $this->entity_name, null, $sid);
         } else {
-            return PwSession::get($this->entity_name, null, $sid);
+            return PwSession::get($this->entity_name, $sid);
         }
     }
 
@@ -717,8 +748,18 @@ class PwEntity {
                     }
                 }
             } else {
+                //TODO Bug: join custom column value can't change cast
                 if (isset($this->columns[$column_name])) {
                     $values[$column_name] = $this->cast($this->columns[$column_name]['type'], $value);
+                }
+            }
+        }
+        //cast for join
+        if ($this->extra_casts) {
+            foreach ($this->extra_casts as $class_name => $extra_casts) {
+                foreach ($extra_casts as $column_name => $type) {
+                    $value = $values[$column_name];
+                    $values[$column_name] = $this->cast($type, $value);
                 }
             }
         }

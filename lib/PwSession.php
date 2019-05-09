@@ -15,11 +15,11 @@ class PwSession {
     * load
     *
     * @param  string $key
-    * @param  object $default_value
     * @param  int $sid
+    * @param  object $default_value
     * @return object
      **/ 
-    static function load($key, $default_value = null, $sid = 0) {
+    static function load($key, $sid = 0, $default_value = null) {
         if (!$sid) $sid = 0;
         if (isset($_REQUEST[$key])) PwSession::set($key, $_REQUEST[$key], $sid);
         return PwSession::get($key, $default_value, $sid);

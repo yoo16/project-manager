@@ -35,10 +35,11 @@ class PwMail {
      * init
      *
      * @param array $params
-     * @return void
+     * @return PwMail
      */
-    function init($params) {
+    public function init($params) {
         if ($params['is_test']) $this->is_test = true;
+        if ($params['is_debug']) $this->is_debug = true;
 
         $this->subject = $params['subject'];
         $this->to = $this->multipleAddress($params['to']);
@@ -52,6 +53,17 @@ class PwMail {
             }
         }
         if ($params['template']) $this->template = BASE_DIR."app/pw_mail/{$this->type}.phtml";
+        return $this;
+    }
+
+    /**
+     * load mail template
+     *
+     * @return void
+     */
+    public function loadSubject($params) {
+        $this->subject = $params['subject'];
+        return $this;
     }
 
     /**
@@ -68,6 +80,7 @@ class PwMail {
             ob_end_clean();
         }
         if ($params['signature']) $this->body.= "\n{$params['signature']}";
+        return $this;
     }
 
     /**
@@ -110,7 +123,11 @@ class PwMail {
         if (!$this->from) return;
         if ($this->cc) $this->cc = mb_convert_encoding($this->bcc, $this->convert_encode, $$this->encode);
         if ($this->bcc) $this->bcc = mb_convert_encoding($this->bcc, $this->convert_encode, $$this->encode);
-        $this->loadBody($params);
+        if ($params['body']) {
+            $this->body = $params['body'];
+        } else {
+            $this->loadBody($params);
+        }
 
         $option = null;
         $header = "From: {$this->from}\n";
