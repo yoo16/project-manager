@@ -310,6 +310,30 @@ class PwDate {
     }
 
     /**
+     * to date convert first day in monthly
+     *
+     * @param string $number
+     */
+    function fromDateFirstDay() {
+        if (!$this->from_time) $this->from_time = time();
+        $string = date('Y/m/01 00:00', $this->from_time);
+        $this->setFromString($string);
+        return $this;
+    }
+
+    /**
+     * to date convert first day in monthly
+     *
+     * @param string $number
+     */
+    function toDateFirstDay() {
+        if (!$this->to_time) $this->to_time = time();
+        $string = date('Y/m/01 00:00', $this->to_time);
+        $this->setToString($string);
+        return $this;
+    }
+
+    /**
      * set from_datetime
      *
      * TODO remove (old function)
@@ -387,6 +411,31 @@ class PwDate {
         $this->setStartString(date('Y/m/d 00:00'));
         $this->setEndString($this->to_string);
         return $this;
+    }
+
+    /**
+     * pereoid dates 
+     *
+     * @return PwDate
+     */
+    function periodDates($params = null) {
+        if (!$this->from_time) return $this;
+        if (!$this->to_time) return $this;
+        $time = $this->from_time;
+        while ($time < $this->to_time) {
+            $update_date = new PwDate();
+            $update_date->setFromTime($time);
+            $update_date->setToTime($time);
+            $update_date->nextToDate(1, 'month');
+            $update_date->toDateFirstDay();
+            $update_date->limitToDate($this->to_time, $params);
+
+            $this->dates[] = $update_date;
+
+            $time = $update_date->to_time;
+            $i++;
+            if ($i > 1000) break;
+        }
     }
 
     /**
@@ -554,7 +603,7 @@ class PwDate {
         $this->setEndString($end_at);
 
         if (!$this->from_string) $this->setFromString($end_at);
-        if (!$this->from_string) $this->setFromString(date('Y-m-01'));
+        if (!$this->from_string) $this->setFromString(date('Y/m/01'));
 
         $this->limitDate();
 
@@ -586,6 +635,31 @@ class PwDate {
             $this->setToTime($this->to_time, $formatter);
         } else {
             $this->setToTime($this->to_time);
+        }
+        return $this;
+    }
+
+    /**
+     * limit to date
+     *
+     * @param array $params
+     */
+    function limitFromDate($params = null) {
+        if ($this->from_time) {
+            $now = time();
+            if ($this->from_time > $now) $this->setFromTime($now, $params['formatter']);
+        }
+        return $this;
+    }
+
+    /**
+     * limit to date
+     *
+     * @param array $params
+     */
+    function limitToDate($time, $params = null) {
+        if ($this->to_time) {
+            if ($this->to_time > $time) $this->setToTime($time, $params['formatter']);
         }
         return $this;
     }
@@ -636,7 +710,7 @@ class PwDate {
     }
 
     /**
-     * set interval by from_string
+     * set interval by from string
      *
      * @param string $string
      * @param string $interval_string
@@ -651,15 +725,45 @@ class PwDate {
     }
 
     /**
-     * set interval by to_at
+     * set interval by from time
+     *
+     * @param string $string
+     * @param string $interval_string
+     * @param boolean $is_limit_now
+     */
+    function setIntervalByFromTime($time, $interval_string, $is_limit_now = true) {
+        $this->setFromTime($time);
+        $to_time = strtotime($interval_string, $this->from_time);
+        $this->setToTime($to_time);
+        if ($is_limit_now) $this->limitNow();
+        return $this;
+    }
+
+    /**
+     * set interval by to string
      *
      * @param string $string
      * @param string $interval_string
      */
-    function setIntervalByToString($string, $interval_string) {
+    function setIntervalByToString($string, $interval_string, $is_limit_now = true) {
         $this->setToString($string);
         $time = strtotime($interval_string, $this->to_time);
         $this->setFromTime($time);
+        if ($is_limit_now) $this->limitNow();
+        return $this;
+    }
+
+    /**
+     * set interval by to time
+     *
+     * @param string $string
+     * @param string $interval_string
+     */
+    function setIntervalByToTime($time, $interval_string, $is_limit_now = true) {
+        $this->setToTime($time);
+        $time = strtotime($interval_string, $this->to_time);
+        $this->setFromTime($time);
+        if ($is_limit_now) $this->limitNow();
         return $this;
     }
 
@@ -735,6 +839,28 @@ class PwDate {
      */
     function reverseDatetimes() {
         $this->datetimes = array_reverse($this->datetimes);
+        return $this;
+    }
+
+    /**
+     * next from date
+     *
+     * @return PwDate
+     */
+    function nextFromDate($value, $unit = 'hour') {
+        $format = "+{$value}{$unit}";
+        $this->setFromTime(strtotime($format, $this->from_time));
+        return $this;
+    }
+
+    /**
+     * next from date
+     *
+     * @return PwDate
+     */
+    function nextToDate($value, $unit = 'hour') {
+        $format = "+{$value}{$unit}";
+        $this->setToTime(strtotime($format, $this->to_time));
         return $this;
     }
 

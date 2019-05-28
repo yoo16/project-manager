@@ -61,10 +61,11 @@ class PwForm {
         if (!$params) return;
         
         $params['class'].= ' form-control';
+        $tag = '';
         if (!$params['hide_year']) $tag.= PwForm::selectYear($params, $selected);
         if (!$params['hide_month']) $tag.= PwForm::selectMonth($params, $selected);
         if (!$params['hide_day']) $tag.= PwForm::selectDays($params, $selected);
-        if ($params['show_hour']) $tag = PwForm::selectTime($params, $selected);
+        if ($params['show_hour']) $tag.= PwForm::selectTime($params, $selected);
 
         if ($params['one_day']) {
             $name = "{$params['name']}[day]";
@@ -180,9 +181,9 @@ class PwForm {
      * @return string
      */
     function selectTime($params) {
-        $hour_tag = self::selectHours($params);
-        $minute_tag = self::selectMinutes($params);
-        $tag.= "&nbsp;{$hour}&nbsp;:&nbsp;{$minute}\n";
+        $hour = self::selectHours($params);
+        $minute = self::selectMinutes($params);
+        $tag = "&nbsp;{$hour}&nbsp;:&nbsp;{$minute}\n";
         return $tag;
     }
 
@@ -196,10 +197,10 @@ class PwForm {
         $current = self::selectDateValue($params, 'minute');
 
         $params['values'] = range(0, 59);
-        $tag.= self::dateOptions($params, $current);
+        $option_tag = self::dateOptions($params, $current);
 
         $attribute = self::selectAttributeDate($params, 'minute');
-        $tag = self::selectTag($tag, $attribute);
+        $tag = self::selectTag($option_tag, $attribute);
         return $tag;
     }
 
@@ -343,7 +344,7 @@ class PwForm {
             $current_minute = (int) date('i', strtotime($params['selected']));
         }
 
-        $tag.= "<select name=\"{$params['name']}[hour]\" class=\"{$params['class']}\">";
+        $tag = "<select name=\"{$params['name']}[hour]\" class=\"{$params['class']}\">";
             if ($params['unselect']) {
             $tag.= "<option value=\"\">--</option>\n";
         }
@@ -653,7 +654,7 @@ class PwForm {
      * @return string
      */
     static function label($params) {
-        $tag.= "<label class=\"{$params['class']}\" for=\"{$params['id']}\">{$params['label']}</label>&nbsp;\n";
+        $tag = "<label class=\"{$params['class']}\" for=\"{$params['id']}\">{$params['label']}</label>&nbsp;\n";
         return $tag;
     }
 
@@ -757,10 +758,11 @@ class PwForm {
                 $label_tag = "<label for=\"{$id}\" class=\"{$label_class}\">\n{$label}\n</label>";
 
                 $checkbox_tag = "{$checkbox}\n{$label_tag}\n";
+                $tag = '';
                 if ($params['is_return']) {
-                    $tag .= "<div class=\"{$params['div_class']}\">{$checkbox}</div>";
+                    $tag.= "<div class=\"{$params['div_class']}\">{$checkbox}</div>";
                 } else {
-                    $tag .= $checkbox_tag;
+                    $tag.= $checkbox_tag;
                 }
             }
         }
@@ -999,10 +1001,11 @@ class PwForm {
      * @return string $name
      */
     static function groupButton($label, $params = null) {
+        $attribute = self::attribute($params);
         $tag = "<button {$attribute}>{$label}</button>\n";
         
         $attributes['class'] = 'input-group-btn';
-        $label = self::tag('span', $attribues);
+        $label = self::tag('span', $attributes);
         return $tag;
     }
 

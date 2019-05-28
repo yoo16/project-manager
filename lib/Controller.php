@@ -7,13 +7,6 @@
 
 require_once "PwSetting.php";
 
-PwSetting::load();
-Controller::loadLib();
-//TODO use $_REQUEST ?
-if (isset($lang)) PwLocalize::loadLocalizeFile($lang);
-PwLoader::autoloadModel();
-PwSetting::loadApplication();
-
 class Controller extends RuntimeException {
     static $routes = ['controller', 'action', 'id'];
 
@@ -74,9 +67,8 @@ class Controller extends RuntimeException {
         } else if(isset($name)) {
             $this->name = $name;
         }
-        if (isset($_REQUEST['pw_multi_sid'])) {
-            $this->session_name = $this->pw_multi_sid = $_REQUEST['pw_multi_sid'];
-        }
+        $this->session_name = $this->name;
+        if (isset($_REQUEST['pw_multi_sid'])) $this->pw_multi_sid = $_REQUEST['pw_multi_sid'];
     }
 
     // function __isset($name) {
@@ -210,7 +202,10 @@ class Controller extends RuntimeException {
                 $is_change_lang = false;
 
                 if (isset($_REQUEST['lang'])) $lang = $_REQUEST['lang'];
-                if (isset($_REQUEST['is_change_lang'])) $is_change_lang = $_REQUEST['is_change_lang'];
+                if (isset($_REQUEST['is_change_lang'])) {
+                    $is_change_lang = $_REQUEST['is_change_lang'];
+                    PwLocalize::loadCsvOptions($lang, true);
+                }
                 
                 if ($lang && $is_change_lang) PwSession::setWithKey('app', 'lang', $lang);
                 $controller->lang = PwLocalize::load($lang);
@@ -351,11 +346,11 @@ class Controller extends RuntimeException {
         $this->before_rendering($action, $this->with_layout);
         $template = $this->pwTemplate($action, $template);
 
-        @include_once BASE_DIR."app/PwHelpers/application_PwHelper.php";
+        @include_once BASE_DIR."app/helpers/application_helper.php";
 
         if ($this->with_layout) {
             $layout = $this->pwLayout();
-            $layout_file = BASE_DIR."app/views/layouts/{$layout}.phtml";
+            if ($layout) $layout_file = BASE_DIR."app/views/layouts/{$layout}.phtml";
         }
         $this->loadPwHeaders();
         if ($this->with_layout && file_exists($layout_file)) {
@@ -884,7 +879,7 @@ class Controller extends RuntimeException {
             $this->renderError($errors);
             exit;
         }
-        if ($this->is_use_multi_sid) {
+        if ($this->is_use_multi_sid && is_numeric($this->pw_multi_sid)) {
             return DB::model($model_name)->requestSession($this->pw_multi_sid, $session_name);
         } else {
             return DB::model($model_name)->requestSession();
@@ -910,7 +905,6 @@ class Controller extends RuntimeException {
         return DB::model($model_name)->clearSession($this->pw_multi_sid);
     }
 
-
     /**
      * load session by Model
      *
@@ -920,11 +914,11 @@ class Controller extends RuntimeException {
         if (is_array($this->session_by_models)) {
             foreach ($this->session_by_models as $class_name) {
                 if (class_exists($class_name)) {
-                    $model = PwSession::getWithKey('app', DB::model($class_name)->entity_name);
+                    $model = PwSession::getWithKey('app', $class_name);
                     if (!$model->entity_name) {
                         $model = DB::model($class_name)->all(true);
                         $entity_name = $model->entity_name;
-                        PwSession::setWithKey('app', $entity_name, $model);
+                        PwSession::setWithKey('app', $class_name, $model);
                     }
                     if ($model->entity_name) {
                         $entity_name = $model->entity_name;
@@ -1039,6 +1033,43 @@ class Controller extends RuntimeException {
      */
     function flushErrors() {
         return PwSession::clearWithKey('errors', $this->name);
+    }
+
+    /**
+     * load session by key value
+     *
+     * @param  string $key
+     * @param  array $value
+     * @return void
+     */
+    function loadSession($key) {
+        if (!$this->session_name) return;
+        if (isset($_REQUEST[$key])) PwSession::setWithKey($this->session_name, $key, $_REQUEST[$key]);
+        $this->getSession($key);
+    }
+
+    /**
+     * set session by key value
+     *
+     * @param  string $key
+     * @param  array $value
+     * @return void
+     */
+    function setSession($key, $value) {
+        if (!$this->session_name) return;
+        if (isset($value)) PwSession::setWithKey($this->session_name, $key, $value);
+    }
+
+    /**
+     * get session by key value
+     *
+     * @param  string $key
+     * @param  array $value
+     * @return mixed
+     */
+    function getSession($key) {
+        if (!$this->session_name) return;
+        return $this->$key = PwSession::getWithKey($this->session_name, $key); 
     }
 
     /**
@@ -1203,7 +1234,7 @@ class Controller extends RuntimeException {
      */
     function redirectForUpdate($model, $params = null) {
         if (!$params['valid']) $params['valid'] = ['action' => 'edit', 'id' => $this->pw_gets['id']];
-        if (!$params['invalid']) $params['invalid'] = ['action' => 'new'];
+        if (!$params['invalid']) $params['invalid'] = ['action' => 'edit', 'id' => $this->pw_gets['id']];
         $this->redirectByModel($model, $params);
     }
 
@@ -1258,7 +1289,10 @@ class Controller extends RuntimeException {
             $model = DB::model($class_name);
             if (!$posts) $posts = $this->pw_posts[$model->entity_name];
             $model->defaultValue()->insert($posts);
-            if (!$model->errors) $this->clearPwPosts();
+            if (!$model->errors) {
+                $model->initSort();
+                $this->clearPwPosts();
+            }
             return $model;
         }
     }
@@ -1670,20 +1704,6 @@ class Controller extends RuntimeException {
     }
 
     /**
-     * memory flow
-     *
-     * @return void
-     */
-    static function isMemoryFlow() {
-        $memory_peak = memory_get_peak_usage();
-        $memory_mb = round($memory_peak / (1024 * 1024));
-        if ($memory_mb > APP_MEMORY_LIMIT) {
-            $msg = "memory peak : {$memory_mb}MB";
-            return true;
-        }
-    }
-
-    /**
      * images dirctory path
      *
      * @return string
@@ -1752,4 +1772,35 @@ class Controller extends RuntimeException {
         return $params;
     }
 
+    /**
+     * system status
+     *
+     * @return void
+     */
+    public function systemStatus() {
+        //MB
+        $values['cpu'] = sys_getloadavg();
+        $values['memory'] = memory_get_usage() / (1024 * 1024);
+        return $values;
+    }
+
+    /**
+     * memory flow
+     *
+     * @return void
+     */
+    static function isMemoryFlow() {
+        $memory_peak = memory_get_peak_usage();
+        $memory_mb = round($memory_peak / (1024 * 1024));
+        if ($memory_mb > APP_MEMORY_LIMIT) {
+            $msg = "memory peak : {$memory_mb}MB";
+            return true;
+        }
+    }
 }
+
+PwSetting::load();
+Controller::loadLib();
+if (isset($lang)) PwLocalize::loadLocalizeFile($lang);
+PwLoader::autoloadModel();
+PwSetting::loadApplication();

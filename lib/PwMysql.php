@@ -135,25 +135,25 @@ class PwMysql extends PwEntity
      * 
      * @param string $table_name
      * @param array $conditions
-     * @param string $schama_name
+     * @param string $schema_name
      * @return string
      */
-    function pgIndexesByTableName($table_name, $conditions = null, $schama_name = 'public')
+    function pgIndexesByTableName($table_name, $conditions = null, $schema_name = 'public')
     {
         $conditions[] = "tablename = '{$table_name}'";
-        return $this->pgIndexes($conditions, $schama_name);
+        return $this->pgIndexes($conditions, $schema_name);
     }
 
     /**
      * index list
      * 
-     * @param string $schama_name
+     * @param string $schema_name
      * @param array $conditions
      * @return string
      */
-    function pgIndexes($conditions = null, $schama_name = 'public')
+    function pgIndexes($conditions = null, $schema_name = 'public')
     {
-        $sql = self::indexSql($conditions, $schama_name);
+        $sql = self::indexSql($conditions, $schema_name);
         return $this->fetchRows($sql);
     }
     
@@ -596,6 +596,7 @@ class PwMysql extends PwEntity
         }
         $vo_files_path = "{$vo_path}*.{$ext}";
 
+        $sql = '';
         foreach (glob($vo_files_path) as $file_path) {
             if (is_file($file_path)) {
                 $file = pathinfo($file_path);
@@ -1229,7 +1230,7 @@ class PwMysql extends PwEntity
      */
     function hasData()
     {
-        $this->select(['id'])->limit(1)->one();
+        $this->select(['id'])->one();
         return (boolean) $this->value;
     }
 
@@ -1266,10 +1267,9 @@ class PwMysql extends PwEntity
      */
     public function one($use_limit = true)
     {
-        if ($use_limit && $this->conditions) $this->limit(1);
-
+        //if ($use_limit && $this->conditions) $this->limit(1);
+        if ($use_limit) $this->limit(1);
         $sql = $this->selectSql();
-
         $this->fetchRow($sql);
 
         $this->id = $this->value[$this->id_column];
@@ -1407,7 +1407,7 @@ class PwMysql extends PwEntity
      * 
      * @return PwPgsql
      */
-    public function byAll($column)
+    public function allBy($column)
     {
         $columns = array_keys($this->columns);
         
@@ -3711,7 +3711,7 @@ class PwMysql extends PwEntity
      * @param int $attnum
      * @return array
      **/
-    function pgAttributeByAttnum($mysql_class_id, $attnum, $schama_name = 'public')
+    function pgAttributeByAttnum($mysql_class_id, $attnum, $schema_name = 'public')
     {
         if (!$mysql_class_id) return;
         if (!$attnum) return;
@@ -3802,15 +3802,15 @@ class PwMysql extends PwEntity
      * table comments
      *
      * @param  string $table_name
-     * @param  string $schama_name
+     * @param  string $schema_name
      * @return array
      */
-    function tableComments($table_name = null, $schama_name = 'public')
+    function tableComments($table_name = null, $schema_name = 'public')
     {
         $sql = "SELECT psut.relname ,pd.description
                 FROM mysql_stat_user_tables psut ,mysql_description pd
                 WHERE psut.relid = pd.objoid
-                AND schemaname = '{$schama_name}' 
+                AND schemaname = '{$schema_name}' 
                 AND pd.objsubid = 0";
 
         if ($table_name) $sql .= "relfilename = '{$table_name}'";
@@ -3822,10 +3822,10 @@ class PwMysql extends PwEntity
      * table comments array
      *
      * @param  string $table_name
-     * @param  string $schama_name
+     * @param  string $schema_name
      * @return array
      */
-    function tableCommentsArray($table_name = null, $schama_name = 'public')
+    function tableCommentsArray($table_name = null, $schema_name = 'public')
     {
         $comments = $this->tableComments();
         if (!$comments) return;

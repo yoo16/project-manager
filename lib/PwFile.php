@@ -419,7 +419,7 @@ class PwFile {
      */
     static function uploadPngImage($to_path, $key='file') {
         self::uploadImage($to_path, $key);
-        if (self::isJpeg($key)) self::convertJpgToPng($path);
+        if (self::isJpeg($key)) self::convertJpgToPng($to_path);
     }
 
     /**
@@ -427,10 +427,8 @@ class PwFile {
      *
      * @param string $path
      * @param bool $is_file_delete
-     *
-     * @return bool
      */
-    static function removeFile($path, $is_file_delete=false) {
+    static function removeFile($path, $is_file_delete = false) {
         if (file_exists($path)) {
             if (defined('PHP_FUNCTION_MODE') && PHP_FUNCTION_MODE) {
                 if (is_dir($path)) {
@@ -442,16 +440,15 @@ class PwFile {
                             }
                         }
                     }
-                    $is_success = rmdir($path);
+                    rmdir($path);
                 } elseif(is_file($path)) {
-                    $is_success = unlink($path);
+                    unlink($path);
                 }
             } else {
                 $cmd = "rm {$path}";
                 exec($cmd);
             }
         }
-        return $is_suceess;
     }
 
 

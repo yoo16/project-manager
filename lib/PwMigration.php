@@ -38,7 +38,6 @@ class PwMigration {
         if (!$old_model->values) return;
 
         $migrate_report = MigrateReport::model($class_name, $old_db_info, $old_model->values);
-
         if (is_array($foreigns)) {
             foreach ($foreigns as $column => $foreign) {
                 $db_name = ($foreign['db_name']) ? $foreign['db_name'] : $old_db_info['dbname'];
@@ -79,10 +78,10 @@ class PwMigration {
             }
             if ($posts['old_db']) {
                 $new_model = DB::model($class_name)->save($posts, $id);
-                //$migrate_report->addReport($new_model, $posts);
+                $migrate_report->addReport($new_model, $posts);
             }
         }
-        //$migrate_report->create();
+        $migrate_report->create();
     }
 
     /**
@@ -94,6 +93,27 @@ class PwMigration {
     function pgsql($params = null) {
         $this->from_pgsql = new PwPgsql();
         if ($params) $this->from_pgsql->setDBInfo($params);
+    }
+
+    /**
+     * update default value by columns
+     *
+     * @param string $model_name
+     * @return void
+     */
+    function updateDefaultValueByColumn($model_name) {
+        if (!class_exists($model_name)) return;
+        $model = DB::model($model_name);
+        if (!$model->columns) return;
+        foreach ($model->columns as $column_name => $column) {
+            if (isset($column['default'])) {
+                $default_value = $column['default'];
+                if ($column['type'] == 'bool') $default_value = ($default_value == 't')? 'TRUE' : 'FALSE';
+                $where = "{$column_name} IS NULL";
+                $sql = "UPDATE {$model->name} SET {$column_name} = '{$default_value}' WHERE {$where}";
+                $model->query($sql);
+            }
+        }
     }
 
     /**

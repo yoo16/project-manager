@@ -158,8 +158,9 @@ class PwEntity {
      */
     public function requestSession($sid = 0, $session_key = null) {
         $request_column = "{$this->entity_name}_id";
-        if (isset($_REQUEST[$request_column])) {
-            $this->fetch($_REQUEST[$request_column]);
+        if (isset($_REQUEST[$request_column])) $id = $_REQUEST[$request_column];
+        if (isset($id)) {
+            $this->fetch($id);
             if ($session_key) {
                 PwSession::setWithKey($session_key, $this->entity_name, $this, $sid);
             } else {
@@ -767,7 +768,7 @@ class PwEntity {
         }
         //cast for join
         if ($this->extra_casts) {
-            foreach ($this->extra_casts as $class_name => $extra_casts) {
+            foreach ($this->extra_casts as $extra_casts) {
                 foreach ($extra_casts as $column_name => $type) {
                     $value = $values[$column_name];
                     $values[$column_name] = $this->cast($type, $value);
@@ -1152,23 +1153,37 @@ class PwEntity {
         return $this;
     }
 
-    //TODO 
     /**
-    * find Parent 
+     * find from relation model
+     * 
+     * @param  PwEntity $relation
+     * @param  string $column
+     * @return PwEntity
+     */
+    function findByRelation($relation, $column = null) {
+        if (!$this->values) return $this;
+        if (!$relation->value) return $this;
+        if (!$column) $column = "{$this->entity_name}_id";
+        $this->value = $this->values[$relation->value[$column]];
+        return $this;
+    }
+
+    /**
+    * find from parent model
     *
-    * @param PwEntity $relation
-    * @param string $relation_key
+    * @param PwEntity $parent
+    * @param string $column
     * @return PwEntity
     */
-    function findParent($relation, $relation_key = null) {
+    function findByParent($parent, $column = null) {
         if (!$this->value) return $this;
-        if (!$relation->values) return $this;
-        if (!$relation->entity_name) return $this;
-        if (!$relation_key) $relation_key = "{$relation->entity_name}_id";
+        if (!$parent->values) return $this;
+        if (!$parent->entity_name) return $this;
+        if (!$column) $column = "{$parent->entity_name}_id";
 
-        $id = $this->value[$relation_key];
-        $entity_name = $relation->entity_name;
-        $this->$entity_name->value = $this->$entity_name->values[$id];
+        $entity_name = $parent->entity_name;
+        $this->$entity_name = $parent;
+        $this->$entity_name->value = $parent->values[$this->value[$column]];
         return $this->$entity_name;
     }
 
@@ -1196,22 +1211,6 @@ class PwEntity {
     function valueForKey($key) {
         if (!$this->values) return $this;
         $this->value = $this->values[$key];
-        return $this;
-    }
-
-    /**
-     * find from relation value
-     * 
-     * @param  PwEntity $relation
-     * @param  string $column
-     * @return PwEntity
-     */
-    function findByRelation($relation, $column = null) {
-        if (!$this->values) return $this;
-        if (!$relation->value) return $this;
-        if (!$column) $column = "{$this->entity_name}_id";
-        $id = $relation->value[$column];
-        $this->value = $this->values[$id];
         return $this;
     }
 

@@ -22,7 +22,8 @@ class PwSession {
     static function load($key, $sid = 0, $default_value = null) {
         if (!$sid) $sid = 0;
         if (isset($_REQUEST[$key])) PwSession::set($key, $_REQUEST[$key], $sid);
-        return PwSession::get($key, $default_value, $sid);
+        $value = PwSession::get($key, $sid);
+        if (is_null($value)) $value = $default_value;
     }
 
    /**
@@ -33,11 +34,11 @@ class PwSession {
     * @param int $sid
     * @return object
     */
-    static function get($key, $default_value = null, $sid = 0) {
+    static function get($key, $sid = 0) {
         if (!$sid) $sid = 0;
+        $sid = (int) $sid;
         $value = null;
         if (isset($_SESSION[APP_NAME][$sid][$key])) $value = $_SESSION[APP_NAME][$sid][$key];
-        if (is_null($value)) $value = $default_value;
         return $value;
     }
 
@@ -50,6 +51,8 @@ class PwSession {
     */
     static function set($key, $value, $sid = 0) {
         if (!$sid) $sid = 0;
+        if (!$key) return;
+        $sid = (int) $sid;
         $_SESSION[APP_NAME][$sid][$key] = $value;
     }
 
