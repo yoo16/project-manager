@@ -60,6 +60,12 @@
                   <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
                 </form>
                 &nbsp;
+                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_sql']) ?>" method="post">
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP SQL?">SQL</button>
+                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+                </form>
+                &nbsp;
                 <form action="<?= $this->urlFor(['controller' => 'localize_string', 'action' => 'export']) ?>" method="post">
                   <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP Localize files?">Localize</button>
                   <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">

@@ -52,26 +52,6 @@ var PwMigrateReport = function () {
         }
     }
 
-    this.show_sql = function(node) {
-        var params = {};
-        params.migrate_report_id = node.attr('migrate_report_id');
-        pw_app.controllerPost('migrate_report', 'api_sql', params, callback);
-
-        function callback(json) {
-            if (!json) return;
-            var execution_sql = JSON.parse(json);
-            var html = '';
-            if (execution_sql) {
-                if (execution_sql) {
-                    $.each(execution_sql, function(key, sql) {
-                        html+= '<div></div>' + sql + '</div>';
-                    });
-                }
-                log_contents.html(html);
-                $('#migrate_error_modal').modal('show');
-            }
-        }
-    }
     this.deletes = function(node) {
         var message = node.attr('message');
         if (!window.confirm(message)) return;

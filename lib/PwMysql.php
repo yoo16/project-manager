@@ -1035,7 +1035,7 @@ class PwMysql extends PwEntity
         $relation = DB::model($model_name);
 
         $column_name = $relation->entity_name;
-        $relation = $this->relationMany(get_class($relation), $foreign_key, $value_key)->all();
+        $relation = $this->relation(get_class($relation), $foreign_key, $value_key)->all();
         $this->$column_name = $relation;
         return $this;
     }
@@ -1093,7 +1093,7 @@ class PwMysql extends PwEntity
      */
     public function hasMany($class_name, $foreign_key = null, $value_key = null)
     {
-        return $this->relationMany($class_name, $foreign_key, $value_key)->all();
+        return $this->relation($class_name, $foreign_key, $value_key)->all();
     }
 
     /**
@@ -1770,7 +1770,7 @@ class PwMysql extends PwEntity
     function updateSortOrder($sort_orders)
     {
         if (!is_array($sort_orders)) return $this;
-        $this->idIndex()->select([$this->id_column, 'sort_order'])->all();
+        $this->select([$this->id_column, 'sort_order'])->all(true);
         $class_name = get_class($this);
         foreach ($sort_orders as $sort_order) {
             $id = $sort_order['id'];
@@ -2589,7 +2589,7 @@ class PwMysql extends PwEntity
     private function limitSql()
     {
         $sql = '';
-        if (!isset($this->limit)) return;
+        if (is_null($this->limit)) return;
         if (!is_int($this->limit)) return;
         $sql = " LIMIT {$this->limit}";
         return $sql;
@@ -2836,45 +2836,6 @@ class PwMysql extends PwEntity
     }
 
     /**
-     * select max value
-     * 
-     * @param  string $column
-     * @return string
-     */
-    public function selectMaxValue($column)
-    {
-        $sql = $this->selectMaxValueSql($column);
-        $values = $this->fetchResult($sql);
-        return $values;
-    }
-
-    /**
-     * select min value
-     * 
-     * @param  string $column
-     * @return string
-     */
-    public function selectMinValue($column)
-    {
-        $sql = $this->selectMinValueSql($column);
-        $values = $this->fetchResult($sql);
-        return $values;
-    }
-
-    /**
-     * selectMaxMinValue
-     * 
-     * @param  string $column
-     * @return string
-     */
-    public function selectMaxMinValue($column = null)
-    {
-        $values['max'] = $this->selectMaxValue($column);
-        $values['min'] = $this->selectMinValue($column);
-        return $values;
-    }
-
-    /**
      * selectMaxSql
      * 
      * @param  string $column
@@ -2899,34 +2860,6 @@ class PwMysql extends PwEntity
         $sql = "SELECT min({$column}) FROM {$this->table_name}";
         $sql .= $this->whereSql();
         $sql .= ";";
-        return $sql;
-    }
-
-    /**
-     * selectMaxValueSql
-     * 
-     * @param  string $column
-     * @return string
-     */
-    private function selectMaxValueSql($column)
-    {
-        $this->conditions[] = "{$column} IS NOT NULL";
-        $condition = $this->sqlConditions($this->conditions);
-        $sql = "SELECT {$column} FROM {$this->table_name} WHERE {$condition} ORDER BY {$column} DESC LIMIT 1;";
-        return $sql;
-    }
-
-    /**
-     * selectMinValueSql
-     * 
-     * @param  string $column
-     * @return string
-     */
-    private function selectMinValueSql($column)
-    {
-        $this->conditions[] = "{$column} IS NOT NULL";
-        $condition = $this->sqlConditions($this->conditions);
-        $sql = "SELECT {$column} FROM {$this->table_name} WHERE {$condition} ORDER BY {$column} ASC LIMIT 1;";
         return $sql;
     }
 

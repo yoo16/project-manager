@@ -44,7 +44,7 @@ class PwForm {
      */
     static function select($params, $selected = null) {
         if (!$params) return;
-        if (!isset($params['class'])) $params['class'] = 'form-control';
+        if (is_null($params['class'])) $params['class'] = 'form-control';
         $tag = self::selectOptions($params, $selected);
         if ($tag) $tag = self::selectTag($tag, $params);
         return $tag;
@@ -292,9 +292,7 @@ class PwForm {
      */
     static function selectTag($tag, $attributes = null) {
        foreach (self::$except_columns as $except_column) {
-           if (isset($attributes[$except_column])) {
-                unset($attributes[$except_column]); 
-           }
+           if (isset($attributes[$except_column])) unset($attributes[$except_column]);
        }
        $tag = self::tag('select', $tag, $attributes);
        return $tag;
@@ -686,7 +684,7 @@ class PwForm {
         } else {
             $label = (isset($params['label'])) ? $params['label'] : LABEL_TRUE;
         }
-        if (!isset($params['value'])) $params['value'] = 1;
+        if (is_null($params['value'])) $params['value'] = 1;
 
         $tag = '';
         if (!$params['unused_hidden']) $tag.= self::hidden($params['name'], 0);
@@ -972,8 +970,8 @@ class PwForm {
      * @return string
      */
     static function confirmDelete($params = null) {
-        if (!isset($params['label'])) $params['label'] = LABEL_DELETE;
-        if (!isset($params['class'])) $params['class'] = 'btn btn-danger';
+        if (is_null($params['label'])) $params['label'] = LABEL_DELETE;
+        if (is_null($params['class'])) $params['class'] = 'btn btn-danger';
         $params['class'].= ' confirm-delete fa fa-erase';
         $tag = PwTag::a($params);
         return $tag;

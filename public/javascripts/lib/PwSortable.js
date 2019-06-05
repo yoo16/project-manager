@@ -99,13 +99,12 @@ var PwSortable = function() {
 
         var link_tag = '';
         link_tag+= '<a><i class="fa fa-align-justify"></i></a>';
-        link_tag+= '<a class="btn btn-sm pw-lib" pw-lib="PwSortable" pw-action="top"><i class="fa fa-angle-double-up"></i></a>';
-        link_tag+= '<a class="bottom btn btn-sm pw-lib" pw-lib="PwSortable" pw-action="bottom"><i class="fa fa-angle-double-down"></i></a>';
+        link_tag+= '<a class="btn btn-sm pw-click" pw-lib="PwSortable" pw-action="top"><i class="fa fa-angle-double-up"></i></a>';
+        link_tag+= '<a class="bottom btn btn-sm pw-click" pw-lib="PwSortable" pw-action="bottom"><i class="fa fa-angle-double-down"></i></a>';
         $('td.sortable-control').html(link_tag);
         $('.sortable-control').show();
     }
     this.update_sort = function(node) {
-        console.log(node);
         if (!pw_sortable.sort_orders) return;
         
         var orders = [];

@@ -27,9 +27,9 @@ class PwMigration {
      * @param array $old_id_column
      * @param array $default_values
      * @param array $conditions
-     * @return void
+     * @return MigrateReport
      */
-    static function migrate($class_name, $old_db_info, $foreigns = null, $old_id_column = 'id', $conditions = null, $default_values = null) {
+   public static function migrate($class_name, $old_db_info, $foreigns = null, $old_id_column = 'id', $conditions = null, $default_values = null) {
         if (!$old_db_info) return;
 
         $old_model = DB::model($class_name)->setDBInfo($old_db_info)->useOldTable();
@@ -37,7 +37,6 @@ class PwMigration {
         $old_model->all();
         if (!$old_model->values) return;
 
-        $migrate_report = MigrateReport::model($class_name, $old_db_info, $old_model->values);
         if (is_array($foreigns)) {
             foreach ($foreigns as $column => $foreign) {
                 $db_name = ($foreign['db_name']) ? $foreign['db_name'] : $old_db_info['dbname'];
@@ -46,6 +45,8 @@ class PwMigration {
             }
         }
         $ids = DB::model($class_name)->where('old_db', $old_db_info['dbname'])->ids('old_id', 'id');
+
+        $migrate_report = MigrateReport::model($class_name, $old_db_info, $old_model->values);
         foreach ($old_model->values as $old_model->value) {
             $old_id = $old_model->value[$old_id_column];
             $posts = $old_model->oldValueToValue()->value;
@@ -69,7 +70,7 @@ class PwMigration {
             if ($search_columns) {
                 $search = DB::model($class_name);
                 foreach ($search_columns as $search_column) {
-                    $search->where("{$search_column} = '{$posts[$search_column]}'");
+                    $search->where($search_column, $posts[$search_column]);
                 }
                 $search->one();
                 $id = $search->value['id'];
@@ -81,7 +82,8 @@ class PwMigration {
                 $migrate_report->addReport($new_model, $posts);
             }
         }
-        $migrate_report->create();
+        $migrate_report->exportSQL();
+        return $migrate_report;
     }
 
     /**
@@ -133,6 +135,7 @@ class PwMigration {
             exit;
         }
 
+        $values = [];
         foreach ($db_infos as $key => $db_info) {
             $pgsql = new PwPgsql($db_info);
             $from_model = $pgsql
@@ -467,7 +470,7 @@ class PwMigration {
             $value = $this->bindFkIdsByFkIds($fk_ids, $value);
 
             if ($old_id_column) $value[$old_id_column] = $fk_ids[$old_id_column][$value['old_id']];
-            if (!isset($value['old_id'])) $value['old_id'] = null;
+            if (is_null($value['old_id'])) $value['old_id'] = null;
 
             $model = DB::model($class_name);
             if ($find_columns) {

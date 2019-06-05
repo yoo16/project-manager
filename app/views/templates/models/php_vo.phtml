@@ -61,7 +61,13 @@ class _<?= $values['model']['class_name'] ?> extends PwPgsql {
 <? endforeach ?>
     );
 <? endif ?>
-
+<? if ($values['index']): ?>
+    public $index_keys = [
+<? foreach ($values['index'] as $index): ?>
+    '<?= $index['indexname'] ?>' => '<?= $index['indexdef'] ?>',
+<? endforeach ?>
+    ];
+<? endif ?>
 <? if ($values['model']['old_name']): ?>
     public $old_name = '<?= $values['model']['old_name'] ?>';
 <? endif ?>

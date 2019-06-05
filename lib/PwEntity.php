@@ -82,7 +82,8 @@ class PwEntity {
     public function finaly() {
         $this->conditions = null;
         $this->orders = null;
-        //$this->limit = null;
+        $this->limit = null;
+        $this->offset = null;
         $this->joins = null;
         $this->group_by_columns = null;
         return $this;
@@ -168,7 +169,7 @@ class PwEntity {
             }
         }
         if ($session_key) {
-            return PwSession::getWithKey($session_key, $this->entity_name, null, $sid);
+            return PwSession::getWithKey($session_key, $this->entity_name, $sid);
         } else {
             return PwSession::get($this->entity_name, $sid);
         }
@@ -325,7 +326,7 @@ class PwEntity {
     public function save($posts, $id = null)
     {
         if (isset($posts[$this->id_column])) unset($posts[$this->id_column]);
-        if ($id) $this->fetch($id);
+        if ($id > 0) $this->fetch($id);
         if ($this->id > 0) {
             $this->update($posts);
         } else {
@@ -866,8 +867,8 @@ class PwEntity {
         $params['action'] = 'edit';
         $params['id'] = $value['id'];
 
-        if (!isset($http_params['label'])) $http_params['label'] = LABEL_EDIT;
-        if (!isset($http_params['class'])) $http_params['class'] = 'btn btn-outline-primary';
+        if (is_null($http_params['label'])) $http_params['label'] = LABEL_EDIT;
+        if (is_null($http_params['class'])) $http_params['class'] = 'btn btn-outline-primary';
 
         $tag = $controller->linkTo($params, $http_params);
         return $tag;
@@ -1048,7 +1049,7 @@ class PwEntity {
     * @return string
     */
     function recordValue($csv_name, $column, $params = null) {
-        if (!isset($this->value[$column])) return;
+        if (is_null($this->value[$column])) return;
         if ($records = $this->recordValues($csv_name, $params)) {
             return $records[$this->value[$column]];
         }
@@ -1078,7 +1079,7 @@ class PwEntity {
 
         //TODO join SQL?
         if (class_exists($model_name)) {
-            $model = DB::model($model_name)->idIndex()->all();
+            $model = DB::model($model_name)->all(true);
             if (!$model->values) return $this;
             if (!$value_key) $value_key = "{$model->entity_name}_id";
             foreach ($this->values as $index => $value) {
@@ -1440,7 +1441,7 @@ class PwEntity {
      * @return boolean
      */
     function validateAlphabet($column) {
-        if (!isset($this->value[$column])) return;
+        if (is_null($this->value[$column])) return;
         $is_alpha = ctype_alpha($this->value[$column]);
         if (!$is_alpha) {
             $this->addError($column, 'invalid');
@@ -1454,7 +1455,7 @@ class PwEntity {
      * @return boolean
      */
     function validateNumber($column) {
-        if (!isset($this->value[$column])) return;
+        if (is_null($this->value[$column])) return;
         $is_alpha = is_numeric($this->value[$column]);
         if (!$is_alpha) {
             $this->addError($column, 'invalid');
@@ -1498,29 +1499,39 @@ class PwEntity {
      */
     function validteAlphanumeric($column) {
         if (!$this->value[$column]) return;
-        if (!PwHelper::validteAlphanumeric($this->value[$column], $min, $max)) {
+        if (!PwHelper::validteAlphanumeric($this->value[$column])) {
             $this->addError($column, 'invalid');
         }
     }
 
     /**
-     * edit
+     * validate email
+     *
+     * @param string $email
+     * @return boolean
+     */
+    function validateEmail($email) {
+        return preg_match("/^\w+[\w\-\.]*@([\w\-]+\.)+\w{2,4}$/", $email) == 1;
+    }
+
+    /**
+     * new page
      *
      * @return PwEntity
      */
-    function new_page() {
+    function newPage() {
         $pw_posts = PwSession::get('pw_posts');
         $this->init()->takeValues($pw_posts[$this->entity_name]);
         return $this;
     }
 
     /**
-     * edit
+     * edit page
      *
      * @param integer $id
      * @return PwEntity
      */
-    function edit_page($id = null) {
+    function editPage($id = null) {
         if (!$id) $id = PwSession::getWithKey('pw_gets', 'id');
         if (!$id) exit('Not found id');
         $this->fetch($id);

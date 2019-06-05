@@ -16,25 +16,14 @@
       <? foreach ($this->pg_indexes as $pg_index): ?>
       <div class="row">
         <div class="col-6">
-            <? if (strpos($pg_index['indexdef'], 'CREATE UNIQUE') === 0): ?>
-            <?= $pg_index['indexname'] ?>
-            <span class="badge badge-info">UNIQUE</span>
-            <? else: ?>
-            <?= PwForm::input(['class' => 'form-control form-control'], 'new_index_name', $pg_index['indexname']) ?>
-            <? endif ?>
-          <!--
-            <span class="input-group-btn"><?= PwForm::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm confirm-dialog', 'message' => 'Do you rename Index?']) ?></span>
-          -->
+          <? if (strpos($pg_index['indexdef'], 'CREATE UNIQUE') === 0): ?>
+          <?= $pg_index['indexname'] ?>
+          <span class="badge badge-info">UNIQUE</span>
+          <? else: ?>
+          <?= PwForm::input(['class' => 'form-control form-control'], 'new_index_name', $pg_index['indexname']) ?>
+          <? endif ?>
         </div>
         <div class="col-6">
-          <!--
-          <form action="<?= $this->urlFor(['action' => 'delete_index']) ?>" method="post">
-            <?= PwForm::submit(LABEL_DELETE, ['class' => 'btn btn-sm btn-danger confirm-dialog', 'message' => 'Do you delete Index?']) ?></a>
-            <?= PwForm::hidden('index_name', $pg_index['indexname']) ?></a>
-            <?= PwForm::hidden('model_id', $this->model->value['id']) ?></a>
-            <?= PwForm::hidden('database_id', $this->database->value['id']) ?></a>
-          </form>
-          -->
         </div>
       </div>
       <? endforeach ?>

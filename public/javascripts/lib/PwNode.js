@@ -17,9 +17,24 @@ var PwNode = /** @class */ (function () {
             }
             if (this.params.class_name) {
                 this.setClassName(this.params.class_name);
+                //TODO node_list type
                 this.node_list = document.getElementsByClassName(this.params.class_name);
+                this.html_collection = document.getElementsByClassName(this.params.class_name);
+                this.elements = Array.from(this.html_collection);
             }
             return this;
+        };
+        this.submit = function () {
+            if (this.element) return this.element.submit();
+        }
+        this.val = function () {
+            if (this.element) return this.element.value;
+        };
+        this.value = function () {
+            if (this.element) return this.element.value;
+        };
+        this.getID = function () {
+            if (this.element) return this.element.id;
         };
         this.setValue = function (value) {
             if (this.element) {
@@ -27,12 +42,13 @@ var PwNode = /** @class */ (function () {
                 return this;
             }
         };
-        this.val = function () {
-            if (this.element) return this.element.value;
-        };
-        this.value = function () {
-            if (this.element) return this.element.value;
-        };
+        this.setValues = function (value) {
+            if (this.node_list) {
+                this.node_list.forEach(function (element) {
+                    element.value = value;
+                });
+            }
+        }
         this.name = function (name) {
             if (this.name) return this.element.name;
         };
@@ -50,18 +66,28 @@ var PwNode = /** @class */ (function () {
         }
         this.checked = function () {
             if (this.node_list) {
-                var selected = null;
+                var checked = null;
                 this.node_list.forEach(function (element) {
-                    if (element.checked) return selected = element.value;
+                    if (element.checked) return checked = element.value;
                 });
             }
-            return selected;
+            return checked;
         }
         this.checkAll = function () {
             if (this.node_list) {
                 this.node_list.forEach(function (element) {
                     element.checked = 1;
                 });
+            }
+        }
+        this.checkValue = function (value) {
+            if (this.element) {
+                if (value) {
+                    this.element.checked = 1;
+                } else {
+                    this.element.checked = null;
+                }
+                return this;
             }
         }
         this.checkValues = function () {
@@ -89,18 +115,10 @@ var PwNode = /** @class */ (function () {
                 return this;
             }
         }
-        this.checkValue = function (value) {
-            if (this.element) {
-                if (value) {
-                    this.element.checked = 1;
-                } else {
-                    this.element.checked = null;
-                }
-                return this;
-            }
-        }
         this.setAttr = function (key, value) {
             if (this.element) {
+                var node = PwNode.byElement(this.element);
+                node.element.setAttribute(key, value);
                 this.element.setAttribute(key, value);
                 return this;
             }
@@ -112,10 +130,8 @@ var PwNode = /** @class */ (function () {
                 Object.keys(params).map(function (key) { this.element.setAttribute(key, params[key]); });
         };
         this.attr = function (selector) {
-            if (!selector)
-                return;
-            if (this.element)
-                return this.element.getAttribute(selector);
+            if (!selector) return;
+            if (this.element) return this.element.getAttribute(selector);
         };
         this.html = function (html) {
             if (this.element) return this.element.innerHTML = html;
@@ -165,8 +181,7 @@ var PwNode = /** @class */ (function () {
             if (this.element) this.element.disabled = false;
         }
         this.controller = function () {
-            if (this.element)
-                return this.attr('pw-controller');
+            if (this.element) return this.attr('pw-controller');
         };
         this.functionName = function () {
             if (this.element)

@@ -78,18 +78,34 @@ class Project extends _Project {
     }
 
     /**
+     * export SQL
+     *
+     * @return void
+     */
+    function exportSQL($user_project_setting) {
+        if (file_exists($user_project_setting->value['project_path'])) {
+            $script_dir = "{$user_project_setting->value['project_path']}script/sql/";
+            $script_file_name = 'create_sql_from_model.php';
+            $script_path = "{$script_dir}{$script_file_name}";
+            $cmd = COMAND_PHP_PATH." {$script_path}";
+            dump($cmd);
+            exec($cmd);
+        }
+    }
+
+    /**
      * export php
      * @return bool
      */
     function exportPHPModels($pgsql) {
-        //model
         $this->bindMany('Model');
 
-        $relation_database = $this->hasMany('RelationDatabase')->all();
-        foreach ($relation_database->values as $relation_database) {
-            $old_database = DB::model('Database')->fetch($relation_database['old_database_id']);
-            $old_pgsqls[$old_database->value['id']] = $old_database->pgsql();
-        }
+        //TODO
+        // $relation_database = $this->hasMany('RelationDatabase')->all();
+        // foreach ($relation_database->values as $relation_database) {
+        //     $old_database = DB::model('Database')->fetch($relation_database['old_database_id']);
+        //     $old_pgsqls[$old_database->value['id']] = $old_database->pgsql();
+        // }
 
         if ($this->model->values) {
             foreach ($this->model->values as $model) {
@@ -128,6 +144,7 @@ class Project extends _Project {
         $values['unique'] = $pg_constraints['unique'];
         $values['foreign'] = $pg_constraints['foreign'];
         $values['primary'] = $pg_constraints['primary'];
+        $values['index'] = $pgsql->pgIndexesByTableName($model->value['name']);
 
         $model_path = Model::projectFilePath($this->user_project_setting->value, $model->value);
 
@@ -323,9 +340,15 @@ class Project extends _Project {
         }
     }
 
+    /**
+     * export PHP View
+     *
+     * @param PHP $page
+     * @param boolean $is_overwrite
+     * @return void
+     */
     function exportPHPView($page, $is_overwrite = false) {
         $values = null;
-        $values['pages'] = $pages;
         $values['page'] = $page;
         if ($page['model_id']) {
             $model = DB::model('Model')->fetch($page['model_id']);
@@ -378,6 +401,13 @@ class Project extends _Project {
         }  
     }
 
+    /**
+     * export php view
+     *
+     * @param Page $page
+     * @param boolean $is_overwrite
+     * @return void
+     */
     function exportPHPViewEdit($page, $is_overwrite = false) {
         $values = null;
         $values['pages'] = $pages;
@@ -407,6 +437,11 @@ class Project extends _Project {
         file_put_contents($form_path, $contents);
     }
 
+    /**
+     * export record(csv)
+     *
+     * @return void
+     */
     function exportRecord() {
         $records = $this->relationMany('Record')->all()->values;
         if ($records) {

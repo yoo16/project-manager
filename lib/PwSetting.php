@@ -15,10 +15,10 @@ class PwSetting {
     static function loadIniSet() {
         //TODO localize
         //ini_set('display_errors', 'Off');
-        ini_set('log_errors', 'On');
-        ini_set('mbstring.language', 'Japanese');
-        ini_set('mbstring.internal_encoding', 'UTF-8');
-        ini_set('default_charset', 'UTF-8');
+        @ini_set('log_errors', 'On');
+        @ini_set('mbstring.language', 'Japanese');
+        @ini_set('mbstring.internal_encoding', 'UTF-8');
+        @ini_set('default_charset', 'UTF-8');
     }
 
     /**
@@ -108,6 +108,10 @@ class PwSetting {
             if (file_exists($pgsql_setting_path)) {
                 define('DB_SETTING_FILE', $pgsql_setting_path);
                 PwSetting::loadFile(DB_SETTING_FILE);
+            }
+            $sql_public_setting_path = BASE_DIR."app/settings/pgsql/public.php";
+            if (file_exists($sql_public_setting_path)) {
+                PwSetting::loadFile($sql_public_setting_path);
             }
         }
     }

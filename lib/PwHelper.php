@@ -77,7 +77,7 @@ class PwHelper
      * @param string $column
      * @return boolean
      */
-    function validteAlphanumeric($value, $min= 4, $max = 50) {
+    function validteAlphanumeric($value) {
         if (!$value) return true;
         $pattern = "/[0-9a-zA-Z\\-\\_\\@\\.]/";
         return preg_match($pattern, $value);
@@ -149,4 +149,34 @@ function dump($object, $file = null, $line = null)
 function email_valid($email)
 {
     return preg_match("/^\w+[\w\-\.]*@([\w\-]+\.)+\w{2,4}$/", $email) == 1;
+}
+
+function undefineLabel($key, $value) {
+    $tag = '';
+    if (!defined($key)) {
+        $tag = undefineLabelTag($key, $value);
+    }
+    if (defined($key)) {
+        $tag.= $value;
+    }
+    return $tag;
+}
+
+function undefineLabelTag($key, $value) {
+    $tag = '<label class="badge badge-danger">Undefined</label>';
+    return $tag;
+}
+
+function cssClass($key, $selected, $class_name) {
+    if ($key == $selected) return $class_name;
+}
+
+function checkForeign($foreign, $attname) {
+    if ($foreign) {
+        foreach ($foreign as $pg_constraint) {
+            if ($pg_constraint['attname'] == $attname) {
+                return $pg_constraint['confrelid'];
+            }
+        }
+    }
 }

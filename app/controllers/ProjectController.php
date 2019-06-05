@@ -243,6 +243,7 @@ class ProjectController extends AppController
 
         $params['project_id'] = $this->project->value['id'];
 
+
         $this->redirectTo(['controller' => 'attribute', 'action' => 'list'], $params);
     }
 
@@ -561,6 +562,11 @@ class ProjectController extends AppController
         $this->redirectTo(['controller' => 'model', 'action' => 'list']);
     }
 
+    /**
+     * export sql
+     *
+     * @return void
+     */
     function action_export_sql_from_models()
     {
         if (!$this->database->value['id']) return;
@@ -571,9 +577,20 @@ class ProjectController extends AppController
         $pgsql_entity = new PwPgsql($this->database->pgInfo());
         $vo_path = "{$user_project_setting->value['project_path']}app/models/vo/";
         $sql = $pgsql_entity->createTablesSQLForPath($vo_path);
-
         echo ($sql);
         exit;
+    }
+
+    /**
+     * export sql
+     *
+     * @return void
+     */
+    function action_export_sql()
+    {
+        $this->user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+        $this->project->exportSQL($this->user_project_setting);
+        $this->redirectTo(['controller' => 'model']);
     }
 
 

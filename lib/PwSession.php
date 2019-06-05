@@ -24,6 +24,7 @@ class PwSession {
         if (isset($_REQUEST[$key])) PwSession::set($key, $_REQUEST[$key], $sid);
         $value = PwSession::get($key, $sid);
         if (is_null($value)) $value = $default_value;
+        return $value;
     }
 
    /**
@@ -47,6 +48,7 @@ class PwSession {
     *
     * @param string $key
     * @param object $value
+    * @param int $sid
     * @return void
     */
     static function set($key, $value, $sid = 0) {
@@ -61,14 +63,13 @@ class PwSession {
     *
     * @param  string $session_key
     * @param  string $key
-    * @param  object $default_value
     * @param  int $sid
     * @return object
      **/ 
-    static function loadWithKey($session_key, $key, $default_value = null, $sid = 0) {
+    static function loadWithKey($session_key, $key, $sid = 0) {
         if (!$sid) $sid = 0;
         if (isset($_REQUEST[$key])) PwSession::setWithKey($session_key, $key, $_REQUEST[$key], $sid);
-        return PwSession::getWithKey($session_key, $key, $default_value, $sid);
+        return PwSession::getWithKey($session_key, $key, $sid);
     }
 
    /**
@@ -76,18 +77,16 @@ class PwSession {
     *
     * @param string $session_key
     * @param string $key
-    * @param object $default_value
     * @param int $sid
     * @return object
     */
-    static function getWithKey($session_key, $key, $default_value = null, $sid = 0) {
+    static function getWithKey($session_key, $key, $sid = 0) {
         $value = null;
         if (isset($_SESSION[APP_NAME][$sid][$session_key])) {
             if (isset($_SESSION[APP_NAME][$sid][$session_key][$key])) {
                 $value = $_SESSION[APP_NAME][$sid][$session_key][$key];
             }
         }
-        if (is_null($value)) $value = $default_value;
         return $value;
     }
 

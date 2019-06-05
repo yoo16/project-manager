@@ -17,6 +17,9 @@ define('SQL_LOG', false);
 
 define('MAIL_SETTING_FILE', DB_DIR.'mail/default.csv');
 
+//shell
+define('COMAND_PHP_PATH', '/usr/bin/php');
+
 //Database Host
 define('DB_HOSTS_CSV', DB_DIR.'db_info/db_hosts.csv');
 define('DB_USERS_CSV', DB_DIR.'db_info/db_users.csv');

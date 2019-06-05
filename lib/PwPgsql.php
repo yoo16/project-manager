@@ -115,6 +115,51 @@ class PwPgsql extends PwEntity
     }
 
     /**
+     * init migrate
+     * 
+     * @return array
+     */
+    function initSQLMigrate()
+    {
+        if (defined('MIGRATE_DB') && is_array(MIGRATE_DB)) {
+            $dir = DB_DIR."sql/";
+            foreach (MIGRATE_DB as $db_name => $value) {
+                $sql_file_path = "{$dir}{$db_name}.sql";
+                if (file_exists($sql_file_path)) {
+                    $this->setDBInfo($value);
+                    $pg_database = $this->pgDatabase();
+                    if (!$pg_database) {
+                        $results = $this->createDatabase();
+                        $sql = file_get_contents($sql_file_path);
+                        if ($sql) {
+                            $this->query($sql);
+                            dump($sql_file_path);
+                            dump($this->host);
+                            dump($this->dbname);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * show database
+     *
+     * @return void
+     */
+    public function showDatabase()
+    {
+        $cmd = "\c {$this->dbname}";
+        $sql = "SHOW DATABASES '{$this->dbname}'";
+        $results = $this->query($sql);
+        var_dump($this->dbname);
+        var_dump($this->host);
+        var_dump($results);
+        exit;
+    }
+
+    /**
      * sequenceName
      * 
      * @param string $table_name
@@ -127,7 +172,6 @@ class PwPgsql extends PwEntity
         $sequence_name = "{$table_name}_{$id_column}_seq";
         return $sequence_name;
     }
-
 
     /**
      * index list
@@ -146,8 +190,8 @@ class PwPgsql extends PwEntity
     /**
      * index list
      * 
-     * @param string $schema_name
      * @param array $conditions
+     * @param string $schema_name
      * @return string
      */
     function pgIndexes($conditions = null, $schema_name = 'public')
@@ -174,7 +218,7 @@ class PwPgsql extends PwEntity
      * create index
      * 
      * @param string $table_name
-     * @param any $column_name
+     * @param mixed $column_name
      * @return string
      */
     function createPgIndex($table_name, $column_name)
@@ -461,8 +505,8 @@ class PwPgsql extends PwEntity
         if (!$models) return;
         $sql = '';
         foreach ($models as $model) {
-            $sql .= $this->createTableSql($model);
-            $sql .= PHP_EOL;
+            $sql.= $this->createTableSql($model);
+            $sql.= PHP_EOL;
         }
         return $sql;
     }
@@ -589,11 +633,7 @@ class PwPgsql extends PwEntity
      */
     function createTablesSQLForPath($vo_path, $ext = 'php')
     {
-        if (!file_exists($vo_path)) {
-            $message = "Not exists : {$vo_path}";
-            echo ($message);
-            exit;
-        }
+        if (!file_exists($vo_path)) return;
         $vo_files_path = "{$vo_path}*.{$ext}";
 
         $sql = '';
@@ -614,7 +654,9 @@ class PwPgsql extends PwEntity
         }
 
         //constraint
-        $sql .= PHP_EOL;
+        //index
+        $sql.= PHP_EOL;
+        $indexes_sql = [];
         foreach (glob($vo_files_path) as $file_path) {
             if (is_file($file_path)) {
                 $file = pathinfo($file_path);
@@ -626,9 +668,19 @@ class PwPgsql extends PwEntity
                     $model = new $class_name();
                     if (!$model->is_not_auto_migrate_table) {
                         if ($db_name = $model->dbname) $this->sql_files[$db_name].= $this->constraintSql($model);
+                        if ($model->index_keys) {
+                            foreach ($model->index_keys as $index_key => $index_sql) {
+                                if (strpos($index_sql, 'CREATE INDEX') === 0) {
+                                    $indexes_sql[$db_name].= $index_sql.';'.PHP_EOL;
+                                }
+                            }
+                        }
                     }
                 }
             }
+        }
+        foreach ($this->sql_files as $db_name => $sql) {
+            if ($indexes_sql[$db_name]) $this->sql_files[$db_name].= $indexes_sql[$db_name];
         }
     }
 
@@ -736,13 +788,10 @@ class PwPgsql extends PwEntity
         if (!$column) return;
         if (!$options) return;
 
-        $using = '';
         //TODO float double
+        $using = '';
         $type = $this->sqlColumnType($options['type'], $options['length']);
-        if (strstr($type, 'int')) {
-            $sql = "ALTER TABLE \"{$table_name}\" ALTER COLUMN \"{$column}\" TYPE {$type}";
-            $using = " USING {$column}::int";
-        }
+        if (strstr($type, 'int')) $using = " USING {$column}::int";
         $sql = "ALTER TABLE \"{$table_name}\" ALTER COLUMN \"{$column}\" TYPE {$type}{$using};";
         return $sql;
     }
@@ -818,6 +867,22 @@ class PwPgsql extends PwEntity
     }
 
     /**
+     * checkDatabase
+     *
+     * @return resource
+     */
+    function checkDatabase()
+    {
+        if (!$this->dbname) return true;
+        if (!$this->host) return true;
+        if ($pg = $this->connection()) {
+            return pg_connection_status($pg);
+        }
+        if ($pg) pg_close($pg);
+        return $pg;
+    }
+
+    /**
      * connection
      * 
      * @return resource
@@ -848,7 +913,7 @@ class PwPgsql extends PwEntity
     }
 
     /**
-     * connection
+     * query
      *
      * @param string $sql 
      * @return resource
@@ -917,7 +982,7 @@ class PwPgsql extends PwEntity
      * @param string $sql
      * @return array
      */
-    function fetchRow($sql)
+    function fetchRow($sql, $is_cast = true)
     {
         if ($rs = $this->query($sql)) {
             if ($this->is_value_object) {
@@ -925,8 +990,12 @@ class PwPgsql extends PwEntity
             } else {
                 $row = pg_fetch_assoc($rs);
             }
-            $this->value = $this->castRow($row);
             $this->initLimit();
+            if ($is_cast) {
+                $this->value = $this->castRow($row);
+            } else {
+                $this->value = $row;
+            }
             return $this->value;
         } else {
             return;
@@ -1044,7 +1113,7 @@ class PwPgsql extends PwEntity
         $relation = DB::model($model_name);
 
         $column_name = $relation->entity_name;
-        $relation = $this->relationMany(get_class($relation), $foreign_key, $value_key)->all();
+        $relation = $this->relation(get_class($relation), $foreign_key, $value_key)->all();
         $this->$column_name = $relation;
         return $this;
     }
@@ -1102,7 +1171,7 @@ class PwPgsql extends PwEntity
      */
     public function hasMany($class_name, $foreign_key = null, $value_key = null)
     {
-        return $this->relationMany($class_name, $foreign_key, $value_key)->all();
+        return $this->relation($class_name, $foreign_key, $value_key)->all();
     }
 
     /**
@@ -1239,6 +1308,7 @@ class PwPgsql extends PwEntity
      */
     function hasData()
     {
+        $this->value = null;
         $this->select(['id'])->one();
         return (boolean) $this->value;
     }
@@ -1393,21 +1463,23 @@ class PwPgsql extends PwEntity
     /**
      * select all
      * 
+     * @param $is_id_index
+     * @param $index_column
      * @return PwPgsql
      */
-    public function all($is_id_index = false)
+    public function all($is_id_index = false, $index_column = null)
     {
         if ($is_id_index) $this->idIndex();
+        if ($index_column) $this->setValuesIndexColumn($index_column);
+
         $this->values = null;
         if ($this->is_bulk_select) {
             return $this->bulkAll($this->limit);
         } else {
-            if (!$this->is_old_table) {
-                if ($this->is_sort_order_column) {
-                    if (!$this->orders && $this->columns['sort_order']) {
-                        $this->order('sort_order');
-                        if ($this->id_column) $this->order($this->id_column);
-                    }
+            if (!$this->is_old_table && $this->is_sort_order_column) {
+                if (!$this->orders && $this->columns['sort_order']) {
+                    $this->order('sort_order');
+                    if ($this->id_column) $this->order($this->id_column);
                 }
             }
             $sql = $this->selectSql();
@@ -1441,9 +1513,7 @@ class PwPgsql extends PwEntity
     public function selectAll()
     {
         if ($pg = $this->connection()) {
-            if (pg_connection_busy($pg)) {
-                exit('DB connection is busy.');
-            }
+            if (pg_connection_busy($pg)) exit('DB connection is busy.');
             $columns = [];
             $columns['id'] = '';
             $this->values = pg_select($pg, $this->table_name, $columns, PGSQL_DML_EXEC);
@@ -1791,7 +1861,7 @@ class PwPgsql extends PwEntity
     function updateSortOrder($sort_orders)
     {
         if (!is_array($sort_orders)) return $this;
-        $this->idIndex()->select([$this->id_column, 'sort_order'])->all();
+        $this->select([$this->id_column, 'sort_order'])->all(true);
         $class_name = get_class($this);
         foreach ($sort_orders as $sort_order) {
             $id = $sort_order['id'];
@@ -2416,6 +2486,7 @@ class PwPgsql extends PwEntity
     public function limit($limit)
     {
         $this->limit = $limit;
+        $this->current_limit = $limit;
         return $this;
     }
 
@@ -2618,7 +2689,7 @@ class PwPgsql extends PwEntity
     private function limitSql()
     {
         $sql = '';
-        if (!isset($this->limit)) return;
+        if (is_null($this->limit)) return;
         if (!is_int($this->limit)) return;
         $sql = " LIMIT {$this->limit}";
         return $sql;
@@ -2632,7 +2703,7 @@ class PwPgsql extends PwEntity
     private function offsetSql()
     {
         $sql = '';
-        if (!isset($this->offset)) return;
+        if (is_null($this->offset)) return;
         if (!is_int($this->offset)) return;
         $sql = " OFFSET {$this->offset}";
         return $sql;
@@ -2853,9 +2924,8 @@ class PwPgsql extends PwEntity
      */
     public function selectMax($column)
     {
-        $sql = $this->selectMaxSql($column);
-        $values = $this->fetchResult($sql);
-        return $values;
+        $values = $this->fetchRow($this->selectMaxSql($column));
+        return $values['max'];
     }
 
     /**
@@ -2866,9 +2936,8 @@ class PwPgsql extends PwEntity
      */
     public function selectMin($column)
     {
-        $sql = $this->selectMinSql($column);
-        $values = $this->fetchResult($sql);
-        return $values;
+        $values = $this->fetchRow($this->selectMinSql($column));
+        return $values['min'];
     }
 
     /**
@@ -2879,48 +2948,7 @@ class PwPgsql extends PwEntity
      */
     public function selectMaxMin($column = null)
     {
-        $sql = $this->selectMaxMinSql($column);
-        $values = $this->fetchRow($sql);
-        return $values;
-    }
-
-    /**
-     * select max value
-     * 
-     * @param  string $column
-     * @return string
-     */
-    public function selectMaxValue($column)
-    {
-        $sql = $this->selectMaxValueSql($column);
-        $values = $this->fetchResult($sql);
-        return $values;
-    }
-
-    /**
-     * select min value
-     * 
-     * @param  string $column
-     * @return string
-     */
-    public function selectMinValue($column)
-    {
-        $sql = $this->selectMinValueSql($column);
-        $values = $this->fetchResult($sql);
-        return $values;
-    }
-
-    /**
-     * selectMaxMinValue
-     * 
-     * @param  string $column
-     * @return string
-     */
-    public function selectMaxMinValue($column = null)
-    {
-        $values['max'] = $this->selectMaxValue($column);
-        $values['min'] = $this->selectMinValue($column);
-        return $values;
+        return $this->fetchRow($this->selectMaxMinSql($column));
     }
 
     /**
@@ -2932,8 +2960,8 @@ class PwPgsql extends PwEntity
     private function selectMaxSql($column)
     {
         $sql = "SELECT max({$column}) FROM {$this->table_name}";
-        $sql .= $this->whereSql();
-        $sql .= ";";
+        $sql.= $this->whereSql();
+        $sql.= ";";
         return $sql;
     }
 
@@ -2946,36 +2974,8 @@ class PwPgsql extends PwEntity
     private function selectMinSql($column)
     {
         $sql = "SELECT min({$column}) FROM {$this->table_name}";
-        $sql .= $this->whereSql();
-        $sql .= ";";
-        return $sql;
-    }
-
-    /**
-     * selectMaxValueSql
-     * 
-     * @param  string $column
-     * @return string
-     */
-    private function selectMaxValueSql($column)
-    {
-        $this->conditions[] = "{$column} IS NOT NULL";
-        $condition = $this->sqlConditions($this->conditions);
-        $sql = "SELECT {$column} FROM {$this->table_name} WHERE {$condition} ORDER BY {$column} DESC LIMIT 1;";
-        return $sql;
-    }
-
-    /**
-     * selectMinValueSql
-     * 
-     * @param  string $column
-     * @return string
-     */
-    private function selectMinValueSql($column)
-    {
-        $this->conditions[] = "{$column} IS NOT NULL";
-        $condition = $this->sqlConditions($this->conditions);
-        $sql = "SELECT {$column} FROM {$this->table_name} WHERE {$condition} ORDER BY {$column} ASC LIMIT 1;";
+        $sql.= $this->whereSql();
+        $sql.= ";";
         return $sql;
     }
 
@@ -2988,8 +2988,8 @@ class PwPgsql extends PwEntity
     private function selectMaxMinSql($column)
     {
         $sql = "SELECT max({$column}), min({$column}) FROM {$this->table_name}";
-        $sql .= $this->whereSql();
-        $sql .= ";";
+        $sql.= $this->whereSql();
+        $sql.= ";";
         return $sql;
     }
 
@@ -3004,8 +3004,8 @@ class PwPgsql extends PwEntity
         // TODO GROUP BY
         if (!$column) $column = $this->table_name;
         $sql = "SELECT sum({$column}) FROM {$this->table_name}";
-        $sql .= $this->whereSql();
-        $sql .= ";";
+        $sql.= $this->whereSql();
+        $sql.= ";";
         return $sql;
     }
 
@@ -3020,8 +3020,8 @@ class PwPgsql extends PwEntity
         // TODO GROUP BY
         if (!$column) $column = $this->table_name;
         $sql = "SELECT avg({$column}) FROM {$this->table_name}";
-        $sql .= $this->whereSql();
-        $sql .= ";";
+        $sql.= $this->whereSql();
+        $sql.= ";";
         return $sql;
     }
 
@@ -4229,7 +4229,7 @@ class PwPgsql extends PwEntity
             $action = self::$constraint_actions[$delete];
             $sql .= " ON DELETE {$action}";
         }
-        if ($is_not_deferrable) $sql .= " NOT DEFERRABLE";
+        if ($is_not_deferrable) $sql.= " NOT DEFERRABLE";
 
         $sql .= ';';
         return $this->query($sql);

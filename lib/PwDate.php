@@ -13,6 +13,8 @@ class PwDate {
     public $number;
     public $string;
     public $time;
+    public $datetimes;
+    public $date_numbers;
 
     public $from_string;
     public $from_number;
@@ -827,6 +829,23 @@ class PwDate {
                 }
                 $i++;
                 if ($i > 100000) break;
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * interval for datetimes
+     *
+     * @param integer $interval
+     * @param string $unit
+     * @param integer $limit_time
+     */
+    function calculateNumber($interval, $unit, $limit_time = null) {
+        $this->calculateDatetimes($interval, $unit, $limit_time = null);
+        if ($this->datetimes) {
+            foreach ($this->datetimes as $time) {
+                $this->date_numbers[] = date('Ymdhi', $time);
             }
         }
         return $this;

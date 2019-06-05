@@ -30,6 +30,22 @@ class PwTag {
     }
 
     /**
+     * label badge tag
+     *
+     * @param object $value
+     * @param string $true_label
+     * @param string $false_label
+     * @return string
+     */
+    static function activeText($value, $true_label = LABEL_TRUE, $false_label = LABEL_FALSE) {
+        if ($value) {
+            return $true_label;
+        } else {
+            return $false_label;
+        }
+    }
+
+    /**
     * urlFor
     *
     * @param array $params
@@ -278,7 +294,7 @@ class PwTag {
         $attribute = PwTag::attribute($params);
         $label = '';
         $icon_tag = '';
-        if (isset($params['icon_name'])) $icon_tag = PwTag::iconTag($params['icon_name']);
+        if (isset($params['icon_name'])) $icon_tag = PwTag::iconTag($params['icon_name'], $params);
         if (!isset($params['label']) && !isset($params['icon_name'])) $params['label'] = 'Link';
         if (isset($params['label']) && is_array($params['label'])) $params['label'] = implode(' ', $params['label']);
 
@@ -332,26 +348,27 @@ class PwTag {
     /**
     * reverse link
     *
-    * @param string $controller
-    * @param string $action
+    * @param array $actions
     * @param array $params
     * @param boolean $is_active
     * @return string
     */ 
-    static function reverse($controller, $action, $params, $is_active) {
-        if ($params['label']) $labels = $params['label'];
+    static function reverse($params, $options, $is_active) {
+        if ($params['label']) $labels = $options['label'];
         if (!$labels['valid']) $labels['valid'] = LABEL_TRUE;
         if (!$labels['invalid']) $labels['invalid'] = LABEL_FALSE;
 
-        if ($controller && $action) $params['href'] = Controller::url($controller, $action, null, $params['http_params']);
+        $controller = $params['controller'];
+        $action = $params['action'];
+        if ($controller && $action) $options['href'] = Controller::url($controller, $action, null, $options['http_params']);
 
-        //TODO bootstrap function
+        $options['label'] = $labels['valid'];
         if ($is_active) {
-            $params['label'] = "<span class=\"btn btn-sm btn-danger\">{$labels['valid']}</span>";
+            $options['class'].= " btn btn-sm btn-danger";
         } else {
-            $params['label'] = "<span class=\"btn btn-sm btn-outline-primary btn-sm\">{$labels['invalid']}</span>";
+            $options['class'].= " btn btn-sm btn-outline-primary";
         }
-        $tag = self::a($params);
+        $tag = self::a($options);
         return $tag;
     }
 
@@ -359,13 +376,20 @@ class PwTag {
      * icon tag
      * 
      * @param  string $name
+     * @param  array $options
      * @return string
      */
-    static function iconTag($name) {
+    static function iconTag($name, $options = null) {
         if ($name) {
-            //TODO fontawesome function
             $icon_class_name = "fa fa-{$name}";
-            $icon_tag = "<i class=\"{$icon_class_name}\"></i>&nbsp;";
+            if ($options['class'] && strpos($options['class'], 'pw-click') !== false) {
+                $options['class'] = "{$icon_class_name} pw-click";
+            } else {
+                $options['class'] = $icon_class_name;
+            }
+            $attribute = PwTag::attribute($options);
+            //TODO fontawesome function
+            $icon_tag = "<i {$attribute}></i>&nbsp;";
         }
         return $icon_tag;
     }
@@ -387,12 +411,12 @@ class PwTag {
      * active btn class
      *
      * @param mixed $value
-     * @param mixed $selected
+     * @param string $active_class
+     * @param string $default_class
      * @return void
      */
     static function activeBtnClass($value, $selected, $active_class = null, $default_class = null)
     {
-        $class = '';
         if ($value == $selected) {
             $class = ($active_class) ? $active_class : "btn btn-danger";
         } else {
@@ -459,28 +483,32 @@ class PwTag {
 
         if ($page_count > 1) {
             //first
-            $icon_tag = self::iconTag('angle-right');
             $params['offset'] = 0;
-            $params['label'] = self::iconTag('angle-double-left');
+            //$params['label'] = self::iconTag('angle-double-left');
+            $params['label'] = '<<';
             $params['class'] = ($offset == 0) ? ' disabled' : '';
             $first_tag = self::paginatorLiTag($params);
 
             //prev
             $params['offset'] = $offset - 1;
-            $params['label'] = self::iconTag('angle-left');
+            //$params['label'] = self::iconTag('angle-left');
+            $params['label'] = '<';
             $prev_tag = self::paginatorLiTag($params);
 
             //next
             $params['class'] = (($offset + 1) >= $page_count) ? ' disabled' : '';
             $params['offset'] = $offset + 1;
-            $params['label'] = self::iconTag('angle-right');
+            //$params['label'] = self::iconTag('angle-right');
+            $params['label'] = '>';
             $next_tag = self::paginatorLiTag($params);
 
             //latest
             $params['offset'] = $page_count - 1;
-            $params['label'] = self::iconTag('angle-double-right');
+            //$params['label'] = self::iconTag('angle-double-right');
+            $params['label'] = '>>';
             $latest_tag = self::paginatorLiTag($params);
 
+            $page_tag = '';
             foreach ($pages as $page) {
                 $label = $page + 1;
 
