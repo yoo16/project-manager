@@ -517,8 +517,12 @@ class Controller extends RuntimeException {
         } else if (is_array($params)) {
             if (empty($params['controller'])) $params['controller'] = $this->name;
             $url = $this->urlFor($params, $url_params);
+        } else {
+            $params['controller'] = $this->name;
+            $url = $this->urlFor($params, $url_params);
         }
         header("Location: {$url}");
+        exit;
     }
 
     /**

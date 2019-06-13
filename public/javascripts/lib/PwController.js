@@ -117,7 +117,6 @@ var PwController = function () {
         if (!json) return;
         var url = this.urlFor(params);
         if (this.isIE()) {
-            //options.data_format = 'json';
             ajaxPost(url, json, options);
         } else {
             fetchRequest(url, this.headerPostJson(json), options);
@@ -201,16 +200,48 @@ var PwController = function () {
     }
 
     /**
+     * pw-click handler
+     *
+     */
+    this.pwClickHandler = function(event) {
+        eventAction(this);
+        event.preventDefault();
+    }
+
+    /**
      * confirm dialog
      * 
      */
     this.confirmDialog = function() {
-        document.querySelectorAll('.confirm-dialog').forEach(function(element) {
+        //IE dosen't work elements.forEach()
+        let elements = document.querySelectorAll('.confirm-dialog');
+        [].forEach.call(elements, function(element) {
             element.addEventListener('click', function(event) {
                 var message = '';
                 if (element.getAttribute('message')) message = element.getAttribute('message');
                 if (!window.confirm(message)) {
                     event.preventDefault();
+                }
+            }, false);
+        });
+    }
+
+    /**
+     * delete
+     * 
+     */
+    this.deleteCheckbox = function() {
+        //IE dosen't work elements.forEach()
+        let elements = document.querySelectorAll('.delete_checkbox');
+        [].forEach.call(elements, function(element) {
+            element.addEventListener('change', function(event) {
+                let pw_node = PwNode.byElement(element);
+                let delete_link_node = PwNode.id('delete_link');
+                let is_checked = pw_node.checked();
+                if (is_checked) {
+                    delete_link_node.abled();                    
+                } else {
+                    delete_link_node.disabled();                    
                 }
             });
         });
@@ -221,16 +252,23 @@ var PwController = function () {
      * 
      */
     document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('pw-click')) eventAction(event);
-    });
+        if (event.target.classList.contains('pw-click')) {
+            eventAction(event.target);
+        //TODO child click event or use PwClick()
+        } else if (event.target.parentNode) {
+            if (event.target.parentNode.classList.contains('pw-click')) eventAction(event.target.parentNode);
+        }
+    }, true);
 
     /**
      * pw-change
      * 
      */
     document.addEventListener('change', function(event) {
-        if (event.target.classList.contains('pw-change')) eventAction(event);
-    });
+        if (event.target.classList.contains('pw-change')) {
+            eventAction(event.target);
+        }
+    }, true);
 
 
     //TODO remove jquery
@@ -252,7 +290,8 @@ var PwController = function () {
             if (!delete_id) return;
             PwNode.id('from_delete_id').setValue(delete_id);
             //remove jquery
-            $('.delete-window').modal();
+            //pw_modal.show(PwNode.id('delete-window'));
+            $('#delete-window').modal();
         }
     });
 
@@ -319,8 +358,10 @@ var PwController = function () {
         return value;
     }
     this.showLoading = function(selector_name) {
+        console.log(selector_name);
         if (!selector_name) selector_name = pw_loading_selector;
         var selector_node = PwNode.id(selector_name);
+            console.log(selector_node);
         if (selector_node) {
             //TODO selector object
             if (selector_name != 'body') selector_name = this.jqueryId(selector_name);
@@ -350,29 +391,29 @@ var PwController = function () {
         }
         return id;
     }
+    //TODO
     this.checkImageLoading = function(class_name, count) {
-        console.log(class_name);
         var displayed_count = 0;
 
-        // $(class_name).off('load');
-        // $(class_name).off('error');
-        // $(class_name).on('error', function(e) {
-        //     $(this).hide();
-        //     pw_app.hideLoading();
-        // });
-        // $(class_name).on('load', function() {
-        //     $(this).show();
-        //     if (count) {
-        //         displayed_count++;
-        //         if (count == displayed_count) {
-        //             pw_app.hideLoading();
-        //         }
-        //     } else {
-        //         pw_app.hideLoading();
-        //     }
-        // });
+        $(class_name).off('load');
+        $(class_name).off('error');
+        $(class_name).on('error', function(e) {
+            $(this).hide();
+            pw_app.hideLoading();
+        });
+        $(class_name).on('load', function() {
+            $(this).show();
+            if (count) {
+                displayed_count++;
+                if (count == displayed_count) {
+                    pw_app.hideLoading();
+                }
+            } else {
+                pw_app.hideLoading();
+            }
+        });
         
-        pw_app.hideLoading();
+        //pw_app.hideLoading();
         // var pw_node = PwNode.byClass(class_name);
         // let loadHandler = function(event) {
         //     pw_app.hideLoading();
@@ -382,7 +423,7 @@ var PwController = function () {
     }
     this.loadingDom = function(node, callback, error_callback) {
         var selector = '';
-        if (node.getID()) selector = this.jqueryId(node.getID());
+        if (node.getID()) selector = node.getID();
         pw_app.showLoading(selector);
 
         let loadHandler = function(event) {
@@ -399,15 +440,14 @@ var PwController = function () {
         }
         node.element.addEventListener('error', errorHandler, false);
     }
-    this.loadImage = function(url, node, callback, error_callback) {
+    this.loadImage = function(url, node, callback, error_callback, loading_node) {
         url+= '&serial=' + new Date().getTime();
         node.setAttr('src', url);
-        pw_app.loadingDom(node);
+        if (loading_node) pw_app.loadingDom(loading_node);
 
         var selector = '';
-        if (node.getID()) selector = this.jqueryId(node.getID());
         let loadHandler = function(event) {
-            pw_app.hideLoading(selector);
+            if (loading_node) pw_app.hideLoading(loading_node);
             node.show();
             if (callback) callback();
             node.element.removeEventListener('load', loadHandler);
@@ -481,28 +521,11 @@ var PwController = function () {
 
     this.openWindow = function(url, params) {
         var queryArray = [];
-        Object.keys(params).forEach(function (key) {
+        [].forEach.call(params, function(key) {
             queryArray.push(key + '=' + params[key]);
         });
         var query = queryArray.join(',');
         if (url) window.open(url, 'new', query);
-    }
-
-    /**
-     * controller class name
-     * 
-     * @param  string name
-     * @return string
-     */
-    this.controllerClassName = function(name) {
-        var class_name = '';
-        var names = name.split('_');
-        //remove jquery
-        $.each(names, function (index, value) {
-            class_name += upperTopString(value);
-        });
-        class_name += 'Controller';
-        return class_name;
     }
 
     this.loadPopup = function() {
@@ -527,28 +550,10 @@ var PwController = function () {
      */
     function query(params) {
         if (!params) return;
-        //var esc = encodeURIComponent;
         var queryArray = [];
         Object.keys(params).forEach(function (key) { return queryArray.push(key + '=' + encodeURIComponent(params[key])); });
         var query = queryArray.join('&');
         return query;
-    }
-
-    /**
-     * controller class name
-     * 
-     * @param  string name
-     * @return string
-     */
-    function controllerClassName(name) {
-        var class_name = '';
-        var names = name.split('_');
-        //TODO remove jQuery
-        $.each(names, function (index, value) {
-            class_name += upperTopString(value);
-        });
-        class_name += 'Controller';
-        return class_name;
     }
 
     /**
@@ -616,6 +621,10 @@ var PwController = function () {
     * @return void
     **/
    function ajaxRequest(url, data, options) {
+        var is_show_loading = false;
+        if (options.is_show_loading) is_show_loading = options.is_show_loading
+        if (is_show_loading) pw_app.showLoading(options.loading_selector);
+
         var data_format = 'html';
         var callback;
         var method = 'GET';
@@ -634,6 +643,7 @@ var PwController = function () {
                 withCredentials: true
             },
             success: function (result) {
+                if (is_show_loading) pw_app.hideLoading(options.loading_selector);
                 if (callback) callback(result);
             },
             error: function () {
@@ -680,13 +690,13 @@ var PwController = function () {
     /**
     * event action
     *
-    * @param Event event
+    * @param Element element
     * @return void
     **/
-    function eventAction(event) {
-        var pw_node = PwNode.byElement(event.target);
+    function eventAction(element) {
+        var pw_node = PwNode.byElement(element);
         var lib_name = pw_node.attr('pw-lib');
-        if (lib_name) return libAction(event);
+        if (lib_name) return libAction(element);
 
         var name = pw_node.controller();
         if (!name) return;
@@ -701,8 +711,14 @@ var PwController = function () {
         } 
     }
 
-    function libAction(event) {
-        var pw_node = PwNode.byElement(event.target);
+    /**
+    * lib action
+    *
+    * @param Element element
+    * @return void
+    **/
+    function libAction(element) {
+        var pw_node = PwNode.byElement(element);
         var lib_name = pw_node.attr('pw-lib');
         if (!lib_name) return;
 
@@ -731,8 +747,24 @@ document.addEventListener('DOMContentLoaded', function() {
     pw_app.multiSessionLink();
     pw_app.pwLoad(); 
     //TODO
-    pw_app.loadPopup();
     if (PwNode.id('pw-current-controller').value()) pw_app.pw_current_controller = PwNode.id('pw-current-controller').value();
     if (PwNode.id('pw-current-action').value()) pw_app.pw_current_action = PwNode.id('pw-current-action').value();
+    pw_app.loadPopup();
     pw_app.confirmDialog();
+    pw_app.deleteCheckbox();
 });
+
+if (!Element.prototype.matches) {
+    Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+}
+  
+if (!Element.prototype.closest) {
+    Element.prototype.closest = function(s) {
+      var el = this;
+      do {
+        if (el.matches(s)) return el;
+        el = el.parentElement || el.parentNode;
+      } while (el !== null && el.nodeType === 1);
+      return null;
+    };
+}

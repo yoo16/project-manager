@@ -87,12 +87,8 @@ class ProjectController extends AppController
      */
     function action_list()
     {
-        $this->database = DB::model('Database')
-            ->all();
-
-        $this->project = DB::model('Project')
-            ->all()
-            ->bindById('Database');
+        $this->database = DB::model('Database')->all();
+        $this->project = DB::model('Project')->all()->bindById('Database');
     }
 
     /**

@@ -93,10 +93,8 @@ class LocalizeStringController extends ProjectController {
             $csv->from_encode = 'AUTO';
             $csv->to_encode = 'UTF-8';
             $csv_values = $csv->results();
-
-            $localize_string = DB::model('LocalizeString')->where("project_id = {$this->project->value['id']}")
-                                                          ->all();
-
+            $localize_string = DB::model('LocalizeString')->where('project_id', $this->project->value['id'])->all();
+            //TODO array_column()
             foreach ($csv_values as $csv_value) {
                 if ($key = $csv_value['key']) {
                     $csv_labels[$key] = $csv_value;
@@ -218,7 +216,7 @@ class LocalizeStringController extends ProjectController {
         if ($localize_string->errors) {
             $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
         } else {
-            $this->redirectTo();
+            $this->redirectTo(['action' => 'list']);
         }
     }
 
