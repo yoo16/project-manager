@@ -8,10 +8,10 @@
         "sourceMap": true
     },
     "files": [
-        "PwApp.ts",
         "PwNode.ts",
+        "PwUI.ts",
         "PwSortable.ts",
         "PwForm.ts",
-        "PwDate.ts",
+        "PwApp.ts"
     ]
 }
