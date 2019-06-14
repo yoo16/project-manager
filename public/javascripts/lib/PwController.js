@@ -195,8 +195,7 @@ var PwController = function () {
                 }
             }
         }
-        //TODO remove jquery
-        $('#pw-error').modal('show');
+        pw_ui.showModal(pw_ui.error_window_name);
     }
 
     /**
@@ -206,45 +205,6 @@ var PwController = function () {
     this.pwClickHandler = function(event) {
         eventAction(this);
         event.preventDefault();
-    }
-
-    /**
-     * confirm dialog
-     * 
-     */
-    this.confirmDialog = function() {
-        //IE dosen't work elements.forEach()
-        let elements = document.querySelectorAll('.confirm-dialog');
-        [].forEach.call(elements, function(element) {
-            element.addEventListener('click', function(event) {
-                var message = '';
-                if (element.getAttribute('message')) message = element.getAttribute('message');
-                if (!window.confirm(message)) {
-                    event.preventDefault();
-                }
-            }, false);
-        });
-    }
-
-    /**
-     * delete
-     * 
-     */
-    this.deleteCheckbox = function() {
-        //IE dosen't work elements.forEach()
-        let elements = document.querySelectorAll('.delete_checkbox');
-        [].forEach.call(elements, function(element) {
-            element.addEventListener('change', function(event) {
-                let pw_node = PwNode.byElement(element);
-                let delete_link_node = PwNode.id('delete_link');
-                let is_checked = pw_node.checked();
-                if (is_checked) {
-                    delete_link_node.abled();                    
-                } else {
-                    delete_link_node.disabled();                    
-                }
-            });
-        });
     }
 
     /**
@@ -277,21 +237,6 @@ var PwController = function () {
             var pw_node = PwNode.byElement(event.target);
             var label = pw_node.value().replace(/\\/g, '/').replace(/.*\//, '');
             PwNode.id('pw_upload_file_text').setValue(label);
-        }
-    });
-
-    /**
-     * confirm delete
-     * 
-     */
-    document.addEventListener('click', function(event) {
-        if(event.target.classList.contains('confirm-delete')) {
-            var delete_id = PwNode.byElement(event.target).attr('delete_id');
-            if (!delete_id) return;
-            PwNode.id('from_delete_id').setValue(delete_id);
-            //remove jquery
-            //pw_modal.show(PwNode.id('delete-window'));
-            $('#delete-window').modal();
         }
     });
 
@@ -358,10 +303,8 @@ var PwController = function () {
         return value;
     }
     this.showLoading = function(selector_name) {
-        console.log(selector_name);
         if (!selector_name) selector_name = pw_loading_selector;
         var selector_node = PwNode.id(selector_name);
-            console.log(selector_node);
         if (selector_node) {
             //TODO selector object
             if (selector_name != 'body') selector_name = this.jqueryId(selector_name);
@@ -468,12 +411,10 @@ var PwController = function () {
         link_delete_image.setAttr('pw-controller', controller);
         link_delete_image.setAttr('pw-action', 'delete_image');
         link_delete_image.setAttr(delete_id_column, node.attr(delete_id_column));
-        //TODO remove jquery
-        $('.delete-file-window').modal('show');
+        pw_ui.showModal(pw_ui.delete_file_window_name);
     }
     this.deleteImage = function(params) {
-        //TODO remove jqeury
-        $('.delete-file-window').modal('hide');
+        pw_ui.hideModal(pw_ui.delete_file_window_name);
         var delete_id_column = params.delete_id_column;
         var url = pw_app.urlFor(
             {controller: params.controller, action: 'delete_image'},
@@ -516,29 +457,6 @@ var PwController = function () {
         .fail(function(xhr, status, errorThrown){
             pw_app.hideLoading();
             error_callback(xhr, status, errorThrown);
-        });
-    }
-
-    this.openWindow = function(url, params) {
-        var queryArray = [];
-        [].forEach.call(params, function(key) {
-            queryArray.push(key + '=' + params[key]);
-        });
-        var query = queryArray.join(',');
-        if (url) window.open(url, 'new', query);
-    }
-
-    this.loadPopup = function() {
-        var popupEvent = function(event) {
-            var option = this.href.replace(/^[^\?]+\??/,'').replace(/&/g, ',');
-            window.open(this.href, this.rel, option).focus();
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        //TODO remove jquery
-        $("a.pw-popup").each(function(i) {
-            $(this).click(popupEvent);
-            $(this).keypress(popupEvent);
         });
     }
 
@@ -749,11 +667,9 @@ document.addEventListener('DOMContentLoaded', function() {
     //TODO
     if (PwNode.id('pw-current-controller').value()) pw_app.pw_current_controller = PwNode.id('pw-current-controller').value();
     if (PwNode.id('pw-current-action').value()) pw_app.pw_current_action = PwNode.id('pw-current-action').value();
-    pw_app.loadPopup();
-    pw_app.confirmDialog();
-    pw_app.deleteCheckbox();
 });
 
+//TODO IE
 if (!Element.prototype.matches) {
     Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
 }

@@ -954,7 +954,6 @@ class PwForm {
         $params['class'].= ' fa fa-erase';
 
         $tag = self::submit($params['label'], $params);
-
         if ($params['is_check_delete']) {
             $check_delete_tag = "<label for=\"delete_checkbox\"><input class=\"delete_checkbox\" type=\"checkbox\" rel=\"{$rel_name}\"></label>";
             $tag.= $check_delete_tag;

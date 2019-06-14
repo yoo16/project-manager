@@ -28,6 +28,11 @@ var PwNode = /** @class */ (function () {
             }
             return this;
         };
+        this.parent = function() {
+            if (this.element && this.element.parentNode) {
+                return PwNode.byElement(this.element.parentNode);
+            }
+        }
         this.remove = function() {
             if (this.element) this.element.remove();
             if (this.elements) {
@@ -273,9 +278,22 @@ var PwNode = /** @class */ (function () {
         }
         this.addClass = function(class_name) {
             this.element.classList.add(class_name);
+            if (this.elements) [].forEach.call(this.elements, function(element) {
+                element.classList.add(class_name);
+            });
         }
         this.removeClass = function(class_name) {
             this.element.classList.remove(class_name);
+            if (this.elements) [].forEach.call(this.elements, function(element) {
+                element.classList.remove(class_name);
+            });
+        }
+        this.urlQuery = function(params) {
+            if (!params) return;
+            var queryArray = [];
+            Object.keys(params).forEach(function (key) { return queryArray.push(key + '=' + encodeURIComponent(params[key])); });
+            var query = queryArray.join('&');
+            return query;
         }
 
         /**
@@ -294,7 +312,6 @@ var PwNode = /** @class */ (function () {
                 class_name += PwNode.upperTopString(name);
             });
             class_name += 'Controller';
-            console.log(class_name);
             return class_name;
         };
         this.params = params;

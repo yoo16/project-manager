@@ -22,7 +22,7 @@ var PwLog = function () {
     this.loadList = function() {
         var url = pw_log.base_url + this.name + '/' + this.action_list;
 
-        $(this.html_id).html('');
+        PwNode.id(this.html_id).html('');
         pw_app.postByUrl(url, this.url_params, callback);
 
         function callback(json) {
@@ -61,7 +61,7 @@ var PwLog = function () {
             var values = nl2br(data);
             pw_log.log_title.html(pw_log.filename);
             pw_log.log_contents.html(values);
-            $('#log-window').modal('show');
+            pw_ui.showModal('log-window');
         }
     }
     this.reload = function(node) {
@@ -87,7 +87,7 @@ var PwLog = function () {
                 pw_app.hideLoading();
                 pw_log.log_title.html('');
                 pw_log.log_contents.html('');
-                $('#log-window').modal('hide');
+                pw_ui.hideModal('log-window');
             }
         }
     }

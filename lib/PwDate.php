@@ -669,9 +669,10 @@ class PwDate {
     /**
      * limitDate
      *
+     * @param string $formatter
      * @return PwDate
      */
-    function limitDate() {
+    function limitDate($formatter = 'Y/m/d H:i') {
         if ($this->start_time && (!$this->from_time || $this->from_time < $this->start_time)) {
             $this->setFromString($this->start_at);
         }
@@ -680,7 +681,7 @@ class PwDate {
         }
         $now = time();
         if ($this->to_time > $now) {
-            $this->setToString($now);
+            $this->setToTime($now, $formatter);
         }
         return $this;
     }

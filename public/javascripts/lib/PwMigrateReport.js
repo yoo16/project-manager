@@ -15,6 +15,7 @@ var PwMigrateReport = function () {
         params.migrate_report_id = node.attr('migrate_report_id');
         pw_app.controllerPost('migrate_report', 'api_error', params, callback);
 
+        //remove jquery
         function callback(json) {
             if (!json) return;
             var errors = JSON.parse(json);
@@ -47,7 +48,7 @@ var PwMigrateReport = function () {
                     }
                 }
                 log_contents.html(html);
-                $('#migrate_error_modal').modal('show');
+                pw_ui.showModal('migrate_error_modal');
             }
         }
     }

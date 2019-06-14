@@ -78,8 +78,8 @@ class PwMigration {
                 $id = $ids[$posts['old_id']];
             }
             if ($posts['old_db']) {
-                $new_model = DB::model($class_name)->save($posts, $id);
-                $migrate_report->addReport($new_model, $posts);
+                $new_model = DB::model($class_name)->defaultValue()->save($posts, $id);
+                $migrate_report->addReport($new_model);
             }
         }
         $migrate_report->exportSQL();
@@ -524,18 +524,73 @@ class PwMigration {
     }
 
     /**
-     * export error log
-     * 
-     * @param  string $contents
-     * @param  string $class_name
+     * update null boolean
+     *
+     * @param string $model_name
      * @return void
      */
-    function exportErrorLog($contents, $class_name) {
-        if ($contents) {
-            $file_name = date('Ymd')."_error_{$class_name}.log";
-            $error_log_dir = LOG_DIR."error_log/";
-            PwFile::outputFile($error_log_dir, $file_name, $contents);
-        }   
+    static function updateNullBoolean($model_name)
+    {
+        if (class_exists($model_name)) {
+            $model = DB::model($model_name);
+            foreach ($model->columns as $column_name => $column) {
+                if ($column['type'] == 'bool') {
+                    $where = "{$column_name} IS NULL";
+                    $sql = "UPDATE {$model->name} SET {$column_name} = FALSE WHERE {$where}";
+                    $model->query($sql);
+                }
+            }
+        }
+    }
+
+    /**
+     * old db infos by system
+     *
+     * @return array
+     */
+    static function oldDBInfosBySystem($system)
+    {
+        if (!defined('OLD_DB_INFO')) return;
+        $values = OLD_DB_INFO;
+        return $values[$system];
+    }
+
+    /**
+     * shamen old db infos
+     *
+     * @return array
+     */
+    static function oldDBInfosKeyDB($system)
+    {
+        $values = self::oldDBInfosBySystem($system);
+        foreach ($values as $value) {
+            $db_name = $value['dbname'];
+            $old_db_infos[$db_name] = $value;
+        }
+        return $old_db_infos;
+    }
+
+    /**
+     * old db info
+     *
+     * @return string $db_name
+     * @return array
+     */
+    static function oldDBInfoByDBName($system, $db_name)
+    {
+        $old_db_infos = self::oldDBInfosKeyDB($system);
+        return $old_db_infos[$db_name];
+    }
+
+    /**
+     * old db infos by system
+     *
+     * @return array
+     */
+    static function oldDBInfoByName($system, $name)
+    {
+        $values = self::oldDBInfosBySystem($system);
+        return $values[$name];
     }
 
 }

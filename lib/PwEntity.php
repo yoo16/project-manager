@@ -1376,8 +1376,8 @@ class PwEntity {
      *
      * @return PwEntity
      */
-    function auth() {
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') exit;
+    function pwAuth() {
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') return $this;
 
         if (!$this->auth_columns) exit('Not found auth columns in model');
         foreach ($this->auth_columns as $column => $options) {

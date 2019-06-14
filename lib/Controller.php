@@ -485,6 +485,7 @@ class Controller extends RuntimeException {
         } else {
             trigger_error("File Not Found: {$file}", E_USER_NOTICE);
         }
+        exit;
     }
 
     /**
@@ -1574,16 +1575,6 @@ class Controller extends RuntimeException {
     }
 
     /**
-     * public action login
-     *
-     * @return void
-     */
-    function login() {
-        $this->redirectLogin();
-        exit;
-    }
-
-    /**
      * check auth
      * 
      * @param  string $action
@@ -1676,8 +1667,9 @@ class Controller extends RuntimeException {
      * @return void
      */
     function redirectLogin($uri = null) {
-        if (!$uri) $uri = $this->pw_login_controller.'/';
-        $this->redirectTo($uri);
+        if (!$uri) $params['controller'] = $this->pw_login_controller;
+        if (!$params['controller']) exit;
+        $this->redirectTo($params);
         exit;
     }
 

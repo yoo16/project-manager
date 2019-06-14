@@ -1650,17 +1650,16 @@ class PwPgsql extends PwEntity
         if (!$id) $id = $this->id;
         if ($id > 0) $this->fetch($id);
         if (!$this->id) return $this;
-        if ($posts[$this->id_column]) unset($posts[$this->id_column]);
+        if (isset($posts[$this->id_column])) unset($posts[$this->id_column]);
         if ($posts) $this->takeValues($posts);
 
         $this->validate();
         //TODO function
         if ($this->errors) return $this;
         $sql = $this->updateSql();
-        $result = $this->query($sql);
+        if ($sql) $result = $this->query($sql);
         if ($result === false) $this->addError('save', 'error');
         if (!$this->errors) PwSession::clear('pw_posts');
-
         return $this;
     }
 
@@ -3059,7 +3058,6 @@ class PwPgsql extends PwEntity
         $sql = '';
         $changes = $this->changes();
         if (!$changes) return;
-
         foreach ($changes as $key => $org_value) {
             $value = self::sqlValue($this->value[$key]);
             $set_values[] = "{$key} = {$value}";
@@ -4131,7 +4129,7 @@ class PwPgsql extends PwEntity
     /**
      * pg constraint by pg_class
      *
-     * @param  string $table_name
+     * @param  string $pg_class_id
      * @return array
      */
     function pgConstraintsByPgClassID($pg_class_id)
@@ -4157,7 +4155,7 @@ class PwPgsql extends PwEntity
      *
      * @param  string $table_name
      * @param  array $columns
-     * @return void
+     * @return boolean
      */
     function addPgPrimaryKey($table_name, $column_name)
     {
@@ -4170,8 +4168,9 @@ class PwPgsql extends PwEntity
      * rename constraint name
      *
      * @param  string $table_name
-     * @param  array $columns
-     * @return void
+     * @param  string $constraint_name
+     * @param  string $new_constraint_name
+     * @return boolean
      */
     function renamePgConstraint($table_name, $constraint_name, $new_constraint_name)
     {
@@ -4203,6 +4202,9 @@ class PwPgsql extends PwEntity
      * @param  string $foreign_column
      * @param  string $reference_table_name
      * @param  string $reference_column
+     * @param  string $update
+     * @param  string $delete
+     * @param  boolean $is_not_deferrable
      * @return void
      */
     function addPgForeignKey(
@@ -4254,7 +4256,7 @@ class PwPgsql extends PwEntity
      * remove pg constraints
      *
      * @param  string $table_name
-     * @return void
+     * @return array
      */
     function removePgConstraints($table_name, $type = null)
     {
@@ -4265,9 +4267,9 @@ class PwPgsql extends PwEntity
 
         foreach ($constraints as $constraint) {
             $sql = "ALTER TABLE {$table_name} DROP CONSTRAINT {$constraint['conname']};";
-            $results = $this->query($sql);
+            $results[] = $this->query($sql);
         }
-        return;
+        return $results;
     }
 
     /**
@@ -4505,6 +4507,8 @@ class PwPgsql extends PwEntity
     /**
      * old db info by old host
      * 
+     * @param string $old_host
+     * @param string $old_db
      * @return string
      */
     static function oldDbInfoByOldHost($old_host, $old_db)
@@ -4523,17 +4527,18 @@ class PwPgsql extends PwEntity
     /**
      * delete records and reset sequence
      *
+     * @param boolean $is_drop_primary
      * @return 
      */
     function deleteRecords($is_drop_primary = false) {
         $this->deletes();
 
         if ($this->sql_error) {
-            dump($this->sql_error);
+            exit($this->sql_error);
             return;
         }
         if ($this->errors) {
-            dump($this->errors);
+            exit($this->errors);
             return;
         }
 
