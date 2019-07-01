@@ -1,5 +1,5 @@
-<a class="btn btn-outline-primary pw-lib" pw-lib="PwSortable" pw-action="edit"><?= PwTag::iconTag('sort') ?><?= LABEL_SORT_ORDER ?></a>
+<a class="btn btn-outline-primary pw_table_dnd" event="click" action="edit"><?= PwTag::iconTag('sort') ?><?= LABEL_SORT_ORDER ?></a>
 &nbsp;
-<a class="btn btn-primary pw-lib pw-sortable-control" pw-lib="PwSortable" pw-controller="<?= $this->name ?>" pw-action='update_sort' style="display: none"><?= PwTag::iconTag('save') ?><?= LABEL_UPDATE ?></a>
+<a class="btn btn-primary pw-tablednd-menu pw_table_dnd" event="click" action="update_sort" pw-controller="<?= $this->name ?>" pw-action='update_sort' style="display: none"><?= PwTag::iconTag('save') ?><?= LABEL_UPDATE ?></a>
 &nbsp;
-<a class="btn btn-outline-primary pw-lib pw-sortable-control" pw-lib="PwSortable" pw-action="reset" style="display: none"><?= PwTag::iconTag('times') ?><?= LABEL_CLOSE ?></a>
+<a class="btn btn-outline-primary pw-tablednd-menu pw_table_dnd" event="click" action="reset" style="display: none"><?= PwTag::iconTag('times') ?><?= LABEL_CLOSE ?></a>

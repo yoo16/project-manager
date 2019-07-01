@@ -1,10 +1,10 @@
 <? if ($this->errors): ?>
-  <div id="pw-error" class="modal error-window">
+  <div id="pw-error" class="pw-modal error-window" event="load" action="show">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title"><?= LABEL_ERROR ?></h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="pw-ui close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -20,7 +20,7 @@
           </ul>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
+          <button type="button" class="pw-modal-close btn btn-secondary" selector="pw-error"><?= LABEL_CLOSE ?></button>
         </div>
       </div>
     </div>

@@ -97,6 +97,13 @@ var PwNode = /** @class */ (function () {
         this.selected = function () {
             if (this.element) return this.element.value;
         }
+        this.selectedLabel = function () {
+            if (this.element) {
+                var index = this.element.selectedIndex;
+                console.log(this.element.options);
+                return this.element.options[index].text;
+            }
+        }
         this.check = function(is_checked) {
             if (is_checked) {
                 this.element.checked = 1;
@@ -130,13 +137,13 @@ var PwNode = /** @class */ (function () {
             var elements = null;
             if (this.node_list) elements = this.node_list;
             if (this.elements) elements = this.elements;
-            if (elements) elements.forEach(function (element) { element.checked = 1; });
+            if (elements) [].forEach.call(elements, function (element) { element.checked = 1; });
         }
         this.uncheckAll = function () {
             var elements = null;
             if (this.node_list) elements = this.node_list;
             if (this.elements) elements = this.elements;
-            if (elements) elements.forEach(function (element) { element.checked = null; });
+            if (elements) [].forEach.call(elements, function (element) { element.checked = null; });
         }
         this.checkValue = function (value) {
             if (this.element) {
@@ -232,6 +239,10 @@ var PwNode = /** @class */ (function () {
             if (this.element) setDisplay(this.element, '');
             if (this.elements) [].forEach.call(this.elements, function(element) { setDisplay(element, '') });
         }
+        this.showInline = function () {
+            if (this.element) setDisplay(this.element, 'inline');
+            if (this.elements) [].forEach.call(this.elements, function(element) { setDisplay(element, 'inline') });
+        }
         this.hide = function () {
             if (this.element) setDisplay(this.element, 'none');
             if (this.elements) [].forEach.call(this.elements, function(element) { setDisplay(element, 'none') });
@@ -240,16 +251,23 @@ var PwNode = /** @class */ (function () {
             element.style.display = value
         }
         this.disabled = function () {
-            if (this.element) setDisabled(this.element.disabled, true);
-            if (this.elements) [].forEach.call(this.elements, function(element) { setDisabled(element.disabled, true) });
+            if (this.element) setDisabled(this.element, true);
+            if (this.elements) [].forEach.call(this.elements, function(element) { setDisabled(element, true) });
         }
         this.abled = function () {
-            if (this.element) setDisabled(this.element.disabled, false);
-            if (this.elements) [].forEach.call(this.elements, function(element) { setDisabled(element.disabled, false) });
+            if (this.element) setDisabled(this.element, false);
+            if (this.elements) [].forEach.call(this.elements, function(element) { setDisabled(element, false) });
         }
         function setDisabled(element, value) {
-            element.style.display = value
+            if (value) {
+                element.setAttribute('disabled', value);
+            } else {
+                element.removeAttribute('disabled');
+            }
         }
+        this.libName = function () {
+            if (this.element) return this.attr('pw-lib');
+        };
         this.controller = function () {
             if (this.element) return this.attr('pw-controller');
         };

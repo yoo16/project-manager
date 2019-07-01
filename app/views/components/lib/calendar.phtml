@@ -13,7 +13,7 @@
               'id' => 'from-at',
               'name' => 'from_at',
               'class' => 'datetimepicker form-control',
-              'value' => $this->app_date->from_at,
+              'value' => $this->app_date->from_string,
               'change_selector' => '#date_number',
             ]
           )
@@ -38,7 +38,7 @@
             'label' => LABEL_OK,
             ]
           ) ?>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
+        <button type="button" class="pw-click btn btn-secondary" pw-lib="PwModal" pw-action="hide" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
       </div>
     </div>
   </div>

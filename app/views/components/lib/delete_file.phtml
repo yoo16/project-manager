@@ -1,9 +1,9 @@
-<div class="modal delete-file-window">
+<div id="delete-file-window" class="pw-modal">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 id="from-delete-title"><?= LABEL_DELETE ?></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="pw-modal-close close" selector="delete-file-window" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -20,7 +20,7 @@
             'message' => MESSAGE_DELETE,
             ]
           ) ?>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
+        <button type="button" class="pw-modal-close btn btn-secondary" selector="delete-file-window"><?= LABEL_CLOSE ?></button>
       </div>
     </div>
   </div>

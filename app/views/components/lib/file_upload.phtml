@@ -1,7 +1,7 @@
 <label>
   <span class="btn btn-outline-primary">
     <?= LABEL_SELECT ?>...
-    <input type="file" name="file" style="display:none">
+    <input id="<?= $params['id'] ?>" class="pw_upload_file" type="file" name="file" style="display:none">
   </span>
 </label>
-<input type="text" class="form-control col-2" readonly="">
+<input id="<?= $params['id'] ?>_text" class="pw_upload_file_text form-control col-6" type="text" class="" readonly="">

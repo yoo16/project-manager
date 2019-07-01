@@ -5,12 +5,6 @@
  */
 
 'use strict';
-var pw_form;
-
-document.addEventListener('DOMContentLoaded', function() {
-    pw_form = new PwForm();
-});
-
 var PwForm = function () {
     this.value = {}
 
@@ -29,6 +23,16 @@ var PwForm = function () {
         }
         return values;
     }
+    this.submit = function(node) {
+        pw_app.showLoading();
+        let selector_id = node.attr('data-target');
+        if (selector_id) {
+            PwNode.id(selector_id).submit();
+        } else {
+            let form = node.element.closest('form');
+            if (form) form.submit();
+        }
+    }
     this.init = function(selector_id) {
         this.initInput(selector_id)
         this.initSelect(selector_id)
@@ -38,7 +42,7 @@ var PwForm = function () {
         var selector = selector_id + ' input';
         let elements = PwNode.byQuery(selector).elements;
         if (!elements) return;
-        [].forEach(elements, function(element) {
+        [].forEach.call(elements, function(element) {
             var node = PwNode.byElement(element);
             var type = node.attr('type');
             var name = node.attr('name');
@@ -61,7 +65,7 @@ var PwForm = function () {
         var selector = selector_id + ' select option';
         let elements = PwNode.byQuery(selector).elements;
         if (!elements) return;
-        [].forEach(elements, function(element) {
+        [].forEach.call(elements, function(element) {
             var node = PwNode.byElement(element);
             var name = node.parent().attr('name');
             var default_value = element.attr('default_value');
@@ -75,7 +79,7 @@ var PwForm = function () {
         var selector = selector_id + ' textarea';
         let elements = PwNode.byQuery(selector).elements;
         if (!elements) return;
-        [].forEach(elements, function(element) {
+        [].forEach.call(elements, function(element) {
             var node = PwNode.byElement(element);
             var name = node.attr('name');
             var default_value = node.attr('default_value');
@@ -95,7 +99,7 @@ var PwForm = function () {
         var selector = selector_id + ' input';
         let elements = PwNode.byQuery(selector).elements;
         if (!elements) return;
-        [].forEach(elements, function(element) {
+        [].forEach.call(elements, function(element) {
             var node = PwNode.byElement(element);
             var type = node.attr('type');
             var name = node.attr('name');
@@ -117,7 +121,7 @@ var PwForm = function () {
         var selector = selector_id + ' select option';
         let elements = PwNode.byQuery(selector).elements;
         if (!elements) return;
-        [].forEach(elements, function(element) {
+        [].forEach.call(elements, function(element) {
             var node = PwNode.byElement(element);
             var name = node.parent().attr('name');
             name = checkName(name);
@@ -128,7 +132,7 @@ var PwForm = function () {
         var selector = selector_id + ' textarea';
         let elements = PwNode.byQuery(selector).elements;
         if (!elements) return;
-        [].forEach(elements, function(element) {
+        [].forEach.call(elements, function(element) {
             var node = PwNode.byElement(element);
             var name = node.attr('name');
             name = checkName(name);
@@ -144,7 +148,7 @@ var PwForm = function () {
         var selector = selector_id + ' input';
         let elements = PwNode.byQuery(selector).elements;
         if (!elements) return;
-        [].forEach(elements, function(element) {
+        [].forEach.call(elements, function(element) {
             var node = PwNode.byElement(element);
             var type = node.attr('type');
             var name = node.attr('name');
@@ -164,7 +168,7 @@ var PwForm = function () {
         var selector = selector_id + ' select option';
         let elements = PwNode.byQuery(selector).elements;
         if (!elements) return;
-        [].forEach(elements, function(element) {
+        [].forEach.call(elements, function(element) {
             var node = PwNode.byElement(element);
             var name = node.parent().attr('name');
             if (name) pw_form.value[name] = node.value();
@@ -174,7 +178,7 @@ var PwForm = function () {
         var selector = selector_id + ' textarea';
         let elements = PwNode.byQuery(selector).elements;
         if (!elements) return;
-        [].forEach(elements, function(element) {
+        [].forEach.call(elements, function(element) {
             var node = PwNode.byElement(element);
             var name = node.attr('name');
             if (name) pw_form.value[name] = node.value();
@@ -210,7 +214,7 @@ var PwForm = function () {
         let elements = PwNode.byQuery(selector).elements;
         if (!elements) return;
         var checks = [];
-        [].forEach(elements, function(element) {
+        [].forEach.call(elements, function(element) {
             var node = PwNode.byElement(element);
             var checked = node.checked();
             if (checked) {
@@ -220,4 +224,23 @@ var PwForm = function () {
         return checks;
     }
 
+    /** 
+     * clear
+     */
+    this.clearHandler = function(event) {
+        let target = this.getAttribute('data-target');
+        document.getElementById(target).value = '';
+    }
+    this.reloadEvents = function() {
+        //IE dosen't work elements.forEach()
+        let clear_elements = document.getElementsByClassName('pw-clear');
+        [].forEach.call(clear_elements, function(element) {
+            element.removeEventListener('click', pw_form.clearHandler);
+            element.addEventListener('click', pw_form.clearHandler, false);
+        });
+    }
 }
+var pw_form = new PwForm();
+document.addEventListener('DOMContentLoaded', function() {
+    pw_form.reloadEvents();
+});
