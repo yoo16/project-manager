@@ -4,11 +4,6 @@
  * Copyright (c) 2018 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
-var pw_date: any;
-document.addEventListener('DOMContentLoaded', function() {
-    pw_date = new PwDate();
-});
-
 var PwDate = function() {
     this.from_at_selector = '#from-at';
     this.to_at_selector = '#to-at';
@@ -122,11 +117,11 @@ var PwDate = function() {
     this.updateFromToComponent = function(value: any) {
         if (value.from_at) {
             var from_at = this.string(value.from_at);
-            $(this.from_at_selector).val(from_at);
+            PwNode.id(this.from_at_selector).setValue(from_at);
         }
         if (value.to_at) {
             var to_at = this.string(value.to_at);
-            $(this.to_at_selector).val(to_at);
+            PwNode.id(this.to_at_selector).setValue(to_at);
         }
     }
     this.convertGraphDate = function(value: any) {
@@ -141,3 +136,7 @@ var PwDate = function() {
     }
 
 }
+
+var pw_date =  new PwDate();
+document.addEventListener('DOMContentLoaded', function() {
+});
