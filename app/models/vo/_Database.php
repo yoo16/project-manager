@@ -2,10 +2,8 @@
 /**
  * Database 
  * 
- * @create  2017-08-21 13:46:26 
+ * @create  2017/08/21 13:46:26 
  */
-
-//namespace project_manager;
 
 require_once 'PwPgsql.php';
 
@@ -15,27 +13,30 @@ class _Database extends PwPgsql {
     public $name = 'databases';
     public $entity_name = 'database';
 
-    public $columns = array(
-        'created_at' => array('type' => 'timestamp'),
-        'current_version' => array('type' => 'int4'),
-        'hostname' => array('type' => 'varchar', 'is_required' => true),
-        'is_lock' => array('type' => 'bool'),
-        'name' => array('type' => 'varchar', 'is_required' => true),
-        'port' => array('type' => 'int4', 'is_required' => true),
-        'type' => array('type' => 'varchar'),
-        'updated_at' => array('type' => 'timestamp'),
-        'user_name' => array('type' => 'varchar', 'is_required' => true),
-    );
+    public $columns = [
+        'created_at' => ['type' => 'timestamp'],
+        'current_version' => ['type' => 'int4'],
+        'hostname' => ['type' => 'varchar', 'is_required' => true],
+        'is_lock' => ['type' => 'bool'],
+        'name' => ['type' => 'varchar', 'is_required' => true],
+        'port' => ['type' => 'int4', 'is_required' => true],
+        'type' => ['type' => 'varchar'],
+        'updated_at' => ['type' => 'timestamp'],
+        'user_name' => ['type' => 'varchar', 'is_required' => true],
+    ];
 
     public $primary_key = 'databases_pkey';
 
-    public $unique = array(
+    public $unique = [
             'databases_name_hostname_key' => [
                         'name',
                         'hostname',
                         ],
-    );
-
+    ];
+    public $index_keys = [
+    'databases_name_hostname_key' => 'CREATE UNIQUE INDEX databases_name_hostname_key ON databases USING btree (name, hostname)',
+    'databases_pkey' => 'CREATE UNIQUE INDEX databases_pkey ON databases USING btree (id)',
+    ];
 
 
     function __construct($params = null) {

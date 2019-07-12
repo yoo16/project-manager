@@ -2,10 +2,8 @@
 /**
  * RelationDatabase 
  * 
- * @create  2017-09-04 15:05:48 
+ * @create  2017/09/04 15:05:48 
  */
-
-//namespace project_manager;
 
 require_once 'PwPgsql.php';
 
@@ -15,16 +13,16 @@ class _RelationDatabase extends PwPgsql {
     public $name = 'relation_databases';
     public $entity_name = 'relation_database';
 
-    public $columns = array(
-        'created_at' => array('type' => 'timestamp'),
-        'old_database_id' => array('type' => 'int4', 'is_required' => true),
-        'project_id' => array('type' => 'int4', 'is_required' => true),
-        'sort_order' => array('type' => 'int4'),
-        'updated_at' => array('type' => 'timestamp'),
-    );
+    public $columns = [
+        'created_at' => ['type' => 'timestamp'],
+        'old_database_id' => ['type' => 'int4', 'is_required' => true],
+        'project_id' => ['type' => 'int4', 'is_required' => true],
+        'sort_order' => ['type' => 'int4'],
+        'updated_at' => ['type' => 'timestamp'],
+    ];
 
     public $primary_key = 'relation_databases_pkey';
-    public $foreign = array(
+    public $foreign = [
             'relation_databases_old_database_id_fkey' => [
                                   'column' => 'old_database_id',
                                   'class_name' => 'Database',
@@ -41,9 +39,11 @@ class _RelationDatabase extends PwPgsql {
                                   'cascade_update_type' => 'a',
                                   'cascade_delete_type' => 'a',
                                   ],
-    );
+    ];
 
-
+    public $index_keys = [
+    'relation_databases_pkey' => 'CREATE UNIQUE INDEX relation_databases_pkey ON relation_databases USING btree (id)',
+    ];
 
 
     function __construct($params = null) {

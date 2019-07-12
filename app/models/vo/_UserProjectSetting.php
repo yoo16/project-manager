@@ -2,10 +2,8 @@
 /**
  * UserProjectSetting 
  * 
- * @create  2017-08-21 13:46:26 
+ * @create  2017/08/21 13:46:26 
  */
-
-//namespace project_manager;
 
 require_once 'PwPgsql.php';
 
@@ -15,20 +13,22 @@ class _UserProjectSetting extends PwPgsql {
     public $name = 'user_project_settings';
     public $entity_name = 'user_project_setting';
 
-    public $columns = array(
-        'created_at' => array('type' => 'timestamp'),
-        'group_name' => array('type' => 'varchar', 'length' => 256),
-        'project_id' => array('type' => 'int4', 'is_required' => true),
-        'project_path' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
-        'sort_order' => array('type' => 'int4'),
-        'updated_at' => array('type' => 'timestamp'),
-        'user_id' => array('type' => 'int4'),
-        'user_name' => array('type' => 'varchar', 'length' => 256),
-    );
+    public $columns = [
+        'created_at' => ['type' => 'timestamp'],
+        'group_name' => ['type' => 'varchar', 'length' => 256],
+        'project_id' => ['type' => 'int4', 'is_required' => true],
+        'project_path' => ['type' => 'varchar', 'length' => 256, 'is_required' => true],
+        'sort_order' => ['type' => 'int4'],
+        'updated_at' => ['type' => 'timestamp'],
+        'user_id' => ['type' => 'int4', 'is_required' => true],
+        'user_name' => ['type' => 'varchar', 'length' => 256],
+    ];
 
     public $primary_key = 'user_project_settings_pkey';
 
-
+    public $index_keys = [
+    'user_project_settings_pkey' => 'CREATE UNIQUE INDEX user_project_settings_pkey ON user_project_settings USING btree (id)',
+    ];
 
 
     function __construct($params = null) {

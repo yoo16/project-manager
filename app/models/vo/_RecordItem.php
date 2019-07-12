@@ -2,10 +2,8 @@
 /**
  * RecordItem 
  * 
- * @create  2017-09-20 17:27:00 
+ * @create  2017/09/20 17:27:00 
  */
-
-//namespace project_manager;
 
 require_once 'PwPgsql.php';
 
@@ -15,18 +13,18 @@ class _RecordItem extends PwPgsql {
     public $name = 'record_items';
     public $entity_name = 'record_item';
 
-    public $columns = array(
-        'created_at' => array('type' => 'timestamp'),
-        'key' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
-        'record_id' => array('type' => 'int4', 'is_required' => true),
-        'sort_order' => array('type' => 'int4'),
-        'updated_at' => array('type' => 'timestamp'),
-        'value' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
-        'value_en' => array('type' => 'varchar', 'length' => 256),
-    );
+    public $columns = [
+        'created_at' => ['type' => 'timestamp'],
+        'key' => ['type' => 'varchar', 'length' => 256, 'is_required' => true],
+        'record_id' => ['type' => 'int4', 'is_required' => true],
+        'sort_order' => ['type' => 'int4'],
+        'updated_at' => ['type' => 'timestamp'],
+        'value' => ['type' => 'varchar', 'length' => 256, 'is_required' => true],
+        'value_en' => ['type' => 'varchar', 'length' => 256],
+    ];
 
     public $primary_key = 'record_items_pkey';
-    public $foreign = array(
+    public $foreign = [
             'record_items_record_id_fkey' => [
                                   'column' => 'record_id',
                                   'class_name' => 'Record',
@@ -35,9 +33,11 @@ class _RecordItem extends PwPgsql {
                                   'cascade_update_type' => 'a',
                                   'cascade_delete_type' => 'c',
                                   ],
-    );
+    ];
 
-
+    public $index_keys = [
+    'record_items_pkey' => 'CREATE UNIQUE INDEX record_items_pkey ON record_items USING btree (id)',
+    ];
 
 
     function __construct($params = null) {

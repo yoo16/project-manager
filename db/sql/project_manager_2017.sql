@@ -14,6 +14,7 @@ id SERIAL PRIMARY KEY NOT NULL
 
 CREATE TABLE IF NOT EXISTS "apis" (
 id SERIAL PRIMARY KEY NOT NULL
+, api_group_id INT4
 , created_at TIMESTAMP
 , label VARCHAR(256)
 , name VARCHAR(256) NOT NULL
@@ -23,9 +24,28 @@ id SERIAL PRIMARY KEY NOT NULL
 , updated_at TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS "api_params" (
+CREATE TABLE IF NOT EXISTS "api_actions" (
 id SERIAL PRIMARY KEY NOT NULL
 , api_id INT4 NOT NULL
+, created_at TIMESTAMP
+, label VARCHAR(256)
+, name VARCHAR(256) NOT NULL
+, note TEXT
+, sort_order INT4
+, updated_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS "api_groups" (
+id SERIAL PRIMARY KEY NOT NULL
+, created_at TIMESTAMP
+, name VARCHAR(64)
+, sort_order INT4
+, updated_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS "api_params" (
+id SERIAL PRIMARY KEY NOT NULL
+, api_action_id INT4 NOT NULL
 , created_at TIMESTAMP
 , name VARCHAR(256) NOT NULL
 , note TEXT
@@ -89,6 +109,28 @@ id SERIAL PRIMARY KEY NOT NULL
 , label TEXT
 , name VARCHAR(256) NOT NULL
 , project_id INT4 NOT NULL
+, sort_order INT4
+, updated_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS "menus" (
+id SERIAL PRIMARY KEY NOT NULL
+, created_at TIMESTAMP
+, is_provide BOOL
+, name VARCHAR(256) NOT NULL
+, sort_order INT4
+, updated_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS "menu_items" (
+id SERIAL PRIMARY KEY NOT NULL
+, action VARCHAR(256)
+, controller VARCHAR(256)
+, created_at TIMESTAMP
+, is BOOL
+, is_provide BOOL
+, menu_id INT4 NOT NULL
+, name VARCHAR(256) NOT NULL
 , sort_order INT4
 , updated_at TIMESTAMP
 );
@@ -184,6 +226,7 @@ CREATE TABLE IF NOT EXISTS "records" (
 id SERIAL PRIMARY KEY NOT NULL
 , created_at TIMESTAMP
 , label VARCHAR(256) NOT NULL
+, laben_en BOOL
 , name VARCHAR(256) NOT NULL
 , note TEXT
 , project_id INT4 NOT NULL
@@ -218,13 +261,12 @@ id SERIAL PRIMARY KEY NOT NULL
 , email VARCHAR(256)
 , first_name VARCHAR(64)
 , first_name_kana VARCHAR(64)
-, gender VARCHAR(8)
 , last_name VARCHAR(64)
 , last_name_kana VARCHAR(64)
+, login_name VARCHAR(64)
 , memo TEXT
 , password VARCHAR(256)
 , sort_order INT2
-, tel FLOAT8
 , tmp_password VARCHAR(256)
 , updated_at TIMESTAMP
 );
@@ -237,7 +279,7 @@ id SERIAL PRIMARY KEY NOT NULL
 , project_path VARCHAR(256) NOT NULL
 , sort_order INT4
 , updated_at TIMESTAMP
-, user_id INT4
+, user_id INT4 NOT NULL
 , user_name VARCHAR(256)
 );
 
@@ -309,7 +351,6 @@ id SERIAL PRIMARY KEY NOT NULL
 , where_model_id INT4
 );
 
-
 ALTER TABLE admins
       ADD CONSTRAINT admins_email_key
       UNIQUE (email);
@@ -321,21 +362,31 @@ ALTER TABLE admins
 ALTER TABLE apis
       ADD CONSTRAINT apis_project_id_fkey FOREIGN KEY (project_id)
       REFERENCES projects(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
-ALTER TABLE api_params
-      ADD CONSTRAINT api_params_api_id_fkey FOREIGN KEY (api_id)
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
+ALTER TABLE apis
+      ADD CONSTRAINT apis_api_group_id_fkey FOREIGN KEY (api_group_id)
+      REFERENCES api_groups(id)
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
+ALTER TABLE api_actions
+      ADD CONSTRAINT api_actions_api_id_fkey FOREIGN KEY (api_id)
       REFERENCES apis(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
+ALTER TABLE api_actions
+      ADD CONSTRAINT api_actions_name_api_id_key
+      UNIQUE (name, api_id);
 
 ALTER TABLE attributes
       ADD CONSTRAINT attributes_model_id_fkey FOREIGN KEY (model_id)
       REFERENCES models(id)
+      ON UPDATE NO ACTION
       ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+;
 ALTER TABLE attributes
       ADD CONSTRAINT attributes_name_model_id_key
       UNIQUE (name, model_id);
@@ -355,9 +406,9 @@ ALTER TABLE langs
 ALTER TABLE localize_strings
       ADD CONSTRAINT localize_strings_project_id_id_fkey FOREIGN KEY (project_id)
       REFERENCES projects(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE localize_strings
       ADD CONSTRAINT localize_strings_name_project_id_key
       UNIQUE (project_id, name);
@@ -365,9 +416,9 @@ ALTER TABLE localize_strings
 ALTER TABLE models
       ADD CONSTRAINT models_project_id_fkey FOREIGN KEY (project_id)
       REFERENCES projects(id)
+      ON UPDATE NO ACTION
       ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+;
 ALTER TABLE models
       ADD CONSTRAINT models_name_project_id_key
       UNIQUE (name, project_id);
@@ -375,51 +426,51 @@ ALTER TABLE models
 ALTER TABLE pages
       ADD CONSTRAINT pages_model_id_fkey FOREIGN KEY (model_id)
       REFERENCES models(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE pages
       ADD CONSTRAINT pages_parent_page_id_fkey FOREIGN KEY (parent_page_id)
       REFERENCES pages(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE pages
       ADD CONSTRAINT pages_project_id_fkey FOREIGN KEY (project_id)
       REFERENCES projects(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE pages
       ADD CONSTRAINT pages_where_model_id_fkey FOREIGN KEY (where_model_id)
       REFERENCES models(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE page_filters
       ADD CONSTRAINT page_filters_attribute_id_fkey FOREIGN KEY (attribute_id)
       REFERENCES attributes(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE page_filters
       ADD CONSTRAINT page_filters_page_id_fkey FOREIGN KEY (page_id)
       REFERENCES pages(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE page_models
       ADD CONSTRAINT page_models_model_id_fkey FOREIGN KEY (model_id)
       REFERENCES models(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE page_models
       ADD CONSTRAINT page_models_page_id_fkey FOREIGN KEY (page_id)
       REFERENCES pages(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE page_models
       ADD CONSTRAINT page_models_model_id_page_id_key
       UNIQUE (model_id, page_id);
@@ -427,91 +478,91 @@ ALTER TABLE page_models
 ALTER TABLE records
       ADD CONSTRAINT records_project_id_fkey FOREIGN KEY (project_id)
       REFERENCES projects(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE record_items
       ADD CONSTRAINT record_items_record_id_fkey FOREIGN KEY (record_id)
       REFERENCES records(id)
+      ON UPDATE NO ACTION
       ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+;
 ALTER TABLE relation_databases
       ADD CONSTRAINT relation_databases_old_database_id_fkey FOREIGN KEY (old_database_id)
       REFERENCES databases(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE relation_databases
       ADD CONSTRAINT relation_databases_project_id_fkey FOREIGN KEY (project_id)
       REFERENCES projects(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE users
       ADD CONSTRAINT users_email_key
       UNIQUE (email);
 
 ALTER TABLE view_items
-      ADD CONSTRAINT view_items_page_id_fkey FOREIGN KEY (page_id)
-      REFERENCES pages(id)
+      ADD CONSTRAINT view_items_view_id_fkey FOREIGN KEY (view_id)
+      REFERENCES views(id)
+      ON UPDATE NO ACTION
       ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
-ALTER TABLE view_items
-      ADD CONSTRAINT view_items_where_attribute_id_fkey FOREIGN KEY (where_attribute_id)
-      REFERENCES attributes(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+;
 ALTER TABLE view_items
       ADD CONSTRAINT view_items_link_param_id_attribute_id_fkey FOREIGN KEY (link_param_id_attribute_id)
       REFERENCES attributes(id)
+      ON UPDATE NO ACTION
       ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+;
+ALTER TABLE view_items
+      ADD CONSTRAINT view_items_where_attribute_id_fkey FOREIGN KEY (where_attribute_id)
+      REFERENCES attributes(id)
+      ON UPDATE NO ACTION
+      ON DELETE CASCADE
+;
 ALTER TABLE view_items
       ADD CONSTRAINT view_items_attribute_id_fkey FOREIGN KEY (attribute_id)
       REFERENCES attributes(id)
+      ON UPDATE NO ACTION
       ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+;
 ALTER TABLE view_items
       ADD CONSTRAINT view_items_where_model_id_fkey FOREIGN KEY (where_model_id)
       REFERENCES models(id)
+      ON UPDATE NO ACTION
       ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+;
 ALTER TABLE view_items
-      ADD CONSTRAINT view_items_view_id_fkey FOREIGN KEY (view_id)
-      REFERENCES views(id)
+      ADD CONSTRAINT view_items_page_id_fkey FOREIGN KEY (page_id)
+      REFERENCES pages(id)
+      ON UPDATE NO ACTION
       ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+;
 ALTER TABLE view_items
       ADD CONSTRAINT view_items_localize_string_id_fkey FOREIGN KEY (localize_string_id)
       REFERENCES localize_strings(id)
+      ON UPDATE NO ACTION
       ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+;
 ALTER TABLE view_item_groups
       ADD CONSTRAINT view_item_groups_view_id_fkey FOREIGN KEY (view_id)
       REFERENCES views(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE view_item_group_members
       ADD CONSTRAINT view_item_group_members_view_item_group_id_fkey FOREIGN KEY (view_item_group_id)
       REFERENCES view_item_groups(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE view_item_group_members
       ADD CONSTRAINT view_item_group_members_view_item_id_fkey1 FOREIGN KEY (view_item_id)
       REFERENCES view_items(id)
-      ON DELETE CASCADE
-      ON UPDATE NO ACTION;
-
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+;
 ALTER TABLE view_item_group_members
       ADD CONSTRAINT view_item_group_members_view_item_group_id_view_item_id_key
       UNIQUE (view_item_group_id, view_item_id);

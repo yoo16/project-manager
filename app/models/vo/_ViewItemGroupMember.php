@@ -2,10 +2,8 @@
 /**
  * ViewItemGroupMember 
  * 
- * @create  2017-11-29 13:05:37 
+ * @create  2017/11/29 13:05:37 
  */
-
-//namespace project_manager;
 
 require_once 'PwPgsql.php';
 
@@ -15,16 +13,16 @@ class _ViewItemGroupMember extends PwPgsql {
     public $name = 'view_item_group_members';
     public $entity_name = 'view_item_group_member';
 
-    public $columns = array(
-        'created_at' => array('type' => 'timestamp'),
-        'sort_order' => array('type' => 'int4'),
-        'updated_at' => array('type' => 'timestamp'),
-        'view_item_group_id' => array('type' => 'int4', 'is_required' => true),
-        'view_item_id' => array('type' => 'int4', 'is_required' => true),
-    );
+    public $columns = [
+        'created_at' => ['type' => 'timestamp'],
+        'sort_order' => ['type' => 'int4'],
+        'updated_at' => ['type' => 'timestamp'],
+        'view_item_group_id' => ['type' => 'int4', 'is_required' => true],
+        'view_item_id' => ['type' => 'int4', 'is_required' => true],
+    ];
 
     public $primary_key = 'view_item_group_members_pkey';
-    public $foreign = array(
+    public $foreign = [
             'view_item_group_members_view_item_group_id_fkey' => [
                                   'column' => 'view_item_group_id',
                                   'class_name' => 'ViewItemGroup',
@@ -41,15 +39,18 @@ class _ViewItemGroupMember extends PwPgsql {
                                   'cascade_update_type' => 'a',
                                   'cascade_delete_type' => 'a',
                                   ],
-    );
+    ];
 
-    public $unique = array(
+    public $unique = [
             'view_item_group_members_view_item_group_id_view_item_id_key' => [
                         'view_item_group_id',
                         'view_item_id',
                         ],
-    );
-
+    ];
+    public $index_keys = [
+    'view_item_group_members_pkey' => 'CREATE UNIQUE INDEX view_item_group_members_pkey ON view_item_group_members USING btree (id)',
+    'view_item_group_members_view_item_group_id_view_item_id_key' => 'CREATE UNIQUE INDEX view_item_group_members_view_item_group_id_view_item_id_key ON view_item_group_members USING btree (view_item_group_id, view_item_id)',
+    ];
 
 
     function __construct($params = null) {

@@ -2,10 +2,8 @@
 /**
  * ViewItemGroup 
  * 
- * @create  2017-11-21 14:18:14 
+ * @create  2017/11/21 14:18:14 
  */
-
-//namespace project_manager;
 
 require_once 'PwPgsql.php';
 
@@ -15,16 +13,16 @@ class _ViewItemGroup extends PwPgsql {
     public $name = 'view_item_groups';
     public $entity_name = 'view_item_group';
 
-    public $columns = array(
-        'created_at' => array('type' => 'timestamp'),
-        'name' => array('type' => 'varchar', 'length' => 256),
-        'sort_order' => array('type' => 'int4'),
-        'updated_at' => array('type' => 'timestamp'),
-        'view_id' => array('type' => 'int4', 'is_required' => true),
-    );
+    public $columns = [
+        'created_at' => ['type' => 'timestamp'],
+        'name' => ['type' => 'varchar', 'length' => 256],
+        'sort_order' => ['type' => 'int4'],
+        'updated_at' => ['type' => 'timestamp'],
+        'view_id' => ['type' => 'int4', 'is_required' => true],
+    ];
 
     public $primary_key = 'view_item_groups_pkey';
-    public $foreign = array(
+    public $foreign = [
             'view_item_groups_view_id_fkey' => [
                                   'column' => 'view_id',
                                   'class_name' => 'View',
@@ -33,9 +31,11 @@ class _ViewItemGroup extends PwPgsql {
                                   'cascade_update_type' => 'a',
                                   'cascade_delete_type' => 'a',
                                   ],
-    );
+    ];
 
-
+    public $index_keys = [
+    'view_item_groups_pkey' => 'CREATE UNIQUE INDEX view_item_groups_pkey ON view_item_groups USING btree (id)',
+    ];
 
 
     function __construct($params = null) {
