@@ -8,6 +8,14 @@
 
 var PwController = function () {
     var _this = this;
+
+    this.current_controller = '';
+    this.current_action = '';
+    this.current_id = '';
+    this.delete_image_action = 'delete_image';
+    this.click_event_name = 'pw-on-click';
+    this.load_event_name = 'pw-on-load';
+
     this.init = function(params) {
 
     }
@@ -31,12 +39,56 @@ var PwController = function () {
         }
     }
 
+    this.currentParams = function() {
+        var params = {};
+        if (_this.currentController()) params.controller = _this.currentController();
+        if (_this.currentAction()) params.action = _this.currentAction(); 
+        if (_this.currentID()) params.id = _this.currentID(); 
+        return params;
+    }
+    
     this.currentController = function() {
-        return PwNode.id('pw-current-controller').value();
+        return _this.current_controller;
     }
     this.currentAction = function() {
-        return PwNode.id('pw-current-action').value();
+        return _this.current_action;
     }
+    this.currentID = function() {
+        return _this.current_id;
+    }
+    this.setCurrentController = function(name) {
+        _this.current_controller = name;
+    }
+    this.setCurrentAction = function(name) {
+        _this.current_action = name;
+    }
+    this.setCurrentId = function(id) {
+        _this.current_id = id;
+    }
+    this.setMultiSid = function(sid) {
+        _this.pw_multi_sid = sid;
+    }
+    this.multiSessionLink = function() {
+        if (!_this.pw_multi_sid) return;
+        [].forEach.call(document.getElementsByTagName('a'), function(element) {
+            var node = PwNode.byElement(element);
+            var link = '';
+            if (node.attr('is_not_pw_multi_sid')) return;
+            if (link = node.attr('href')) {
+                if (link.indexOf('pw_multi_sid') == -1) {
+                    link = link + "&pw_multi_sid=" + _this.pw_multi_sid;
+                    node.setAttr('href', link);
+                }
+            }
+        });
+    }
+    this.multiSID = function(values) {
+        if (!_this.pw_multi_sid) return values;
+        if (!values) values = {};
+        values.pw_multi_sid = _this.pw_multi_sid;
+        return values;
+    }
+
     this.dom = function(params) {
         var instance = new PwNode(params);
         instance.init();
@@ -54,7 +106,7 @@ var PwController = function () {
         var url_query = url_queries.join('/');
         var url = projectUrl() + url_query;
 
-        if (options && pw_multi_sid) options.pw_multi_sid = pw_multi_sid;
+        options = _this.multiSID(options);
         if (options) url = url + '?' + query(options);
         return url;
     }
@@ -92,7 +144,7 @@ var PwController = function () {
         return header;
     }
     this.getHtml = function (params, values, options) {
-        if (pw_multi_sid) values.pw_multi_sid = pw_multi_sid;
+        values = _this.multiSID(values);
         var url = this.urlFor(params, values);
         options.method = 'get';
         if (this.isIE()) {
@@ -102,7 +154,7 @@ var PwController = function () {
         }
     }
     this.postHtml = function (params, values, options) {
-        if (pw_multi_sid) values.pw_multi_sid = pw_multi_sid;
+        values = _this.multiSID(values);
         var url = this.urlFor(params);
         options.method = 'post';
         if (this.isIE()) {
@@ -145,10 +197,6 @@ var PwController = function () {
         options.method = 'get';
         this.ajaxRequest(url, params, options);
     }
-    this.multiSID = function(values) {
-        if (values && pw_multi_sid) values.pw_multi_sid = pw_multi_sid;
-        return values;
-    }
 
     /**
     * ajax request    
@@ -160,7 +208,7 @@ var PwController = function () {
     **/
    this.ajaxRequest = function(url, data, options) {
         var is_show_loading = options.is_show_loading;
-        if (is_show_loading) pw_app.showLoading(options.loading_selector);
+        if (is_show_loading) pw_loading_overlay.show(options.loading_selector);
 
         var content_type = 'application/xhtml+xml';
         var callback;
@@ -175,8 +223,11 @@ var PwController = function () {
         var xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
         xhr.onreadystatechange = function() {
-            if (is_show_loading) pw_app.hideLoading(options.loading_selector);
+            if (is_show_loading && xhr.readyState >= 2) {
+                pw_app.hideLoading(options.loading_selector);
+            }
             if (xhr.readyState == 4 && xhr.status == 200) {
+                //_this.pwEvent();
                 if (callback) callback(xhr.response);
             }
         };
@@ -198,7 +249,7 @@ var PwController = function () {
      */
     this.fetchRequest = function(url, header_options, options) {
         var is_show_loading = options.is_show_loading;
-        if (is_show_loading) pw_app.showLoading(options.loading_selector);
+        if (is_show_loading) pw_loading_overlay.show(options.loading_selector);
         
         fetch(url, header_options).catch(function(err) {
             if (is_show_loading) pw_app.hideLoading(options.loading_selector);
@@ -215,10 +266,34 @@ var PwController = function () {
             }
         }).then(function(text) {
             var callback = options.callback;
+            //_this.pwEvent();
             if (callback) callback(text);
         }); 
     }
 
+    this.pwEvent = function() {
+        let click_selector = '[' + _this.click_event_name + ']';
+        _this.pwClickEvent(click_selector);
+    }
+    this.pwClickEvent = function(selector) {
+        var elements = document.querySelectorAll(selector);
+        if (!elements) return;
+        [].forEach.call(elements, function(element) {
+            element.addEventListener('click', function(event) {
+                _this.nodeAction(element);
+            });
+        });
+    }
+    this.pwClickEventById = function(id) {
+        let selector = '[' + _this.click_event_name + ']';
+        var elements = document.getElementById(id).querySelectorAll(selector);
+        if (!elements) return;
+        [].forEach.call(elements, function(element) {
+            element.addEventListener('click', function(event) {
+                _this.nodeAction(element);
+            });
+        });
+    }
     this.pwLoad = function(params) {
         var pw_load = document.getElementsByClassName('pw-load');
         for (var $i = 0; $i < pw_load.length; $i++) {
@@ -241,24 +316,15 @@ var PwController = function () {
     }
 
     /**
-     * pw-click handler
-     *
-     */
-    this.pwClickHandler = function(event) {
-        eventAction(this);
-        event.preventDefault();
-    }
-
-    /**
      * pw-click
      * 
      */
     document.addEventListener('click', function(event) {
         if (event.target.classList.contains('pw-click')) {
-            eventAction(event.target);
+            _this.eventAction(event.target);
         //TODO child click event or use PwClick()
         } else if (event.target.parentNode.classList) {
-            if (event.target.parentNode.classList.contains('pw-click')) eventAction(event.target.parentNode);
+            if (event.target.parentNode.classList.contains('pw-click')) _this.eventAction(event.target.parentNode);
         }
     }, true);
 
@@ -268,7 +334,7 @@ var PwController = function () {
      */
     document.addEventListener('change', function(event) {
         if (event.target.classList.contains('pw-change')) {
-            eventAction(event.target);
+            _this.eventAction(event.target);
         }
     }, true);
 
@@ -293,34 +359,15 @@ var PwController = function () {
         }
     });
 
-    this.multiSessionLink = function(fileName, content) {
-        var pw_multi_session_id = PwNode.id('pw-multi-session-id');
-        if (!pw_multi_session_id) return;
-        pw_multi_sid = pw_multi_session_id.value();
-        if (!pw_multi_sid) return;
-
-        [].forEach.call(document.getElementsByTagName('a'), function(element) {
-            var node = PwNode.byElement(element);
-            var link = '';
-            if (node.attr('is_not_pw_multi_sid')) return;
-            if (link = node.attr('href')) {
-                if (link.indexOf('pw_multi_sid') == -1) {
-                    link = link + "&pw_multi_sid=" + pw_multi_sid;
-                    node.setAttr('href', link);
-                }
-            }
-        });
-    };
-
     this.downloadAsFile = function(fileName, content) {
         var a = document.createElement('a');
         a.download = fileName;
         a.href = 'data:application/octet-stream,' + encodeURIComponent(content);
         a.click();
     };
-    this.requestPage = function (url, params, callback) {
-        if (params && pw_multi_sid) params.pw_multi_sid = pw_multi_sid;
-        window.location.href = pw_app.generateUrl(url, params);
+    this.requestPage = function (url, values, callback) {
+        values = _this.multiSID(values);
+        window.location.href = pw_app.generateUrl(url, values);
     }
     this.generateUrl = function (url, params) {
         var url_param = query(params);
@@ -367,46 +414,51 @@ var PwController = function () {
     this.checkImageLoading = function(class_name, count) {
         pw_app.hideLoading();
     }
-    this.loadImage = function(url, node, callback, error_callback) {
-        let loading_id = node.attr('loading_id');
-        pw_ui.showLoading(loading_id);
+    this.loadImage = function(url, node) {
+        var image = new Image();
+        image = node.element;
+        if (!image) return;
 
         url+= '&serial=' + new Date().getTime();
-        node.setAttr('src', '');
-        node.setAttr('src', url);
 
-        let loadHandler = function(event) {
-            pw_app.hideLoading(loading_id);
-            if (callback) callback();
-            node.element.removeEventListener('load', loadHandler);
-            node.show();
-        }
-        node.element.addEventListener('load', loadHandler, false);
+        var loading_id = node.attr('loading_id');
+        pw_loading_overlay.show(loading_id);
 
-        let errorHandler = function(event) {
-            node.attr('src', '');
-            pw_app.hideLoading(loading_id);
-            if (error_callback) error_callback();
-            node.element.removeEventListener('error', errorHandler);
-            node.hide();
+        if (image) {
+            image.onload = function() {
+                node.show();
+                pw_app.hideLoading(loading_id);
+            }
+            image.onerror = function() {
+                node.hide();
+                pw_app.hideLoading(loading_id);
+            }
+            image.src = url;
         }
-        node.element.addEventListener('error', errorHandler, false);
     }
+
     this.confirmDeleteImage = function(controller, node, delete_id_column) {
-        var link_delete_image = PwNode.id('link_delete_image');
+        var link_delete_image = PwNode.id('link_delete_file');
+        var delete_action = _this.delete_image_action;
+
+        if (node.attr('delete_controller')) controller = node.attr('delete_controller');
+        if (node.attr('delete_action')) delete_action = node.attr('delete_action');
+        if (node.attr('delete_id_column')) delete_id_column = node.attr('delete_id_column');
+
         link_delete_image.setAttr('pw-controller', controller);
-        link_delete_image.setAttr('pw-action', 'delete_image');
+        link_delete_image.setAttr('pw-action', delete_action);
         link_delete_image.setAttr(delete_id_column, node.attr(delete_id_column));
+
         pw_ui.showModal(pw_ui.delete_file_window_name);
     }
     this.deleteImage = function(params) {
         pw_ui.hideModal(pw_ui.delete_file_window_name);
+
         var delete_id_column = params.delete_id_column;
         var url = pw_app.urlFor(
-            {controller: params.controller, action: 'delete_image'},
+            {controller: params.controller, action: params.action},
             {delete_id_column: params.node.attr(delete_id_column)}
-            );
-
+        );
         pw_app.postByUrl(url, null, 
             function (data, status, xhr) {
                 if (params.image && params.callback) params.callback(params.image);
@@ -436,6 +488,75 @@ var PwController = function () {
         };
         xhr.open("POST", url, true);
         xhr.send(form_data);
+    }
+
+    /**
+    * event action
+    *
+    * @param Element element
+    * @return void
+    **/
+   this.eventAction = function(element) {
+        var pw_node = PwNode.byElement(element);
+        var lib_name = pw_node.attr('pw-lib');
+        if (lib_name) return _this.libAction(element);
+
+        var name = pw_node.controller();
+        if (!name) return;
+
+        var action = pw_node.action();
+        if (!action) return;
+
+        var controller_name = pw_node.controllerClassName();
+        if (controller_name in window) {
+            var controller = new window[controller_name]();
+            if (action in controller) controller[action](pw_node);
+        } 
+    }
+
+    /**
+    * event action
+    *
+    * @param Element pw_node
+    * @return void
+    **/
+   this.nodeAction = function(element) {
+        var pw_node = PwNode.byElement(element);
+
+        var name = pw_node.controller();
+        if (!name) return;
+
+        var event = pw_node.event();
+        if (!event) return;
+
+        var action = event.action;
+        if (!action) return;
+
+        var controller_name = pw_node.controllerClassName();
+        if (controller_name in window) {
+            var controller = new window[controller_name]();
+            if (action in controller) controller[action](pw_node);
+        } 
+    }
+
+    /**
+    * lib action
+    *
+    * @param Element element
+    * @return void
+    **/
+    this.libAction = function(element) {
+        var pw_node = PwNode.byElement(element);
+        var lib_name = pw_node.attr('pw-lib');
+        if (!lib_name) return;
+
+        var action = pw_node.action();
+        if (!action) return
+
+        if (lib_name in window) {
+            var controller = new window[lib_name]();
+            if (action in controller) controller[action](pw_node);
+        }
     }
 
     /**
@@ -482,96 +603,32 @@ var PwController = function () {
         return url;
     }
 
-    /**
-    * upper string for top
-    *
-    * @param string string
-    * @return string
-    **/
-    function upperTopString(string) {
-        var value = string.charAt(0).toUpperCase() + string.slice(1);
-        var value = string.substring(0, 1).toUpperCase() + string.substring(1);
-        var value = string.replace(/^[a-z]/g, function (val) { return val.toUpperCase(); });
-        return value;
-    }
-
-    /**
-    * event action
-    *
-    * @param Element element
-    * @return void
-    **/
-    function eventAction(element) {
-        var pw_node = PwNode.byElement(element);
-        var lib_name = pw_node.attr('pw-lib');
-        if (lib_name) return libAction(element);
-
-        var name = pw_node.controller();
-        if (!name) return;
-
-        var action = pw_node.action();
-        if (!action) return;
-
-        var controller_name = pw_node.controllerClassName();
-        if (controller_name in window) {
-            var controller = new window[controller_name]();
-            if (action in controller) controller[action](pw_node);
-        } 
-    }
-
-    /**
-    * lib action
-    *
-    * @param Element element
-    * @return void
-    **/
-    function libAction(element) {
-        var pw_node = PwNode.byElement(element);
-        var lib_name = pw_node.attr('pw-lib');
-        if (!lib_name) return;
-
-        var action = pw_node.action();
-        if (!action) return
-
-        if (lib_name in window) {
-            var controller = new window[lib_name]();
-            if (action in controller) controller[action](pw_node);
-        }
-    }
-
 }
 
-//TODO remove jquery
-$.support.cors = true;
-
+//$.support.cors = true;
 var pw_app = new PwController();
 var pw_base_url = '';
-var pw_current_controller = '';
-var pw_current_action = '';
 var pw_loading_selector = '';
-var pw_multi_sid = '';
 
 document.addEventListener('DOMContentLoaded', function() {
     pw_app.multiSessionLink();
     pw_app.pwLoad(); 
-
-    //TODO important method
-    if (PwNode.id('pw-current-controller').value()) pw_app.pw_current_controller = PwNode.id('pw-current-controller').value();
-    if (PwNode.id('pw-current-action').value()) pw_app.pw_current_action = PwNode.id('pw-current-action').value();
+    pw_app.pwEvent(); 
 });
 
 //TODO IE closet
-if (!Element.prototype.matches) {
-    Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
-}
-  
-if (!Element.prototype.closest) {
-    Element.prototype.closest = function(s) {
-      var el = this;
-      do {
-        if (el.matches(s)) return el;
-        el = el.parentElement || el.parentNode;
-      } while (el !== null && el.nodeType === 1);
-      return null;
-    };
+if (pw_app.isIE()) {
+    if (!Element.prototype.matches) {
+        Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+    }
+    if (!Element.prototype.closest) {
+        Element.prototype.closest = function(value) {
+        var element = this;
+        do {
+            if (element.matches(value)) return element;
+            element = element.parentelementement || element.parentNode;
+        } while (element !== null && element.nodeType === 1);
+            return null;
+        };
+    }
 }

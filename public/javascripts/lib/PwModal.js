@@ -5,7 +5,7 @@
  */
 
 var PwModal = function() {
-    this.backdrop_id = 'pw_modal_backdrop';
+    this.backdrop_id = 'pw_backdrop';
     this.load_show_class_name = 'pw-modal';
     this.show_class_name = 'pw-modal-show';
     this.close_class_name = 'pw-modal-close';
@@ -14,8 +14,8 @@ var PwModal = function() {
     this.createBackground = function() {
         if (!pw_modal.pw_backdrop_element) {
             pw_modal.pw_backdrop_element = document.createElement('div');
-            pw_modal.pw_backdrop_element.id = 'pw_modal_backdrop';
-            pw_modal.pw_backdrop_element.classList.add('pw_modal_backdrop');
+            pw_modal.pw_backdrop_element.id = 'pw_backdrop';
+            pw_modal.pw_backdrop_element.classList.add('pw_backdrop');
             document.body.appendChild(pw_modal.pw_backdrop_element);
         }
     }
@@ -28,15 +28,14 @@ var PwModal = function() {
         background_node.show();
 
         var node = PwNode.id(selector);
-        node.showInline();
+        if (node) node.showInline();
     }
     this.hide = function(selector) {
-        //if (!selector) return;
         var background_node = PwNode.id(pw_modal.backdrop_id);
         background_node.hide();
 
-        //var node = PwNode.id(selector);
-        //node.hide();
+        var node = PwNode.id(selector);
+        if (node) node.hide();
         PwNode.byClass(pw_modal.load_show_class_name).hide();
     }
     this.showHandler = function(event) {

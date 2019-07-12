@@ -120,7 +120,7 @@ function PwTableDND(options) {
     this.enableDrag = function() {
         if (!this.table_id) return;
         var row_id;
-        [].forEach.call(this.getElements(), function(element, index) {
+        [].forEach.call(_this.getElements(), function(element, index) {
             _this.before_rows.push(element);
             row_node = PwNode.byElement(element);
             if (row_id = row_node.attr(_this.row_id_column)) {
@@ -145,7 +145,7 @@ function PwTableDND(options) {
     this.reloadRowIds = function() {
         _this.sort_orders = [];
         var order = 0;
-        [].forEach.call(this.getElements(), function(element) {
+        [].forEach.call(_this.getElements(), function(element) {
             order++;
             element.setAttribute('order', order);
             let row_id = element.getAttribute(_this.row_id_column);
@@ -180,17 +180,16 @@ function PwTableDND(options) {
     this.update_sort = function() {
         if (!_this.sort_orders) return;
         let json = JSON.stringify(_this.getOrders());
-        let controller = this.getAttribute('pw-controller');
-        let action = this.getAttribute('pw-action');
-
         if (typeof pw_app === "undefined") {
-            if (_this.url) {
-                _this.postJson(_this.url, json, options);
-            } else {
-                window.alert('Not found url');
+            if (!_this.url) {
+                window.alert('Not found Update API URL');
+                return;
             }
+            _this.postJson(_this.url, json, options);
         } else {
             //use PwApp
+            let controller = this.getAttribute('pw-controller');
+            let action = this.getAttribute('pw-action');
             pw_app.postJson( { controller: controller, action: action },
                 json,
                 {callback: callback, is_show_loading: true}
@@ -243,7 +242,7 @@ function PwTableDND(options) {
         PwNode.byClass(_this.tablednd_control).remove();
         this.cursorChange('default');
 
-        [].forEach.call(this.getElements(), function(element, index) {
+        [].forEach.call(_this.getElements(), function(element, index) {
             row_node = PwNode.byElement(element);
             if (row_node.attr(_this.row_id_column)) { row_node.setAttr('draggable', false); }
         });
@@ -254,7 +253,7 @@ function PwTableDND(options) {
     }
     this.showControl = function(node) {
         PwNode.byClass(_this.tablednd_control).show();
-        if (this.is_use_row_control) this.addRowControl();
+        if (_this.is_use_row_control) this.addRowControl();
     }
     this.top = function(event) {
         var tbody = PwNode.byQuery(_this.body_selector).first();
@@ -294,7 +293,7 @@ function PwTableDND(options) {
         sortable_control_header_element.classList.add(_this.tablednd_control);
         header_tr_element.insertBefore(sortable_control_header_element, header_tr_element.children[0]);
 
-        [].forEach.call(this.getElements(), function(element, index) {
+        [].forEach.call(_this.getElements(), function(element, index) {
             let tr = PwNode.byElement(element);
             if (row_id = tr.attr(_this.row_id_column)) {
                 var sortable_control_element = document.createElement('td');
@@ -307,12 +306,12 @@ function PwTableDND(options) {
 
         var link_tag = '';
         link_tag = '';
-        var drag_label = this.drag_label;
-        var top_label = this.top_label;
-        var bottom_label = this.bottom_label;
-        var up_label = this.up_label;
-        var down_label = this.down_label;
-        if (this.is_font_awesome) {
+        var drag_label = _this.drag_label;
+        var top_label = _this.top_label;
+        var bottom_label = _this.bottom_label;
+        var up_label = _this.up_label;
+        var down_label = _this.down_label;
+        if (_this.is_font_awesome) {
             drag_label = '<i class="fa fa-align-justify"></i>';
             top_label = '<i class="fa fa-angle-double-up"></i>';
             bottom_label = '<i class="fa fa-angle-double-down"></i>';

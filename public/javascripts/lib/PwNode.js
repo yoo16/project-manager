@@ -100,7 +100,6 @@ var PwNode = /** @class */ (function () {
         this.selectedLabel = function () {
             if (this.element) {
                 var index = this.element.selectedIndex;
-                console.log(this.element.options);
                 return this.element.options[index].text;
             }
         }
@@ -193,8 +192,11 @@ var PwNode = /** @class */ (function () {
             if (this.element) return this.element.getAttribute(selector);
         };
         this.html = function (html) {
-            if (this.element) return this.element.innerHTML = html;
+            if (this.element) this.element.innerHTML = html;
             if (this.elements) [].forEach.call(this.elements, function(element) { element.innerHTML = html });
+        };
+        this.getHtml = function (html) {
+            if (this.element) return this.element.innerHTML;
         };
         this.css = function (column) {
             if (this.element) return this.element.style[column];
@@ -276,6 +278,9 @@ var PwNode = /** @class */ (function () {
         };
         this.action = function () {
             if (this.element) return this.attr('pw-action');
+        };
+        this.event = function () {
+            if (this.element && this.attr(pw_app.click_event_name)) return { event: 'click', action: this.attr(pw_app.click_event_name)};
         };
         this.fadeOut = function () {
             this.element.classList.add('fadeout');

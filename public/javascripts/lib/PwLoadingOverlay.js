@@ -20,13 +20,14 @@ var PwLoadingOverlay = function() {
         style+= "background-position: center center;";
         style+= "background-repeat: no-repeat;";
 
-        var top = "0;";
-        var left = "0;";
-        var width = "100%;";
-        var height = "100%;";
+        var top = 0;
+        var left = 0;
+        var width = 0;
+        var height = pw_ui.contentsHeight();
         var background_size = 'contains';
-        var element = document.body;
-        if (selector) {
+        var element;
+        element = document.getElementById(selector);
+        if (element) {
             element = document.getElementById(selector);
             var rect = element.getBoundingClientRect();
             top = rect.top;
@@ -39,20 +40,30 @@ var PwLoadingOverlay = function() {
             if (td) {
                 top = 0;
                 left = 0;
+                alert(td);
             }
         }
         style+= "background-size: " + background_size + ";";
         style+= "top: " + top + "px;";
         style+= "left: " + left + "px;";
-        style+= "width: " + width + "px;";
+        if (width > 0) {
+            style+= "width: " + width + "px;";
+        } else {
+            style+= "width: 100%;";
+        }
         style+= "height: " + height + "px;";
+
         style+="background-image: url(" + loading_image + ");";
 
         _this.loading_overlay_element = document.createElement('div');
         _this.loading_overlay_element.classList.add(_this.loading_overlay_name);
-        _this.loading_overlay_element.style = style;
+        _this.loading_overlay_element.setAttribute('style', style);
 
-        element.appendChild(_this.loading_overlay_element);
+        if (element) {
+            element.appendChild(_this.loading_overlay_element);
+        } else {
+            document.body.appendChild(_this.loading_overlay_element);
+        }
 
         //timer
         function hideHandler() {
