@@ -1,24 +1,25 @@
-<!-- TODO setting -->
-<?= PwTag::javascript('jquery/jquery-1.11.1.min') ?>
-<?= PwTag::javascript('jquery/jquery-ui.min') ?>
-<?= PwTag::javascript('jquery/jquery.tablednd') ?>
-<?= PwTag::javascript('jquery/jquery.validate.min') ?>
-<?= PwTag::javascript('jquery/jquery.datetimepicker') ?>
+<?= PwTag::pwProjectName($this->pw_project_name) ?>
+
+<?= PwTag::javascript('jquery/jquery-3.3.1.min') ?>
+<?= PwTag::javascript('jquery/jquery-ui-1.12.1.min') ?>
 <?= PwTag::javascript('jquery/jpicker-1.1.6.min') ?>
-<?= PwTag::javascript('jquery/loadingoverlay.min') ?>
 
 <?= PwTag::javascript('bootstrap/tether.min') ?>
 <?= PwTag::javascript('bootstrap/bootstrap.min') ?>
 
-<script type="text/javascript">
-  var pw_project_name = '<?= $this->pw_project_name ?>';
-</script>
-
-<?= PwTag::javascript('application') ?>
-<?= PwTag::javascript('plugin') ?>
 <?= PwTag::javascript('functions') ?>
+
+<!-- pw lib -->
 <?= PwTag::javascript('lib/PwController') ?>
 <?= PwTag::javascript('lib/PwNode') ?>
-<?= PwTag::javascript('lib/PwSortable') ?>
+<?= PwTag::javascript('lib/PwUI') ?>
+<?= PwTag::javascript('lib/PwLoadingOverlay') ?>
+<?= PwTag::javascript('lib/PwForm') ?>
+<?= PwTag::javascript('lib/PwTableDND') ?>
+<?= PwTag::javascript('lib/PwDate') ?>
+<?= PwTag::javascript('lib/PwModal') ?>
 <?= PwTag::javascript('lib/PwScroller') ?>
-<?= PwTag::javascriptController($this->class_name) ?>
+<?= PwTag::javascript('lib/PwAnimation') ?>
+<?= PwTag::javascript('lib/PwLog') ?>
+
+<?= PwTag::javascript('pw_functions') ?>

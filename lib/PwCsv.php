@@ -1,11 +1,13 @@
 <?php
+
 /**
  * PwCsv.php
  * 
  * Copyright (c) 2017 Yohei Yoshikawa (https://github.com/yoo16/)
  **/
 
-class PwCsv {
+class PwCsv
+{
 
     public $id;
     public $id_key = 'id';
@@ -30,7 +32,8 @@ class PwCsv {
      * constructor
      *
      **/
-    function __construct($file_path = null, $lang = 'ja') {
+    function __construct($file_path = null, $lang = 'ja')
+    {
         $this->setLang($lang);
         $file_path = PwCsv::csvPath($file_path, $lang);
         if (file_exists($file_path)) {
@@ -45,7 +48,8 @@ class PwCsv {
      * @param string $lang
      * @return PwCsv
      */
-    static function file($csv_name, $lang = 'ja') {
+    static function file($csv_name, $lang = 'ja')
+    {
         $instance = new PwCsv($csv_name, $lang);
         return $instance;
     }
@@ -57,36 +61,64 @@ class PwCsv {
      * @param string $lang
      * @return string
      **/
-    static function csvPath($csv_name, $lang = 'ja') {
+    static function csvPath($csv_name, $lang = 'ja')
+    {
         if (!$lang) $lang = 'ja';
         if (!$csv_name) return;
-        $file_path = BASE_DIR."db/records/{$lang}/{$csv_name}.csv";
-        if (!file_exists($file_path)) $file_path = BASE_DIR."db/records/{$lang}/{$csv_name}";
-        if (!file_exists($file_path)) $file_path = BASE_DIR."{$csv_name}";
+        $file_path = BASE_DIR . "db/records/{$lang}/{$csv_name}.csv";
+        if (!file_exists($file_path)) $file_path = BASE_DIR . "db/records/{$lang}/{$csv_name}";
+        if (!file_exists($file_path)) $file_path = BASE_DIR . "{$csv_name}";
         if (!file_exists($file_path)) $file_path = $csv_name;
         if (file_exists($file_path)) return $file_path;
+    }
+
+    /**
+     * stream download
+     *
+     * @param string $file_name
+     * @param array $values
+     * @param array $options
+     * @return void
+     */
+    static function streamDownload($file_name, $values, $options = null)
+    {
+        if (!$values) return;
+        header("Content-Type: application/octet-stream");
+        header("Content-Disposition: attachment; filename={$file_name}");
+        $fp = fopen('php://output', 'w');
+        foreach ($values as $value) {
+            //TODO encoding
+            // if ($options['from_encode'] && $options['to_encode']) {
+            //     mb_convert_variables($options['to_encode'], $options['to_encode'], $value);
+            // }
+            fputcsv($fp, $value);
+        }
+        fclose($fp);
+        exit;
     }
 
     /**
      * options
      *
      * @param string $file_path
+     * @param string $lang
      * @return array
      **/
-    static function options($file_path, $lang = null) {
-        $results = array();
+    static function options($file_path, $lang = null)
+    {
         $file_path = PwCsv::csvPath($file_path, $lang);
-        if (file_exists($file_path)) {
-            $fp = fopen($file_path, "r");
-            $columns = fgetcsv($fp, 1024, ",");
-            while ($data = fgetcsv($fp, 1024, ",")) {
-                foreach ($columns as $key => $column) {
-                    $value[$column] = $data[$key]; 
-                }
-                $results[] = $value;
+        if (!file_exists($file_path)) return;
+
+        $results = [];
+        $fp = fopen($file_path, "r");
+        $columns = fgetcsv($fp, 1024, ",");
+        while ($data = fgetcsv($fp, 1024, ",")) {
+            foreach ($columns as $key => $column) {
+                $value[$column] = $data[$key];
             }
-            fclose($fp); 
+            $results[] = $value;
         }
+        fclose($fp);
         return $results;
     }
 
@@ -95,8 +127,9 @@ class PwCsv {
      *
      * @param string $lang
      * @return PwCsv
-     */ 
-    function setLang($lang) {
+     */
+    function setLang($lang)
+    {
         $this->lang = $lang;
         return $this;
     }
@@ -106,7 +139,8 @@ class PwCsv {
      * 
      * @return PwCsv
      **/
-    function keyValueAll() {
+    function keyValueAll()
+    {
         $this->values = PwCsv::keyValues($this->file_path, $this->id_column, $this->label_column, $this->lang);
         return $this;
     }
@@ -119,13 +153,14 @@ class PwCsv {
      * @param string $label_column
      * @return array
      **/
-     static function keyValues($file_path, $id_column='value', $label_column='label', $lang = 'ja') {
+    static function keyValues($file_path, $id_column = 'value', $label_column = 'label', $lang = 'ja')
+    {
         $results = array();
         $file_path = PwCsv::csvPath($file_path, $lang);
         if (!$file_path || !file_exists($file_path)) return;
         $values = self::options($file_path);
         if (is_array($values)) {
-            foreach($values as $value) {
+            foreach ($values as $value) {
                 $results[$value[$id_column]] = $value[$label_column];
             }
         }
@@ -141,25 +176,27 @@ class PwCsv {
      * @param string $label_column
      * @return array
      **/
-    static function valueByKey($key, $file_path, $lang = 'ja', $id_column='value', $label_column='label') {
+    static function valueByKey($key, $file_path, $lang = 'ja', $id_column = 'value', $label_column = 'label')
+    {
         $key_values = self::keyValues($file_path, $id_column, $label_column, $lang);
         return $key_values[$key];
     }
 
-   /**
-    * form
-    *
-    * @param string $csv_path
-    * @param string $name
-    * @param array $params
-    * @return array
-    */ 
-    static function form($csv_path, $name, $params = null) {
+    /**
+     * form
+     *
+     * @param string $csv_path
+     * @param string $name
+     * @param array $params
+     * @return array
+     */
+    static function form($csv_path, $name, $params = null)
+    {
         $params['values'] = PwCsv::options($csv_path);
         $params['name'] = $name;
         return $params;
     }
-    
+
     /**
      * array to csv for columns
      *
@@ -168,24 +205,25 @@ class PwCsv {
      * @param array $csv_callbacks
      * @return array
      **/
-    static function arrayToCsvForColumns($values, $columns, $csv_callbacks=null) {
+    static function arrayToCsvForColumns($values, $columns, $csv_callbacks = null)
+    {
         if (is_array($columns)) {
             $keys = array_keys($columns);
             $labels = array_values($columns);
-            $csv = implode(',', $labels)."\n";
+            $csv = implode(',', $labels) . "\n";
         }
-        if(is_array($values)) {
+        if (is_array($values)) {
             foreach ($values as $key => $row) {
                 $row_array = [];
-                foreach($keys as $column) { 
+                foreach ($keys as $column) {
                     $value = $row[$column];
                     if ($csv_callbacks && $csv_callbacks[$column]) {
                         $func = $csv_callbacks[$column];
-                        $value = call_user_func($func, $value); 
+                        $value = call_user_func($func, $value);
                     }
                     $row_array[] = "\"{$value}\"";
                 }
-                $csv.= implode(',', $row_array)."\n";
+                $csv .= implode(',', $row_array) . "\n";
             }
             if (self::$from_encode && self::$to_encode) {
                 $csv = mb_convert_encoding($csv, self::$to_encode, self::$from_encode);
@@ -193,19 +231,20 @@ class PwCsv {
             return $csv;
         }
     }
-    
+
     /**
      * arrayToCsv
      *
      * @param array $values
      * @return array
      **/
-    static function arrayToCsv($values) {
+    static function arrayToCsv($values)
+    {
         if (is_array($values)) {
             $csv = '';
             $columns = array_keys($values[0]);
-            $csv.= implode(',', $columns);
-            $csv.= "\n";
+            $csv .= implode(',', $columns);
+            $csv .= "\n";
             foreach ($values as $key => $value) {
                 $csv_values = [];
                 foreach ($value as $column => $_value) {
@@ -215,14 +254,13 @@ class PwCsv {
                     $csv_values[] = csv_value($_value);
                 }
                 if (is_array($csv_values)) {
-                    $csv.= implode(',', $csv_values);
+                    $csv .= implode(',', $csv_values);
                 }
-                $csv.= "\n";
+                $csv .= "\n";
             }
             return $csv;
         }
     }
-
 
     /**
      * valuesForCsvName
@@ -230,8 +268,9 @@ class PwCsv {
      * @param string $csv_name
      * @return array
      **/
-     function valuesForCsvName($csv_name, $lang = 'ja') {
-        $file_path = PwCsv::csvPath($file_path, $lang);
+    function valuesForCsvName($csv_name, $lang = 'ja')
+    {
+        $file_path = PwCsv::csvPath($csv_name, $lang);
         if (!$file_path || !file_exists($file_path)) return;
 
         $values = $this->_readCsv($file_path);
@@ -249,7 +288,8 @@ class PwCsv {
      * @param array $columns
      * @return
      **/
-     function create($columns=null) {
+    function create($columns = null)
+    {
         if (is_array($columns)) $this->columns;
 
         if (!file_exists($this->file_path)) {
@@ -259,7 +299,7 @@ class PwCsv {
                 flock($fp, LOCK_EX);
                 fputs($fp, $header);
                 flock($fp, LOCK_UN);
-                fclose($fp); 
+                fclose($fp);
             }
         }
     }
@@ -271,7 +311,8 @@ class PwCsv {
      * @param string $column_key
      * @return array
      **/
-    function fetch($id) {
+    function fetch($id)
+    {
         $values = $this->_readCsv();
         if (is_array($values)) {
             foreach ($values as $key => $value) {
@@ -285,11 +326,23 @@ class PwCsv {
     }
 
     /**
+     * get
+     *
+     * @return void
+     */
+    function get()
+    {
+        $this->values = $this->_list();
+        return $this;
+    }
+
+    /**
      * all
      *
      * @return void
      */
-    function all() {
+    function all()
+    {
         $this->values = $this->_list();
         return $this;
     }
@@ -300,7 +353,8 @@ class PwCsv {
      * @param array $columns
      * @return array
      **/
-    function _list($columns = null) {
+    function _list($columns = null)
+    {
         $values = array();
         if (file_exists($this->file_path)) {
             $fp = fopen($this->file_path, "r");
@@ -329,7 +383,7 @@ class PwCsv {
                 }
                 $values[] = $value;
             }
-            fclose($fp); 
+            fclose($fp);
         }
         return $values;
     }
@@ -340,7 +394,8 @@ class PwCsv {
      * @param array $conditions
      * @return array
      **/
-    function results($conditions = null) {
+    function results($conditions = null)
+    {
         $values = $this->_readCsv();
         $values = $this->_sortOrder($values);
         return $values;
@@ -353,7 +408,8 @@ class PwCsv {
      * @param string $sort_key
      * @return array
      **/
-    function _sortOrder($values, $sort_key='id') {
+    function _sortOrder($values, $sort_key = 'id')
+    {
         if ($this->sort_key) $sort_key = $this->sort_key;
         if (is_array($this->values)) {
             foreach ($this->values as $key => $value) {
@@ -374,7 +430,8 @@ class PwCsv {
      * @param array $posts
      * @return array
      **/
-    function insert($posts) {
+    function insert($posts)
+    {
         //TODO new file
         //TODO fopen write mode is 'a'
         if (is_array($posts)) {
@@ -393,7 +450,8 @@ class PwCsv {
      * @param array $posts
      * @return array
      **/
-    function take_values($posts) {
+    function take_values($posts)
+    {
         if ($this->id > 0) {
             //TODO cast & marge
             $this->value = $posts;
@@ -406,7 +464,8 @@ class PwCsv {
      *
      * @return
      **/
-    function update() {
+    function update()
+    {
         if ($this->id > 0 && is_array($this->values)) {
             if ($this->values) {
                 foreach ($this->values as $key => $value) {
@@ -424,7 +483,8 @@ class PwCsv {
      *
      * @return
      **/
-    function delete($id) {
+    function delete($id)
+    {
         $this->values = $this->_readCsv();
         if ($this->values) {
             foreach ($this->values as $key => $value) {
@@ -441,7 +501,8 @@ class PwCsv {
      *
      * @return
      **/
-    function _readCsv() {
+    function _readCsv()
+    {
         if (file_exists($this->file_path)) {
             $fp = fopen($this->file_path, "r");
 
@@ -456,7 +517,7 @@ class PwCsv {
                     } else {
                         $_value = $data[$key];
                     }
-                    $value[$column] = $_value; 
+                    $value[$column] = $_value;
                 }
                 if ($this->index_key) {
                     $index_value = $value[$this->index_key];
@@ -465,7 +526,7 @@ class PwCsv {
                     $results[] = $value;
                 }
             }
-            fclose($fp); 
+            fclose($fp);
         }
         $this->values = $results;
         return $results;
@@ -477,23 +538,22 @@ class PwCsv {
      * @param array $values
      * @return
      **/
-    function write($values) {
-        $csv = implode(',', $this->columns)."\n";
+    function write($values)
+    {
+        $csv = implode(',', $this->columns) . "\n";
 
-        if(is_array($values)) {
+        if (is_array($values)) {
             foreach ($values as $key => $row) {
                 $row_array = [];
-                foreach($this->columns as $column_key => $column) { 
+                foreach ($this->columns as $column_key => $column) {
                     $row_array[] = "\"{$row[$column]}\"";
                 }
-                $csv.= implode(',', $row_array)."\n";
+                $csv .= implode(',', $row_array) . "\n";
             }
 
             $fp = fopen($this->file_path, "w");
             flock($fp, LOCK_EX);
-            if (fputs($fp, $csv)) {
-
-            } else {
+            if (fputs($fp, $csv)) { } else {
                 $this->errors[] = array('column' => 'csv', 'message' => 'save error');
             }
             flock($fp, LOCK_UN);
@@ -503,7 +563,7 @@ class PwCsv {
                 $this->errors[] = array('column' => 'csv', 'message' => 'chmod error');
             }
         }
-        return $results;
+        return;
     }
 
     /**
@@ -512,11 +572,12 @@ class PwCsv {
      * @param array $columns
      * @return
      **/
-    static function implodeColumn($columns) {
+    static function implodeColumn($columns)
+    {
         if (is_array($columns)) {
             $lables = array_values($columns);
             $value = implode(',', $lables);
-            $value.="\n";
+            $value .= "\n";
             return $value;
         }
     }
@@ -527,8 +588,9 @@ class PwCsv {
      * @param string $value
      * @return
      **/
-    static function csvValue($value) {
-        return '"'.$value.'"';
+    static function csvValue($value)
+    {
+        return '"' . $value . '"';
     }
 
     /**
@@ -537,7 +599,8 @@ class PwCsv {
      * @param string $value
      * @return
      **/
-    static function escapeValue($value) {
+    static function escapeValue($value)
+    {
         $value = str_replace('"', '""', $value);
         $value = str_replace(',', '、', $value);
         return $value;
@@ -551,11 +614,12 @@ class PwCsv {
      * @param  string $to_encode
      * @return void
      */
-    static function outputLine($values, $from_encode = 'SJIS', $to_encode = 'UTF-8') {
+    static function outputLine($values, $from_encode = 'SJIS', $to_encode = 'UTF-8')
+    {
         $value = implode(',', $values);
-        $value.="\r\n";
+        $value .= "\r\n";
         $value = mb_convert_encoding($value, $from_encode, $to_encode);
-        echo($value);
+        echo ($value);
     }
 
     /**
@@ -566,9 +630,10 @@ class PwCsv {
      * @param  string $to_encode
      * @return void
      */
-    static function line($values, $from_encode = 'SJIS', $to_encode = 'UTF-8') {
+    static function line($values, $from_encode = 'SJIS', $to_encode = 'UTF-8')
+    {
         $value = implode(',', $values);
-        $value.= "\r\n";
+        $value .= "\r\n";
         $value = mb_convert_encoding($value, $from_encode, $to_encode);
         return $value;
     }
@@ -579,9 +644,9 @@ class PwCsv {
      * @param  string $key
      * @return array
      */
-    static function loadSession($key) {
+    static function loadSession($key)
+    {
         $csv_options = PwSession::getWithKey('app', 'csv_options');
         return $csv_options[$key];
     }
-
 }

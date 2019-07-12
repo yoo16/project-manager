@@ -12,6 +12,7 @@ class PwFtp
     public $is_login = false;
     public $is_connect_error = false;
     public $is_success_download = false;
+    public $host = null;
     public $login_name = null;
     public $password = null;
     public $default_dir = null;

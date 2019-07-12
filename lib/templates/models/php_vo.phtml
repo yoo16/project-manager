@@ -3,7 +3,7 @@
 /**
  * <?= $values['model']['class_name'] ?> 
  * 
- * @create  <?= $values['model']['created_at'] ?> 
+ * @create
  */
 
 require_once 'PwPgsql.php';
@@ -22,11 +22,11 @@ class _<?= $values['model']['class_name'] ?> extends PwPgsql {
     public $name = '<?= $values['model']['name'] ?>';
     public $entity_name = '<?= $values['model']['entity_name']?>';
 
-<? if ($values['attribute']): ?>
+<? if ($values['columns']): ?>
     public $columns = [
-<? foreach ($values['attribute'] as $attribute): ?>
-<? if ($attribute['name'] != 'id'): ?>
-        <?= Model::columnPropertyForTemplate($attribute) ?>,
+<? foreach ($values['columns'] as $column_name => $column): ?>
+<? if ($column_name != 'id'): ?>
+        '<?= $column_name ?>' => [<?= $column ?>],
 <? endif ?>
 <? endforeach ?>
     ];

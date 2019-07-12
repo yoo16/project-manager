@@ -6,8 +6,12 @@
  */
 
 class PwMigration {
-    public $from_pgsql;
+    public $pgsql;
     public $used_old_host = false;
+    public $version = 0;
+    public $schema_table_name = 'schema_info';
+    public $host;
+    public $dbname;
 
     /**
      * constructor
@@ -15,7 +19,154 @@ class PwMigration {
      * @param array $params
      */
     function __construct($params = null) {
-        $this->pgsql($params);
+        $this->setPgsql($params);
+    }
+
+    /**
+     * init schema info
+     *
+     * @return void
+     */
+    public function initInfo()
+    {
+        if (!$this->pgsql) return;
+        $dir = PwMigration::migrationDir();
+        if (!file_exists($dir)) PwFile::createDir($dir);
+        if (!$this->pgsql->tableExists($this->schema_table_name)) {
+            $sql = "CREATE TABLE {$this->schema_table_name} (version INT8 NOT NULL);";
+            $this->pgsql->query($sql);
+        }
+        $version = $this->version();
+        if (!is_numeric($version)) {
+            $sql = "INSERT INTO {$this->schema_table_name} (version) VALUES (0);";
+            $this->pgsql->query($sql);
+        }
+    }
+
+    /**
+     * setDBName
+     *
+     * @param string $dbname
+     * @return
+     */
+    public function setDBName($dbname)
+    {
+        $this->dbname = $dbname;
+    }
+
+    /**
+     * setHost
+     *
+     * @param string $host
+     * @return
+     */
+    public function setHost($host)
+    {
+        $this->host = $host;
+    }
+
+    /**
+     * update version
+     *
+     * @param integer $version
+     * @return resource
+     */
+    public function updateVersion($version)
+    {
+        if ($this->pgsql) return;
+        $sql = "UPDATE schema_info SET version = {$version};";
+        return $this->pgsql->query($sql);
+    }
+
+    /**
+     * up
+     *
+     * @param array $options
+     * @return void
+     */
+    public function up($options = null)
+    {
+        if (!$this->pgsql) return;
+        $current_version = $this->version();
+        $sqls = $this->upSQL();
+        $update_version = 0;
+        foreach ($sqls as $version => $sql) {
+            if ($version > $current_version && $this->pgsql->query($sql)) $update_version = $version;
+        }
+        if ($update_version > $current_version) {
+            $this->updateVersion($update_version);
+        }
+    }
+
+    public function down()
+    {
+
+    }
+
+    /**
+     * version
+     *
+     * @return void
+     */
+    public function version()
+    {
+        if (!$this->pgsql) return;
+        $sql = "SELECT version FROM {$this->schema_table_name};";
+        $row = $this->pgsql->fetchRow($sql);
+        if (is_numeric($row['version'])) return (int) $row['version'];
+    }
+
+    /**
+     * migration sql
+     *
+     * @return void
+     */
+    public function upSQL()
+    {
+        if (!$this->pgsql) return;
+        $current_version = $this->version();
+        $dir = PwMigration::migrationDir()."{$this->pgsql->dbname}/";
+        if (!file_exists($dir)) exit("Not found {$dir}");
+
+        $values = [];
+        $path = "{$dir}/*.sql";
+        foreach (glob($path) as $file) {
+            $file_info = pathinfo($file);
+            if (is_numeric($file_info['filename'])) {
+                $version = (int) $file_info['filename'];
+                if ($version > $current_version) {
+                    $file_path = "{$file_info['dirname']}/{$file_info['basename']}";
+                    $sql = file_get_contents($file_path);
+                    if ($sql) $values[$version] = $sql;
+                }
+            }
+        }
+        return $values;
+    }
+
+    /**
+     * init schema info
+     *
+     * @return void
+     */
+    public function destroy()
+    {
+        if (!$this->pgsql) return;
+        if (!$this->pgsql->tableExists($this->schema_table_name)) {
+            $sql = "DROP TABLE {$this->schema_table_name};";
+            $this->pgsql->query($sql);
+        }
+    }
+
+    /**
+     * migrationDir
+     *
+     * @return void
+     */
+    static function migrationDir()
+    {
+        $dir = DB_DIR."migrate/";
+        return $dir;
     }
 
     /**
@@ -34,13 +185,16 @@ class PwMigration {
 
         $old_model = DB::model($class_name)->setDBInfo($old_db_info)->useOldTable();
         if ($conditions) $old_model->wheres($conditions);
-        $old_model->all();
+        $old_model->get();
         if (!$old_model->values) return;
 
+        //old DB foreign table
         if (is_array($foreigns)) {
             foreach ($foreigns as $column => $foreign) {
                 $db_name = ($foreign['db_name']) ? $foreign['db_name'] : $old_db_info['dbname'];
-                $foreign_ids[$column] = DB::model($foreign['class_name'])->where('old_db', $db_name)->ids('old_id', 'id');
+                $old_class = DB::model($foreign['class_name']);
+                if (!$foreign['is_not_use_old_db']) $old_class->where('old_db', $db_name);
+                $foreign_ids[$column] = $old_class->ids('old_id', 'id');
                 if ($foreign['is_search']) $search_columns[] = $column;
             }
         }
@@ -92,9 +246,9 @@ class PwMigration {
      * @param  array $params
      * @return void
      */
-    function pgsql($params = null) {
-        $this->from_pgsql = new PwPgsql();
-        if ($params) $this->from_pgsql->setDBInfo($params);
+    function setPgsql($params = null) {
+        $this->pgsql = new PwPgsql();
+        if ($params) $this->pgsql->setDBInfo($params);
     }
 
     /**
@@ -103,7 +257,7 @@ class PwMigration {
      * @param string $model_name
      * @return void
      */
-    function updateDefaultValueByColumn($model_name) {
+    public static function updateDefaultValueByColumn($model_name) {
         if (!class_exists($model_name)) return;
         $model = DB::model($model_name);
         if (!$model->columns) return;
@@ -140,7 +294,7 @@ class PwMigration {
             $pgsql = new PwPgsql($db_info);
             $from_model = $pgsql
                         ->table($model->old_name)
-                        ->all();
+                        ->get();
 
             foreach ($from_model->values as $value) {
                 $id = $value[$model->old_id_column];
@@ -318,15 +472,13 @@ class PwMigration {
      */
     function createMasterTable($model_names) {
         foreach ($model_names as $model_name) {
-            $model = DB::model($model_name)->all();
+            $model = DB::model($model_name)->get();
             if ($model->values) {
                 echo("{$model_name} data exists.").PHP_EOL;
             } else {
-                $pgsql = DB::model($model_name)->insertsFromOldTable($this->from_pgsql);
+                $pgsql = DB::model($model_name)->insertsFromOldTable($this->pgsql);
             }
-
             if ($pgsql->sql_error) {
-                echo($trancate_model).PHP_EOL;
                 echo($pgsql->sql).PHP_EOL;
                 echo($pgsql->sql_error).PHP_EOL;
                 exit;
@@ -358,10 +510,10 @@ class PwMigration {
             $fk_entity_name = PwFile::pluralToSingular($fk_table_name);
             $fk_class_name = PwFile::phpClassName($fk_entity_name);
 
-            $fk_model = DB::model($fk_class_name)->setDBInfo($this->from_pgsql->pg_info_array);
+            $fk_model = DB::model($fk_class_name)->setDBInfo($this->pgsql->pg_info_array);
             $fk_model->from($fk_model->old_name)
                      ->select($fk_model->old_id_column)
-                     ->all();
+                     ->get();
 
             $values = null;
             foreach ($fk_model->values as $value) {
@@ -395,7 +547,7 @@ class PwMigration {
             $name = PwFile::pluralToSingular($foreign['foreign_table']);
             $fk_class_name = PwFile::phpClassName($name);
             if (class_exists($fk_class_name)) {
-                $fk_model = DB::model($fk_class_name)->all();
+                $fk_model = DB::model($fk_class_name)->get();
                 foreach ($fk_model->values as $fk_value) {
                     if ($fk_value['old_id']) {
                         $old_fk_model = $old_fk_models[$foreign['column']];
@@ -462,7 +614,7 @@ class PwMigration {
             exit;
         }
 
-        $values = DB::model($class_name)->valuesFromOldTable($this->from_pgsql);
+        $values = DB::model($class_name)->valuesFromOldTable($this->pgsql);
         $fk_ids = $this->fkIds($class_name);
 
         $contents = '';
@@ -482,12 +634,12 @@ class PwMigration {
                 $model->where("old_id IS NOT NULL")
                       ->where("old_db IS NOT NULL")
                       ->where("old_id = {$value['old_id']}")
-                      ->where("old_db = '{$this->from_pgsql->dbname}'")
+                      ->where("old_db = '{$this->pgsql->dbname}'")
                       ->one();
             }
 
-            $value['old_host'] = $this->from_pgsql->host;
-            $value['old_db'] = $this->from_pgsql->dbname;
+            $value['old_host'] = $this->pgsql->host;
+            $value['old_db'] = $this->pgsql->dbname;
 
             if ($model->value['id']) {
                 //UPDATE

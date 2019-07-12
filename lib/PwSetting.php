@@ -46,6 +46,7 @@ class PwSetting {
         define('SCRIPT_DIR', BASE_DIR.'script/');
         define('CONTROLLER_DIR', APP_DIR.'controllers/');
         define('TEMPLATE_DIR', VIEW_DIR.'templates/');
+        define('LIB_TEMPLATE_DIR', BASE_DIR.'lib/templates/');
 
         require_once 'application_setting.php';
         if (!defined('ROOT_CONTROLLER_NAME')) define('ROOT_CONTROLLER_NAME', 'root');
@@ -73,21 +74,38 @@ class PwSetting {
     /**
      * setting file path
      * 
-     * @return String
+     * @return string
      */
     static function hostSettingFilePath() {
         $hostname = PwSetting::hostname();
         $path = BASE_DIR."app/settings/{$hostname}.php";
         if (file_exists($path)) return $path;
 
-        $path = BASE_DIR.'app/settings/default.php';
-        if (file_exists($path)) return $path;
+        $default_path = BASE_DIR.'app/settings/default.php';
+        if (file_exists($default_path)) return $default_path;
+
+        echo("Not found {$path} OR {$default_path}").PHP_EOL;
+        exit;
+    }
+
+    /**
+     * check defined
+     * 
+     * @param string $name
+     * @return string
+     */
+    static function checkDefined($name) {
+        if (!defined($name)) {
+            echo(PwSetting::hostSettingFilePath()).PHP_EOL;
+            echo("Not defined {$name}!").PHP_EOL;
+            exit;
+        }
     }
 
     /**
      * DB setting file path
      * 
-     * @return String
+     * @return string
      */
     static function loadHostSetting() {
         $path = PwSetting::hostSettingFilePath();
@@ -97,7 +115,7 @@ class PwSetting {
     /**
      * DB setting file path
      * 
-     * @return String
+     * @return string
      */
     static function loadDBSetting() {
         if (defined('DB_SETTING_FILE')) {

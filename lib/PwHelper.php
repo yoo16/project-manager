@@ -14,8 +14,8 @@ class PwHelper
     /**
      * random string
      * 
-     * @param  Integer $length
-     * @return String
+     * @param  integer $length
+     * @return string
      */
     static function randomString($length = 16)
     {
@@ -35,7 +35,7 @@ class PwHelper
      * @param float $value
      * @param integer $digit
      * @param string $not_format
-     * @return float
+     * @return mixed
      */
     static function numberFormat($value, $digit = null, $not_format = '-')
     {
@@ -53,21 +53,25 @@ class PwHelper
      * @param string $email
      * @return boolean
      */
-    static function validateEmail($email)
+    static function validateEmail($email, $pattern = '')
     {
         if (!$email) return true;
-        return preg_match("/^\w+[\w\-\.]*@([\w\-]+\.)+\w{2,4}$/", $email) == 1;
+        if (!$pattern) $pattern = "/^\w+[\w\-\.]*@([\w\-]+\.)+\w{2,4}$/";
+        return preg_match($pattern, $email) == 1;
     }
 
     /**
-     * validate Alphanumeric
+     * validate Password
      *
-     * @param string $column
+     * @param string $value
+     * @param integer $min
+     * @param integer $max
      * @return boolean
      */
-    static function validtePassword($value, $min= 4, $max = 50) {
+    static function validtePassword($value, $min= 4, $max = 50, $pattern = '') {
         if (!$value) return true;
-        $pattern = "/^[0-9a-zA-Z\\-\\_\\@\\.]{".$min."," .$max."}$/i";
+        if (!$pattern) $pattern = "/^[0-9a-zA-Z\\-\\_\\@\\.]";
+        $pattern.= "{".$min."," .$max."}$/i";
         return preg_match($pattern, $value);
     }
 

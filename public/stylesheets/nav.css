@@ -1,69 +1,87 @@
 .nav-item a {
-  color: white; }
+  color: white;
+}
 
 .nav-item a:hover {
   color: white;
-  background: rgba(240, 50, 20, 0.95); }
+  background: rgba(240, 50, 20, 0.95);
+}
 
 .nav-link {
   padding: 12px 10px;
-  border-radius: none; }
+  border-radius: none;
+}
 
 .nav-pills .nav-link {
-  border-radius: 0; }
+  border-radius: 0;
+}
 
 .nav-item .nav-link.active {
   background-color: rgba(240, 50, 20, 0.95);
-  border-color: rgba(240, 50, 20, 0.95); }
+  border-color: rgba(240, 50, 20, 0.95);
+}
 
 .btn-outline-primary.active,
 .btn-outline-primary:active,
 .show > .btn-outline-primary.dropdown-toggle {
   background-color: rgba(240, 50, 20, 0.95);
-  border-color: rgba(240, 50, 20, 0.95); }
+  border-color: rgba(240, 50, 20, 0.95);
+}
 
 .dropdown-item {
-  padding-left: 36px; }
+  padding-left: 36px;
+}
 
 .dropdown-item a {
-  color: white; }
+  color: white;
+}
 
 .dropdown-item.active {
   color: white;
-  background: rgba(240, 50, 20, 0.95); }
+  background: rgba(240, 50, 20, 0.95);
+}
 
 #header {
-  background: rgba(23, 46, 60, 0.95); }
+  background: rgba(23, 46, 60, 0.95);
+}
 
 .bg-faded {
   margin: 0;
   padding: 5px 0;
   background: rgba(23, 46, 60, 0.95);
   color: white;
-  margin-bottom: 1px; }
+  margin-bottom: 1px;
+}
 
 #side-nav .nav-link {
-  border-bottom: 1px solid #172e3c; }
+  border-bottom: 1px solid #172e3c;
+}
 
 .bg-faded a {
   font-size: 10pt;
-  color: white; }
+  color: white;
+}
 
 #header, #header .nav-link {
-  color: white; }
+  color: white;
+}
 
 #header .navbar-brand {
-  font-size: 14pt; }
+  font-size: 14pt;
+}
 
 #header a {
   font-size: 10pt;
-  color: white; }
+  color: white;
+}
 
 #header .dropdown-menu {
-  background: rgba(23, 46, 60, 0.95); }
+  background: rgba(23, 46, 60, 0.95);
+}
 
 #header .dropdown-menu a {
-  padding: 10px; }
+  padding: 10px;
+}
 
 #side-nav h1,
 #side-nav h2,
@@ -72,24 +90,29 @@
 #side-nav h5,
 #side-nav h6 {
   font-size: 0.9rem;
-  margin: 0; }
+  margin: 0;
+}
 
 #side-nav {
-  padding-right: 0 !important; }
+  padding-right: 0 !important;
+}
 
 #side-nav ul {
-  width: 100%; }
+  width: 100%;
+}
 
 .bg-faded .dropdown-menu {
-  background: rgba(23, 46, 60, 0.95); }
+  background: rgba(23, 46, 60, 0.95);
+}
 
 .bg-faded .dropdown-item {
   padding-top: 12px;
   padding-bottom: 12px;
-  color: white; }
+  color: white;
+}
 
 .bg-faded.active {
   background: rgba(240, 50, 20, 0.95);
-  border-color: rgba(240, 50, 20, 0.95); }
-
+  border-color: rgba(240, 50, 20, 0.95);
+}
 /*# sourceMappingURL=nav.css.map */

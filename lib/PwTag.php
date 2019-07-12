@@ -20,10 +20,10 @@ class PwTag {
         $url = '';
         if (isset($GLOBALS['controller'])) {
             $controller = $GLOBALS['controller'];
-            if (isset($controller->relative_base)) {
-                $url = $controller->relative_base;
+            if (isset($controller->pw_relative_base)) {
+                $url = $controller->pw_relative_base;
             } else if (is_array($controller)) {
-                $url = $controller['relative_base'];
+                $url = $controller['pw_relative_base'];
             }
         }
         return $url;
@@ -106,7 +106,7 @@ class PwTag {
      */
     static function base() {
         $controller = $GLOBALS['controller'];
-        if (is_null($controller->relative_base)) {
+        if (is_null($controller->pw_relative_base)) {
             return "<base href=\"{$controller->base}\">\n";
         }
     }
@@ -122,7 +122,7 @@ class PwTag {
     static function javascript($name, $dir_name = 'javascripts', $ext = 'js') {
         if (!$name) return;
         $href = PwTag::fileUrl($dir_name, $name, $ext);
-        return "<script type=\"text/javascript\" src=\"{$href}\"></script>\n";
+        return "<script src=\"{$href}\"></script>\n";
     }
 
     /**
@@ -139,7 +139,7 @@ class PwTag {
         $file_name = "{$name}.{$ext}";
         $path = BASE_DIR."public/javascripts/controllers/{$file_name}";
         if (file_exists($path)) {
-            return "<script type=\"text/javascript\" src=\"{$href}\"></script>\n";
+            return "<script src=\"{$href}\"></script>\n";
         }
     }
 
@@ -147,12 +147,12 @@ class PwTag {
      * stylesheet controller tag
      * 
      * @param  string $name
-     * @param  array $attributes
      * @param  string $dir_name
+     * @param  array $attributes
      * @param  string $ext
      * @return string
      */
-    static function stylesheet($name, $attributes = null, $stylesheet_dir = null, $ext = 'css') {
+    static function stylesheet($name, $stylesheet_dir = 'stylesheets', $attributes = null, $ext = 'css') {
         if (!$name) return;
         if (!$stylesheet_dir) $stylesheet_dir = PwTag::$stylesheet_dir;
         $attributes['href'] = PwTag::fileUrl($stylesheet_dir, $name, $ext);
@@ -165,12 +165,12 @@ class PwTag {
      * print stylesheet controller tag
      * 
      * @param  string $name
-     * @param  array $attributes
      * @param  string $dir_name
+     * @param  array $attributes
      * @param  string $ext
      * @return string
      */
-    static function stylesheetPrint($name, $attributes = null, $stylesheet_dir = null, $ext = 'css') {
+    static function stylesheetPrint($name, $stylesheet_dir = null, $attributes = null, $ext = 'css') {
         if (!$name) return;
         if (!$stylesheet_dir) $stylesheet_dir = PwTag::$stylesheet_dir;
         $attributes['href'] = PwTag::fileUrl($stylesheet_dir, $name, $ext);
@@ -354,7 +354,7 @@ class PwTag {
     * @return string
     */ 
     static function reverse($params, $options, $is_active) {
-        if ($params['label']) $labels = $options['label'];
+        if ($options['label']) $labels = $options['label'];
         if (!$labels['valid']) $labels['valid'] = LABEL_TRUE;
         if (!$labels['invalid']) $labels['invalid'] = LABEL_FALSE;
 
@@ -362,11 +362,16 @@ class PwTag {
         $action = $params['action'];
         if ($controller && $action) $options['href'] = Controller::url($controller, $action, null, $options['http_params']);
 
-        $options['label'] = $labels['valid'];
-        if ($is_active) {
-            $options['class'].= " btn btn-sm btn-danger";
+        if ($options['is_btn']) {
+            $options['label'] = $labels['valid'];
+            if ($is_active) {
+                $options['class'].= " btn btn-sm btn-danger";
+            } else {
+                $options['class'].= " btn btn-sm btn-outline-primary";
+            }
         } else {
-            $options['class'].= " btn btn-sm btn-outline-primary";
+            $options['class'].= ' link';
+            $options['label'] = ($is_active) ? $labels['valid']: $labels['invalid'];
         }
         $tag = self::a($options);
         return $tag;
@@ -433,7 +438,7 @@ class PwTag {
      */
     static function pwProjectName($name) {
         $tag = '';
-        $tag.= '<script type="text/javascript">';
+        $tag.= '<script>';
         $tag.= "var pw_project_name = '{$name}'";
         $tag.= '</script>';
         return $tag;
@@ -484,28 +489,28 @@ class PwTag {
         if ($page_count > 1) {
             //first
             $params['offset'] = 0;
-            //$params['label'] = self::iconTag('angle-double-left');
             $params['label'] = '<<';
+            $params['label'] = self::iconTag('angle-double-left');
             $params['class'] = ($offset == 0) ? ' disabled' : '';
             $first_tag = self::paginatorLiTag($params);
 
             //prev
             $params['offset'] = $offset - 1;
-            //$params['label'] = self::iconTag('angle-left');
             $params['label'] = '<';
+            $params['label'] = self::iconTag('angle-left');
             $prev_tag = self::paginatorLiTag($params);
 
             //next
             $params['class'] = (($offset + 1) >= $page_count) ? ' disabled' : '';
             $params['offset'] = $offset + 1;
-            //$params['label'] = self::iconTag('angle-right');
             $params['label'] = '>';
+            $params['label'] = self::iconTag('angle-right');
             $next_tag = self::paginatorLiTag($params);
 
             //latest
             $params['offset'] = $page_count - 1;
-            //$params['label'] = self::iconTag('angle-double-right');
             $params['label'] = '>>';
+            $params['label'] = self::iconTag('angle-double-right');
             $latest_tag = self::paginatorLiTag($params);
 
             $page_tag = '';
@@ -582,7 +587,6 @@ class PwTag {
     static function button($params)
     {
         if (!$params['class']) $params['class'] = 'btn btn-outline-primary';
-        $attribute = PwTag::attribute($params);
         $tag = PwTag::buttonTag($params);
         return $tag;
     }
@@ -595,10 +599,9 @@ class PwTag {
      */
     static function closeModalButton($params = null)
     {
-        if (!$params['class']) $params['class'] = 'btn btn-outline-primary';
+        if (!$params['class']) $params['class'] = 'pw-modal-close btn btn-outline-primary';
         $params['label'] = LABEL_CLOSE;
         $params['type'] = 'button';
-        $params['data-dismiss'] = 'modal';
         $params['label'] = PwTag::htmlLabel($params);
         $tag = PwTag::buttonTag($params);
         return $tag;

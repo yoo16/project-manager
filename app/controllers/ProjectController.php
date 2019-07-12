@@ -166,6 +166,20 @@ class ProjectController extends AppController
     }
 
     /**
+     * export php default values
+     *
+     * @return void
+     */
+    function action_export_default_values()
+    {
+        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
+        $this->project->exportPHPDefaultValues();
+
+        $params['project_id'] = $this->project->value['id'];
+        $this->redirectTo(['controller' => 'model', 'action' => 'list'], $params);
+    }
+
+    /**
      * export php view
      *
      * @return void

@@ -31,7 +31,6 @@ class PwSession {
     * get
     *
     * @param string $key
-    * @param object $default_value
     * @param int $sid
     * @return object
     */
@@ -47,7 +46,7 @@ class PwSession {
     * set session
     *
     * @param string $key
-    * @param object $value
+    * @param mixed $value
     * @param int $sid
     * @return void
     */

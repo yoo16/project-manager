@@ -7,7 +7,7 @@
 -
 <?= $this->total_file_count ?>
 
-<a class="btn" href="#" onClick="$('#error_documents').show()">Error Documents</a>
+<a class="pw-click btn" pw-controller="document" pw-action="show_error_document">Error Documents</a>
 <a class="btn" href="<?= $this->linkTo('test_php', array('project_id' => $this->project->value['id'])) ?>">Test PHP</a>
 <div id="error_documents">
   <ul>

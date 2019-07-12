@@ -71,6 +71,7 @@ class PwLocalize {
      * @return void
      */
     static function loadLocalizeFile($lang) {
+        if (!$lang) $lang = 'ja';
         $localize_path = BASE_DIR."app/localize/{$lang}/localize.php";
         if (file_exists($localize_path)) {
            require_once $localize_path;

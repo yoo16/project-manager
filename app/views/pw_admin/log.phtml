@@ -1,6 +1,6 @@
 <? include('_header.phtml') ?>
 
-<div class="modal fade" id="log-window">
+<div id="log-window" class="pw-modal">
   <div class="modal-dialog">
     <div class="modal-content">
 
@@ -9,14 +9,14 @@
       </div>
 
       <div class="modal-body">
-        <div id="log-contents"></div>
+        <div id="log-contents" class="pw-load" pw-controller="pw_admin" pw-function="logList"></div>
       </div>
 
       <div class="modal-footer">
         <div class="card-block text-right">
           <a href="#" class="pw-lib btn btn-outline-primary" pw-lib="PwLog" pw-action="reload"><?= LABEL_RELOAD ?></a>
           <a href="#" class="pw-lib btn btn-danger" pw-lib="PwLog" pw-action="delete" message="<?= MESSAGE_DELETE ?>"><?= LABEL_DELETE ?></a>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
+          <button type="button" class="pw-modal-close btn btn-secondary"><?= LABEL_CLOSE ?></button>
         </div>
       </div>
 
@@ -24,11 +24,5 @@
   </div>
 </div>
 
-<div id="log-list"></div>
-<div id="log-detail"></div>
-
-<script>
-  $(function () {
-    pw_log.loadList()
-  });
-</script>
+<div id="log_list"></div>
+<div id="log_detail"></div>

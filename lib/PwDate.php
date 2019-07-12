@@ -455,9 +455,9 @@ class PwDate {
      *
      * @return void
      */
-    function storePwSession($key = 'app_date') {
+    function storePwSession($key = 'app_date', $pw_multi_sid = 0) {
         if (!$key) $key = 'app_date';
-        PwSession::setWithKey($key, 'date', $this);
+        PwSession::setWithKey($key, 'date', $this, $pw_multi_sid);
     }
 
     /**
@@ -465,9 +465,9 @@ class PwDate {
      *
      * @return PwDate
      */
-    function loadPwSession($key = 'app_date') {
+    function loadPwSession($key = 'app_date', $pw_multi_sid = 0) {
         if (!$key) $key = 'app_date';
-        $pw_date = PwSession::getWithKey($key, 'date');
+        $pw_date = PwSession::getWithKey($key, 'date', $pw_multi_sid);
         if ($pw_date) {
             $this->setFromString($pw_date->from_string);
             $this->setToString($pw_date->to_string);

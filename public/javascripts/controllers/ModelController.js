@@ -5,22 +5,24 @@
  */
 
 var ModelController = function() {
+    var _this = this;
+    this.name = 'model';
 
-    this.relation_list = function(dom) {
-        postApi(apiUrl(this.name, 'list'), this.params, callback);
-
+    this.relation_list = function(node) {
+        var params = {};
+        params.model_id = node.attr('model_id')
+        pw_app.postHtml({controller: this.name, action: 'list'}, params, {callback: callback});
         function callback(data) {
-            $('#database_list').html(data);
+            PwNode.id('database_list').html(data);
         }
     }
 
-    this.old_table_list = function(dom) {
+    this.old_table_list = function(node) {
         var params = {};
-        params.model_id = $(dom).attr('model_id');
-        pw_app.apiPost(dom, params, callback);
-
+        params.model_id = node.attr('model_id');
+        pw_app.postHtml({controller: _this.name, action: 'old_list'}, params, {callback: callback});
         function callback(data) {
-            $('#old_table_list').html(data);
+            PwNode.id('old_table_list').html(data);
         }
     }
 

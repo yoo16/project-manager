@@ -10,16 +10,17 @@
 
 'use strict';
 var PwScroller = function (options) {
+    var _this = this;
     this.options = options;
     this.motion = '';
     this.speed = 1000;
     this.is_moving = false;
 
     this.init = function() {
-        this.bindOptions();
+        _this.bindOptions();
     }
     this.pwInit = function() {
-        this.init();
+        _this.init();
         let elements = document.querySelectorAll('.pw-scroller');
         [].forEach.call(elements, function(element) {
             element.addEventListener('click', function(event) {
@@ -32,11 +33,11 @@ var PwScroller = function (options) {
     this.bindOptions = function() {
         if (!pw_scroller.options) return;
         Object.keys(pw_scroller.options).forEach(function(key) {
-            pw_scroller[key] = this[key];
+            pw_scroller[key] = _this[key];
         }, pw_scroller.options);
     }
     this.move = function(to_y) {
-        this.scroll(to_y);
+        _this.scroll(to_y);
         return false;
     }
     this.topByElement = function(element) {
@@ -53,31 +54,31 @@ var PwScroller = function (options) {
         var scroll_range = window.parent.screen.height / 2;
         var y = current - scroll_range;
         if (y < 0) y = 0;
-        this.scrollUp(y);
+        _this.scrollUp(y);
     }
     this.down = function(node) {
         var current = window.pageYOffset;
         var scroll_range = window.parent.screen.height / 2;
         var y = current + scroll_range;
-        this.scrollDown(y)
+        _this.scrollDown(y)
     }
     this.bottom = function(node) {
         var element = document.documentElement;
         var y = element.scrollHeight - element.clientHeight;
-        this.scrollDown(y);
+        _this.scrollDown(y);
     }
     this.scroll = function (to_y) {
         if (to_y < 0) return;
         if (window.pageYOffset > to_y) {
-            this.scrollUp(to_y);
+            _this.scrollUp(to_y);
         } else if (window.pageYOffset < to_y) {
-            this.scrollDown(to_y);
+            _this.scrollDown(to_y);
         }
     };
     this.scrollUp = function (to_y) {
         if (to_y < 0) return;
-        var range = this.calculateRange();
         var start_y = window.pageYOffset;
+        var range = _this.calculateRange(start_y, to_y);
         var current_y = 0;
         var progress = 0;
         var move = function () {
@@ -91,8 +92,8 @@ var PwScroller = function (options) {
     };
     this.scrollDown = function (to_y) {
         if (to_y < 0) return;
-        var range = this.calculateRange();
         var start_y = window.pageYOffset;
+        var range = _this.calculateRange(start_y, to_y);
         var current_y = 0;
         var progress = 0;
         var move = function () {
@@ -106,10 +107,8 @@ var PwScroller = function (options) {
     this.easing = function(p) {
         return p * p; 
     }
-    this.calculateRange = function() {
-        var start_y = window.pageYOffset
-        var height = window.parent.screen.height;
-        var range = Math.abs(height - start_y) * this.speed * 0.1;
+    this.calculateRange = function(from_y, to_y) {
+        var range = Math.abs(from_y - to_y) * _this.speed * 0.1;
         return range;
     }
 }

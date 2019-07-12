@@ -12,8 +12,8 @@ class PwError {
      * @param
      * @return string
      */
-    static function display($values, $params, $model) {
-        return PwError::get($values, $params, $model);
+    static function display($values, $params, $model_name) {
+        return PwError::get($values, $params, $model_name);
     }
 
     /**
@@ -23,68 +23,42 @@ class PwError {
      * @return string
      */
     static function defaultMessage() {
-        return $errors;
+        $messages = [];
+        return $messages;
     }
 
     /**
-     * メッセージ取得
+     * get
      *
      * @param  array $values
      * @param  array $params
-     * @param  array $model
+     * @param  string $model_name
      * @return string
      */
-    static function get($values, $params, $model) {
-        $messages = PwError::defaultMessage();
+    static function get($values, $params, $model_name) {
         $column = $values['column'];
         $message = $values['message'];
 
-        if ($model) {
+        if ($column == 'pw_error') {
+            $message_name = "MESSAGE_".strtoupper($message);
+            if (defined($message_name)) $result = constant($message_name);
+        } else if ($model_name) {
             $column = str_replace('_id', '', $column);
 
-            //column
-            $label = "LABEL_".strtoupper($model)."_".strtoupper($column);
-            if (defined($label)) $column = constant($label);
+            $label_name = "LABEL_".strtoupper($model_name)."_".strtoupper($column);
+            $message_name = "MESSAGE_".strtoupper($message);
 
-            //message
-            $label = "MESSAGE_".strtoupper($message);
-            if (defined($label)) $message = constant($label);
+            if (defined($label_name)) $column = constant($label_name);
+            if (defined($message_name)) $message = constant($message_name);
+            $result = "{$column} {$message}";
+        } else if ($params) {
+            $messages = PwError::defaultMessage();
+            $column = $params['column'];
+            if ($messages[$column]) $column = $messages[$column];
+            if ($messages[$message]) $message = $messages[$message];
+            $result = "{$column} {$message}";
         }
-
-        $result = "{$column} {$message}";
         return $result;
     }
 
-    /**
-    * error message
-    *
-    * @param  array $errors
-    * @return array 
-    **/
-    static function unify_error_messages($errors) {
-        foreach($errors as $key => $error) {
-            $column = $error['column'];
-            $message = $error['message'];
-
-            $unify_message = $unify_messages[$column]['message'];
-            
-            if($unify_message) {
-                if($message == 'required') {
-                    $unify_messages[$column] = $error;
-                } else if($message == 'is not valid') {
-                    if($unify_message != 'required') {
-                        $unify_messages[$column] = $error;
-                    }
-                } else {
-                    if($unify_message != 'required' && $unify_message != 'is not valid') {
-                        $unify_messages[$column] = $error;
-                    }
-                }
-            } else {
-                $unify_messages[$column] = $error;
-            } 
-        }
-
-        return $unify_messages;
-    }
 }

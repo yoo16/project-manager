@@ -83,23 +83,46 @@ class PwFile {
         $this->base_dir = $path;
     }
 
+    /**
+     * set base dir
+     *
+     * @param string $base_dir
+     * @return PwFile
+     */
     function setBaseDir($base_dir) {
         $this->base_dir = $base_dir;
         return $this;
     }
 
+    /**
+     * set file name
+     *
+     * @param string $file_name
+     * @return PwFile
+     */
     function setFileName($file_name) {
         $this->file_name = $file_name;
         $this->loadFilePath();
         return $this;
     }
 
+    /**
+     * load file path
+     *
+     * @return PwFile
+     */
     function loadFilePath() {
         $this->file_path = $this->base_dir.$this->file_name;
         return $this;
     }
 
-    function create($is_add = false) {
+    /**
+     * open file
+     *
+     * @param boolean $is_add
+     * @return
+     */
+    function openFile($is_add = false) {
         PwFile::createDir($this->base_dir);
         $mode = ($is_add) ? 'a' : 'w';
         $this->file = fopen($this->file_path, $mode);
@@ -112,10 +135,8 @@ class PwFile {
      **/
     function output($contents) {
         PwFile::createDir($this->base_dir);
-
         file_put_contents($this->file_path, $contents);
-
-        $cmd = "chmod 666 {$file}";
+        $cmd = "chmod 666 {$this->file_path}";
         exec($cmd);
     }
 
@@ -130,7 +151,6 @@ class PwFile {
      **/
     static function logFiles() {
         if (!defined('LOG_DIR')) exit('not found LOG_DIR');
-
         if (defined('LOG_DIR') && file_exists(LOG_DIR)) {
             $log_files = self::loadFiles(LOG_DIR);
         }

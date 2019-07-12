@@ -178,9 +178,9 @@ class PwMysql extends PwEntity
      * @param any $column_name
      * @return string
      */
-    function createPgIndex($table_name, $column_name)
+    function createIndex($table_name, $column_name)
     {
-        $sql = self::createPgIndexSql($table_name, $column_name);
+        $sql = self::createIndexSql($table_name, $column_name);
         return $this->query($sql);
     }
 
@@ -191,7 +191,7 @@ class PwMysql extends PwEntity
      * @param  mixed $column_name
      * @return string
      */
-    static function createPgIndexSql($table_name, $column_name) {
+    static function createIndexSql($table_name, $column_name) {
         if (!$table_name) return;
         if (!$column_name) return;
         if (is_array($column_name)) {
@@ -967,14 +967,14 @@ class PwMysql extends PwEntity
         $amount = ceil($count / $limit);
 
         if ($amount == 0) return;
-        if ($amount == 1) return $this->all();
+        if ($amount == 1) return $this->get();
 
         $values = [];
         $this->limit = $limit;
         for ($i = 1; $i <= $amount; $i++) {
             $this->offset = $i * $limit;
             if ($this->offset <= $count) {
-                $_values = $this->all();
+                $_values = $this->get();
                 if ($values) {
                     $values = array($values, $_values);
                 } else {
@@ -1035,7 +1035,7 @@ class PwMysql extends PwEntity
         $relation = DB::model($model_name);
 
         $column_name = $relation->entity_name;
-        $relation = $this->relation(get_class($relation), $foreign_key, $value_key)->all();
+        $relation = $this->relation(get_class($relation), $foreign_key, $value_key)->get();
         $this->$column_name = $relation;
         return $this;
     }
@@ -1093,7 +1093,7 @@ class PwMysql extends PwEntity
      */
     public function hasMany($class_name, $foreign_key = null, $value_key = null)
     {
-        return $this->relation($class_name, $foreign_key, $value_key)->all();
+        return $this->relation($class_name, $foreign_key, $value_key)->get();
     }
 
     /**
@@ -1174,7 +1174,7 @@ class PwMysql extends PwEntity
         $this->join($through_class_name, $through_left_column, 'id');
         $this->join($through_class_name, $through_right_column, 'id', $class_name);
 
-        return $relation->all();
+        return $relation->get();
     }
 
     /**
@@ -1217,7 +1217,7 @@ class PwMysql extends PwEntity
         if ($ids = array_column($this->values, $foreign_key)) {
             $relation->whereIn($relation->id_column, $ids);
             if ($is_id_index) $relation->idIndex();
-            $relation->all();
+            $relation->get();
         }
         return $relation;
     }
@@ -1376,11 +1376,12 @@ class PwMysql extends PwEntity
     }
 
     /**
-     * select all
+     * select all (get)
      * 
-     * @return PwPgsql
+     * @param  array $params
+     * @return array
      */
-    public function all($is_id_index = false)
+    public function get($is_id_index = false)
     {
         if ($is_id_index) $this->idIndex();
         $this->values = null;
@@ -1397,8 +1398,18 @@ class PwMysql extends PwEntity
             }
             $sql = $this->selectSql();
             $this->values = $this->fetchRows($sql);
-            return $this;
         }
+        return $this;
+    }
+
+    /**
+     * select all
+     * 
+     * @return PwPgsql
+     */
+    public function all($is_id_index = false)
+    {
+        return $this->get($is_id_index);
     }
 
 
@@ -1415,7 +1426,7 @@ class PwMysql extends PwEntity
             exit("Not found column: {$column}");
         }
         $this->values_index_column = $column;
-        $this->all();
+        $this->get();
         return $this;
     }
 
@@ -1479,24 +1490,13 @@ class PwMysql extends PwEntity
     }
 
     /**
-     * select all (get)
-     * 
-     * @param  array $params
-     * @return array
-     */
-    public function get()
-    {
-        return $this->all();
-    }
-
-    /**
      * select all values
      * 
      * @return array
      */
     public function allValues()
     {
-        return $this->all()->values;
+        return $this->get()->values;
     }
 
     /**
@@ -1544,7 +1544,7 @@ class PwMysql extends PwEntity
         if ($this->id = $this->fetchResult($sql)) {
             $this->value[$this->id_column] = $this->id;
         } else {
-            $this->addError('save', 'error');
+            $this->addError('pw_error', 'save_error');
         }
         if (!$this->errors) PwSession::clear('pw_posts');
         return $this;
@@ -1576,7 +1576,7 @@ class PwMysql extends PwEntity
         if (!$sql) return $this;
 
         $result = $this->query($sql);
-        if ($result === false) $this->addError('save', 'error');
+        if ($result === false) $this->addError('pw_error', 'save_error');
         if (!$this->errors) PwSession::clear('pw_posts');
         return $this;
     }
@@ -1592,7 +1592,7 @@ class PwMysql extends PwEntity
         $sql = $this->updateAllSql($posts);
         if (!$sql) return $this;
         $result = $this->query($sql);
-        if ($result === false) $this->addError('save', 'error');
+        if ($result === false) $this->addError('pw_error', 'save_error');
         if (!$this->errors) PwSession::clear('pw_posts');
         return $this;
     }
@@ -1608,7 +1608,7 @@ class PwMysql extends PwEntity
         if (!$sql) return $this;
 
         $result = $this->query($sql);
-        if ($result === false) $this->addError('save', 'error');
+        if ($result === false) $this->addError('pw_error', 'save_error');
         return $this;
     }
 
@@ -1628,7 +1628,7 @@ class PwMysql extends PwEntity
         if (!$sql) return $this;
 
         $result = $this->query($sql);
-        if ($result === false) $this->addError('save', 'error');
+        if ($result === false) $this->addError('pw_error', 'save_error');
         return $this;
     }
 
@@ -1646,7 +1646,7 @@ class PwMysql extends PwEntity
         $sql = $this->upsertSql();
 
         $result = $this->query($sql);
-        if ($result === false) $this->addError('save', 'error');
+        if ($result === false) $this->addError('pw_error', 'save_error');
         return $this;
     }
 
@@ -1663,7 +1663,7 @@ class PwMysql extends PwEntity
         if (!$sql) return $this;
 
         $result = $this->query($sql);
-        if ($result === false) $this->addError('save', 'error');
+        if ($result === false) $this->addError('pw_error', 'save_error');
         return $this;
     }
 
@@ -1770,7 +1770,7 @@ class PwMysql extends PwEntity
     function updateSortOrder($sort_orders)
     {
         if (!is_array($sort_orders)) return $this;
-        $this->select([$this->id_column, 'sort_order'])->all(true);
+        $this->select([$this->id_column, 'sort_order'])->get(true);
         $class_name = get_class($this);
         foreach ($sort_orders as $sort_order) {
             $id = $sort_order['id'];
@@ -1830,7 +1830,7 @@ class PwMysql extends PwEntity
 
         $values = $this->valuesFromOldTable($old_pgsql);
         if (!$values) {
-            $this->addError('save', 'error');
+            $this->addError('pw_error', 'save_error');
         } else {
             $this->_value = $this->value;
         }
@@ -2410,8 +2410,11 @@ class PwMysql extends PwEntity
     /**
      * select column for join
      * 
-     * @param  string $model_name
-     * @param  array $conditions
+     * @param  string $join_class_name
+     * @param  string $column
+     * @param  string $join_column
+     * @param  string $eq
+     * @param  string $type
      * @return PwPgsql
      */
     public function selectColumn($join_class_name, $column, $join_column, $eq = '=', $type = 'LEFT')
@@ -2483,6 +2486,7 @@ class PwMysql extends PwEntity
      * init Join
      * 
      * @param  string $model_name
+     * @param  string $type
      * @return PwPgsql
      */
     public function initJoin($class_name, $type = 'LEFT')
@@ -2495,7 +2499,8 @@ class PwMysql extends PwEntity
     /**
      * sqlValue
      * 
-     * @param  Object $value
+     * @param  mixed $value
+     * @param  string $type
      * @return string
      */
     public function sqlValue($value, $type = null)
@@ -2530,29 +2535,28 @@ class PwMysql extends PwEntity
      */
     private function joinSql()
     {
+        if (!is_array($this->joins)) return;
         $sql = '';
-        if (is_array($this->joins)) {
-            foreach ($this->joins as $join) {
-                $eq = $join['eq'];
+        foreach ($this->joins as $join) {
+            $eq = $join['eq'];
 
-                $origin_table_name = $join['origin_table_name'];
-                $origin_column = $join['origin_column'];
+            $origin_table_name = $join['origin_table_name'];
+            $origin_column = $join['origin_column'];
 
-                $join_table_name = $join['join_table_name'];
-                $join_column = $join['join_column'];
+            $join_table_name = $join['join_table_name'];
+            $join_column = $join['join_column'];
 
-                if ($join['join_as_name']) {
-                    $join_name = "{$join_table_name} AS {$join['join_as_name']}";
-                    $condition = "{$origin_table_name}.{$origin_column} {$eq} {$join['join_as_name']}.{$join_column}";
-                } else {
-                    $join_name = $join_table_name;
-                    $condition = "{$origin_table_name}.{$origin_column} {$eq} {$join_table_name}.{$join_column}";
-                }
-
-                $joins[] = PHP_EOL . " {$join['type']} JOIN {$join_name} ON {$condition}";
+            if ($join['join_as_name']) {
+                $join_name = "{$join_table_name} AS {$join['join_as_name']}";
+                $condition = "{$origin_table_name}.{$origin_column} {$eq} {$join['join_as_name']}.{$join_column}";
+            } else {
+                $join_name = $join_table_name;
+                $condition = "{$origin_table_name}.{$origin_column} {$eq} {$join_table_name}.{$join_column}";
             }
-            $sql = implode(' ', $joins) . PHP_EOL;
+
+            $joins[] = PHP_EOL . " {$join['type']} JOIN {$join_name} ON {$condition}";
         }
+        $sql = implode(' ', $joins) . PHP_EOL;
         return $sql;
     }
 
@@ -2575,7 +2579,6 @@ class PwMysql extends PwEntity
      */
     private function orderBySql()
     {
-        $sql = '';
         if (!$this->orders) return;
         if ($order = $this->sqlOrders($this->orders)) $sql = " ORDER BY {$order}";
         return $sql;
@@ -2588,7 +2591,6 @@ class PwMysql extends PwEntity
      */
     private function limitSql()
     {
-        $sql = '';
         if (is_null($this->limit)) return;
         if (!is_int($this->limit)) return;
         $sql = " LIMIT {$this->limit}";
@@ -2602,7 +2604,6 @@ class PwMysql extends PwEntity
      */
     private function offsetSql()
     {
-        $sql = '';
         if (!isset($this->offset)) return;
         if (!is_int($this->offset)) return;
         $sql = " OFFSET {$this->offset}";
@@ -2627,16 +2628,16 @@ class PwMysql extends PwEntity
     /**
      * select join column array
      * 
+     * @param array $columns
      * @return string
      */
     private function selectJoinColumnArray($columns)
     {
-        if ($this->joins) {
-            foreach ($this->joins as $join) {
-                $join_class = $join['join_class'];
-                foreach ($join_class->columns as $join_column_name => $join_column) {
-                    $columns[] = "{$join['join_name']}.{$join_column_name} AS {$join['join_entity_name']}_{$join_column_name}";
-                }
+        if (!$this->joins) return;
+        foreach ($this->joins as $join) {
+            $join_class = $join['join_class'];
+            foreach ($join_class->columns as $join_column_name => $join_column) {
+                $columns[] = "{$join['join_name']}.{$join_column_name} AS {$join['join_entity_name']}_{$join_column_name}";
             }
         }
         return $columns;
@@ -2645,7 +2646,7 @@ class PwMysql extends PwEntity
     /**
      * select column string
      * 
-     * @param $columns
+     * @param array $columns
      * @return string
      */
     private function selectColumnString($columns)
@@ -2673,15 +2674,13 @@ class PwMysql extends PwEntity
         }
         $column = $this->selectColumnString($columns);
         $sql = "SELECT {$column} FROM {$this->table_name}";
-
-        if ($this->joins) $sql .= $this->joinSql();
-
-        $sql .= $this->whereSql();
-        $sql .= $this->groupBySql();
-        if (!$this->group_by_columns) $sql .= $this->orderBySql();
-        $sql .= $this->limitSql();
-        $sql .= $this->offsetSql();
-        $sql .= ";";
+        if ($this->joins) $sql.= $this->joinSql();
+        $sql.= $this->whereSql();
+        $sql.= $this->groupBySql();
+        if (!$this->group_by_columns) $sql.= $this->orderBySql();
+        $sql.= $this->limitSql();
+        $sql.= $this->offsetSql();
+        $sql.= ";";
         return $sql;
     }
 
@@ -2698,16 +2697,12 @@ class PwMysql extends PwEntity
             $columns = $this->selectColumnArray();
             $columns = $this->selectJoinColumnArray($columns);
         }
-
         $column = $this->selectColumnString($columns);
-
         $sql = "SELECT {$column} FROM {$this->table_name}";
-
         if ($this->joins) $sql .= $this->joinSql();
-
-        $sql .= $this->whereSql();
-        if ($this->group_by_columns) $sql .= $this->groupBySql();
-        $sql .= ";";
+        $sql.= $this->whereSql();
+        if ($this->group_by_columns) $sql.= $this->groupBySql();
+        $sql.= ";";
         return $sql;
     }
 
@@ -2728,13 +2723,12 @@ class PwMysql extends PwEntity
 
         $sql = "SELECT {$column} FROM {$this->old_name}";
 
-        $sql .= $this->whereSql();
-        if ($this->old_id_column) " ORDER BY {$this->old_id_column}";
-
-        $sql .= $this->groupBySql();
-        $sql .= $this->limitSql();
-        $sql .= $this->offsetSql();
-        $sql .= ";";
+        $sql.= $this->whereSql();
+        //if ($this->old_id_column) $sql.= " ORDER BY {$this->old_id_column}";
+        $sql.= $this->groupBySql();
+        $sql.= $this->limitSql();
+        $sql.= $this->offsetSql();
+        $sql.= ";";
         return $sql;
     }
 
@@ -2746,9 +2740,9 @@ class PwMysql extends PwEntity
     public function selectOldColumns()
     {
         $this->select_columns = null;
-        if ($this->old_id_column) $select_columns[] = $this->old_id_column;
+        if ($this->old_id_column) $this->select_columns[] = $this->old_id_column;
         if ($this->columns) {
-            foreach ($this->columns as $column_name => $column) {
+            foreach ($this->columns as $column) {
                 if ($column['old_name']) {
                     $this->select_columns[] = $column['old_name'];
                 }
@@ -2760,23 +2754,21 @@ class PwMysql extends PwEntity
     /**
      * old column for SQL select
      * 
-     * @param  string $column
      * @return string
      */
     public function oldColumnForSelect()
     {
-        if ($this->columns) {
-            foreach ($this->columns as $column_name => $column) {
-                if ($column['old_name']) {
-                    if ($column['old_name'] == $column_name) {
-                        $select_columns[] = $column_name;
-                    } else {
-                        $select_columns[] = "{$column['old_name']} AS {$column_name}";
-                    }
+        if (!$this->columns) return;
+        foreach ($this->columns as $column_name => $column) {
+            if ($column['old_name']) {
+                if ($column['old_name'] == $column_name) {
+                    $select_columns[] = $column_name;
+                } else {
+                    $select_columns[] = "{$column['old_name']} AS {$column_name}";
                 }
             }
-            $column = implode(", ", $select_columns) . PHP_EOL;
         }
+        $column = implode(", ", $select_columns) . PHP_EOL;
         return $column;
     }
 
@@ -2791,8 +2783,8 @@ class PwMysql extends PwEntity
         // TODO GROUP BY
         if (!$column) $column = $this->table_name;
         $sql = "SELECT count({$column}) FROM {$this->table_name}";
-        $sql .= $this->whereSql();
-        $sql .= ";";
+        $sql.= $this->whereSql();
+        $sql.= ";";
         return $sql;
     }
 
@@ -2828,7 +2820,7 @@ class PwMysql extends PwEntity
      * @param  string $column
      * @return string
      */
-    public function selectMaxMin($column = null)
+    public function selectMaxMin($column)
     {
         $sql = $this->selectMaxMinSql($column);
         $values = $this->fetchRow($sql);
@@ -3102,6 +3094,24 @@ class PwMysql extends PwEntity
     }
 
     /**
+     * sql set value
+     *
+     * @return void
+     */
+    private function sqlSetValue($key, $value)
+    {
+        if (!$key) return;
+        $set_value = '';
+        if (is_bool($value)) {
+            $value = ($value === true) ? 'TRUE' : 'FALSE';
+            $set_value = "{$key} = {$value}";
+        } else {
+            $set_value = "{$key} = '{$value}'";
+        }
+        return $set_value;
+    }
+
+    /**
      * updates Sql
      * 
      * @return string
@@ -3111,22 +3121,10 @@ class PwMysql extends PwEntity
         if (!$values) return;
         if (!$this->conditions) return;
         foreach ($values as $key => $value) {
-            if ($key) {
-                if (is_bool($value)) {
-                    if ($value === true) {
-                        $value = 'TRUE';
-                    } else {
-                        $value = 'FALSE';
-                    }
-                    $set_values[] = "{$key} = {$value}";
-                } else {
-                    $set_values[] = "{$key} = '{$value}'";
-                }
-            }
+            if ($sql_set_value = $this->sqlSetValue($key, $value)) $set_values[] = $sql_set_value;
         }
         if (isset($this->columns['updated_at'])) $set_values[] = "updated_at = current_timestamp";
         if ($set_values) $set_value = implode(', ', $set_values);
-
         if ($set_value) {
             $condition = $this->sqlConditions($this->conditions);
             $sql = "UPDATE {$this->table_name} SET {$set_value} WHERE {$condition};";
@@ -3141,7 +3139,6 @@ class PwMysql extends PwEntity
      */
     private function deleteSql()
     {
-        $sql = '';
         if (!$this->id) return;
         $where = $this->whereSql();
         if ($where) $sql = "DELETE FROM {$this->table_name} {$where};";
@@ -3155,7 +3152,6 @@ class PwMysql extends PwEntity
      */
     private function deletesSql()
     {
-        $sql = '';
         $where = $this->whereSql();
         $sql = "DELETE FROM {$this->table_name} {$where};";
         return $sql;
@@ -3266,7 +3262,6 @@ class PwMysql extends PwEntity
     /**
      * postgres table attributes info
      *
-     * @param string $table_name
      * @return string
      **/
     public function pgDBname()
@@ -4424,7 +4419,7 @@ class PwMysql extends PwEntity
      */
     function updatesEmptySortOrder() {
         if (!array_key_exists('sort_order', $this->columns)) return $this;
-        $this->select([$this->id_column, 'sort_order'])->where('sort_order IS NULL')->all();
+        $this->select([$this->id_column, 'sort_order'])->where('sort_order IS NULL')->get();
         if (!$this->values) return $this;
 
         $sql = "UPDATE {$this->table_name} SET sort_order = {$this->id_column} WHERE sort_order IS NULL;";

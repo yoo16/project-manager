@@ -451,7 +451,7 @@ class Model extends _Model {
 
         $propaty = implode(', ', $propaties);
 
-        $value = "'{$attribute['name']}' => array({$propaty})";
+        $value = "'{$attribute['name']}' => [{$propaty}]";
         return $value;
     }
 

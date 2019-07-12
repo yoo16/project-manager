@@ -4,136 +4,110 @@
  * Copyright (c) 2017 Yohei Yoshikawa (http://yoo-s.com/)
  */
 
-var database;
-var action = '';
-
-$(document).ready(function(){
-    database = new DatabaseController();
-});
-
 var DatabaseController = function() {
-    this.params = {};
+    var _this = this;
     this.name = 'database';
 
-    this.import_list = function(dom) {
+    this.import_list = function(node) {
         var params = {};
-        params.host = $(dom).val();
-
-        console.log(params);
-        pw_app.apiPost(dom, params, callback);
-
+        params.host = PwNode.id(node).value();
+        pw_app.postHtml({controller: this.name, action: 'import_list'}, params, {callback: callback});
         function callback(data) {
-            $('#import_list').html(data);
+            PwNode.id('import_list').html(data);
         }
     }
 
-    this.list = function(dom) {
-        postApi(apiUrl(this.name, 'list'), this.params, callback);
-
+    this.list = function(node) {
+        var params = {};
+        pw_app.postHtml({controller: this.name, action: 'list'}, params, {callback: callback});
         function callback(data) {
-            $('#database_list').html(data);
+            PwNode.id('database_list').html(data);
         }
     }
 
-    this.new = function(dom) {
-        postApi(apiUrl(this.name, 'new'), this.params, callback);
-
+    this.new = function(node) {
+        var params = {};
+        pw_app.postHtml({controller: this.name, action: 'new'}, params, {callback: callback});
         function callback(data) {
-            $('#database_edit').html(data);
+            PwNode.id('database_edit').html(data);
         }
     }
 
-    this.edit = function(dom) {
-        this.params.id = $(dom).attr('edit-id');
-        postApi(apiUrl(this.name, 'edit'), this.params, callback);
-
+    this.edit = function(node) {
+        var params = {};
+        params.id = node.attr('user_id');
+        pw_app.postHtml({controller: this.name, action: 'edit'}, params, {callback: callback});
         function callback(data) {
-            $('#database_edit').html(data);
+            PwNode.id('database_edit').html(data);
         }
     }
 
-    this.update = function(dom) {
+    this.update = function(node) {
         if (!window.confirm('update user?')) return;
-
-        this.params.user = formParseJson('#form-edit');
-
-        postApi(apiUrl(this.name, 'update'), this.params, callback);
-
+        var params = {};
+        params.id = node.attr('user_id');
+        //TODO params
+        pw_app.postHtml({controller: this.name, action: 'update'}, params, {callback: callback});
         function callback(json) {
-            data = $.parseJSON(json)
+            data = JSON.parse(json)
             if (data.errors) {
-                //window.alert(data);
+                console.log(data.errors);
             } else {
-                $('#edit_modal').modal('hide');
+                PwNode.id('edit_modal').modal('hide');
                 database.list();
             }
         }
     }
 
-    this.delete = function(dom) {
+    this.delete = function(node) {
         if (!window.confirm('delete user?')) return;
 
-        this.params.user = formParseJson('#form-edit');
-
-        postApi(apiUrl(this.name, 'delete'), this.params, callback);
-
+        var params = {};
+        params.id = node.attr('user_id');
+        pw_app.postHtml({controller: this.name, action: 'delete'}, params, {callback: callback});
         function callback(data) {
-            $('#edit_modal').modal('hide');
+            PwNode.id('edit_modal').modal('hide');
             database.list();
         }
     }
 
 
-    this.columns = function(dom) {
-        this.params.database_id = $(dom).attr('database_id');
-        this.params.table_name = $(dom).attr('table_name');
+    this.columns = function(node) {
+        var params = {};
+        params.database_id = PwNode.id(node).attr('database_id');
+        params.table_name = PwNode.id(node).attr('table_name');
 
-        var url = apiUrl(this.name, 'columns');
-
-        postApi(url, this.params, callback);
-
+        pw_app.postHtml({controller: this.name, action: 'columns'}, params, {callback: callback});
         function callback(data) {
-            $('#columns').html(data);
+            PwNode.id('columns').html(data);
         }
     }
 
-    this.updateTableComment = function(dom) {
-        this.params.database_id = $(dom).attr('database_id');
-        this.params.table_name = $(dom).attr('table_name');
-
-        var comment_id = '#' + $(dom).attr('comment-id');
-        this.params.comment = $(comment_id).val();
-
-        var url = apiUrl(this.name, 'update_table_comment');
-        postApi(url, this.params, callback);
-
+    this.updateTableComment = function(node) {
+        var params = {};
+        params.database_id = PwNode.id(node).attr('database_id');
+        params.table_name = PwNode.id(node).attr('table_name');
+        params.comment = PwNode.id(node.attr('comment-id')).value();
+        pw_app.postHtml({controller: this.name, action: 'update_table_comment'}, params, {callback: callback});
         function callback(data) {
-            //$('#edit_modal').modal('hide');
-            //database.list();
-            //database.columns(dom);
         }
     }
 
-    this.updateColumnComment = function(dom) {
-        this.params.database_id = $(dom).attr('database_id');
-        this.params.table_name = $(dom).attr('table_name');
-        this.params.column_name = $(dom).attr('column_name');
-
-        var comment_id = '#' + $(dom).attr('comment-id');
-        this.params.comment = $(comment_id).val();
-
-        var url = apiUrl(this.name, 'update_column_comment');
-        postApi(url, this.params, callback);
-
+    this.updateColumnComment = function(node) {
+        var params = {};
+        params.database_id = PwNode.id(node).attr('database_id');
+        params.table_name = PwNode.id(node).attr('table_name');
+        params.column_name = PwNode.id(node).attr('column_name');
+        params.comment = PwNode.id(node.attr('comment-id')).value();
+        pw_app.postHtml({controller: this.name, action: 'update_column_comment'}, params, {callback: callback});
         function callback(data) {
-            //$('#edit_modal').modal('hide');
-            //database.list();
-            //database.columns(dom);
         }
     }
 
-    this.closeColumns = function(dom) {
-        $('#columns').html('');
+    this.closeColumns = function(node) {
+        PwNode.id('columns').html('');
     }
 
 }
+
+var database = new DatabaseController();

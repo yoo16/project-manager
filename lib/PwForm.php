@@ -24,7 +24,7 @@ class PwForm {
                               'label_separate',
                               'filter_values',
                               'unselect',
-                              'unselct_label',
+                              'unselect_label',
                               'unselct_value',
                               'unused_hidden',
                               'effective-digit',
@@ -251,8 +251,8 @@ class PwForm {
      */
     static function singleTag($type, $attributes=null, $tag = null) {
         if (is_array($attributes)) $attribute = self::attribute($attributes);
-       $tag = "<{$type} {$attribute}>{$tag}\n"; 
-       return $tag;
+        $tag = "<{$type} {$attribute}>{$tag}\n"; 
+        return $tag;
     }
 
     /**
@@ -405,7 +405,7 @@ class PwForm {
             }
             if (isset($params['wheres'])) $instance->wheres($params['wheres']);
             if (isset($params['order'])) $instance->order($params['order'], $params['order_type'], $params['order_column_type']);
-            $instance->all();
+            $instance->get();
 
             $values = $instance->values;
         } else {
