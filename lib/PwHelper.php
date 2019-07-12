@@ -129,13 +129,14 @@ function jsonDump($object, $file = null, $line = null)
 /**
  * dump log
  *
- * @param mixed $object
+ * @param mixed $values
  * @param string $file
  * @param string $line
  * @return void
  */
-function dump($object, $file = null, $line = null)
+function dump($values, $file = null, $line = null)
 {
+    $object = $values;
     if (!$object) return;
     ob_start();
     var_dump($object);

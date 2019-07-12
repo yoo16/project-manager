@@ -148,9 +148,9 @@ class PwPgsql extends PwEntity
         $cmd = "\c {$this->dbname}";
         $sql = "SHOW DATABASES '{$this->dbname}'";
         $results = $this->query($sql);
-        var_dump($this->dbname);
-        var_dump($this->host);
-        var_dump($results);
+        echo $this->dbname.PHP_EOL;
+        echo $this->host.PHP_EOL;
+        echo $results.PHP_EOL;
         exit;
     }
 

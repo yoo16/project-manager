@@ -54,7 +54,7 @@ class PwTag {
     */
     static function urlFor($params, $http_params = null) {
         if ($controller = $GLOBALS['controller']) {
-            $url = $controller->urlFor($params, $id, $http_params);
+            $url = $controller->urlFor($params, $http_params);
             return $url;
         }
     }

@@ -167,7 +167,7 @@ class PwForm {
         $current = self::selectDateValue($params, 'hour');
 
         $params['values'] = range(0, 23);
-        $tag.= self::dateOptions($params, $current);
+        $tag = self::dateOptions($params, $current);
 
         $attribute = self::selectAttributeDate($params, 'hour');
         $tag = self::selectTag($tag, $attribute);
@@ -981,7 +981,7 @@ class PwForm {
      *
      * @param string $label
      * @param array $params
-     * @return string $name
+     * @return string
      */
     static function button($label, $params = null) {
         if (!$params['class']) $params['class'] = 'btn btn-primary';
@@ -995,7 +995,7 @@ class PwForm {
      *
      * @param string $label
      * @param array $params
-     * @return string $name
+     * @return string
      */
     static function groupButton($label, $params = null) {
         $attribute = self::attribute($params);
