@@ -79,7 +79,7 @@ class RecordController extends ProjectController {
         $this->checkEdit();
 
         $this->record = DB::model('Record')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->pw_posts['record']);
     }
 
@@ -110,10 +110,10 @@ class RecordController extends ProjectController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts["record"];
-        $record = DB::model('Record')->update($posts, $this->pw_params['id']);
+        $record = DB::model('Record')->update($posts, $this->pw_gets['id']);
 
         if ($record->errors) {
-            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
         } else {
             $this->redirectTo();
         }
@@ -127,21 +127,18 @@ class RecordController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('Record')->delete($this->pw_params['id']);
+        DB::model('Record')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 
-   /**
-    * sort order
+    /**
+    * download csv
     *
     * @param
     * @return void
     */
-    function action_sort_order() {
-        if (!$this->project->value) $this->redirectTo(['controller' => 'root']);
-        $this->record = $this->project->relationMany('Record')
-                                ->wheres($this->filters)
-                                ->all();
+    function action_download_csv() {
+        DB::model('Record')->select(['name', 'label'])->get()->streamDownloadCsv();
     }
 
     /**

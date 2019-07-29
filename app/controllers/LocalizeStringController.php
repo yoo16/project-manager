@@ -172,7 +172,7 @@ class LocalizeStringController extends ProjectController {
     */
     function action_edit() {
         $this->localize_string = DB::model('LocalizeString')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->session['posts']);
         //TODO entity
         $this->localize_string->value['label'] = json_decode($this->localize_string->value['label'], true);
@@ -211,10 +211,10 @@ class LocalizeStringController extends ProjectController {
         $posts = $this->pw_posts["localize_string"];
         $posts['label'] = json_encode($posts['label']);
 
-        $localize_string = DB::model('LocalizeString')->update($posts, $this->pw_params['id']);
+        $localize_string = DB::model('LocalizeString')->update($posts, $this->pw_gets['id']);
 
         if ($localize_string->errors) {
-            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
         } else {
             $this->redirectTo(['action' => 'list']);
         }
@@ -227,7 +227,7 @@ class LocalizeStringController extends ProjectController {
     * @return void
     */
     function action_duplicate() {
-        $localize_string = DB::model('LocalizeString')->fetch($this->pw_params['id']);
+        $localize_string = DB::model('LocalizeString')->fetch($this->pw_gets['id']);
 
         if ($localize_string->value) {
             $posts = $localize_string->value;
@@ -250,7 +250,7 @@ class LocalizeStringController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('LocalizeString')->delete($this->pw_params['id']);
+        DB::model('LocalizeString')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 

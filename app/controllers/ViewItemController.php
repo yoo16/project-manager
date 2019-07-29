@@ -113,7 +113,7 @@ class ViewItemController extends ProjectController {
     */
     function action_edit() {
         $this->view_item = DB::model('ViewItem')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->session['posts']);
 
         if ($this->view_item->value['attribute_id']) {
@@ -232,9 +232,9 @@ class ViewItemController extends ProjectController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->session['posts'] = $_REQUEST["view_item"];
-        $view_item = DB::model('ViewItem')->update($posts, $this->pw_params['id']);
+        $view_item = DB::model('ViewItem')->update($posts, $this->pw_gets['id']);
 
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
     }
 
    /**
@@ -245,7 +245,7 @@ class ViewItemController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('ViewItem')->delete($this->pw_params['id']);
+        DB::model('ViewItem')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 

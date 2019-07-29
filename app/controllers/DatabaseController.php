@@ -35,7 +35,7 @@ class DatabaseController extends AppController {
     }
 
     function action_edit() {
-        $this->database = DB::model('Database')->fetch($this->pw_params['id'])
+        $this->database = DB::model('Database')->fetch($this->pw_gets['id'])
                                                ->takeValues($this->session['posts']);
 
     }
@@ -58,7 +58,7 @@ class DatabaseController extends AppController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts['database'];
-        $database = DB::model('Database')->update($posts, $this->pw_params['id']);
+        $database = DB::model('Database')->update($posts, $this->pw_gets['id']);
 
         $this->redirectTo(['action' => 'list']);;
     }
@@ -81,9 +81,9 @@ class DatabaseController extends AppController {
         //     exit;
         // }
         //TODO delete
-        $database = DB::model('Database')->fetch($this->pw_params['id']);
+        $database = DB::model('Database')->fetch($this->pw_gets['id']);
         if ($database->value) {
-            DB::model('Database')->delete($this->pw_params['id']);
+            DB::model('Database')->delete($this->pw_gets['id']);
         }
 
         $this->redirectTo(['controller' => 'database']);
@@ -144,8 +144,8 @@ class DatabaseController extends AppController {
     }
 
     function action_create_table() {
-        if ($this->database['id'] > 0 && $this->pw_params['id']) {
-            $model = Model::_getValue($this->pw_params['id']);
+        if ($this->database['id'] > 0 && $this->pw_gets['id']) {
+            $model = Model::_getValue($this->pw_gets['id']);
             $this->createTable($model);
             $this->flash['result'] = true;
             $this->redirectTo(['controller' => 'model', 'action' => 'list']);

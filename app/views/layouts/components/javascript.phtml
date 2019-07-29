@@ -10,16 +10,6 @@
 <?= PwTag::javascript('functions') ?>
 
 <!-- pw lib -->
-<?= PwTag::javascript('lib/PwController') ?>
-<?= PwTag::javascript('lib/PwNode') ?>
-<?= PwTag::javascript('lib/PwUI') ?>
-<?= PwTag::javascript('lib/PwLoadingOverlay') ?>
-<?= PwTag::javascript('lib/PwForm') ?>
-<?= PwTag::javascript('lib/PwTableDND') ?>
-<?= PwTag::javascript('lib/PwDate') ?>
-<?= PwTag::javascript('lib/PwModal') ?>
-<?= PwTag::javascript('lib/PwScroller') ?>
-<?= PwTag::javascript('lib/PwAnimation') ?>
-<?= PwTag::javascript('lib/PwLog') ?>
+<? include('pw_js_lib.phtml') ?>
 
-<?= PwTag::javascript('pw_functions') ?>
+<? include('pw_js_controller.phtml') ?>

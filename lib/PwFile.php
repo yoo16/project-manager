@@ -892,7 +892,7 @@ class PwFile {
     * @param string $path
     * @return void
     */ 
-    static public function convertJpgToPng($path) {
+    public static function convertJpgToPng($path) {
         $image = @imagecreatefromjpeg($path);
         imagepng($image, $path);
     }

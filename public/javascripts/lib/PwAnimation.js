@@ -4,7 +4,6 @@
  * Copyright (c) 2019 Yohei Yoshikawa (https://github.com/yoo16/)
  */
 
- //TODO remove jquery
 'use strict';
 var PwAnimation = function () {
     this.motion = '';

@@ -81,6 +81,17 @@ var PwController = function () {
                 }
             }
         });
+        [].forEach.call(document.getElementsByTagName('form'), function(element) {
+            var node = PwNode.byElement(element);
+            var link = '';
+            if (node.attr('method') == 'post' || node.attr('is_not_pw_multi_sid')) return;
+            if (link = node.attr('action')) {
+                if (link.indexOf('pw_multi_sid') == -1) {
+                    link = link + "&pw_multi_sid=" + _this.pw_multi_sid;
+                    node.setAttr('action', link);
+                }
+            }
+        });
     }
     this.multiSID = function(values) {
         if (!_this.pw_multi_sid) return values;
@@ -227,7 +238,6 @@ var PwController = function () {
                 pw_app.hideLoading(options.loading_selector);
             }
             if (xhr.readyState == 4 && xhr.status == 200) {
-                //_this.pwEvent();
                 if (callback) callback(xhr.response);
             }
         };
@@ -266,7 +276,6 @@ var PwController = function () {
             }
         }).then(function(text) {
             var callback = options.callback;
-            //_this.pwEvent();
             if (callback) callback(text);
         }); 
     }
@@ -280,7 +289,7 @@ var PwController = function () {
         if (!elements) return;
         [].forEach.call(elements, function(element) {
             element.addEventListener('click', function(event) {
-                _this.nodeAction(element);
+                _this.eventAction(element);
             });
         });
     }
@@ -290,7 +299,7 @@ var PwController = function () {
         if (!elements) return;
         [].forEach.call(elements, function(element) {
             element.addEventListener('click', function(event) {
-                _this.nodeAction(element);
+                _this.eventAction(element);
             });
         });
     }
@@ -505,6 +514,7 @@ var PwController = function () {
         if (!name) return;
 
         var action = pw_node.action();
+        if (!action) action = pw_node.attr(_this.click_event_name);
         if (!action) return;
 
         var controller_name = pw_node.controllerClassName();
@@ -515,9 +525,9 @@ var PwController = function () {
     }
 
     /**
-    * event action
+    * node action
     *
-    * @param Element pw_node
+    * @param Element element
     * @return void
     **/
    this.nodeAction = function(element) {
@@ -526,10 +536,8 @@ var PwController = function () {
         var name = pw_node.controller();
         if (!name) return;
 
-        var event = pw_node.event();
-        if (!event) return;
-
-        var action = event.action;
+        var action = pw_node.action();
+        if (!action) action = pw_node.attr(_this.click_event_name);
         if (!action) return;
 
         var controller_name = pw_node.controllerClassName();
@@ -551,6 +559,7 @@ var PwController = function () {
         if (!lib_name) return;
 
         var action = pw_node.action();
+        if (!action) action = pw_node.attr(_this.click_event_name);
         if (!action) return
 
         if (lib_name in window) {

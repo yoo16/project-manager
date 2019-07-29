@@ -1,0 +1,9 @@
+<!-- controller -->
+<?= PwTag::javascriptController($this->class_name) ?>
+<? if ($this->js_controllers): ?>
+<? foreach ($this->js_controllers as $js_controller): ?>
+<? if ($js_controller != $this->class_name): ?>
+<?= PwTag::javascriptController($js_controller) ?>
+<? endif ?>
+<? endforeach ?>
+<? endif ?>

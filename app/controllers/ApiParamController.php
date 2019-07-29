@@ -80,7 +80,7 @@ class ApiParamController extends ApiController {
         $this->checkEdit();
 
         $this->api_param = DB::model('ApiParam')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->pw_posts['api_param']);
     }
 
@@ -111,10 +111,10 @@ class ApiParamController extends ApiController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts["api_param"];
-        $api_param = DB::model('ApiParam')->update($posts, $this->pw_params['id']);
+        $api_param = DB::model('ApiParam')->update($posts, $this->pw_gets['id']);
 
         if ($api_param->errors) {
-            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
         } else {
             $this->redirectTo();
         }
@@ -128,7 +128,7 @@ class ApiParamController extends ApiController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('ApiParam')->delete($this->pw_params['id']);
+        DB::model('ApiParam')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 

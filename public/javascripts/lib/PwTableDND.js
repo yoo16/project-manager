@@ -188,8 +188,9 @@ function PwTableDND(options) {
             _this.postJson(_this.url, json, options);
         } else {
             //use PwApp
-            let controller = this.getAttribute('pw-controller');
-            let action = this.getAttribute('pw-action');
+            let controller = this.getAttribute('api-controller');
+            let action = this.getAttribute('api-action');
+            if (this.getAttribute('api-callback')) _this.callback = this.getAttribute('api-callback');
             pw_app.postJson( { controller: controller, action: action },
                 json,
                 {callback: callback, is_show_loading: true}
@@ -366,8 +367,15 @@ function PwTableDND(options) {
         let elements = document.getElementsByClassName('pw_table_dnd_event');
         if (elements) {
             [].forEach.call(elements, function(element) {
-                let event = element.getAttribute('event');
-                let action = element.getAttribute('action');
+                var event = '';
+                var action = '';
+                action = element.getAttribute(pw_app.click_event_name);
+                if (action) {
+                    event = 'click';
+                } else {
+                    event = element.getAttribute('event');
+                    action = element.getAttribute('action');
+                }
                 if (event == 'click' && action) { element.addEventListener('click', _this[action], false); }
             });
         }
@@ -379,10 +387,17 @@ function PwTableDND(options) {
         let elements = document.getElementsByClassName('pw_table_dnd');
         if (elements) {
             [].forEach.call(elements, function(element) {
-                let event = element.getAttribute('event');
-                let action = element.getAttribute('action');
+                var event = '';
+                var action = '';
+                action = element.getAttribute(pw_app.click_event_name);
+                if (action) {
+                    event = 'click';
+                } else {
+                    event = element.getAttribute('event');
+                    action = element.getAttribute('action');
+                }
                 if (event && action) { 
-                    if (element.removeEventListener) element.removeEventListener(event, _this[action], false); 
+                    if (element.removeEventListener) element.removeEventListener(event, _this[action], false);
                     element.addEventListener(event, _this[action], false); 
                 }
             });

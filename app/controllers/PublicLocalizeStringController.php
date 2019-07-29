@@ -78,7 +78,7 @@ class PublicLocalizeStringController extends AppController {
         $this->checkEdit();
 
         $this->public_localize_string = DB::model('PublicLocalizeString')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->pw_posts['public_localize_string']);
     }
 
@@ -112,13 +112,13 @@ class PublicLocalizeStringController extends AppController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts["public_localize_string"];
-        $public_localize_string = DB::model('PublicLocalizeString')->update($posts, $this->pw_params['id']);
+        $public_localize_string = DB::model('PublicLocalizeString')->update($posts, $this->pw_gets['id']);
 
         if ($public_localize_string->errors) {
             $errors['public_localize_strings'] = $public_localize_string->errors;
             $this->setErrors($errors);
         }
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
     }
 
    /**
@@ -129,7 +129,7 @@ class PublicLocalizeStringController extends AppController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('PublicLocalizeString')->delete($this->pw_params['id']);
+        DB::model('PublicLocalizeString')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 

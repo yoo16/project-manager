@@ -85,9 +85,9 @@ class PwLocalize {
      * @return boolean $is_clear
      * @return array
      */
-    static function loadCsvOptions($lang = null, $is_clear = false) {
-        if ($is_clear) PwSession::clearWithKey('app', 'csv_options');
-        $csv_options = PwSession::getWithKey('app', 'csv_options');
+    static function loadCsvSessions($lang = null, $is_clear = false) {
+        if ($is_clear) PwSession::clearWithKey('app', PwCsv::$session_name);
+        $csv_sessions = PwSession::getWithKey('app', PwCsv::$session_name);
 
         if (!$lang) $lang = PwSession::get('lang');
         if (!$lang) $lang = 'ja';
@@ -95,10 +95,10 @@ class PwLocalize {
         $path = DB_DIR."records/{$lang}/*.csv";
         foreach (glob($path) as $file_path) {
             $path_info = pathinfo($file_path);
-            $csv_options[$path_info['filename']] = PwCsv::keyValues($file_path);
+            $csv_sessions[$path_info['filename']] = PwCsv::keyValues($file_path);
         }
-        PwSession::setWithKey('app', 'csv_options', $csv_options);
-        return $csv_options;
+        PwSession::setWithKey('app', 'csv', $csv_sessions);
+        return $csv_sessions;
     }
 
     /**
@@ -137,7 +137,7 @@ class PwLocalize {
      * @return string 
      */
     static function loadLocale() {
-        PwLocalize::requestLocale();
+        $lang = PwLocalize::requestLocale();
         if (!$lang) {
             $lang = PwLocalize::defaultLocale();
             PwSession::setWithKey('app', 'lang', $lang);
@@ -151,7 +151,7 @@ class PwLocalize {
      * @return void
      */
     static function claerLocaleValues() {
-        PwSession::clearWithKey('app', 'csv_options');
+        PwSession::clearWithKey('app', PwCsv::$session_name);
     }
 
 }

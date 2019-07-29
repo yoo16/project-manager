@@ -3,6 +3,9 @@
 <div class="pt-3">
   <?= PwForm::linkButton(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
   <? include('views/components/lib/sortable.phtml') ?>
+  <?= $this->linkTo(['action' => 'download_csv'],
+                    ['label' => 'Download', 'class' => 'btn btn-outline-primary']
+  ) ?>
 </div>
 
 <table id="sortable-table" class="table table-list">

@@ -5,6 +5,8 @@
  */
 
 var PwModal = function() {
+    var _this = this;
+
     this.backdrop_id = 'pw_backdrop';
     this.load_show_class_name = 'pw-modal';
     this.show_class_name = 'pw-modal-show';
@@ -12,57 +14,57 @@ var PwModal = function() {
     this.pw_backdrop_element;
     
     this.createBackground = function() {
-        if (!pw_modal.pw_backdrop_element) {
-            pw_modal.pw_backdrop_element = document.createElement('div');
-            pw_modal.pw_backdrop_element.id = 'pw_backdrop';
-            pw_modal.pw_backdrop_element.classList.add('pw_backdrop');
-            document.body.appendChild(pw_modal.pw_backdrop_element);
+        if (!_this.pw_backdrop_element) {
+            _this.pw_backdrop_element = document.createElement('div');
+            _this.pw_backdrop_element.id = 'pw_backdrop';
+            _this.pw_backdrop_element.classList.add('pw_backdrop');
+            document.body.appendChild(_this.pw_backdrop_element);
         }
     }
 
     this.show = function(selector) {
         if (!selector) return;
-        pw_modal.createBackground();
+        _this.createBackground();
 
-        var background_node = PwNode.id(pw_modal.backdrop_id);
+        var background_node = PwNode.id(_this.backdrop_id);
         background_node.show();
 
         var node = PwNode.id(selector);
         if (node) node.showInline();
     }
     this.hide = function(selector) {
-        var background_node = PwNode.id(pw_modal.backdrop_id);
+        var background_node = PwNode.id(_this.backdrop_id);
         background_node.hide();
 
         var node = PwNode.id(selector);
         if (node) node.hide();
-        PwNode.byClass(pw_modal.load_show_class_name).hide();
+        PwNode.byClass(_this.load_show_class_name).hide();
     }
     this.showHandler = function(event) {
-        pw_modal.show(this.getAttribute('selector'));
+        _this.show(this.getAttribute('selector'));
     }
     this.hideHandler = function(event) {
-        pw_modal.hide(this.getAttribute('selector'));
+        _this.hide(this.getAttribute('selector'));
     }
     this.reloadEvents = function() {
         //IE dosen't work elements.forEach()
-        let load_show_elements = document.getElementsByClassName(pw_modal.load_show_class_name);
+        let load_show_elements = document.getElementsByClassName(_this.load_show_class_name);
         [].forEach.call(load_show_elements, function(element) {
             let event = element.getAttribute('event');
             let action = element.getAttribute('action');
             if (element.id && event && action) {
                 if (event == 'load' && action == 'show') {
-                    pw_modal.show(element.id);
+                    _this.show(element.id);
                 }
             }
         });
-        let show_elements = document.getElementsByClassName(pw_modal.show_class_name);
+        let show_elements = document.getElementsByClassName(_this.show_class_name);
         [].forEach.call(show_elements, function(element) {
-            element.addEventListener('click', pw_modal.showHandler, false);
+            element.addEventListener('click', _this.showHandler, false);
         });
-        let close_elements = document.getElementsByClassName(pw_modal.close_class_name);
+        let close_elements = document.getElementsByClassName(_this.close_class_name);
         [].forEach.call(close_elements, function(element) {
-            element.addEventListener('click', pw_modal.hideHandler, false);
+            element.addEventListener('click', _this.hideHandler, false);
         });
     }
 }

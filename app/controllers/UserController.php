@@ -76,7 +76,7 @@ class UserController extends AppController {
         $this->checkEdit();
 
         $this->user = DB::model('User')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->pw_posts['user']);
     }
 
@@ -110,13 +110,13 @@ class UserController extends AppController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts["user"];
-        $user = DB::model('User')->update($posts, $this->pw_params['id']);
+        $user = DB::model('User')->update($posts, $this->pw_gets['id']);
 
         if ($user->errors) {
             $errors['users'] = $user->errors;
             $this->setErrors($errors);
         }
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
     }
 
    /**
@@ -127,7 +127,7 @@ class UserController extends AppController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('User')->delete($this->pw_params['id']);
+        DB::model('User')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 

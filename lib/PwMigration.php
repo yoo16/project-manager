@@ -98,7 +98,14 @@ class PwMigration {
         }
     }
 
-    public function down()
+    /**
+     * down
+     * TODO: under construction
+     *
+     * @param array $options
+     * @return void
+     */
+    public function down($options = null)
     {
 
     }
@@ -145,6 +152,27 @@ class PwMigration {
     }
 
     /**
+     * migration sql
+     * 
+     * default dir: db/migrate/
+     *
+     * @param string $path
+     * @param string $model_name
+     * @return resourse
+     */
+    public function queryBySQLPath($path, $model_name)
+    {
+        if ($model_name && class_exists($model_name)) $this->pgsql = DB::model($model_name);
+        if (!$this->pgsql) return;
+        if (!file_exists($path)) $path = PwMigration::migrationDir().$path;
+        if (!file_exists($path)) return;
+        $sql = file_get_contents($path);
+        $this->pgsql->query($sql);
+        return $this->pgsql;
+    }
+
+
+    /**
      * init schema info
      *
      * @return void
@@ -165,7 +193,7 @@ class PwMigration {
      */
     static function migrationDir()
     {
-        $dir = DB_DIR."migrate/";
+        $dir = DB_DIR.MIGRATION_DIR."/";
         return $dir;
     }
 

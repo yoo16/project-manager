@@ -78,7 +78,7 @@ class ApiController extends ProjectController {
         $this->checkEdit();
 
         $this->api = DB::model('Api')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->pw_posts['api']);
     }
 
@@ -111,13 +111,13 @@ class ApiController extends ProjectController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts["api"];
-        $api = DB::model('Api')->update($posts, $this->pw_params['id']);
+        $api = DB::model('Api')->update($posts, $this->pw_gets['id']);
 
         if ($api->errors) {
             $errors['apis'] = $api->errors;
             $this->setErrors($errors);
         }
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
     }
 
    /**
@@ -128,7 +128,7 @@ class ApiController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('Api')->delete($this->pw_params['id']);
+        DB::model('Api')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 

@@ -1,6 +1,6 @@
 <?= "<? include('_header.phtml') ?>" ?>
 
-<form action="<? Tag::init()->php('$this->urlFor([\'action\' => \'update\', \'id\' => $this->pw_params[\'id\']])') ?>" method="post">
+<form action="<? Tag::init()->php('$this->urlFor([\'action\' => \'update\', \'id\' => $this->pw_gets[\'id\']])') ?>" method="post">
   <?= "<? include('form.phtml') ?>" ?>
   <div class="">
     <? Tag::init()->php('PwForm::submit(LABEL_SAVE)') ?>

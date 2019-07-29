@@ -76,7 +76,7 @@ class MenuController extends AppController {
         $this->checkEdit();
 
         $this->menu = DB::model('Menu')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->pw_posts['menu']);
     }
 
@@ -110,13 +110,13 @@ class MenuController extends AppController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts["menu"];
-        $menu = DB::model('Menu')->update($posts, $this->pw_params['id']);
+        $menu = DB::model('Menu')->update($posts, $this->pw_gets['id']);
 
         if ($menu->errors) {
             $errors['menus'] = $menu->errors;
             $this->setErrors($errors);
         }
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
     }
 
 

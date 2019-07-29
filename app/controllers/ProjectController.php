@@ -99,7 +99,7 @@ class ProjectController extends AppController
     function action_edit()
     {
         $this->project = DB::model('Project');
-        $this->project->fetch($this->pw_params['id'])
+        $this->project->fetch($this->pw_gets['id'])
                       ->takeValues($this->pw_posts['project']);
 
         $this->database = DB::model('Database')->fetch($this->project->value['database_id']);
@@ -122,7 +122,7 @@ class ProjectController extends AppController
     function action_add()
     {
         $project = DB::model('Project');
-        $project->fetch($this->pw_params['id'])
+        $project->fetch($this->pw_gets['id'])
                 ->post()
                 ->insert();
 
@@ -139,12 +139,12 @@ class ProjectController extends AppController
      */
     function action_update()
     {
-        $project = DB::model('Project')->update($_REQUEST['project'], $this->pw_params['id']);
+        $project = DB::model('Project')->update($_REQUEST['project'], $this->pw_gets['id']);
 
         if ($project->errors) {
             $this->addError('projects', $project->errors);
         }
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
     }
 
     /**
@@ -156,9 +156,9 @@ class ProjectController extends AppController
     {
         if (!isPost()) exit;
 
-        $project = DB::model('Project')->delete($this->pw_params['id']);
+        $project = DB::model('Project')->delete($this->pw_gets['id']);
         if ($project->errors) {
-            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
         } else {
             $this->clearPwPosts();
             $this->redirectTo();
@@ -348,7 +348,7 @@ class ProjectController extends AppController
 
     function action_export_list()
     {
-        $this->project = DB::model('Project')->fetch("{$this->pw_params['id']}");
+        $this->project = DB::model('Project')->fetch("{$this->pw_gets['id']}");
         $this->project->bindOne('Database');
         $this->database = $this->project->database;
         $this->project->bindMany('UserProjectSetting');
@@ -439,8 +439,8 @@ class ProjectController extends AppController
 
     function action_export()
     {
-        $project = DB::model('Project')->fetch($this->pw_params['id'])->value;
-        $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_params['user_project_setting_id'])->value;
+        $project = DB::model('Project')->fetch($this->pw_gets['id'])->value;
+        $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_gets['user_project_setting_id'])->value;
 
         $project_path = $user_project_setting['project_path'];
 
@@ -466,14 +466,14 @@ class ProjectController extends AppController
 
     function action_create()
     {
-        $project = DB::model('Project')->fetch($this->pw_params['id']);
+        $project = DB::model('Project')->fetch($this->pw_gets['id']);
         $phpwork_path = DB_DIR . "phpwork";
     }
 
 
     function action_edit_user_project_setting()
     {
-        $this->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_params['id']);
+        $this->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_gets['id']);
         $this->project = DB::model('Project')->fetch($this->user_project_setting->value['project_id']);
     }
 
@@ -496,7 +496,7 @@ class ProjectController extends AppController
     function action_delete_user_project_setting()
     {
         if (!isPost()) exit;
-        $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_params['id']);
+        $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_gets['id']);
         if ($user_project_setting->value) {
             DB::model('UserProjectSetting')->delete($user_project_setting->value['id']);
         }
@@ -507,7 +507,7 @@ class ProjectController extends AppController
     {
         if (!isPost()) exit;
         $posts = $this->session['user_project_setting'] = $_POST['user_project_setting'];
-        $user_project_setting = DB::model('UserProjectSetting')->update($posts, $this->pw_params['id']);
+        $user_project_setting = DB::model('UserProjectSetting')->update($posts, $this->pw_gets['id']);
 
         if ($user_project_setting->errors) {
             $this->flash['errors'] = $project->errors;

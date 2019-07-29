@@ -8,6 +8,7 @@
 //TODO remove jquery
 
 var PwMigrateReport = function () {
+    var _this = this;
     this.log_contents;
 
     this.show_errors = function(node) {
@@ -68,5 +69,4 @@ var PwMigrateReport = function () {
 
 var pw_migrate_report = new PwMigrateReport();
 document.addEventListener('DOMContentLoaded', function() {
-    pw_migrate_report.log_contents = PwNode.id('log-contents').html(html);
 });

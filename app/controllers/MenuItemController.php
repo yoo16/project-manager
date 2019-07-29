@@ -77,7 +77,7 @@ class MenuItemController extends MenuController {
         $this->checkEdit();
 
         $this->menu_item = DB::model('MenuItem')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->pw_posts['menu_item']);
     }
 
@@ -110,13 +110,13 @@ class MenuItemController extends MenuController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts["menu_item"];
-        $menu_item = DB::model('MenuItem')->update($posts, $this->pw_params['id']);
+        $menu_item = DB::model('MenuItem')->update($posts, $this->pw_gets['id']);
 
         if ($menu_item->errors) {
             $errors['menu_items'] = $menu_item->errors;
             $this->setErrors($errors);
         }
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
     }
 
    /**
@@ -127,7 +127,7 @@ class MenuItemController extends MenuController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('MenuItem')->delete($this->pw_params['id']);
+        DB::model('MenuItem')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 

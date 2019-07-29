@@ -279,6 +279,9 @@ var PwNode = /** @class */ (function () {
         this.action = function () {
             if (this.element) return this.attr('pw-action');
         };
+        this.onClick = function () {
+            if (this.element) return this.attr('pw-on-click');
+        };
         this.event = function () {
             if (this.element && this.attr(pw_app.click_event_name)) return { event: 'click', action: this.attr(pw_app.click_event_name)};
         };

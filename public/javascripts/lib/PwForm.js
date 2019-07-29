@@ -6,6 +6,7 @@
 
 'use strict';
 var PwForm = function () {
+    var _this = this;
     this.value = {}
 
     PwForm.getByName = function(name) {

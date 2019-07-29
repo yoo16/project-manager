@@ -135,7 +135,7 @@ class Project extends _Project {
         $values['attribute'] = $attribute->values;
         
         $values['old_id_column'] = DB::model('Attribute')
-                                        ->where('lmodel_id', $model->value['id'])
+                                        ->where('model_id', $model->value['id'])
                                         ->where("name = 'old_id'")
                                         ->one()
                                         ->value['old_name'];

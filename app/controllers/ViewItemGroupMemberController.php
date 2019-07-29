@@ -80,7 +80,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
         $this->checkEdit();
 
         $this->view_item_group_member = DB::model('ViewItemGroupMember')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->pw_posts['view_item_group_member']);
     }
 
@@ -111,10 +111,10 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts["view_item_group_member"];
-        $view_item_group_member = DB::model('ViewItemGroupMember')->update($posts, $this->pw_params['id']);
+        $view_item_group_member = DB::model('ViewItemGroupMember')->update($posts, $this->pw_gets['id']);
 
         if ($view_item_group_member->errors) {
-            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
         } else {
             $this->redirectTo();
         }
@@ -128,7 +128,7 @@ class ViewItemGroupMemberController extends ViewItemGroupController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('ViewItemGroupMember')->delete($this->pw_params['id']);
+        DB::model('ViewItemGroupMember')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 

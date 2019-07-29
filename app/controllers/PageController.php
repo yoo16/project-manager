@@ -59,7 +59,7 @@ class PageController extends ProjectController {
     }
 
     function action_edit() {
-        $this->page = DB::model('Page')->fetch($this->pw_params['id']);
+        $this->page = DB::model('Page')->fetch($this->pw_gets['id']);
 
         if ($this->page->value['model_id']) {
             $this->model = DB::model('Model')->fetch($this->page->value['model_id']);
@@ -88,9 +88,9 @@ class PageController extends ProjectController {
      */
     function action_update() {
         if (!isPost()) exit;
-        $page = DB::model('Page')->update($this->pw_posts['page'], $this->pw_params['id']);
+        $page = DB::model('Page')->update($this->pw_posts['page'], $this->pw_gets['id']);
         if ($page->errors) $this->addErrorByModel($page);
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
     }
 
     /**
@@ -100,7 +100,7 @@ class PageController extends ProjectController {
      */
     function action_duplicate() {
         //TODO PwEntity function?
-        $page = DB::model('Page')->fetch($this->pw_params['id']);
+        $page = DB::model('Page')->fetch($this->pw_gets['id']);
         $posts = $page->value;
         $posts['name'] = "{$page->value['name']}_copy";
         unset($posts['id']);
@@ -175,7 +175,7 @@ class PageController extends ProjectController {
     }
 
     function action_change_overwrite() {
-        $page = DB::model('Page')->fetch($this->pw_params['id']);
+        $page = DB::model('Page')->fetch($this->pw_gets['id']);
         if ($page->value['id']) {
             $posts['is_overwrite'] = !$page->value['is_overwrite'];
             $page->update($posts);

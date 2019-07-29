@@ -27,6 +27,7 @@ class PwCsv
 
     static $from_encode = '';
     static $to_encode = '';
+    static $session_name = 'csv';
 
     /**
      * constructor
@@ -639,6 +640,16 @@ class PwCsv
     }
 
     /**
+     * load Csv sessions
+     * 
+     * @return array
+     */
+    static function loadSessions()
+    {
+        return PwSession::getWithKey('app', PwCsv::$session_name);
+    }
+
+    /**
      * load Csv session values
      * 
      * @param  string $key
@@ -646,7 +657,7 @@ class PwCsv
      */
     static function loadSession($key)
     {
-        $csv_options = PwSession::getWithKey('app', 'csv_options');
-        return $csv_options[$key];
+        $csv_sessions = PwSession::getWithKey('app', PwCsv::$session_name);
+        return $csv_sessions[$key];
     }
 }

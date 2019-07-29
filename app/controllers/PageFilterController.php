@@ -88,7 +88,7 @@ class PageFilterController extends PageController {
         $this->checkEdit();
 
         $this->page_filter = DB::model('PageFilter')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->pw_posts['page_filter']);
 
         if ($this->page->value['model_id']) {
@@ -128,10 +128,10 @@ class PageFilterController extends PageController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts["page_filter"];
-        $page_filter = $page_filter = DB::model('PageFilter')->update($posts, $this->pw_params['id']);
+        $page_filter = $page_filter = DB::model('PageFilter')->update($posts, $this->pw_gets['id']);
 
         if ($page_filter->errors) {
-            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
         } else {
             $this->redirectTo();
         }
@@ -145,7 +145,7 @@ class PageFilterController extends PageController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('PageFilter')->delete($this->pw_params['id']);
+        DB::model('PageFilter')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 

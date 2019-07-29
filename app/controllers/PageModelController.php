@@ -81,7 +81,7 @@ class PageModelController extends ProjectController {
         $this->checkEdit();
 
         $this->page_model = DB::model('PageModel')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->pw_posts['page_model']);
     }
 
@@ -113,10 +113,10 @@ class PageModelController extends ProjectController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts["page_model"];
-        $page_model = DB::model('PageModel')->update($posts, $this->pw_params['id']);
+        $page_model = DB::model('PageModel')->update($posts, $this->pw_gets['id']);
 
         if ($page_model->errors) {
-            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
         } else {
             $this->redirectTo();
         }
@@ -130,7 +130,7 @@ class PageModelController extends ProjectController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('PageModel')->delete($this->pw_params['id']);
+        DB::model('PageModel')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 
@@ -164,7 +164,7 @@ class PageModelController extends ProjectController {
     * @return void
     */
     function action_change_request_session() {
-        DB::model('PageModel')->reverseBool($this->pw_params['id'], 'is_request_session');
+        DB::model('PageModel')->reverseBool($this->pw_gets['id'], 'is_request_session');
         $this->redirectTo(['action' => 'list']);
     }
 
@@ -175,7 +175,7 @@ class PageModelController extends ProjectController {
     * @return void
     */
     function action_change_fetch_list_values() {
-        DB::model('PageModel')->reverseBool($this->pw_params['id'], 'is_fetch_list_values');
+        DB::model('PageModel')->reverseBool($this->pw_gets['id'], 'is_fetch_list_values');
         $this->redirectTo(['action' => 'list']);
     }
 

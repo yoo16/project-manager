@@ -104,13 +104,13 @@ class UserProjectSettingController extends AppController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts["user_project_setting"];
-        $user_project_setting = DB::model('UserProjectSetting')->update($posts, $this->pw_params['id']);
+        $user_project_setting = DB::model('UserProjectSetting')->update($posts, $this->pw_gets['id']);
 
         if ($user_project_setting->errors) {
             $errors['user_project_settings'] = $user_project_setting->errors;
             $this->setErrors($errors);
         }
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
     }
 
    /**
@@ -121,7 +121,7 @@ class UserProjectSettingController extends AppController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('UserProjectSetting')->delete($this->pw_params['id']);
+        DB::model('UserProjectSetting')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 

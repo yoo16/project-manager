@@ -445,7 +445,7 @@ class PwEntity {
      * 
      * @param  string $column
      * @param  string $message
-     * @return array
+     * @return
      */
     public function addError($column, $message) {
         if (isset($column) && isset($message)) {
@@ -1024,12 +1024,11 @@ class PwEntity {
     *
     * @param string $column
     * @param string $csv_name
-    * @param array $params
     * @return string
     */
-    function recordValue($csv_name, $column, $params = null) {
+    function recordValue($csv_name, $column) {
         if (is_null($this->value[$column])) return;
-        if ($records = $this->recordValues($csv_name, $params)) {
+        if ($records = $this->recordValues($csv_name)) {
             return $records[$this->value[$column]];
         }
     }
@@ -1041,8 +1040,8 @@ class PwEntity {
     * @param array $params
     * @return string
     */
-    function recordValues($csv_name, $params = null) {
-        $csv_records = PwSession::getWithKey('app', 'csv_options');
+    function recordValues($csv_name) {
+        $csv_records = PwSession::getWithKey('app', PwCsv::$session_name);
         return $csv_records[$csv_name];
     }
 
@@ -1528,7 +1527,7 @@ class PwEntity {
      * @param array $options
      * @return void
      */
-    public function downloadCsv($options = null)
+    public function streamDownloadCsv($options = null)
     {
         if (!$this->values) return;
         $file_name = "{$this->name}.csv";

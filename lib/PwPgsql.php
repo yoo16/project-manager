@@ -288,7 +288,6 @@ class PwPgsql extends PwEntity
     /**
      * dropDatabase
      * 
-     * @return array
      * @return PwPgsql
      */
     function dropDatabase()
@@ -306,7 +305,6 @@ class PwPgsql extends PwEntity
     /**
      * default pg info
      * 
-     * @param $pg_info
      * @return PwPgsql
      */
     function defaultDBInfo()
@@ -324,7 +322,7 @@ class PwPgsql extends PwEntity
     /**
      * database name
      * 
-     * @param array $name
+     * @param string $name
      * @return PwPgsql
      */
     function setDBName($name)
@@ -339,7 +337,7 @@ class PwPgsql extends PwEntity
     /**
      * database host
      * 
-     * @param array $host
+     * @param string $host
      * @return PwPgsql
      */
     function setDBHost($host)
@@ -354,7 +352,7 @@ class PwPgsql extends PwEntity
     /**
      * database user
      * 
-     * @param array $user
+     * @param string $user
      * @return PwPgsql
      */
     function setDBUser($user)
@@ -369,7 +367,7 @@ class PwPgsql extends PwEntity
     /**
      * database port
      * 
-     * @param array $user
+     * @param string $port
      * @return PwPgsql
      */
     function setDBPort($port)
@@ -380,6 +378,22 @@ class PwPgsql extends PwEntity
         }
         return $this;
     }
+
+    /**
+     * database password
+     * 
+     * @param array $user
+     * @return PwPgsql
+     */
+    function setDBPassword($password)
+    {
+        if ($password) {
+            $this->password = $password;
+            $this->loadDBInfo();
+        }
+        return $this;
+    }
+
 
     /**
      * pgInfo
@@ -409,11 +423,9 @@ class PwPgsql extends PwEntity
      */
     function loadDBInfo()
     {
-        //TODO array or object ?
         foreach (self::$pg_info_columns as $column) {
             if (isset($this->$column)) {
                 $pg_infos[] = "{$column}={$this->$column}";
-                //TODO rename
                 $this->pg_info_array[$column] = $this->$column;
             }
         }
@@ -984,6 +996,7 @@ class PwPgsql extends PwEntity
     function query($sql)
     {
         if (!$sql) return true;
+
         $this->sql_error = null;
         $this->sql = $sql;
         if (defined('SQL_LOG') && SQL_LOG) error_log("SQL: {$sql}");
@@ -2125,15 +2138,15 @@ class PwPgsql extends PwEntity
     {
         if (!$condition) return $this;
         if (isset($value)) {
-            if (is_bool($value)) $value = ($value === true) ? 'TRUE' : 'FALSE';
-            $this->conditions[] = "{$condition} {$eq} '{$value}'";
+            $value = self::sqlValue($value);
+            $this->conditions[] = "{$condition} {$eq} {$value}";
         } else {
             if (is_array($condition)) {
                 $column = $condition[0];
                 $value = $condition[1];
                 $eq = (isset($condition[2])) ? $condition[2] : '=';
-                if (is_bool($value)) $value = ($value === true) ? 'TRUE' : 'FALSE';
-                $this->conditions[] = "{$column} {$eq} '{$value}'";
+                $value = self::sqlValue($value);
+                $this->conditions[] = "{$column} {$eq} {$value}";
             } else {
                 $this->conditions[] = $condition;
             }
@@ -2155,15 +2168,15 @@ class PwPgsql extends PwEntity
     {
         if (!$condition) return $this;
         if (isset($value)) {
-            if (is_bool($value)) $value = ($value === true) ? 'TRUE' : 'FALSE';
-            $this->or_wheres[] = "{$condition} {$eq} '{$value}'";
+            $value = self::sqlValue($value);
+            $this->or_wheres[] = "{$condition} {$eq} {$value}";
         } else {
             if (is_array($condition)) {
                 $column = $condition[0];
                 $value = $condition[1];
                 $eq = (isset($condition[2])) ? $condition[2] : '=';
-                if (is_bool($value)) $value = ($value === true) ? 'TRUE' : 'FALSE';
-                $this->or_wheres[] = "{$column} {$eq} '{$value}'";
+                $value = self::sqlValue($value);
+                $this->or_wheres[] = "{$column} {$eq} {$value}";
             } else {
                 $this->or_wheres[] = $condition;
             }
@@ -2191,7 +2204,8 @@ class PwPgsql extends PwEntity
     public function whereNot($column, $value)
     {
         if (!$column) return $this;
-        $this->where("{$column} != '{$value}'");
+        $value = self::sqlValue($value);
+        $this->where("{$column} != {$value}");
         return $this;
     }
 
@@ -2300,7 +2314,9 @@ class PwPgsql extends PwEntity
             $before = '%';
             $after = '%';
         }
-        $condition =  "{$column} LIKE '{$before}{$value}{$after}'";
+        $like_value = "{$before}{$value}{$after}";
+        $like_value = self::sqlValue($like_value);
+        $condition =  "{$column} LIKE {$like_value}";
         return $condition;
     }
 
@@ -2720,7 +2736,8 @@ class PwPgsql extends PwEntity
         } else if (is_bool($value)) {
             return ($value) ? 'TRUE' : 'FALSE';
         } else if (is_array($value)) {
-            return "'" . pg_escape_string(json_encode($value)) . "'";
+            $json = json_encode($value);
+            return "'" . pg_escape_string($json) . "'";
         } else {
             return "'" . pg_escape_string($value) . "'";
         }
@@ -3893,7 +3910,7 @@ class PwPgsql extends PwEntity
     function pgAttributeByAttrelid($pg_class_id)
     {
         if (!$pg_class_id) return;
-        $sql = "SELECT * FROM pg_attribute WHERE attrelid = {$pg_class_id};";
+        $sql = "SELECT * FROM pg_attribute WHERE attrelid = '{$pg_class_id}';";
         return $this->fetchRows($sql);
     }
 
@@ -3908,7 +3925,7 @@ class PwPgsql extends PwEntity
     {
         if (!$pg_class_id) return;
         if (!$attname) return;
-        $sql = "SELECT * FROM pg_attribute WHERE attrelid = {$pg_class_id} AND attname = '{$attname}';";
+        $sql = "SELECT * FROM pg_attribute WHERE attrelid = '{$pg_class_id}' AND attname = '{$attname}';";
         return $this->fetchRow($sql);
     }
 
@@ -4117,7 +4134,6 @@ class PwPgsql extends PwEntity
             $condition = $this->sqlConditions($conditions);
             $sql.= " WHERE {$condition}";
         }
-
         $sql.= ';';
         return $this->fetchRows($sql);
     }
@@ -4569,6 +4585,8 @@ class PwPgsql extends PwEntity
                 } else {
                     $pg_class = $model->pgClassByRelname($model->name);
                 }
+                $this->setDBName($model->dbname);
+                $this->setDBHost($model->host);
             }
             if (!$model->is_not_auto_migrate_table) {
                 if (!$pg_class) {
@@ -4603,8 +4621,8 @@ class PwPgsql extends PwEntity
     
                                 //TODO status function
                                 $status = "---- Not found column----" . PHP_EOL;
-                                $status .= "{$model->name}.{$column_name}" . PHP_EOL;
-                                $status .= $this->sql . PHP_EOL;
+                                $status.= "{$model->name}.{$column_name}" . PHP_EOL;
+                                $status.= $this->sql . PHP_EOL;
                             } else if ($column['type'] != $attribute['udt_name']) {
                                 $options['type'] = $column['type'];
                                 $options['length'] = $column['length'];
@@ -4613,8 +4631,8 @@ class PwPgsql extends PwEntity
     
                                 //TODO status function
                                 $status = "---- Alter column type ----" . PHP_EOL;
-                                $status .= "{$model->name}.{$column_name} : {$column['type']} != {$attribute['udt_name']}" . PHP_EOL;
-                                $status .= $this->sql . PHP_EOL;
+                                $status.= "{$model->name}.{$column_name} : {$column['type']} != {$attribute['udt_name']}".PHP_EOL;
+                                $status.= $this->sql.PHP_EOL;
                             }
                             echo ($status);
                         }

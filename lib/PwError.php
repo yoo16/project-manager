@@ -6,10 +6,31 @@
  **/
 
 class PwError {
+
     /**
      * display
      *
-     * @param
+     * @param string $message
+     * @param array $params
+     * @param string $model_name
+     * @return string
+     */
+    static function displayForString($message, $params, $key) {
+        $label_name = "LABEL_".strtoupper($key);
+        $message_name = "MESSAGE_".strtoupper($message);
+        if (defined($label_name)) $column = constant($label_name);
+        if (defined($message_name)) $message = constant($message_name);
+
+        $result = "{$column}: {$message}";
+        return $result;
+    }
+
+    /**
+     * display
+     *
+     * @param mixed $values
+     * @param array $params
+     * @param string $model_name
      * @return string
      */
     static function display($values, $params, $model_name) {

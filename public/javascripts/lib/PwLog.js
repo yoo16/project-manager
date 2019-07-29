@@ -8,6 +8,7 @@
 
 //TODO remove jquery
 var PwLog = function () {
+    var _this = this;
     this.url_params = {};
     this.filename;
     this.html_id = '#log-list';
@@ -16,8 +17,6 @@ var PwLog = function () {
     this.action_detail = 'log_file';
     this.base_url = '';
     this.log_window;
-    this.log_title;
-    this.log_contents;
 
     this.loadList = function() {
         PwNode.id(this.html_id).html('');
@@ -56,7 +55,7 @@ var PwLog = function () {
     }
     this.detail = function(node) {
         this.filename = node.attr('filename');
-        pw_log.filename = this.filename;
+        _this.filename = this.filename;
         this.url_params.filename = this.filename;
 
         pw_app.postHtml(
@@ -66,14 +65,14 @@ var PwLog = function () {
         );
         function callback(data) {
             var values = nl2br(data);
-            pw_log.log_title.html(pw_log.filename);
-            pw_log.log_contents.html(values);
+            PwNode.id('log-title').html(_this.filename)
+            PwNode.id('log-contents').html(values);
             pw_ui.showModal('log-window');
         }
     }
     this.reload = function(node) {
-        if (!pw_log.filename) return;
-        this.url_params.filename = pw_log.filename;
+        if (!_this.filename) return;
+        this.url_params.filename = _this.filename;
         pw_app.postHtml(
             { controller: 'pw_admin', action: 'log_file'},
             this.url_params,
@@ -81,21 +80,21 @@ var PwLog = function () {
         );
         function callback(data) {
             var values = nl2br(data);
-            pw_log.log_contents.html(values);
+            _this.log_contents.html(values);
         }
     }
     this.delete = function(node) {
         if (window.confirm('delete log?')) {
-            var url = pw_log.base_url + 'pw_admin/delete_log';
-            this.url_params.filename = pw_log.filename;
+            var url = _this.base_url + 'pw_admin/delete_log';
+            this.url_params.filename = _this.filename;
             pw_app.postHtml(
                 { controller: 'pw_admin', action: 'delete_log'},
                 this.url_params,
                 { callback: callback , is_show_loading: true}
             )
             function callback(data) {
-                pw_log.log_title.html('');
-                pw_log.log_contents.html('');
+                _this.log_title.html('');
+                _this.log_contents.html('');
                 pw_ui.hideModal('log-window');
             }
         }
@@ -116,8 +115,4 @@ var log_file_name = '';
 var pw_log = new PwLog();
 
 document.addEventListener('DOMContentLoaded', function() {
-    pw_log.log_window = PwNode.id('log-window');
-    pw_log.log_title = PwNode.id('log-title');
-    pw_log.log_contents = PwNode.id('log-contents');
-    //pw_log.base_url = pw_app.projectUrl()
 });

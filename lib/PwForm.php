@@ -620,6 +620,7 @@ class PwForm {
         if (!is_array($values)) return;
         if (isset($params['selected'])) $selected = $params['selected'];
 
+        $tmp_id = $params['id'];
         $value_key = isset($params['value']) ? $params['value'] : 'value';
         $tag = '';
         foreach ($values as $value) {
@@ -627,7 +628,11 @@ class PwForm {
             unset($params['checked']);
             $checked = self::checkedTag($params['value'], $selected);
             if ($checked) $params['checked'] = $checked;
-            $params['id'] = "{$params['name']}_{$params['value']}";
+            if ($tmp_id) {
+                $params['id'] = "{$tmp_id}_{$params['value']}";
+            } else {
+                $params['id'] = "{$params['name']}_{$params['value']}";
+            }
             $tag.= self::radioTag($params, $value);
 
             $label_params['id'] = $params['id'];
@@ -664,7 +669,7 @@ class PwForm {
      * @return string
      */
     static function genderRadio($params = null, $selected = null) {
-        if (!$params['csv_name']) $params['csv_name'] = 'gender';
+        if (!$params['csv']) $params['csv'] = 'gender';
         if (!$params['name']) $params['name'] = 'gender';
         $values = PwCsv::formOptions($params);
         $tag = self::radio($values, $selected);

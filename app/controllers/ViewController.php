@@ -85,7 +85,7 @@ class ViewController extends ProjectController {
     */
     function action_edit() {
         $this->view = DB::model('View')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->session['posts']);
 
         $this->forms['is_overwrite']['name'] = 'view[is_overwrite]';
@@ -120,7 +120,7 @@ class ViewController extends ProjectController {
     */
     function action_update() {
         $project = DB::model('View')
-                        ->fetch($this->pw_params['id'])
+                        ->fetch($this->pw_gets['id'])
                         ->post()
                         ->update();
 
@@ -138,13 +138,13 @@ class ViewController extends ProjectController {
     */
     function action_delete() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            DB::model('View')->delete($this->pw_params['id']);
+            DB::model('View')->delete($this->pw_gets['id']);
         }
         $this->redirectTo();
     }
 
     function action_change_overwrite() {
-        $view = DB::model('View')->fetch($this->pw_params['id']);
+        $view = DB::model('View')->fetch($this->pw_gets['id']);
         if ($view->value['id']) {
             $posts['is_overwrite'] = !$view->value['is_overwrite'];
             $view->update($posts);

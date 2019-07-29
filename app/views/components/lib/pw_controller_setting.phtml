@@ -1,0 +1,10 @@
+<script>
+  pw_app.setCurrentController('<?= $this->pw_controller ?>');
+  pw_app.setCurrentAction('<?= $this->pw_action ?>');
+  pw_app.setCurrentId('<?= $this->pw_id ?>');
+</script>
+<? if ($this->is_use_multi_sid): ?>
+<script>
+  pw_app.setMultiSid('<?= $this->spot->value["id"] ?>');
+</script>
+<? endif ?>

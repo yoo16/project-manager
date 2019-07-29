@@ -80,7 +80,7 @@ class RecordItemController extends RecordController {
         $this->checkEdit();
 
         $this->record_item = DB::model('RecordItem')
-                    ->fetch($this->pw_params['id'])
+                    ->fetch($this->pw_gets['id'])
                     ->takeValues($this->pw_posts['record_item']);
     }
 
@@ -111,10 +111,10 @@ class RecordItemController extends RecordController {
     function action_update() {
         if (!isPost()) exit;
         $posts = $this->pw_posts["record_item"];
-        $record_item = DB::model('RecordItem')->update($posts, $this->pw_params['id']);
+        $record_item = DB::model('RecordItem')->update($posts, $this->pw_gets['id']);
 
         if ($record_item->errors) {
-            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_params['id']]);
+            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
         } else {
             $this->redirectTo();
         }
@@ -128,7 +128,7 @@ class RecordItemController extends RecordController {
     */
     function action_delete() {
         if (!isPost()) exit;
-        DB::model('RecordItem')->delete($this->pw_params['id']);
+        DB::model('RecordItem')->delete($this->pw_gets['id']);
         $this->redirectTo();
     }
 

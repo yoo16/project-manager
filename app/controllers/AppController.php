@@ -37,7 +37,7 @@ class AppController extends Controller {
      * @return void
      */
     function checkEdit($redirect_action = 'new') {
-        if (!$this->pw_params['id']) {
+        if (!$this->pw_gets['id']) {
             $this->redirectTo(['action' => $redirect_action]);
             exit;
         }
@@ -75,4 +75,18 @@ class AppController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] != 'POST') exit;
     }
 
+    function check_old_id()
+    {
+        $model = $this->project->relation('Model')->whereLike('old_name', 'tb_')->get();
+        foreach ($model->values as $model->value) {
+            $attribute = $model->relation('Attribute')->where('name', 'id')->one();
+            if ($attribute->value) {
+                if (!$attribute->value['old_name']) {
+                    $posts['old_name'] = 'rid';
+                    $attribute->update($posts);
+                }
+            }
+        }
+        $this->redirectTo(['controller' => 'model', 'list']);
+    }
 }

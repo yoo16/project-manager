@@ -26,15 +26,15 @@ var PwScroller = function (options) {
             element.addEventListener('click', function(event) {
                 var node = PwNode.byElement(element);
                 var action = node.action();
-                if (action) pw_scroller[action](node)
+                if (action) _this[action](node)
             });
         });
     }
     this.bindOptions = function() {
-        if (!pw_scroller.options) return;
-        Object.keys(pw_scroller.options).forEach(function(key) {
-            pw_scroller[key] = _this[key];
-        }, pw_scroller.options);
+        if (!_this.options) return;
+        Object.keys(_this.options).forEach(function(key) {
+            _this[key] = this[key];
+        }, _this.options);
     }
     this.move = function(to_y) {
         _this.scroll(to_y);

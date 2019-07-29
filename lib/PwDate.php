@@ -424,11 +424,15 @@ class PwDate {
         if (!$this->from_time) return $this;
         if (!$this->to_time) return $this;
         $time = $this->from_time;
+        $i = 0;
+        if (!$params['unit']) $interval_unit = 'month';
+        if (!$params['interval']) $interval = 1;
         while ($time < $this->to_time) {
             $update_date = new PwDate();
+            $update_date->setTime($time);
             $update_date->setFromTime($time);
             $update_date->setToTime($time);
-            $update_date->nextToDate(1, 'month');
+            $update_date->nextToDate($interval, $interval_unit);
             $update_date->toDateFirstDay();
             $update_date->limitToDate($this->to_time, $params);
 
