@@ -7,11 +7,6 @@ $lang = 'ja';
 require_once dirname(__FILE__).'/../../lib/Controller.php';
 
 if ($argv[1] == 1) $is_excute_sql = true;
-if ($argv[2]) {
-    $host = $argv[2];
-} else {
-    $host = DB_HOST;
-}
 if (!$host) $host = 'localhost';
 
 if ($is_excute_sql) {
@@ -22,5 +17,4 @@ if ($is_excute_sql) {
 echo("host: {$host}").PHP_EOL;
 $pgsql = new PwPgsql();
 $pgsql->is_excute_sql = $is_excute_sql;
-$pgsql->setDBHost($host);
 $pgsql->diffFromVoModel();

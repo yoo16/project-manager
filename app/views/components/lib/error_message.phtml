@@ -11,10 +11,14 @@
         <div class="modal-body">
           <ul class="list-unstyled">
             <? if (is_array($this->errors)): ?>
-              <? foreach ($this->errors as $model_name => $error): ?>
+              <? foreach ($this->errors as $key => $error): ?>
+                <? if (is_array($error)): ?>
                 <? foreach ($error as $key2 => $value): ?>
-                  <li><?= PwError::display($value, $this->pw_gets, $model_name)?></li>
+                  <li><?= PwError::display($value, $this->pw_gets, $key)?></li>
                 <? endforeach?>
+                <? else: ?>
+                  <li><?= PwError::displayForString($error, $this->pw_gets, $key) ?></li>
+                <? endif ?>
               <? endforeach?>
             <? endif ?>
           </ul>
