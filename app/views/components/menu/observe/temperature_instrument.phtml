@@ -1,8 +1,0 @@
-<? include('views/components/observe/spot.phtml') ?>
-
-<? if ($this->temperature_instrument->value['id']): ?>
-  <div class="d-flex p-2">
-    <h2><?= $this->temperature_instrument->value['name'] ?></h2>
-    <input type="hidden" id="temperature_instrument_id" value="<?= $this->temperature_instrument->value['id'] ?>">
-  </div>
-<? endif ?>

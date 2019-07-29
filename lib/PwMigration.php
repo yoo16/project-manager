@@ -736,7 +736,7 @@ class PwMigration {
     }
 
     /**
-     * shamen old db infos
+     * old db infos
      *
      * @return array
      */
