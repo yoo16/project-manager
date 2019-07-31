@@ -1,0 +1,77 @@
+<? include('_header.phtml') ?>
+
+<div class="card">
+  <h3 class="card-header">Model</h3>
+  <div class="card-block">
+
+    <form id="" action="<?= $this->urlFor(['action' => 'update', 'id' => $this->model->value['id']]) ?>" method="post" autocomplete="off">
+
+      <table class="table">
+        <tr>
+          <th>Table Name</th>
+          <td>
+            <?= $this->model->formInput('name', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
+
+        <tr>
+          <th>Model Class Name</th>
+          <td>
+            <?= $this->model->value['class_name'] ?>
+          </td>
+        </tr>
+
+        <tr>
+          <th>PwEntity Name</th>
+          <td>
+            <?= $this->model->value['entity_name'] ?>
+          </td>
+        </tr>
+
+        <tr>
+          <th>Label</th>
+          <td>
+            <?= $this->model->formInput('label', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
+
+        <tr>
+          <th>Lock</th>
+          <td>
+            <?= $this->model->formCheckbox('is_lock', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
+
+        <tr>
+          <th>Note</th>
+          <td>
+            <?= $this->model->formTextarea('note', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
+
+        <tr>
+          <th>
+            <?= PwForm::formLabel('Old Database', ['class' => 'col-2']) ?>
+          </th>
+          <td>
+            <?= $this->model->formSelect('old_database_id', ['model' => 'Database', 'label' => 'name', 'unselect' => true]) ?>
+          </td>
+        </tr>
+
+        <tr>
+          <th>old table</th>
+          <td>
+            <?= $this->model->formInput('old_name', ['class' => 'form-control']) ?>
+          </td>
+        </tr>
+      </table>
+
+      <?= PwForm::submit(LABEL_UPDATE) ?>
+      <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+
+      <? if (!$this->model->value['is_lock']): ?>
+      <?= $this->model->confirmDelete() ?>
+      <? endif ?>
+    </form>
+  </div>
+</div>

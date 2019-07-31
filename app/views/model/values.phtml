@@ -1,0 +1,52 @@
+<? include('_header.phtml') ?>
+
+<? include('model_value_window.phtml'); ?>
+
+<div class="">
+  <div class="pt-3">
+    <?= PwForm::linkModal('#model-value-window', LABEL_ADD) ?>
+    <?= PwForm::linkButton(['action' => 'list'], ['label' => LABEL_BACK]) ?>
+    <?= PwForm::linkButton([
+    'controller' => 'model',
+    'action' => 'delere_records',
+    'id' => $this->model->value['id']
+    ],
+    [
+    'class' => 'btn btn-danger conrim-dialog',
+    'label' => LABEL_DELETE,
+    'message' => 'Delete data?',
+    ]
+    ) ?>
+  </div>
+
+  <div class="pt-3">
+    <h3><?= $this->model->value['name'] ?></h3>
+  </div>
+  <div>
+    <table class="table table-headerfixed">
+      <thead class="thead-default">
+        <tr>
+        <? foreach ($this->values[0] as $column_name => $value): ?>
+        <th><?= $column_name ?></th>
+        <? endforeach ?>
+        </tr>
+      </thead>
+
+      <? if ($this->values): ?>
+      <? foreach ($this->values as $values): ?>
+      <tr>
+        <? foreach ($values as $column_name => $value): ?>
+        <td>
+        <? if ($model = $this->fk_models[$column_name]): ?>
+        <a href="<?= $this->linkTo('values', $model['id']) ?>"><?= $value ?></a>
+        <? else: ?>
+        <?= $value ?>
+        <? endif ?>
+        </td>
+        <? endforeach ?>
+      </tr>
+      <? endforeach ?>
+      <? endif ?>
+    </table>
+  </div>
+</div>
