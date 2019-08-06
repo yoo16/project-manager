@@ -5,7 +5,7 @@ vendor/*
 composer.lock
 HOSTNAME
 tmp
-.DS_Store
+debian.php
 .DS_Store
 .phpintel
 .vscode/
