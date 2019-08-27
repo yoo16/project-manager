@@ -13,6 +13,9 @@
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Project path</label>
             <?= DB::model('UserProjectSetting')->formInput('project_path', ['class' => 'form-control', 'placeholder' => '/home/users/project_name/']) ?>
+
+            <label for="recipient-name" class="col-form-label">User</label>
+            <?= PwForm::select(['name' => 'user_project_setting[user_id]', 'model' => 'User', 'value' => 'id', 'label' => 'login_name']) ?>
           </div>
         </div>
 

@@ -24,6 +24,11 @@ define('LABEL_PASSWORD', 'パスワード');
 define('LABEL_USER_ID', 'ユーザID');
 define('LABEL_LOGIN_NAME', 'ログイン名');
 
+define('DATABASE_NAME', 'DB名');
+define('DATABASE_HOST', 'ホスト');
+define('DATABASE_USER', 'ユーザ');
+define('DATABASE_PORT', 'ポート');
+
 define('LABEL_FILE', 'ファイル');
 define('LABEL_SEARCH', '検索');
 define('LABEL_CANCEL', 'キャンセル');

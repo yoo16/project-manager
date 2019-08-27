@@ -348,8 +348,7 @@ class ProjectController extends AppController
 
     function action_export_list()
     {
-        $this->project = DB::model('Project')->fetch("{$this->pw_gets['id']}");
-        $this->project->bindOne('Database');
+        $this->project->bindBelongsOne('Database');
         $this->database = $this->project->database;
         $this->project->bindMany('UserProjectSetting');
     }
@@ -480,17 +479,14 @@ class ProjectController extends AppController
     function action_add_user_project_setting()
     {
         if (!isPost()) exit;
-        $posts = $this->session['user_project_setting'] = $_REQUEST['user_project_setting'];
-
-        $project = DB::model('Project')->fetch($posts['project_id'])->value;
-        if ($project['id']) {
-            $user_project_setting = DB::model('UserProjectSetting')->insert($posts);
-        }
-
+        $user_project_setting = DB::model('UserProjectSetting')->insert($this->pw_posts['user_project_setting']);
         if ($user_project_setting->errors) {
             $this->addErrorByModel($user_project_setting);
         }
-        $this->redirectTo(['action' => 'export_list', 'id' => $posts['project_id']]);
+        // var_dump($this->pw_posts);
+        // var_dump($user_project_setting->errors);
+        // exit;
+        $this->redirectTo(['action' => 'export_list', 'id' => $project['id']]);
     }
 
     function action_delete_user_project_setting()

@@ -1,6 +1,6 @@
 <?php
 
-    define('DB_NAME', 'project_manager2');
+    define('DB_NAME', 'project_manager');
     define('DB_HOST', 'localhost');
     define('DB_USER', 'postgres');
     define('DB_PORT', '5432');

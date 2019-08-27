@@ -24,6 +24,11 @@ define('LABEL_PASSWORD', 'Password');
 define('LABEL_USER_ID', 'User id');
 define('LABEL_LOGIN_NAME', 'Login name');
 
+define('DATABASE_NAME', 'DB Name');
+define('DATABASE_HOST', 'Host');
+define('DATABASE_USER', 'User');
+define('DATABASE_PORT', 'Port');
+
 define('LABEL_FILE', 'File');
 define('LABEL_SEARCH', 'Search');
 define('LABEL_CANCEL', 'Cancel');
