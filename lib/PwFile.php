@@ -556,12 +556,12 @@ class PwFile {
     * @param  array $path
     * @return void
     */ 
-    static function chmodFile($path) {
+    static function chmodFile($path, $mod = 0755) {
         if (file_exists($path)) {
             if (defined('PHP_FUNCTION_MODE') && PHP_FUNCTION_MODE) {
-                return chmod($path, 0777);
+                return chmod($path, $mod);
             } else {
-                $cmd = "chmod 777 {$path}";
+                $cmd = "chmod {$mod} {$path}";
                 exec($cmd);
             }
         }

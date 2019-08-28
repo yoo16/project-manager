@@ -227,9 +227,18 @@ class PageController extends ProjectController
         $page = DB::model('Page')->fetch($this->pw_posts['page_id']);
         $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
 
-        $name = "{$page->value['name']}Controller";
-        $path = $user_project_setting->value['project_path'];
-        PwLaravel::artisanMakeController($name, $path);
+        $params['path'] = $user_project_setting->value['project_path'];
+
+        $laravel = new PwLaravel($params);
+
+        $options[] = '--api';
+        $name = $laravel->controllerNameByName($page->value['name']);
+        //$laravel->makeController($name, $options);
+
+        $options = [];
+        $options['action'][] = 'index';
+        $name = strtolower($page->value['name']);
+        $laravel->createView($name, $options);
 
         $this->redirectTo(['action' => 'list']);
     }

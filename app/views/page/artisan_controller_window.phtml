@@ -1,17 +1,17 @@
-<div id="artisan-window" class="modal">
+<div id="artisan_controller_window" class="modal">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <form method="post" action="<?= $this->urlFor(['action' => 'artisan']) ?>">
         <div class="modal-header">
-          <h5 class="modal-title">Artisan</h5>
+          <h5 class="modal-title">Artisan Controller</h5>
         </div>
         <div class="modal-body">
           <dl>
-            <dt>Name</dt>
+            <dt>Controller</dt>
             <dd>
-              <input id="artisan_name" class="form-control">
+              <div id="artisan_name"></div>
             </dd>
-            <dt>User</dt>
+            <dt>Path</dt>
             <dd>
               <?= PwForm::select([
               'name' => 'user_project_setting_id',

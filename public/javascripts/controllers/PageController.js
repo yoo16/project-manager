@@ -13,16 +13,16 @@ var PageController = function() {
         var page_id = node.attr('page_id');
 
         var artisan_name_node = PwNode.id('artisan_name');
-        artisan_name_node.setValue(controller_name);
+        artisan_name_node.html(controller_name);
 
         var page_id_node = PwNode.id('page_id');
         page_id_node.setValue(page_id);
 
-        pw_ui.showModal('artisan-window');
+        pw_ui.showModal('artisan_controller_window');
     }
 
     this.hideArtisan = function(node) {
-        pw_ui.hideModal('artisan-window');
+        pw_ui.hideModal('artisan_controller_window');
     }
 }
 
