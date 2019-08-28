@@ -21,13 +21,14 @@ class Project extends _Project {
         return $this->value;
     }
 
-    function fetchForName($name) {
-        $conditions[] = "name = '{$name}'";
-        $project = Project::_get($conditions);
-        return $project;
-    }
-
+    /**
+     * pg constraint values
+     *
+     * @param  PgClass $pg_class
+     * @return void
+     */
     function pgConstraintValues($pg_class) {
+        if (!$pg_class['pg_constraint']) return;
         foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
             if ($pg_constraints) {
                 foreach ($pg_constraints as $pg_constraint) {
@@ -52,7 +53,7 @@ class Project extends _Project {
     /**
      * exportAttributeLabels
      *
-     * @return Array void
+     * @return void
      */
     function exportAttributeLabels() {
         if (!$this->user_project_setting->value) {
@@ -71,7 +72,7 @@ class Project extends _Project {
             }
 
             $body = '<?php'.PHP_EOL.$row;
-            $results = file_put_contents($path, $body);
+            file_put_contents($path, $body);
             $cmd = "chmod 666 {$path}";
             exec($cmd);
         }
@@ -100,31 +101,24 @@ class Project extends _Project {
     function exportPHPModels($pgsql) {
         $this->bindMany('Model');
 
-        //TODO
-        // $relation_database = $this->hasMany('RelationDatabase')->all();
-        // foreach ($relation_database->values as $relation_database) {
-        //     $old_database = DB::model('Database')->fetch($relation_database['old_database_id']);
-        //     $old_pgsqls[$old_database->value['id']] = $old_database->pgsql();
-        // }
-
-        if ($this->model->values) {
-            foreach ($this->model->values as $model) {
-                $this->model->value = $model;
-                $this->exportPHPModel($pgsql, $this->model);
-            }
+        if (!$this->model->values) return;
+        foreach ($this->model->values as $model) {
+            $this->model->value = $model;
+            $this->exportPHPModel($pgsql, $this->model);
         }
     }
 
     /**
      * export php model
      * 
+     * @param PwPgsql $pgsql
      * @param Model $model
      * @return bool
      */
     function exportPHPModel($pgsql, $model) {
         $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
 
-        $values = null;
+        $values = [];
         $values['project'] = $this->value;
         
         $attribute = $model->relation('Attribute')
@@ -133,10 +127,9 @@ class Project extends _Project {
 
         $values['model'] = $model->value;
         $values['attribute'] = $attribute->values;
-        
         $values['old_id_column'] = DB::model('Attribute')
                                         ->where('model_id', $model->value['id'])
-                                        ->where("name = 'old_id'")
+                                        ->where('name', 'old_id')
                                         ->one()
                                         ->value['old_name'];
 
@@ -165,20 +158,12 @@ class Project extends _Project {
      * @return bool
      */
     function exportPythonModels($pgsql) {
-        //model
         $this->bindMany('Model');
+        if (!$this->model->values) return;
 
-        $relation_database = $this->hasMany('RelationDatabase')->all();
-        foreach ($relation_database->values as $relation_database) {
-            $old_database = DB::model('Database')->fetch($relation_database['old_database_id']);
-            $old_pgsqls[$old_database->value['id']] = $old_database->pgsql();
-        }
-
-        if ($this->model->values) {
-            foreach ($this->model->values as $model) {
-                $this->model->value = $model;
-                $this->exportPythonModel($pgsql, $this->model);
-            }
+        foreach ($this->model->values as $model) {
+            $this->model->value = $model;
+            $this->exportPythonModel($pgsql, $this->model);
         }
     }
 
@@ -191,7 +176,7 @@ class Project extends _Project {
     function exportPythonModel($pgsql, $model) {
         $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
 
-        $values = null;
+        $values = [];
         $values['project'] = $this->value;
         
         $attribute = $model->relation('Attribute')
@@ -200,10 +185,9 @@ class Project extends _Project {
 
         $values['model'] = $model->value;
         $values['attribute'] = $attribute->values;
-        
-        $values['old_id_column'] = DB::model('Attribute')
-                                        ->where("model_id = '{$model->value['id']}'")
-                                        ->where("name = 'old_id'")
+        $values['old_id_column'] = DB::model('attribute')
+                                        ->where('model_id', $model->value['id'])
+                                        ->where('name', 'old_id')
                                         ->one()
                                         ->value['old_name'];
 
@@ -231,13 +215,11 @@ class Project extends _Project {
      * @return bool
      */
     function exportLaravelModels($pgsql) {
-        //model
         $this->bindMany('Model');
-        if ($this->model->values) {
-            foreach ($this->model->values as $model) {
-                $this->model->value = $model;
-                $this->exportLaravelModel($pgsql, $this->model);
-            }
+        if (!$this->model->values) return;
+        foreach ($this->model->values as $model) {
+            $this->model->value = $model;
+            $this->exportLaravelModel($pgsql, $this->model);
         }
     }
 
@@ -324,7 +306,6 @@ class Project extends _Project {
                 }
             }
             PwCsv::streamDownload('default_values.csv', $values);
-            //var_dump($values);
             exit;
         }
     }
@@ -350,7 +331,7 @@ class Project extends _Project {
             $values['page'] = $page;
         }
         $page_model = $page->relation('PageModel')->join('Model', 'id', 'model_id')->all();
-        $values['page_filter'] = DB::model('PageFilter')->where("page_id = {$page->value['id']}")->all();
+        $values['page_filter'] = DB::model('PageFilter')->where('page_id', $page->value['id'])->all();
 
         $page_path = Page::projectFilePath($this->user_project_setting, $page);
 
@@ -362,7 +343,6 @@ class Project extends _Project {
                 $contents = ob_get_contents();
                 ob_end_clean();
             }
-            //$contents = PwFile::bufferFileContetns($page_template_path, $values);
             file_put_contents($page_path, $contents);
         }
     }
@@ -384,48 +364,42 @@ class Project extends _Project {
         }
 
         $views = DB::model('Page')->fetch($page['id'])->hasMany('View')->values;
+        if (!$views) return;
 
-        if ($views) {
-            //TODO header contents
-            $header_path = View::headerFilePath($this->user_project_setting->value, $page);
-            if (!file_exists($header_path)) {
-                file_put_contents($header_path, '');
-            }
+        //TODO header contents
+        $header_path = View::headerFilePath($this->user_project_setting->value, $page);
+        if (!file_exists($header_path)) {
+            file_put_contents($header_path, '');
+        }
 
-            foreach ($views as $view) {
-                $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
-                if (!file_exists($view_path) || ($is_overwrite && $view['is_overwrite'])) {
-                    $view['view_item'] = DB::model('View')->fetch($view['id'])
-                                                          ->relation('ViewItem')
-                                                          ->order('sort_order')
-                                                          ->all()
-                                                          ->values;
-                    $values['view'] = $view;
+        foreach ($views as $view) {
+            $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
+            if (!file_exists($view_path) || ($is_overwrite && $view['is_overwrite'])) {
+                $view['view_item'] = DB::model('View')->fetch($view['id'])
+                                                      ->relation('ViewItem')
+                                                      ->order('sort_order')
+                                                      ->all()
+                                                      ->values;
+                $values['view'] = $view;
 
-                    $view_template_path = View::templateFilePath($view);
-                    if (file_exists($view_template_path)) {
-                        $contents = PwFile::bufferFileContetns($view_template_path, $values);
-                        file_put_contents($view_path, $contents);
-                    }
+                $view_template_path = View::templateFilePath($view);
+                if (file_exists($view_template_path)) {
+                    file_put_contents($view_path, PwFile::bufferFileContetns($view_template_path, $values));
+                }
 
-                    if ($view['name'] == 'edit') {
-                        //new
-                        $form_template_path = View::templateNameFilePath('new');
-                        $contents = PwFile::bufferFileContetns($form_template_path, $values);
+                if ($view['name'] == 'edit') {
+                    //new
+                    $form_template_path = View::templateNameFilePath('new');
+                    $form_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'new');
+                    file_put_contents($form_path, PwFile::bufferFileContetns($form_template_path, $values));
 
-                        $form_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'new');
-                        file_put_contents($form_path, $contents);
-
-                        //form
-                        $new_template_path = View::templateNameFilePath('form_for_table');
-                        $contents = PwFile::bufferFileContetns($new_template_path, $values);
-
-                        $new_file_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'form');
-                        file_put_contents($new_file_path, $contents);
-                    }
-                } 
-            }
-        }  
+                    //form
+                    $new_template_path = View::templateNameFilePath('form_for_table');
+                    $new_file_path = View::projectNameFilePath($this->user_project_setting->value, $page, 'form');
+                    file_put_contents($new_file_path, PwFile::bufferFileContetns($new_template_path, $values));
+                }
+            } 
+        }
     }
 
     /**
@@ -436,18 +410,13 @@ class Project extends _Project {
      * @return void
      */
     function exportPHPViewEdit($page, $is_overwrite = false) {
-        $values = null;
-        $values['pages'] = $pages;
+        $values = [];
         $values['page'] = $page;
         if ($page['model_id']) {
             $model = DB::model('Model')->fetch($page['model_id']);
             $values['model'] = $model->value;
             $values['attribute'] = $model->relation('Attribute')->idIndex()->all()->values;
         }
-
-        $views = DB::model('Page')->fetch($page['id'])->hasMany('View')->values;
-
-        $view_path = View::projectFilePath($this->user_project_setting->value, $page, $view);
 
         //new
         $form_template_path = View::templateNameFilePath('new');
@@ -473,21 +442,16 @@ class Project extends _Project {
         $records = $this->relation('Record')->all()->values;
         if ($records) {
             foreach ($records as $record) {
-                $record_items = DB::model('RecordItem')
-                                                ->where("record_id = {$record['id']}")
-                                                ->all()
-                                                ->values;
-
+                $record_item = DB::model('RecordItem');
+                $record_item->where('record_id', $record['id'])->all();
                 foreach (['ja', 'en'] as $lang) {
                     $csv_path = Record::csvFilePath($this->user_project_setting->value, $record, $lang);
-                    if ($record_items) {
+                    if ($record_item->values) {
                         $csv = '';
                         $csv.=  'value,label'.PHP_EOL;
-                        foreach ($record_items as $record_item) {
+                        foreach ($record_item->values as $record_item) {
                             $column_name = 'value';
-                            if ($lang == 'en') {
-                                $column_name.= "_{$lang}";
-                            }
+                            if ($lang == 'en') $column_name.= "_{$lang}";
                             $value = $record_item[$column_name];
                             $csv.=  "\"{$record_item['key']}\",\"{$value}\"".PHP_EOL;
                         }

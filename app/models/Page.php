@@ -48,16 +48,17 @@ class Page extends _Page {
      * project path
      * 
      * @param array UserProjectSetting $user_project_setting
-     * @param array Page $page
+     * @param Page $page
+     * @param string $base_dir
      * @return string
      */
-    static function projectFilePath($user_project_setting, $page) {
+    static function projectFilePath($user_project_setting, $page, $base_dir = 'app/controllers/') {
         if (!$user_project_setting->value) return;
         if (!$page->value['name']) return;
         if (!file_exists($user_project_setting->value['project_path'])) return;
 
         $file_name = Page::classFileName($page);
-        $path = $user_project_setting->value['project_path']."app/controllers/{$file_name}";
+        $path = $user_project_setting->value['project_path']."{$base_dir}{$file_name}";
         return $path;
     }
 
