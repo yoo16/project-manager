@@ -18,7 +18,7 @@
     <tr>
       <th>&nbsp;</th>
 <? foreach ($values['view']['view_item'] as $view_item): ?>
-<? if (!Model::$required_columns[$view_item['name']]): ?>
+<? if (!PwModel::$required_columns[$view_item['name']]): ?>
 <? if ($view_item['attribute_id']): ?>
       <th><?= Attribute::labelName($values['model'], $values['attribute'][$view_item['attribute_id']]) ?></th>
       <? else: ?>
@@ -34,7 +34,7 @@
   <tr row-id="<?= Tag::init()->valuesId() ?>">
     <td><? Tag::init()->php('$this->'.$values['model']['entity_name'].'->linkEdit([], $values)') ?></td>
 <? foreach ($values['view']['view_item'] as $view_item): ?>
-<? if (!Model::$required_columns[$view_item['name']]): ?>
+<? if (!PwModel::$required_columns[$view_item['name']]): ?>
 <? if ($view_item['page_id']): ?>
     <td><? Tag::init()->tableItemUrlForAttribute ($values['attribute'][$view_item['attribute_id']], $values['pages'][$view_item['page_id']], $values['model'], $view_item) ?></td>
 <? else: ?>

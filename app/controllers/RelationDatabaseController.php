@@ -183,7 +183,7 @@ class RelationDatabaseController extends ProjectController {
 
         foreach ($models as $model) {
             $attributes = DB::model('Attribute')
-                                ->where("model_id = {$model['id']}")
+                                ->where('model_id', $model['id'])
                                 ->all()
                                 ->values;
 

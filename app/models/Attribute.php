@@ -121,7 +121,7 @@ class Attribute extends _Attribute {
         if (!$database) return;
         if (!$model) return;
 
-        $required_columns = Model::$required_columns;
+        $required_columns = PwModel::$required_columns;
         $column = $required_columns[$key];
         if (!$column) return;
 

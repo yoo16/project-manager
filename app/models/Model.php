@@ -3,29 +3,6 @@ require_once 'vo/_Model.php';
 
 class Model extends _Model {
 
-    static $required_columns = array('id' => array('name' => 'id', 
-                                                   'type' => 'SERIAL',
-                                                   'option' => 'PRIMARY KEY NOT NULL',
-                                                   'comment' => 'ID'
-                                                   ),
-                                     'created_at' => array('name' => 'created_at',
-                                                           'type' => 'TIMESTAMP',
-                                                           'option' => 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
-                                                           'comment' => '作成日'
-                                                           ),
-                                     'updated_at' => array('name' => 'updated_at',
-                                                           'type' => 'TIMESTAMP',
-                                                           'option' => 'NULL',
-                                                           'comment' => '更新日'
-                                                           ),
-                                     'sort_order' => array('name' => 'sort_order',
-                                                           'type' => 'INT4',
-                                                           'option' => 'NULL',
-                                                           'comment' => '並び順'
-                                                           ),
-                                     );
-
-
     function validate() {
         parent::validate();
     }
@@ -40,51 +17,45 @@ class Model extends _Model {
         if (!$project->value) return;
 
         $database = DB::model('Database')->fetch($project->value['database_id']);
-
         if (!$database->value) return;
 
-        $pgsql = $database->pgsql();
         $model = $project->hasMany('Model');
+        if (!$model->values) return;
 
+        $pgsql = $database->pgsql();
+        foreach ($model->values as $model->value) {
+            $pgsql->removePgConstraints($model->value['name'], 'f');
+            $attribute = DB::model('Attribute')->where('model_id', $model->value['id'])->all();
+            foreach ($attribute->values as $attribute->value) {
+                if ($model->value['pg_class_id'] && PwEntity::isForeignColumnName($attribute->value['name'])) {
+                    $foreign_table_name = PwEntity::foreignTableByColumnName($attribute->value['name']);
+                    $foreign_pg_class = $pgsql->pgClassByRelname($foreign_table_name);
 
-        if ($model->values) {
-            foreach ($model->values as $model) {
-                $pgsql->removePgConstraints($model['name'], 'f');
+                    $fk_model = DB::model('Model');
+                    $fk_model->where('pg_class_id', $foreign_pg_class['pg_class_id'])
+                             ->where('project_id', $project->value['id'])
+                             ->one();
 
-                $attributes = DB::model('Attribute')->where("model_id = {$model['id']}")
-                                                   ->all()
-                                                   ->values;
-                foreach ($attributes as $attribute) {
-                    if ($model['pg_class_id'] && PwEntity::isForeignColumnName($attribute['name'])) {
-                        $foreign_table_name = PwEntity::foreignTableByColumnName($attribute['name']);
-                        $foreign_pg_class = $pgsql->pgClassByRelname($foreign_table_name);
+                    if ($fk_model->value) {
+                        $fk_attribute = DB::model('Attribute');
+                        $fk_attribute->where('name', $fk_model->id_column)
+                                     ->where('model_id', $model->value['id'])
+                                     ->one();
 
-                        $fk_model = DB::model('Model')
-                                                    ->where("pg_class_id = {$foreign_pg_class['pg_class_id']}")
-                                                    ->where("project_id = {$project->value['id']}")
-                                                    ->one();
+                        if ($fk_attribute->value) {
+                            if ($fk_attribute->value['id'] && $attribute->value['id']) {
+                                $results = $pgsql->addPgForeignKey($model->value['name'],
+                                                                    $attribute->value['name'],
+                                                                    $fk_model->value['name'],
+                                                                    $fk_attribute->value['name'],
+                                                                    $attribute->value['update_action'],
+                                                                    $attribute->value['delete_action']
+                                                                );
 
-                        if ($fk_model->value) {
-                            $fk_attribute = DB::model('Attribute')
-                                                    ->where("name = '{$fk_model->id_column}'")
-                                                    ->where("model_id = {$model['id']}")
-                                                    ->one();
-
-                            if ($fk_attribute->value) {
-                                if ($fk_attribute->value['id'] && $attribute['id']) {
-                                    $results = $pgsql->addPgForeignKey($model['name'],
-                                                                       $attribute['name'],
-                                                                       $fk_model->value['name'],
-                                                                       $fk_attribute->value['name'],
-                                                                       $attribute['update_action'],
-                                                                       $attribute['delete_action']
-                                                                   );
-
-                                    if ($results) {
-                                        $posts = null;
-                                        $posts['fk_attribute_id'] = $fk_attribute->value['id'];
-                                        DB::model('Attribute')->update($posts, $attribute['id']);
-                                    }
+                                if ($results) {
+                                    $posts = [];
+                                    $posts['fk_attribute_id'] = $fk_attribute->value['id'];
+                                    DB::model('Attribute')->update($posts, $attribute->value['id']);
                                 }
                             }
                         }
@@ -104,59 +75,46 @@ class Model extends _Model {
         if (!$project->value) return;
 
         $database = DB::model('Database')->fetch($project->value['database_id']);
-
         if (!$database->value) return;
 
         $pgsql = $database->pgsql();
         $model = $project->hasMany('Model');
+        if (!$model->values) return;
 
-        if ($model->values) {
-            foreach ($model->values as $model) {
-                $attributes = DB::model('Attribute')->where("model_id = {$model['id']}")
-                                                   ->all()
-                                                   ->values;
-                foreach ($attributes as $attribute) {
-                    if ($attribute['fk_attribute_id'] && $model['pg_class_id'] && PwEntity::isForeignColumnName($attribute['name'])) {
-                        $pg_class = $pgsql->pgClassByRelname($model['name']);
-                        $pg_constraints = $pgsql->pgConstraints($pg_class['pg_class_id'], 'f');
+        foreach ($model->values as $model->value) {
+            $attribute = DB::model('Attribute')->where('model_id', $model->value['id'])->all();
+            foreach ($attribute->values as $attribute->value) {
+                if ($attribute->value['fk_attribute_id'] && $model->value['pg_class_id'] && PwEntity::isForeignColumnName($attribute->value['name'])) {
+                    $pg_class = $pgsql->pgClassByRelname($model->value['name']);
+                    $pg_constraints = $pgsql->pgConstraints($pg_class['pg_class_id'], 'f');
 
-                        $foreign_keys = null;
-                        if ($pg_constraints) {
-                            foreach ($pg_constraints as $pg_constraint) {
-                                $foreign_keys[$pg_constraint['attname']] = $pg_constraint['attname'];
-                            }
+                    $foreign_keys = [];
+                    if ($pg_constraints) {
+                        foreach ($pg_constraints as $pg_constraint) {
+                            $foreign_keys[$pg_constraint['attname']] = $pg_constraint['attname'];
                         }
+                    }
 
-                        if (!$foreign_keys[$attribute['name']]) {
-                            $fk_attribute = DB::model('Attribute')->fetch($attribute['fk_attribute_id']);
-                            $fk_model = DB::model('Model')->fetch($fk_attribute->value['model_id']);
-
-                            if ($fk_model->value) {
-
-                                if ($fk_attribute->value) {
-                                    if ($fk_attribute->value['id'] && $attribute['id']) {
-
-                                        $on_update = null;
-
-                                        if ($attribute['delete_cascade']) {
-                                            $on_delete = $attribute['delete_cascade'];
-                                        } else {
-                                            $on_delete = null;
-                                        }
-
-                                        $results = $pgsql->addPgForeignKey($model['name'],
-                                                                           $attribute['name'],
-                                                                           $fk_model->value['name'],
-                                                                           $fk_attribute->value['name'],
-                                                                           $on_update,
-                                                                           $on_delete
-                                                                       );
-
-                                        if ($results) {
-                                            $posts = null;
-                                            $posts['fk_attribute_id'] = $fk_attribute->value['id'];
-                                            DB::model('Attribute')->update($posts, $attribute['id']);
-                                        }
+                    if (!$foreign_keys[$attribute->value['name']]) {
+                        $fk_attribute = DB::model('Attribute')->fetch($attribute->value['fk_attribute_id']);
+                        $fk_model = DB::model('Model')->fetch($fk_attribute->value['model_id']);
+                        if ($fk_model->value) {
+                            if ($fk_attribute->value) {
+                                if ($fk_attribute->value['id'] && $attribute->value['id']) {
+                                    //TODO on_update
+                                    $on_update = null;
+                                    $on_delete = ($attribute->value['delete_cascade']) ? $attribute->value['delete_cascade'] : null;
+                                    $results = $pgsql->addPgForeignKey($model->value['name'],
+                                                                       $attribute->value['name'],
+                                                                       $fk_model->value['name'],
+                                                                       $fk_attribute->value['name'],
+                                                                       $on_update,
+                                                                       $on_delete
+                                                                    );
+                                    if ($results) {
+                                        $posts = [];
+                                        $posts['fk_attribute_id'] = $fk_attribute->value['id'];
+                                        DB::model('Attribute')->update($posts, $attribute->value['id']);
                                     }
                                 }
                             }
@@ -178,36 +136,34 @@ class Model extends _Model {
         if (!$project->value) return;
 
         $database = DB::model('Database')->fetch($project->value['database_id']);
-
         if (!$database->value) return;
 
         $pgsql = $database->pgsql();
         $model = $project->hasMany('Model');
+        if (!$model->values) return;
+        foreach ($model->values as $model->value) {
+            $pg_constraints = $pgsql->pgForeignConstraints($model->value['pg_class_id']);
 
-        if ($model->values) {
-            foreach ($model->values as $model) {
-                $pg_constraints = $pgsql->pgForeignConstraints($model['pg_class_id']);
+            foreach ($pg_constraints as $pg_constraint) {
+                $attribute = DB::model('Attribute');
+                $attribute->where('model_id', $model->value['id'])
+                          ->where('name', $pg_constraint['attname'])
+                          ->one();
+                if ($attribute->value) {
+                    $fk_model = DB::model('Model')->where('project_id', $project->value['id'])
+                                                  ->where('name', $pg_constraint['foreign_relname'])
+                                                  ->one();
 
-                foreach ($pg_constraints as $pg_constraint) {
-                    $attribute = DB::model('Attribute')
-                                                ->where("model_id = {$model['id']}")
-                                                ->where("name = '{$pg_constraint['attname']}'")
-                                                ->one();
-                    if ($attribute->value) {
-                        $fk_model = DB::model('Model')->where("project_id = {$project->value['id']}")
-                                                      ->where("name = '{$pg_constraint['foreign_relname']}'")
-                                                      ->one();
+                    $fk_attribute = DB::model('Attribute');
+                    $fk_attribute->where('model_id', $fk_model->value['id'])
+                                 ->where('name', $pg_constraint['foreign_attname'])
+                                 ->one();
 
-                        $fk_attribute = DB::model('Attribute')->where("model_id = {$fk_model->value['id']}")
-                                                      ->where("name = '{$pg_constraint['foreign_attname']}'")
-                                                      ->one();
-
-                        if ($fk_attribute->value['id']) {
-                            $posts['fk_attribute_id'] = $fk_attribute->value['id'];
-                            $posts['update_action'] = $pg_constraint['confupdtype'];
-                            $posts['delete_action'] = $pg_constraint['confdeltype'];
-                            DB::model('Attribute')->update($posts, $attribute->value['id']);
-                        }
+                    if ($fk_attribute->value['id']) {
+                        $posts['fk_attribute_id'] = $fk_attribute->value['id'];
+                        $posts['update_action'] = $pg_constraint['confupdtype'];
+                        $posts['delete_action'] = $pg_constraint['confdeltype'];
+                        DB::model('Attribute')->update($posts, $attribute->value['id']);
                     }
                 }
             }
@@ -225,30 +181,24 @@ class Model extends _Model {
         if (!$project->value) return;
 
         $database = DB::model('Database')->fetch($project->value['database_id']);
-
         if (!$database->value) return;
 
         $model = $project->hasMany('Model');
+        if (!$model->values) return;
 
         $coulmn_keys = array_keys($columns);
-        
-        if ($model->values) {
-            foreach ($model->values as $model) {
-                $attributes = DB::model('Attribute')->where("model_id = {$model['id']}")
-                                                   ->all()
-                                                   ->values;
-                                                   
-                foreach ($attributes as $attribute) {
-                    if (in_array($attribute['name'], $coulmn_keys)) {
-                        $column = $attribute['name'];
-                        $comment = $columns[$column];
-                        if ($attribute['name'] == $column) {
-                            $results = $database->pgsql()->updateColumnComment($model['name'], $column, $comment);
-                            if ($results) {
-                                $posts = null;
-                                $posts['label'] = $comment;
-                                DB::model('Attribute')->update($posts, $attribute['id']);
-                            }
+        foreach ($model->values as $model->value) {
+            $attributes = DB::model('Attribute')->where('model_id', $model->value['id'])->all()->values;
+            foreach ($attributes as $attribute) {
+                if (in_array($attribute['name'], $coulmn_keys)) {
+                    $column = $attribute['name'];
+                    $comment = $columns[$column];
+                    if ($attribute['name'] == $column) {
+                        $results = $database->pgsql()->updateColumnComment($model->value['name'], $column, $comment);
+                        if ($results) {
+                            $posts = [];
+                            $posts['label'] = $comment;
+                            DB::model('Attribute')->update($posts, $attribute['id']);
                         }
                     }
                 }
@@ -427,7 +377,7 @@ class Model extends _Model {
         $propaties[] = "'type' => '{$attribute['type']}'";
         if ($attribute['length'] > 0) $propaties[] = "'length' => {$attribute['length']}";
 
-        if (!self::$required_columns[$attribute['name']] && $attribute['is_required']) {
+        if (!PwModel::$required_columns[$attribute['name']] && $attribute['is_required']) {
             $propaties[] = "'is_required' => true";
         }
         if ($attribute['old_name']) {
@@ -465,7 +415,7 @@ class Model extends _Model {
         $propaties[] = "'type': '{$attribute['type']}'";
         if ($attribute['length'] > 0) $propaties[] = "'length': {$attribute['length']}";
 
-        if (!self::$required_columns[$attribute['name']] && $attribute['is_required']) {
+        if (!PwModel::$required_columns[$attribute['name']] && $attribute['is_required']) {
             $propaties[] = "'is_required': True";
         }
         if ($attribute['old_name']) {
@@ -511,8 +461,8 @@ class Model extends _Model {
         $attribute = $this->relationMany('Attribute')->all();
         if (!$attribute->values) return;
 
-        $columns = Model::$required_columns;
-        $required_columns = array_keys(Model::$required_columns);
+        $columns = PwModel::$required_columns;
+        $required_columns = array_keys(PwModel::$required_columns);
         foreach ($attribute->values as $value) {
             if (!in_array($value['name'], $required_columns)) {
                 $column['name'] = $value['name'];

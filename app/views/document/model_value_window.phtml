@@ -11,7 +11,7 @@
         </div>
         <div class="modal-body">
         <? foreach ($this->pg_class['pg_attribute'] as $column): ?>
-        <? if (!Model::$required_columns[$column['attname']]): ?>
+        <? if (!PwModel::$required_columns[$column['attname']]): ?>
           <div class="form-group row">
             <label for="" class="col-6 col-form-label"><?= $column['attname'] ?></label>
             <input class="form-control col-5" type="text" name="model[<?= $column['attname'] ?>]" value="">

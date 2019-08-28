@@ -41,7 +41,7 @@
         <? foreach ($this->attribute->values as $attribute): ?>
         <tr>
           <td>
-            <? if (!Model::$required_columns[$attribute['name']]): ?>
+            <? if (!PwModel::$required_columns[$attribute['name']]): ?>
             <? endif ?>
             <?= $this->attribute->linkEdit([], $attribute) ?>
           </td>
@@ -119,7 +119,7 @@
           </td>
 
           <td>
-            <? if (!Model::$required_columns[$attribute['name']]): ?>
+            <? if (!PwModel::$required_columns[$attribute['name']]): ?>
             <? if ($attribute['is_required']): ?>
             <?= $this->linkTo(['action' => 'change_required', 'id' => $attribute['id']], ['label' => 'required', 'class' => 'badge badge-success']) ?>
             <? else: ?>

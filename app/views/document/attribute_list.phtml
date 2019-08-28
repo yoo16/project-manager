@@ -21,7 +21,7 @@
         <? foreach ($this->attribute->values as $attribute): ?>
         <tr>
           <td>
-            <? if (!Model::$required_columns[$attribute['name']]): ?><?= PwForm::linkButton('edit', LABEL_EDIT, $attribute['id']) ?><? endif ?>
+            <? if (!PwModel::$required_columns[$attribute['name']]): ?><?= PwForm::linkButton('edit', LABEL_EDIT, $attribute['id']) ?><? endif ?>
           </td>
 
           <td>

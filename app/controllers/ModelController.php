@@ -68,7 +68,7 @@ class ModelController extends ProjectController {
         $posts = $this->pw_posts['model'];
 
         if ($this->database && $posts['name']) {
-            $columns = Model::$required_columns;
+            $columns = PwModel::$required_columns;
             if ($columns) {
                 $pgsql = $this->database->pgsql();
                 $results = $pgsql->createTable($posts['name'], $columns);
@@ -228,8 +228,7 @@ class ModelController extends ProjectController {
         $table_name = $model['name'];
 
         if ($database && $table_name) {
-            $columns = Model::$required_columns;
-
+            $columns = PwModel::$required_columns;
             if ($columns) {
                 $pgsql = $database->pgsql()->createTable($table_name, $columns);
 
@@ -278,7 +277,7 @@ class ModelController extends ProjectController {
             $pg_foreign_constraints = $pgsql->pgForeignConstraints($model['pg_class_id']);
             if ($pg_foreign_constraints) {
                 foreach ($pg_foreign_constraints as $pg_foreign_constraint) {
-                    $attribute = DB::model('Attribute')->where("model_id = {$model['id']}")
+                    $attribute = DB::model('Attribute')->where('model_id', $model['id'])
                                                        ->where("name = '{$pg_foreign_constraint['attname']}'")
                                                        ->where("fk_attribute_id IS NULL OR fk_attribute_id = 0")
                                                        ->one();
@@ -336,7 +335,7 @@ class ModelController extends ProjectController {
                 $model = $model->update($posts);
 
                 $attribute = new Attribute();
-                $attribute->importByModel($model_values, $this->database);
+                $attribute->importByModel($model->value, $this->database);
             }
         }
         $this->redirectTo(['action' => 'list']);;
@@ -347,7 +346,7 @@ class ModelController extends ProjectController {
         $model = $this->project->hasMany('Model');
 
         $database = DB::model('Database')->fetch($this->project->value['database_id']);
-        $columns = array_keys(Model::$required_columns);
+        $columns = array_keys(PwModel::$required_columns);
 
         $pgsql = $database->pgsql();
         if ($model->values) {
@@ -372,7 +371,7 @@ class ModelController extends ProjectController {
         $model = $this->project->hasMany('Model');
 
         $database = DB::model('Database')->fetch($this->project->value['database_id']);
-        $add_columns = array_keys(Model::$required_columns);
+        $add_columns = array_keys(PwModel::$required_columns);
         if ($model->values) {
             foreach ($model->values as $model_value) {
                 $model = DB::model('Model')->fetch($model_value['id']);
