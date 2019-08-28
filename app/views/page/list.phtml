@@ -2,6 +2,8 @@
 
 <? include('add_window.phtml') ?>
 
+<? include('artisan_window.phtml') ?>
+
 <div class="pt-3">
   <form action="<?= $this->urlFor(['action' => 'import_from_models']) ?>" method="post">
     <?= PwForm::linkModal('#add-window', LABEL_ADD) ?>
@@ -15,6 +17,7 @@
     <tr>
       <th></th>
       <th>Page Controller</th>
+      <th></th>
       <th></th>
       <th nowrap="nowrap">
         Overwrite
@@ -40,7 +43,17 @@
             <?= $page['label'] ?>
           </div>
         </td>
-        <td><a class="btn btn-outline-primary" href="<?= $this->urlFor(['controller' => 'page_model'], ['page_id' => $page['id']]) ?>">Model Request</a></td>
+        <td><?= $this->linkJs(
+          [
+          'pw-on-click' => 'showArtisan',
+          'pw-controller' => 'page',
+          'label' => 'artisan',
+          'page_id' => $page['id'],
+          'page_name' => $page['name'],
+          'class' => 'btn btn-sm btn-outline-primary'
+          ]
+        ) ?></td>
+        <td><a class="btn btn-outline-primary btn-sm" href="<?= $this->urlFor(['controller' => 'page_model'], ['page_id' => $page['id']]) ?>">Model Request</a></td>
         <td>
           <? if ($page['is_overwrite']): ?>
             <?= $this->linkTo(['action' => 'change_overwrite', 'id' => $page['id']], ['label' => 'overwrite', 'class' => 'badge badge-danger']) ?>

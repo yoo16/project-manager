@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ProjectController 
  *
@@ -6,18 +7,20 @@
  */
 require_once 'ProjectController.php';
 
-class PageController extends ProjectController {
+class PageController extends ProjectController
+{
 
     var $name = 'page';
 
-   /**
-    * 
-    *
-    * @access public
-    * @param string $action
-    * @return void
-    */ 
-    function before_action($action) {
+    /**
+     * 
+     *
+     * @access public
+     * @param string $action
+     * @return void
+     */
+    function before_action($action)
+    {
         parent::before_action($action);
 
         if (!$this->project->value['id']) {
@@ -26,31 +29,36 @@ class PageController extends ProjectController {
         }
     }
 
-    function before_rendering($action) {
-    }
+    function before_rendering($action)
+    { }
 
-    function index() {
+    function index()
+    {
         $this->redirectTo(['action' => 'list']);;
     }
 
-    function action_cancel() {
+    function action_cancel()
+    {
         $this->index();
     }
 
-    function action_list() {
+    function action_list()
+    {
+        //$this->user = DB::model('User')->all(true);
         $this->models = $this->project->relationMany('Model')
-                                      ->idIndex()
-                                      ->all()
-                                      ->values;
+            ->idIndex()
+            ->all()
+            ->values;
 
         $this->pages = $this->project->relationMany('Page')
-                                     ->order('name')
-                                     ->all()
-                                     ->bindValuesArray($this->models, 'model', 'model_id')
-                                     ->values;
+            ->order('name')
+            ->all()
+            ->bindValuesArray($this->models, 'model', 'model_id')
+            ->values;
     }
 
-    function action_new() {
+    function action_new()
+    {
         $this->page = DB::model('Page')->takeValues($this->session['posts']);
 
         $this->forms['is_overwrite']['name'] = 'page[is_overwrite]';
@@ -58,7 +66,8 @@ class PageController extends ProjectController {
         $this->forms['is_overwrite']['label'] = LABEL_TRUE;
     }
 
-    function action_edit() {
+    function action_edit()
+    {
         $this->page = DB::model('Page')->fetch($this->pw_gets['id']);
 
         if ($this->page->value['model_id']) {
@@ -70,7 +79,8 @@ class PageController extends ProjectController {
         $this->forms['is_overwrite']['label'] = LABEL_TRUE;
     }
 
-    function action_add() {
+    function action_add()
+    {
         if (!isPost()) exit;
         $posts = $this->pw_posts['page'];
         $posts['class_name'] = $posts['name'];
@@ -86,7 +96,8 @@ class PageController extends ProjectController {
      *
      * @return void
      */
-    function action_update() {
+    function action_update()
+    {
         if (!isPost()) exit;
         $page = DB::model('Page')->update($this->pw_posts['page'], $this->pw_gets['id']);
         if ($page->errors) $this->addErrorByModel($page);
@@ -98,7 +109,8 @@ class PageController extends ProjectController {
      *
      * @return void
      */
-    function action_duplicate() {
+    function action_duplicate()
+    {
         //TODO PwEntity function?
         $page = DB::model('Page')->fetch($this->pw_gets['id']);
         $posts = $page->value;
@@ -116,11 +128,13 @@ class PageController extends ProjectController {
      *
      * @return void
      */
-    function action_delete() {
+    function action_delete()
+    {
         $this->redirectForDelete($this->deleteByModel('Page'));
     }
 
-    function action_import_from_models() {
+    function action_import_from_models()
+    {
         $this->model = $this->project->hasMany('Model');
 
         foreach ($this->model->values as $model) {
@@ -134,8 +148,8 @@ class PageController extends ProjectController {
 
             $page = DB::model('Page');
             $page->where('project_id', $this->project->value['id'])
-                 ->where('name', $model['class_name'])
-                 ->one();
+                ->where('name', $model['class_name'])
+                ->one();
 
             if (!$page->value['id']) $page = DB::model('Page')->insert($posts);
             if ($page->value['id']) {
@@ -145,7 +159,8 @@ class PageController extends ProjectController {
         $this->redirectTo(['action' => 'list']);;
     }
 
-    function action_create_page_from_model() {
+    function action_create_page_from_model()
+    {
         $model = DB::model('Model')->fetch($_REQUEST['model_id'])->value;
 
         if ($this->project->value['id'] && $model['id']) {
@@ -160,8 +175,8 @@ class PageController extends ProjectController {
 
             $page = DB::model('Page');
             $page->where('project_id', $this->project->value['id'])
-                 ->where('name', $model['class_name'])
-                 ->one();
+                ->where('name', $model['class_name'])
+                ->one();
 
             if (!$page->value['id']) {
                 $page = DB::model('Page')->insert($posts);
@@ -174,7 +189,8 @@ class PageController extends ProjectController {
         $this->redirectTo(['action' => 'list']);;
     }
 
-    function action_change_overwrite() {
+    function action_change_overwrite()
+    {
         $page = DB::model('Page')->fetch($this->pw_gets['id']);
         if ($page->value['id']) {
             $posts['is_overwrite'] = !$page->value['is_overwrite'];
@@ -183,7 +199,8 @@ class PageController extends ProjectController {
         $this->redirectTo(['action' => 'list']);;
     }
 
-    function action_all_off_overwrite() {
+    function action_all_off_overwrite()
+    {
         $page = $this->project->relationMany('Page')->all();
 
         foreach ($page->values as $page_value) {
@@ -193,14 +210,27 @@ class PageController extends ProjectController {
         $this->redirectTo(['action' => 'list']);;
     }
 
-   /**
-    * update sort order
-    *
-    * @param
-    * @return void
-    */
-    function action_update_sort() {
+    /**
+     * update sort order
+     *
+     * @param
+     * @return void
+     */
+    function action_update_sort()
+    {
         $this->updateSort('Page');
     }
 
+    //laravel
+    function artisan()
+    {
+        $page = DB::model('Page')->fetch($this->pw_posts['page_id']);
+        $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
+
+        $name = "{$page->value['name']}Controller";
+        $path = $user_project_setting->value['project_path'];
+        PwLaravel::artisanMakeController($name, $path);
+
+        $this->redirectTo(['action' => 'list']);
+    }
 }

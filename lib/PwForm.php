@@ -30,6 +30,8 @@ class PwForm {
                               'effective-digit',
                               'is_associative_array',
                               'is_key_value_array',
+                              'label_models',
+                              'label_values',
                             ];
 
     //TODO refactoring
@@ -438,6 +440,14 @@ class PwForm {
         $value_key = isset($params['value']) ? $params['value'] : 'value';
 
         $tag = self::unselectOption($params);
+        if ($params['label_models']) {
+            foreach ($params['label_models'] as $model_name => $options) {
+                $entity = DB::model($model_name);
+                if ($options['wheres']) $entity->wheres($options['wheres']);
+                $entity->all(true, $options['relation_column']);
+                $params['label_values'][$model_name] = $entity->values;
+            }
+        }
         foreach ($values as $key => $value) {
             if (isset($params['is_key_value_array']) && $params['is_key_value_array']) {
                 $attributes['value'] = $key;
@@ -567,7 +577,22 @@ class PwForm {
         $label_keys = isset($params['label']) ? $params['label'] : 'label';
         if (is_array($label_keys)) {
             foreach ($label_keys as $label_key) {
-                $labels[] = $values[$label_key];
+                $model_name = '';
+                $model_column = '';
+                $label_key_column = '';
+                if ($params['label_values'] && strpos($label_key, ':') > 0) {
+                    $label_params = explode(':', $label_key);
+                    $model_name = $label_params[0];
+                    $model_column = $label_params[1];
+                    $label_key_column = $label_params[2];
+                }
+                if ($model_name && $model_column && $label_key_column) {
+                    $id = $values[$label_key_column]; 
+                    $label_values = $params['label_values'][$model_name];
+                    if ($label_values && $id > 0) $labels[] = $label_values[$id][$model_column];
+                } else {
+                    $labels[] = $values[$label_key];
+                }
             }
             $label_separate = (isset($params['label_separate'])) ? $params['label_separate'] : ' ';
             $label = implode($label_separate, $labels);

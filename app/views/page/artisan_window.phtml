@@ -1,0 +1,38 @@
+<div id="artisan-window" class="modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form method="post" action="<?= $this->urlFor(['action' => 'artisan']) ?>">
+        <div class="modal-header">
+          <h5 class="modal-title">Artisan</h5>
+        </div>
+        <div class="modal-body">
+          <dl>
+            <dt>Name</dt>
+            <dd>
+              <input id="artisan_name" class="form-control">
+            </dd>
+            <dt>User</dt>
+            <dd>
+              <?= PwForm::select([
+              'name' => 'user_project_setting_id',
+              'model' => 'UserProjectSetting',
+              'value' => 'id',
+              'label' => ['User:login_name:user_id', 'project_path'],
+              'where' => "project_id = {$this->project->value['id']}",
+              'label_models' => ['User' => []],
+              'label_separate' => ' : '
+              ]) ?>
+            </dd>
+          </dl>
+        </div>
+
+        <div class="modal-footer">
+          <?= PwForm::submit(LABEL_ADD) ?>
+          <?= $this->linkJs(['pw-on-click' => 'hideArtisan', 'pw-controller' => 'page', 'label' => LABEL_CLOSE, 'class' => 'btn btn-outline-primary']) ?>
+        </div>
+
+        <input id="page_id" type="hidden" name="page_id" value="<?= $this->page->value['id'] ?>">
+      </form>
+    </div>
+  </div>
+</div>

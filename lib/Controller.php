@@ -67,6 +67,7 @@ class Controller extends RuntimeException
         'PwColor',
         'PwPython',
         'PwModel',
+        'PwLaravel',
     ];
 
     function __construct($name = null)
