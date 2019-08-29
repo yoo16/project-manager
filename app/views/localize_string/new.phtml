@@ -3,13 +3,13 @@
 
   <table class="table">
     <tr>
-      <th>坝称</th>
+      <th>Name</th>
       <td><?= $this->localize_string->formInput('name') ?></td>
     </tr>
 
     <? foreach ($this->lang->values as $lang): ?>
     <tr>
-      <th>言語(<?= $lang['name'] ?>)</th>
+      <th>Lang(<?= $lang['name'] ?>)</th>
       <td><input class="form-control" name="localize_string[label][<?= $lang['lang'] ?>]" value=""></td>
     </tr> 
     <? endforeach ?>

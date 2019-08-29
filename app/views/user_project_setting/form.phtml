@@ -2,7 +2,7 @@
 <table class="table">
 
     <tr>
-      <th><?= LABEL_USERS ?></th>
+      <th><?= LABEL_USER ?></th>
       <td>
           <?= $this->user_project_setting->formSelect('user_id', [
                         'unselect' => true,
@@ -16,33 +16,20 @@
       </td>
     </tr>
 
-
     <tr>
-      <th><?= LABEL_PROJECTS ?></th>
+      <th>Project</th>
       <td>
           <?= $this->user_project_setting->formSelect('project_id', [
                         'unselect' => true,
                         'label_separate' => '-',
                         'label' => ['name'],
                         'model' => 'Project',
-                        
-                        
-                        
                         ]) ?>
       </td>
     </tr>
 
-
     <tr>
-      <th><?= LABEL_USER_PROJECT_SETTINGS_GROUP_NAME ?></th>
-      <td>
-          <?= $this->user_project_setting->formInput('group_name', ['class' => 'form-control']) ?>
-      </td>
-    </tr>
-
-
-    <tr>
-      <th><?= LABEL_USER_PROJECT_SETTINGS_PROJECT_PATH ?></th>
+      <th>Local Path</th>
       <td>
           <?= $this->user_project_setting->formInput('project_path', ['class' => 'form-control']) ?>
       </td>

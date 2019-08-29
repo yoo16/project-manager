@@ -4,16 +4,16 @@
 
     <ul class="nav flex-column">
       <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'project'], [ 'label' => 'Project', 'class' => 'nav-link' ]) ?>
+        <?= $this->linkTo(['controller' => 'project'], [ 'label' => 'Project', 'class' => 'nav-link', 'icon_name' => 'home' ]) ?>
       </li>
       <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'database'], [ 'label' => 'Database', 'class' => 'nav-link']) ?>
+        <?= $this->linkTo(['controller' => 'database'], [ 'label' => 'Database', 'class' => 'nav-link', 'icon_name' => 'database' ]) ?>
       </li>
       <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'setting'], [ 'label' => 'Setting', 'class' => 'nav-link' ]) ?>
+        <?= $this->linkTo(['controller' => 'user'], [ 'label' => 'User', 'class' => 'nav-link', 'icon_name' => 'users' ]) ?>
       </li>
       <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'user'], [ 'label' => 'User', 'class' => 'nav-link' ]) ?>
+        <?= $this->linkTo(['controller' => 'setting'], [ 'label' => 'Setting', 'class' => 'nav-link', 'icon_name' => 'cog' ]) ?>
       </li>
     </ul>
 
@@ -28,6 +28,7 @@
                       [
                       'label' => 'Model',
                       'class' => 'nav-link',
+                      'icon_name' => 'table',
                       'http_params' => ['project_id' => $this->project->value['id']]
                     ]
                     ) ?>
@@ -37,6 +38,7 @@
                       [
                       'label' => 'Page',
                       'class' => 'nav-link',
+                      'icon_name' => 'file',
                       'http_params' => ['project_id' => $this->project->value['id']]
                     ]
                     ) ?>
@@ -47,6 +49,7 @@
                       [
                       'label' => 'View',
                       'class' => 'nav-link',
+                      'icon_name' => 'eye',
                       'http_params' => ['page_id' => $this->page->value['id']]
                     ]
                     ) ?>
@@ -58,6 +61,7 @@
                     [
                       'label' => 'CSV',
                       'class' => 'nav-link',
+                      'icon_name' => 'file-csv',
                       'http_params' => ['project_id' => $this->project->value['id']]
                     ]
                     ) ?>
@@ -67,13 +71,23 @@
                     [
                       'label' => 'Localize',
                       'class' => 'nav-link',
+                      'icon_name' => 'language',
+                      'http_params' => ['project_id' => $this->project->value['id']]
+                    ]
+                    ) ?>
+      </li>
+
+      <li class="nav-item">
+        <?= $this->linkTo(['controller' => 'user_project_setting'],
+                      [
+                      'label' => 'Setting',
+                      'class' => 'nav-link',
+                      'icon_name' => 'cog',
                       'http_params' => ['project_id' => $this->project->value['id']]
                     ]
                     ) ?>
       </li>
     </ul>
-    <? include('php_export_window.phtml') ?>
-    <? include('sql_export_window.phtml') ?>
     <? endif ?>
   </div>
 </nav>

@@ -52,8 +52,6 @@ class UserController extends AppController {
     */
     function action_list() {
         $this->user = DB::model('User')->all();
-
-                
     }
 
    /**
@@ -63,7 +61,7 @@ class UserController extends AppController {
     * @return void
     */
     function action_new() {
-        $this->user = DB::model('User')->init()->takeValues($this->pw_posts['user']);
+        $this->user = DB::model('User')->newPage();
     }
 
    /**
@@ -73,11 +71,7 @@ class UserController extends AppController {
     * @return void
     */
     function action_edit() {
-        $this->checkEdit();
-
-        $this->user = DB::model('User')
-                    ->fetch($this->pw_gets['id'])
-                    ->takeValues($this->pw_posts['user']);
+        $this->user = DB::model('User')->editPage();
     }
 
    /**

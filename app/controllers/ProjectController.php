@@ -476,19 +476,6 @@ class ProjectController extends AppController
         $this->project = DB::model('Project')->fetch($this->user_project_setting->value['project_id']);
     }
 
-    function action_add_user_project_setting()
-    {
-        if (!isPost()) exit;
-        $user_project_setting = DB::model('UserProjectSetting')->insert($this->pw_posts['user_project_setting']);
-        if ($user_project_setting->errors) {
-            $this->addErrorByModel($user_project_setting);
-        }
-        // var_dump($this->pw_posts);
-        // var_dump($user_project_setting->errors);
-        // exit;
-        $this->redirectTo(['action' => 'export_list', 'id' => $project['id']]);
-    }
-
     function action_delete_user_project_setting()
     {
         if (!isPost()) exit;
@@ -497,21 +484,6 @@ class ProjectController extends AppController
             DB::model('UserProjectSetting')->delete($user_project_setting->value['id']);
         }
         $this->redirectTo(['action' => 'export_list', 'id' => $user_project_setting->value['project_id']]);
-    }
-
-    function action_update_user_project_setting()
-    {
-        if (!isPost()) exit;
-        $posts = $this->session['user_project_setting'] = $_POST['user_project_setting'];
-        $user_project_setting = DB::model('UserProjectSetting')->update($posts, $this->pw_gets['id']);
-
-        if ($user_project_setting->errors) {
-            $this->flash['errors'] = $project->errors;
-            $this->redirectTo(['action' => 'edit_user_project_setting', 'id' => $user_project_setting->value['id']]);
-        } else {
-            unset($this->session['posts']);
-            $this->redirectTo(['action' => 'export_list', 'id' => $user_project_setting->value['project_id']]);
-        }
     }
 
     function action_download_phpwork()

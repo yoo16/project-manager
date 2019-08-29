@@ -65,6 +65,7 @@ define('LABEL_SETTING', '設定');
 define('LABEL_TRUE', '有効');
 define('LABEL_FALSE', '無効');
 define('LABEL_ERROR', 'エラー');
+define('LABEL_NOTE', '備考');
 
 define('LABEL_IMPORT', 'インポート');
 define('LABEL_EXPORT', 'エクスポート');

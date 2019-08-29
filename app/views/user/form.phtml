@@ -1,69 +1,48 @@
-
 <table class="table">
 
-    <tr>
-      <th><?= LABEL_USERS_LOGIN_NAME ?></th>
-      <td>
-          <?= $this->user->formInput('login_name', ['class' => 'form-control']) ?>
-      </td>
-    </tr>
+  <tr>
+    <th><?= LABEL_LOGIN_NAME ?></th>
+    <td>
+      <?= $this->user->formInput('login_name', ['class' => 'form-control']) ?>
+    </td>
+  </tr>
 
 
-    <tr>
-      <th><?= LABEL_USERS_PASSWORD ?></th>
-      <td>
-          
-      </td>
-    </tr>
+  <tr>
+    <th><?= LABEL_PASSWORD ?></th>
+    <td>
+
+    </td>
+  </tr>
 
 
-    <tr>
-      <th><?= LABEL_USERS_EMAIL ?></th>
-      <td>
-          <?= $this->user->formInput('email', ['class' => 'form-control']) ?>
-      </td>
-    </tr>
+  <tr>
+    <th><?= LABEL_MAIL ?></th>
+    <td>
+      <?= $this->user->formInput('email', ['class' => 'form-control']) ?>
+    </td>
+  </tr>
 
 
-    <tr>
-      <th><?= LABEL_USERS_FIRST_NAME ?></th>
-      <td>
-          <?= $this->user->formInput('first_name', ['class' => 'form-control']) ?>
-      </td>
-    </tr>
+  <tr>
+    <th><?= LABEL_FIRST_NAME ?></th>
+    <td>
+      <?= $this->user->formInput('first_name', ['class' => 'form-control']) ?>
+    </td>
+  </tr>
 
+  <tr>
+    <th><?= LABEL_LAST_NAME ?></th>
+    <td>
+      <?= $this->user->formInput('last_name', ['class' => 'form-control']) ?>
+    </td>
+  </tr>
 
-    <tr>
-      <th><?= LABEL_USERS_FIRST_NAME_KANA ?></th>
-      <td>
-          <?= $this->user->formInput('first_name_kana', ['class' => 'form-control']) ?>
-      </td>
-    </tr>
-
-
-    <tr>
-      <th><?= LABEL_USERS_LAST_NAME ?></th>
-      <td>
-          <?= $this->user->formInput('last_name', ['class' => 'form-control']) ?>
-      </td>
-    </tr>
-
-
-    <tr>
-      <th><?= LABEL_USERS_LAST_NAME_KANA ?></th>
-      <td>
-          <?= $this->user->formInput('last_name_kana', ['class' => 'form-control']) ?>
-      </td>
-    </tr>
-
-
-    <tr>
-      <th><?= LABEL_USERS_MEMO ?></th>
-      <td>
-          <?= $this->user->formTextarea('memo') ?>
-      </td>
-    </tr>
+  <tr>
+    <th><?= LABEL_NOTE ?></th>
+    <td>
+      <?= $this->user->formTextarea('memo') ?>
+    </td>
+  </tr>
 
 </table>
-
-                

@@ -1,5 +1,5 @@
 <? include('_header.phtml') ?>
-<form action="<?= $this->urlSelfFor('update', $this->pw_gets['id']) ?>" method="post">
+<form action="<?= $this->urlFor(['action' => 'update', 'id' => $this->pw_gets['id']]) ?>" method="post">
 
   <div class="card">
 
@@ -9,22 +9,12 @@
     </div>
 
     <div class="card-footer">
-      <h4></h4>
       <div class="text-left">
-
         <?= PwForm::submit(LABEL_SAVE) ?>        
         <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+        <?= $this->user->confirmDelete() ?>
       </div>
     </div>
 
   </div>
 </form>
-
-<div class="card">
-  <div class="card-footer">
-    <div class="text-left">
-
-      <?= $this->user->confirmDelete() ?>
-    </div>
-  </div>
-</div>

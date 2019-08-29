@@ -9,22 +9,13 @@
     </div>
 
     <div class="card-footer">
-      <h4></h4>
       <div class="text-left">
 
         <?= PwForm::submit(LABEL_SAVE) ?>        
         <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
+        <?= $this->user_project_setting->confirmDelete() ?>
       </div>
     </div>
 
   </div>
 </form>
-
-<div class="card">
-  <div class="card-footer">
-    <div class="text-left">
-
-      <?= $this->user_project_setting->confirmDelete() ?>
-    </div>
-  </div>
-</div>

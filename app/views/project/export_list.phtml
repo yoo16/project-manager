@@ -20,7 +20,12 @@
   <tbody>
     <? foreach ($this->project->user_project_setting->values as $user_project_setting): ?>
     <tr>
-      <td><a class="btn btn-outline-primary" href="<?= $this->linkTo('edit_user_project_setting', $user_project_setting['id']) ?>"><?= LABEL_EDIT ?></a></td>
+      <td>
+        <?= $this->linkTo(
+        [ 'controller' => 'user_project_setting', 'action' => 'edit', 'id' => $user_project_setting['id'] ],
+        [ 'class' => 'btn btn-outline-primary', 'label' => LABEL_EDIT] 
+        ) ?>
+      </td>
       <td><?= $user_project_setting['project_path'] ?></td>
       <td>
         <? if (file_exists($user_project_setting['project_path'])): ?>

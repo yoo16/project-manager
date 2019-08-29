@@ -62,6 +62,7 @@ define('LABEL_SELECT', 'Select');
 define('LABEL_PRINT', 'Print');
 define('LABEL_RELOAD', 'Reload');
 define('LABEL_SETTING', 'Setting');
+define('LABEL_NOTE', 'Note');
 
 define('LABEL_IMPORT', 'Import');
 define('LABEL_EXPORT', 'Export');

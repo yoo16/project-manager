@@ -9,6 +9,8 @@ require_once 'AppController.php';
 
 class SettingController extends AppController {
 
+    public $name = "setting";
+
     function before_action($action) {
         $this->pgsql_entity = new PwPgsql();
         $this->pg_connection = $this->pgsql_entity->checkConnection();
@@ -18,9 +20,9 @@ class SettingController extends AppController {
     }
 
     function index() {
-        // $this->hostname = hostname();
-        // $this->debug_traces = debug_backtrace(true);
-        // $this->create_sql_path = BASE_DIR."db/sql/create.sql";
+        $this->hostname = PwSetting::hostname();
+        $this->debug_traces = debug_backtrace(true);
+        $this->create_sql_path = DB_DIR."sql/project_manager.sql";
     }
 
     function action_pgsql() {

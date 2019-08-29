@@ -10,16 +10,12 @@
       <td></td>
       <td></td>
       <td>
-        <?= PwForm::linkModal('#php-export-window', 'PHP Export',
+        <?= $this->linkJs(
         [
-        'class' => 'btn btn-sm btn-outline-primary',
-        'icon_name' => 'php',
-        ]
-        ) ?>
-        <?= $this->linkTo(['controller' => 'user_project_setting', 'action' => 'list'],
-        [
-        'label' => 'Project Setting',
-        'class' => 'btn btn-sm btn-outline-primary',
+        'selector' => 'php-export-window',
+        'label' => 'PHP Export',
+        'class' => 'pw-modal-show btn btn-sm btn-outline-primary',
+        'icon_name' => 'file-export',
         ]
         ) ?>
       </td>

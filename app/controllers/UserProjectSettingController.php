@@ -5,9 +5,9 @@
  * @create  2018-06-06 19:00:32 
  */
 
-require_once 'AppController.php';
+require_once 'ProjectController.php';
 
-class UserProjectSettingController extends AppController {
+class UserProjectSettingController extends ProjectController {
 
     public $name = 'user_project_setting';
 
@@ -19,7 +19,7 @@ class UserProjectSettingController extends AppController {
     */
     function before_action($action) {
         parent::before_action($action);
-        
+        $this->project = $this->model('Project');
     }
 
    /**
@@ -51,10 +51,8 @@ class UserProjectSettingController extends AppController {
     * @return void
     */
     function action_list() {
-        $this->user_project_setting = DB::model('UserProjectSetting')->all();
-
-                
-    }
+        $this->user_project_setting = $this->project->relation('UserProjectSetting')->all();
+   }
 
    /**
     * new
@@ -63,7 +61,7 @@ class UserProjectSettingController extends AppController {
     * @return void
     */
     function action_new() {
-        $this->user_project_setting = DB::model('UserProjectSetting')->init()->takeValues($this->pw_posts['user_project_setting']);
+        $this->user_project_setting = DB::model('UserProjectSetting')->newPage();
     }
 
    /**
@@ -73,7 +71,7 @@ class UserProjectSettingController extends AppController {
     * @return void
     */
     function action_edit() {
-        $this->user_project_setting = DB::model('UserProjectSetting')->edit_page();
+        $this->user_project_setting = DB::model('UserProjectSetting')->editPage();
     }
 
    /**
@@ -84,15 +82,11 @@ class UserProjectSettingController extends AppController {
     */
     function action_add() {
         if (!isPost()) exit;
-        $posts = $this->pw_posts["user_project_setting"];
-        $user_project_setting = DB::model('UserProjectSetting')->insert($posts);
-
+        $user_project_setting = DB::model('UserProjectSetting')->insert($this->pw_posts['user_project_setting']);
         if ($user_project_setting->errors) {
             $this->addErrorByModel($user_project_setting);
-            $this->redirectTo(['action' => 'new']);;
-        } else {
-            $this->redirectTo();
         }
+        $this->redirectTo(['controller' => 'project', 'action' => 'export_list', 'id' => $this->project['id']]);
     }
 
    /**
