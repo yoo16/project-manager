@@ -1,0 +1,37 @@
+
+<table class="table">
+
+    <tr>
+      <th><?= LABEL_ROUTES_ADDRESS ?></th>
+      <td>
+          <?= $this->route->formInput('address', ['class' => 'form-control']) ?>
+      </td>
+    </tr>
+
+
+    <tr>
+      <th><?= LABEL_ROUTES_CONTROLLER ?></th>
+      <td>
+          <?= $this->route->formInput('controller', ['class' => 'form-control']) ?>
+      </td>
+    </tr>
+
+
+    <tr>
+      <th><?= LABEL_ROUTES_ACTION ?></th>
+      <td>
+          <?= $this->route->formInput('action', ['class' => 'form-control']) ?>
+      </td>
+    </tr>
+
+
+    <tr>
+      <th><?= LABEL_ROUTES_METHOD ?></th>
+      <td>
+          <?= $this->route->formRadio('method', ['csv' => 'laravel_route_method', 'unselect' => true]) ?>
+      </td>
+    </tr>
+
+</table>
+
+        

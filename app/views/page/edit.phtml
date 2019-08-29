@@ -9,7 +9,10 @@
         <tr>
           <th>Overwrite</th>
           <td>
-            <?= PwForm::checkbox($this->forms['is_overwrite'], (bool) $this->page->value['is_overwrite']) ?>
+            <?= PwForm::checkbox(
+              $this->forms['is_overwrite'],
+              (bool) $this->page->value['is_overwrite'])
+            ?>
           </td>
         </tr>
 

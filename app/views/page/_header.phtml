@@ -3,13 +3,7 @@
   <h3><?= $this->page->value['label'] ?> : <?= $this->page->value['name'] ?></h3>
 
   <div>
-    <?= $this->linkTo(['controller' => 'page_model'],
-        [
-        'label' => 'Model Requests',
-        'class' => 'btn btn-outline-primary',
-        'http_params' => ['page_id' => $this->page->value['id']]
-        ]
-        ) ?>
+    
     <?= $this->linkTo(['controller' => 'view'],
         [
         'label' => 'View',
@@ -17,5 +11,23 @@
         'http_params' => ['page_id' => $this->page->value['id']]
         ]
         ) ?>
+    <?= $this->linkTo(['controller' => 'route'],
+        [
+        'label' => 'Route',
+        'class' => 'btn btn-outline-primary',
+        'http_params' => ['page_id' => $this->page->value['id']]
+        ]
+        ) ?>
+    <?= $this->linkTo(['controller' => 'page_model'],
+        [
+        'label' => 'Model Requests',
+        'class' => 'btn btn-outline-primary',
+        'http_params' => ['page_id' => $this->page->value['id']]
+        ]
+        ) ?>
+
+    <?= PwForm::linkModal('#php-page-export-window', 'Export view', ['class' => 'btn btn-success']) ?>
   </div>
+  
+  <? include('views/components/php_page_export_window.phtml') ?>
 <? endif ?>

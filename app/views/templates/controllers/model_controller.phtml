@@ -67,7 +67,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     */
     function action_new() {
 <? if ($model = $values['model']): ?>
-        $this-><?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->new_page();
+        $this-><?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->newPage();
 <? endif ?>
     }
 
@@ -79,7 +79,7 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     */
     function action_edit() {
 <? if ($model = $values['model']): ?>
-        $this-><?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->edit_page();
+        $this-><?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->editPage();
 <? endif ?>
     }
 

@@ -1,30 +1,26 @@
 <? include('_header.phtml') ?>
 
-<div class="card">
-  <h3 class="card-header">View</h3>
-  <div class="card-block">
     <form id="form-edit" action="<?= $this->urlFor(['action' => 'update', 'id' => $this->view->value['id']]) ?>" method="post" autocomplete="off">
-      <div class="form-group row">
+      <div class="form-group">
         <?= PwForm::formLabel('Name') ?>
         <?= $this->view->formInput('name', ['class' => 'form-control']) ?>
       </div>
 
-      <div class="form-group row">
+      <div class="form-group">
         <?= PwForm::formLabel('Label') ?>
         <?= $this->view->formInput('label', ['class' => 'form-control']) ?>
       </div>
 
-      <div class="form-group row">
-        <?= PwForm::formLabel('Overwrite') ?>
-        <?= $this->view->formCheckbox('is_overwrite') ?>
+      <div class="form-group form-check">
+        <?= $this->view->formCheckbox('is_overwrite', ['label' => 'Overwrite']) ?>
       </div>
 
-      <div class="form-group row">
+      <div class="form-group">
         <?= PwForm::formLabel('Label Width') ?>
         <?= $this->view->formSelect('label_width', ['csv' => 'bootstrap_width', 'unselect' => true]) ?>
       </div>
 
-      <div class="form-group row">
+      <div class="form-group">
         <?= PwForm::formLabel('Note') ?>
         <?= $this->view->formTextarea('note') ?>
       </div>
@@ -33,5 +29,3 @@
       <?= PwForm::linkButton(['action' => 'list'], ['label' => LABEL_CANCEL]) ?>
       <?= $this->view->confirmDelete() ?>
     </form>
-  </div>
-</div>

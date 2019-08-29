@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ViewController 
  *
@@ -7,17 +8,19 @@
 
 require_once 'ProjectController.php';
 
-class ViewController extends ProjectController {
+class ViewController extends ProjectController
+{
 
     var $name = 'view';
 
-   /**
-    * 事前処理
-    *
-    * @param string $action
-    * @return void
-    */
-    function before_action($action) {
+    /**
+     * before_action
+     *
+     * @param string $action
+     * @return void
+     */
+    function before_action($action)
+    {
         parent::before_action($action);
 
         $this->page = DB::model('Page')->requestSession();
@@ -28,78 +31,79 @@ class ViewController extends ProjectController {
         }
     }
 
-   /**
-    * トップページ
-    * セッションクリア＆一覧画面リダイレクト
-    *
-    * @param
-    * @return void
-    */
-    function index() {
+    /**
+     * index
+     *
+     * @param
+     * @return void
+     */
+    function index()
+    {
         $this->clearPwPosts();
         $this->redirectTo(['action' => 'list']);;
     }
 
-   /**
-    * キャンセル
-    * セッションクリア＆トップページ
-    *
-    * @param
-    * @return void
-    */
-    function action_cancel() {
+    /**
+     * cancel
+     *
+     * @param
+     * @return void
+     */
+    function action_cancel()
+    {
         $this->clearPwPosts();
         $this->redirectTo(['action' => 'list']);;
     }
 
-   /**
-    * 一覧画面
-    *
-    * @param
-    * @return void
-    */
-    function action_list() {
+    /**
+     * list
+     *
+     * @param
+     * @return void
+     */
+    function action_list()
+    {
         $this->page->bindMany('View');
     }
 
-   /**
-    * 新規作成画面
-    *
-    * @param
-    * @return void
-    */
-    function action_new() {
-        $this->view = DB::model('View')
-                    ->takeValues($this->session['posts']);
+    /**
+     * new
+     *
+     * @param
+     * @return void
+     */
+    function action_new()
+    {
+        $this->view = DB::model('View')->newPage();
 
         $this->forms['is_overwrite']['name'] = 'view[is_overwrite]';
         $this->forms['is_overwrite']['value'] = true;
         $this->forms['is_overwrite']['label'] = LABEL_TRUE;
     }
 
-   /**
-    * 編集画面
-    *
-    * @param
-    * @return void
-    */
-    function action_edit() {
-        $this->view = DB::model('View')
-                    ->fetch($this->pw_gets['id'])
-                    ->takeValues($this->session['posts']);
+    /**
+     * edit
+     *
+     * @param
+     * @return void
+     */
+    function action_edit()
+    {
+        $this->view = DB::model('View')->editPage();
 
-        $this->forms['is_overwrite']['name'] = 'view[is_overwrite]';
-        $this->forms['is_overwrite']['value'] = true;
-        $this->forms['is_overwrite']['label'] = LABEL_TRUE;
+        // $this->forms['is_overwrite']['name'] = 'view[is_overwrite]';
+        // $this->forms['is_overwrite']['value'] = true;
+        // $this->forms['is_overwrite']['label'] = LABEL_TRUE;
     }
 
-   /**
-    * 新規作成追加処理
-    *
-    * @param
-    * @return void
-    */
-    function action_add() {
+    /**
+     * 新規作成追加処理
+     *
+     * @param
+     * @return void
+     */
+    function action_add()
+    {
         if (!isPost()) exit;
         $posts = $this->pw_posts['view'];
 
@@ -107,22 +111,23 @@ class ViewController extends ProjectController {
 
 
         if ($view->errors) {
-            exit;      
+            exit;
         }
         $this->redirectTo(['action' => 'list']);;
     }
 
-   /**
-    * update
-    *
-    * @param
-    * @return void
-    */
-    function action_update() {
+    /**
+     * update
+     *
+     * @param
+     * @return void
+     */
+    function action_update()
+    {
         $project = DB::model('View')
-                        ->fetch($this->pw_gets['id'])
-                        ->post()
-                        ->update();
+            ->fetch($this->pw_gets['id'])
+            ->post()
+            ->update();
 
         if (!$project->errors) {
             $this->clearPwPosts();
@@ -130,35 +135,51 @@ class ViewController extends ProjectController {
         $this->redirectTo(['action' => 'list']);;
     }
 
-   /**
-    * delete
-    *
-    * @param
-    * @return void
-    */
-    function action_delete() {
+    /**
+     * delete
+     *
+     * @param
+     * @return void
+     */
+    function action_delete()
+    {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             DB::model('View')->delete($this->pw_gets['id']);
         }
         $this->redirectTo();
     }
 
-    function action_change_overwrite() {
+    function action_change_overwrite()
+    {
         $view = DB::model('View')->fetch($this->pw_gets['id']);
         if ($view->value['id']) {
             $posts['is_overwrite'] = !$view->value['is_overwrite'];
             $view->update($posts);
         }
-        $this->redirectTo(['action' => 'list']);;
+        $this->redirectTo(['action' => 'list']);
     }
 
     /**
-    * update sort order
-    *
-    * @param
-    * @return void
-    */
-    function action_update_sort() {
+     * update sort order
+     *
+     * @param
+     * @return void
+     */
+    function action_update_sort()
+    {
         $this->updateSort('View');
+    }
+
+    /**
+     * create default view
+     *
+     * @return void
+     */
+    function action_create_default_view()
+    {
+        if ($this->page->value['id']) {
+            DB::model('View')->generateDefaultActions($this->page->value);
+        }
+        $this->redirectTo(['action' => 'list']);
     }
 }

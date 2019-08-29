@@ -7,35 +7,16 @@
 </head>
 <body>
 
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
-      <ul class="nav nav-pills justify-content-left">
-        <li class="nav-item">
-          <?= $this->linkTo(['controller' => 'project'], [ 'label' => 'Project', 'class' => 'nav-link' ]) ?>
-        </li>
-        <li class="nav-item">
-          <?= $this->linkTo(['controller' => 'database'], [ 'label' => 'Database', 'class' => 'nav-link']) ?>
-        </li>
-        <li class="nav-item">
-          <?= $this->linkTo(['controller' => 'setting'], [ 'label' => 'Setting', 'class' => 'nav-link' ]) ?>
-        </li>
-        <li class="nav-item">
-          <?= $this->linkTo(['controller' => 'user'],
-          [
-          'label' => 'User',
-          'class' => 'nav-link'
-          ]
-          ) ?>
-        </li>
-      </ul>
-    </div>
-  </nav>
+<div class="container-fluid">
+  <div class="row">
+  <? include('views/components/side_nav.phtml') ?>
 
-  <div id="main" class="container">
-
+  <div role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
     <?= $this->content_for_layout?>
+  </div>
 
   </div>
+</div>
 
 <? include('views/components/lib/pw_component.phtml') ?>
 </body>

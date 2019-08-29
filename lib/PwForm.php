@@ -32,6 +32,7 @@ class PwForm {
                               'is_key_value_array',
                               'label_models',
                               'label_values',
+                              'is_no_label',
                             ];
 
     //TODO refactoring
@@ -712,13 +713,16 @@ class PwForm {
         if (is_array($params['label'])) {
             $label = implode(' ', $params['label']);
         } else {
-            $label = (isset($params['label'])) ? $params['label'] : LABEL_TRUE;
+            if (!$params['is_no_label']) {
+                $label = (isset($params['label'])) ? $params['label'] : LABEL_TRUE;
+            }
         }
         if (is_null($params['value'])) $params['value'] = 1;
 
         $tag = '';
         if (!$params['unused_hidden']) $tag.= self::hidden($params['name'], 0);
         $id = ($params['id']) ? "{$params['id']}_{$params['value']}" : $params['value'];
+        $params['class'].= ' form-check-input';
         $checkbox_attributes = [
             'id' => $id,
             'class' => $params['class'],
@@ -731,7 +735,7 @@ class PwForm {
         $tag = '';
         $tag.= self::input($checkbox_attributes);
 
-        $label_attributes['class'] = 'checkbox';
+        $label_attributes['class'] = 'form-check-label';
         $label_attributes['for'] = $id;
         $tag.= self::labelTag($label, $label_attributes);
         return $tag;
@@ -882,7 +886,7 @@ class PwForm {
         if ($attributes['class']) {
             $attributes['class'].= " col-form-label";
         } else {
-            $attributes['class'] = "col-2 col-form-label";
+            $attributes['class'] = "col-form-label";
         }
         $tag = self::labelTag($tag, $attributes);
         return $tag;
@@ -914,6 +918,7 @@ class PwForm {
      */
     static function textarea($name, $value = null, $params = null) {
         if (isset($name)) $params['name'] = $name;
+        $params['class'].= ' form-control';
         if (!$params['rows']) $params['rows'] = '10';
 
         $tag = self::tag('textarea', $value, $params);

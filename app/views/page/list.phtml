@@ -52,7 +52,16 @@
           'page_name' => $page['name'],
           'class' => 'btn btn-sm btn-outline-primary'
           ]
-        ) ?></td>
+          ) ?>
+       </td>
+        <td><?= $this->linkTo(['controller' => 'route'],
+          [
+          'label' => 'Route',
+          'class' => 'btn btn-sm btn-outline-primary',
+          'http_params' => [ 'page_id' => $page['id'] ]
+          ]
+          ) ?>
+         </td>
         <td><a class="btn btn-outline-primary btn-sm" href="<?= $this->urlFor(['controller' => 'page_model'], ['page_id' => $page['id']]) ?>">Model Request</a></td>
         <td>
           <? if ($page['is_overwrite']): ?>

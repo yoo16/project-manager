@@ -181,9 +181,6 @@ class PageController extends ProjectController
             if (!$page->value['id']) {
                 $page = DB::model('Page')->insert($posts);
             }
-            if ($page->value['id']) {
-                DB::model('View')->generateDefaultActions($page->value);
-            }
         }
 
         $this->redirectTo(['action' => 'list']);;

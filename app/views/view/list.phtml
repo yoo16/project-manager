@@ -4,13 +4,6 @@
 <div class="pt-3">
   <?= PwForm::linkModal('#add-window', LABEL_ADD) ?>
   <?= $this->linkTo(['controller' => 'page'], ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-  <?= $this->linkTo(['controller' => 'page_model'],
-                    [
-                    'label' => 'Model Requests',
-                    'class' => 'btn btn-outline-primary',
-                    'http_params' => ['page_id' => $this->page->value['id']]
-                    ]
-  ) ?>
 </div>
 
 <? if ($this->page->view->values): ?>

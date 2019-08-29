@@ -1,0 +1,32 @@
+<? include('_header.phtml') ?>
+
+<div class="pt-3">
+  <?= $this->linkTo(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary'] ) ?>
+  <? include('views/components/lib/sortable.phtml') ?>
+
+</div>
+
+<table id="sortable-table" class="table">
+  <thead class="thead-default">
+    <tr>
+      <th>&nbsp;</th>
+      <th><?= LABEL_ROUTES_ADDRESS ?></th>
+            <th><?= LABEL_ROUTES_CONTROLLER ?></th>
+            <th><?= LABEL_ROUTES_ACTION ?></th>
+            <th><?= LABEL_ROUTES_METHOD ?></th>
+          </tr>
+  </thead>
+
+  <? if ($this->route->values): ?>
+  <? foreach ($this->route->values as $values): ?>
+  <tr row-id="<?= $values['id'] ?>">
+    <td><?= $this->route->linkEdit([], $values) ?></td>
+    <td><?= $values['address'] ?></td>
+    <td><?= $values['controller'] ?></td>
+    <td><?= $values['action'] ?></td>
+    <td><?= $values['method'] ?></td>
+  </tr>
+  <? endforeach ?>
+  <? endif ?>
+
+</table>
