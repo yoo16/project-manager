@@ -1,8 +1,6 @@
 <table class="table table-form">
   <tr>
-    <th>
-      <?= LABEL_MODELS ?>
-    </th>
+    <th>Model</th>
     <td>
       <?= $this->page_model->formSelect('model_id', [
                         'unselect' => true,
@@ -17,7 +15,7 @@
 
   <tr>
     <th class="form-control-label col-2" for="is_fetch_list_values">
-      <?= LABEL_PAGE_MODELS_IS_FETCH_LIST_VALUES ?>
+      fetch value for action list() 
     </th>
     <td>
       <?= $this->page_model->formRadio('is_fetch_list_values', ['csv' => 'active', 'unselect' => true]) ?>
@@ -25,7 +23,7 @@
 
     <tr>
       <th>
-        <?= LABEL_PAGE_MODELS_IS_REQUEST_SESSION ?>
+        request model for before_action()
       </th>
       <td>
         <?= $this->page_model->formRadio('is_request_session', ['csv' => 'active', 'unselect' => true]) ?>

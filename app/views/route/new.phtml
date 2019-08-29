@@ -5,4 +5,6 @@
     <?= PwForm::submit(LABEL_SAVE) ?>
     <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
   </div>
+
+  <input type="hidden" name="route[page_id]" value="<?= $this->page->value['id'] ?>">
 </form>

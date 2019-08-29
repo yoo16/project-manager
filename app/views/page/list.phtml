@@ -22,7 +22,8 @@
       <th></th>
       <th nowrap="nowrap">
         Overwrite
-        <a href="<?= $this->urlFor(['action' => 'all_off_overwrite']) ?>" class="btn btn-outline-primary btn-sm confirm-dialog" message="Do you turn off overwriting?">off</a>
+        <a href="<?= $this->urlFor(['action' => 'all_off_overwrite']) ?>"
+          class="btn btn-outline-primary btn-sm confirm-dialog" message="Do you turn off overwriting?">off</a>
       </th>
       <th>Model / PwEntity Name</th>
       <th></th>
@@ -30,21 +31,21 @@
   </thead>
 
   <? if ($this->pages): ?>
-    <? foreach ($this->pages as $page): ?>
-      <tr>
-        <td><?= PwForm::linkButton(['action' => 'edit', 'id' => $page['id']], ['label' => LABEL_EDIT]) ?></td>
-        <td>
-          <div>
-            <a href="<?= $this->urlFor(['controller' => 'view'], ['page_id' => $page['id']]) ?>"><?= $page['name'] ?></a>
-            <div>
-              <?= Page::className($page) ?>
-            </div>
-          </div>
-          <div>
-            <?= $page['label'] ?>
-          </div>
-        </td>
-        <td><?= $this->linkJs(
+  <? foreach ($this->pages as $page): ?>
+  <tr>
+    <td><?= PwForm::linkButton(['action' => 'edit', 'id' => $page['id']], ['label' => LABEL_EDIT]) ?></td>
+    <td>
+      <div>
+        <a href="<?= $this->urlFor(['controller' => 'view'], ['page_id' => $page['id']]) ?>"><?= $page['name'] ?></a>
+        <div>
+          <?= Page::className($page) ?>
+        </div>
+      </div>
+      <div>
+        <?= $page['label'] ?>
+      </div>
+    </td>
+    <td><?= $this->linkJs(
           [
           'pw-on-click' => 'showArtisan',
           'pw-controller' => 'page',
@@ -54,31 +55,42 @@
           'class' => 'btn btn-sm btn-outline-primary'
           ]
           ) ?>
-       </td>
-        <td><?= $this->linkTo(['controller' => 'route'],
+    </td>
+    <td><?= $this->linkTo(['controller' => 'view'],
+          [
+          'label' => 'View',
+          'class' => 'btn btn-sm btn-outline-primary',
+          'http_params' => [ 'page_id' => $page['id'] ]
+          ]
+          ) ?>
+    </td>
+    <td><?= $this->linkTo(['controller' => 'route'],
           [
           'label' => 'Route',
           'class' => 'btn btn-sm btn-outline-primary',
           'http_params' => [ 'page_id' => $page['id'] ]
           ]
           ) ?>
-         </td>
-        <td><a class="btn btn-outline-primary btn-sm" href="<?= $this->urlFor(['controller' => 'page_model'], ['page_id' => $page['id']]) ?>">Model Request</a></td>
-        <td>
-          <? if ($page['is_overwrite']): ?>
-            <?= $this->linkTo(['action' => 'change_overwrite', 'id' => $page['id']], ['label' => 'overwrite', 'class' => 'badge badge-danger']) ?>
-          <? else: ?>
-            <?= $this->linkTo(['action' => 'change_overwrite', 'id' => $page['id']], ['label' => 'off', 'class' => 'badge badge-default']) ?>
-          <? endif ?>
-        </td>
-        <td>
-          <div><?= $page['entity_name'] ?></div>
-          <div><? if ($page['model_id']): ?><?= $page['model']['name'] ?><? endif ?></div>
-        </td>
+    </td>
+    <td>
+      <? if ($page['is_overwrite']): ?>
+      <?= $this->linkTo(['action' => 'change_overwrite', 'id' => $page['id']], ['label' => 'overwrite', 'class' => 'badge badge-danger']) ?>
+      <? else: ?>
+      <?= $this->linkTo(['action' => 'change_overwrite', 'id' => $page['id']], ['label' => 'off', 'class' => 'badge badge-default']) ?>
+      <? endif ?>
+    </td>
+    <td>
+      <div><?= $page['entity_name'] ?></div>
+      <div>
+        <? if ($page['model_id']): ?><?= $page['model']['name'] ?>
+        <? endif ?>
+      </div>
+    </td>
 
-        <td><a class="btn btn-outline-primary confirm-dialog" message="Do you duplicate page?" href="<?= $this->urlFor(['action' => 'duplicate', 'id' => $page['id']]) ?>"><?= LABEL_DUPLICATE ?></a></td>
-      </tr>
-    <? endforeach ?> 
+    <td><a class="btn btn-outline-primary confirm-dialog" message="Do you duplicate page?"
+        href="<?= $this->urlFor(['action' => 'duplicate', 'id' => $page['id']]) ?>"><?= LABEL_DUPLICATE ?></a></td>
+  </tr>
+  <? endforeach ?>
   <? endif ?>
 
 </table>

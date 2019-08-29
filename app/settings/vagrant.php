@@ -1,6 +1,5 @@
 <?php
 define('PROJECT_NAME', 'project-manager');
-define('PROJECT_ROOT', 'project-manager');
 define('LOG_DIR', BASE_DIR.'log/');
 
 ini_set('error_log', LOG_DIR.date('Ymd').'.log');
@@ -14,8 +13,6 @@ define('DB_DIR', BASE_DIR.'db/');
 
 define('DEBUG', true);
 define('SQL_LOG', false);
-
-define('MAIL_SETTING_FILE', DB_DIR.'mail/default.csv');
 
 //shell
 define('COMAND_PHP_PATH', '/usr/bin/php');

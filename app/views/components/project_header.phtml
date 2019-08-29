@@ -1,16 +1,14 @@
-<div class="row">
-  <? if ($this->project->value['id']): ?>
-  <table class="table">
-    <tr>
-      <th>Project</th>
-      <td>
-        <?= $this->project->value['name'] ?>
-      </td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>
-        <?= $this->linkJs(
+<? if ($this->project->value['id']): ?>
+<h2><?= $this->project->value['name'] ?></h2>
+<?= $this->linkTo(['controller' => 'project', 'action' => 'edit', 'id' => $this->project->value['id']],
+        [
+        'label' => 'Edit',
+        'class' => 'btn btn-sm btn-outline-primary',
+        'icon_name' => 'edit',
+        'http_params' => ['project_id' => $this->project->value['id']]
+      ]
+      ) ?>
+<?= $this->linkJs(
         [
         'selector' => 'php-export-window',
         'label' => 'PHP Export',
@@ -18,10 +16,17 @@
         'icon_name' => 'file-export',
         ]
         ) ?>
-      </td>
-    </tr>
-
-    <? if ($this->database->value['id']): ?>
+<?= $this->linkTo(['controller' => 'user_project_setting'],
+        [
+        'label' => 'User Setting',
+        'class' => 'btn btn-sm btn-outline-primary',
+        'icon_name' => 'cog',
+        'http_params' => ['project_id' => $this->project->value['id']]
+      ]
+      ) ?>
+<div class="row">
+  <? if ($this->database->value['id']): ?>
+  <table class="table">
     <tr>
       <th>Database</th>
       <td>
@@ -70,7 +75,7 @@
             ?>
       </td>
     </tr>
-    <? endif ?>
   </table>
   <? endif ?>
 </div>
+<? endif ?>

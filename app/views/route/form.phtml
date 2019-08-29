@@ -2,20 +2,25 @@
 <table class="table">
 
     <tr>
-      <th><?= LABEL_ROUTES_ADDRESS ?></th>
+      <th><?= LABEL_ROUTES_MIDDLEWARE ?></th>
       <td>
-          <?= $this->route->formInput('address', ['class' => 'form-control']) ?>
+        <?= $this->route->formRadio('middleware', ['csv' => 'laravel_route_middleware', 'unselect' => true]) ?>
       </td>
     </tr>
 
+    <tr>
+      <th><?= LABEL_ROUTES_URI ?></th>
+      <td>
+        <?= $this->route->formInput('uri', ['class' => 'form-control']) ?>
+      </td>
+    </tr>
 
     <tr>
       <th><?= LABEL_ROUTES_CONTROLLER ?></th>
       <td>
-          <?= $this->route->formInput('controller', ['class' => 'form-control']) ?>
+        <?= $this->route->formInput('controller', ['class' => 'form-control']) ?>
       </td>
     </tr>
-
 
     <tr>
       <th><?= LABEL_ROUTES_ACTION ?></th>
@@ -24,11 +29,10 @@
       </td>
     </tr>
 
-
     <tr>
       <th><?= LABEL_ROUTES_METHOD ?></th>
       <td>
-          <?= $this->route->formRadio('method', ['csv' => 'laravel_route_method', 'unselect' => true]) ?>
+        <?= $this->route->formRadio('method', ['csv' => 'laravel_route_method', 'unselect' => true]) ?>
       </td>
     </tr>
 

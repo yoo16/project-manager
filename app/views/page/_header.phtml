@@ -1,33 +1,16 @@
 <? include('views/components/project_header.phtml') ?>
+
+<h2>Page</h2>
 <? if ($this->page->value): ?>
-  <h3><?= $this->page->value['label'] ?> : <?= $this->page->value['name'] ?></h3>
-
-  <div>
-    
-    <?= $this->linkTo(['controller' => 'view'],
-        [
-        'label' => 'View',
-        'class' => 'btn btn-outline-primary',
-        'http_params' => ['page_id' => $this->page->value['id']]
-        ]
-        ) ?>
-    <?= $this->linkTo(['controller' => 'route'],
-        [
-        'label' => 'Route',
-        'class' => 'btn btn-outline-primary',
-        'http_params' => ['page_id' => $this->page->value['id']]
-        ]
-        ) ?>
-    <?= $this->linkTo(['controller' => 'page_model'],
-        [
-        'label' => 'Model Requests',
-        'class' => 'btn btn-outline-primary',
-        'http_params' => ['page_id' => $this->page->value['id']]
-        ]
-        ) ?>
-
-    <?= PwForm::linkModal('#php-page-export-window', 'Export view', ['class' => 'btn btn-success']) ?>
-  </div>
-  
+  <h3>
+    <?= $this->page->value['label'] ?> : <?= $this->page->value['name'] ?>
+    <?= PwForm::linkModal(
+      '#php-page-export-window', 'Export...',
+      [
+      'class' => 'btn btn-sm btn-outline-primary',
+      ]
+      )
+      ?>
+  </h3>
   <? include('views/components/php_page_export_window.phtml') ?>
 <? endif ?>

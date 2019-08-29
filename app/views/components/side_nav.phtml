@@ -17,77 +17,8 @@
       </li>
     </ul>
 
-    <? if ($this->project->value['id']): ?>
-    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-      <span></span>
-      <a class="d-flex align-items-center text-muted" href="#"><span data-feather="plus-circle"></span></a>
-    </h6>
-    <ul class="nav flex-column mb-2">
-      <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'model', 'action' => 'list'],
-                      [
-                      'label' => 'Model',
-                      'class' => 'nav-link',
-                      'icon_name' => 'table',
-                      'http_params' => ['project_id' => $this->project->value['id']]
-                    ]
-                    ) ?>
-      </li>
-      <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'page', 'action' => 'list'],
-                      [
-                      'label' => 'Page',
-                      'class' => 'nav-link',
-                      'icon_name' => 'file',
-                      'http_params' => ['project_id' => $this->project->value['id']]
-                    ]
-                    ) ?>
-      </li>
-      <? if ($this->page->value): ?>
-      <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'view'],
-                      [
-                      'label' => 'View',
-                      'class' => 'nav-link',
-                      'icon_name' => 'eye',
-                      'http_params' => ['page_id' => $this->page->value['id']]
-                    ]
-                    ) ?>
-      </li>
-      <? endif ?>
+    <? include('views/components/project_nav.phtml') ?>
 
-      <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'record', 'action' => 'list'],
-                    [
-                      'label' => 'CSV',
-                      'class' => 'nav-link',
-                      'icon_name' => 'file-csv',
-                      'http_params' => ['project_id' => $this->project->value['id']]
-                    ]
-                    ) ?>
-      </li>
-      <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'localize_string', 'action' => 'list'],
-                    [
-                      'label' => 'Localize',
-                      'class' => 'nav-link',
-                      'icon_name' => 'language',
-                      'http_params' => ['project_id' => $this->project->value['id']]
-                    ]
-                    ) ?>
-      </li>
-
-      <li class="nav-item">
-        <?= $this->linkTo(['controller' => 'user_project_setting'],
-                      [
-                      'label' => 'Setting',
-                      'class' => 'nav-link',
-                      'icon_name' => 'cog',
-                      'http_params' => ['project_id' => $this->project->value['id']]
-                    ]
-                    ) ?>
-      </li>
-    </ul>
-    <? endif ?>
+    <? include('views/components/page_nav.phtml') ?>
   </div>
 </nav>

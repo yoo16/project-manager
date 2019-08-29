@@ -5,9 +5,9 @@
  * @create  2019/08/29 17:00:52 
  */
 
-require_once 'ProjectController.php';
+require_once 'PageController.php';
 
-class RouteController extends ProjectController {
+class RouteController extends PageController {
 
     public $name = 'route';
 
@@ -19,7 +19,8 @@ class RouteController extends ProjectController {
     */
     function before_action($action) {
         parent::before_action($action);
-        
+        $this->page = $this->model('Page');
+        if (!$this->page->value) $this->redirectTo(['controller' => 'page']);
     }
 
    /**
@@ -40,9 +41,7 @@ class RouteController extends ProjectController {
     * @return void
     */
     function action_list() {
-        $this->route = DB::model('Route')->all();
-
-                
+        $this->route = $this->page->relation('Route')->all();
     }
 
    /**
@@ -53,6 +52,8 @@ class RouteController extends ProjectController {
     */
     function action_new() {
         $this->route = DB::model('Route')->newPage();
+
+        $this->route->value['controller'] = $this->page->value['name'].'Controller';
     }
 
    /**

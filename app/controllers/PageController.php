@@ -230,7 +230,7 @@ class PageController extends ProjectController
 
         $options[] = '--api';
         $name = $laravel->controllerNameByName($page->value['name']);
-        //$laravel->makeController($name, $options);
+        $laravel->makeController($name, $options);
 
         $options = [];
         $options['action'][] = 'index';

@@ -2,7 +2,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Attributes</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Database</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -11,9 +11,26 @@
         <dl>
           <dd>* If you want manage PostgreSQL on browser, please set the permission on pg_hba.conf, postgresql.conf.
           </dd>
-          <dd>* project-manager need database '
-            <?= DB_NAME ?>' by PostgreSQL 9.x. </dd>
+          <dd>
+            * project-manager need database '<?= DB_NAME ?>' by PostgreSQL 9.x.
+            <p>
+              $ createdb project_manager
+            </p>
+          </dd>
+          <dd>
+            * setting define in php file
+            <p>
+            <?= DB_SETTING_FILE ?>
+            </p>
+          </dd>
         </dl>
+        <pre>
+define('DB_NAME', 'project_manager');
+define('DB_HOST', 'localhost');
+define('DB_USER', 'postgres');
+define('DB_PORT', '5432');
+define('DB_PASS', '');
+        </pre>
       </div>
     </div>
   </div>
