@@ -1,0 +1,9 @@
+value,label
+"get","Get"
+"post","Post"
+"redirect","Redirect"
+"view","View"
+"put","Put"
+"patch","Patch"
+"delete","Delete"
+"options","Options"

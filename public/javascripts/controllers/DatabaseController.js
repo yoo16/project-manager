@@ -8,9 +8,11 @@ var DatabaseController = function() {
     var _this = this;
     this.name = 'database';
 
-    this.import_list = function(node) {
+    this.importList = function(node) {
+        pw_ui.showModal('import_database_window');
         var params = {};
-        params.host = PwNode.id(node).value();
+        var host = PwNode.id(node).value();
+        if (host) params.host = PwNode.id(node).value();
         pw_app.postHtml({controller: this.name, action: 'import_list'}, params, {callback: callback});
         function callback(data) {
             PwNode.id('import_list').html(data);

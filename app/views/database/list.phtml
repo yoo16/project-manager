@@ -4,12 +4,14 @@
 
 <div>
   <?= $this->linkTo(['action' => 'new'], ['label' => LABEL_ADD, 'class' => 'btn btn-primary']) ?>
-  <?= PwForm::linkModal('#import-table', LABEL_IMPORT, 
+  <?= $this->linkJs(
     [
-    'class' => 'btn btn-outline-primary btn-sm pw-click', 
+    'label' => LABEL_IMPORT,
+    'class' => 'btn btn-outline-primary pw-click', 
     'pw-controller' => 'database',
-    'pw-action' => 'import_list', 
-    ]) ?>
+    'pw-on-click' => 'importList', 
+    ]
+    ) ?>
   <?= PwForm::linkModal('#help-database', 'Help', ['class' => 'btn btn-outline-primary']) ?>
 </div>
 <? include('import_window.phtml') ?>
