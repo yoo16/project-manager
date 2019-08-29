@@ -1,12 +1,15 @@
 @charset "UTF-8";
 body {
-  margin-top: 60px;
   font-family: "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", Arial, sans-serif;
 }
 
 body,
 table {
   font-size: 0.8rem;
+}
+
+a:not([href]):not([tabindex]) {
+  color: #0088cc;
 }
 
 input[type="text"],
@@ -27,7 +30,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .form-control {
   display: inline;
-  width: auto;
   padding: .3rem .5rem;
   line-height: 1;
   font-size: 0.8rem;
@@ -78,21 +80,6 @@ select.form-control:not([size]):not([multiple]) {
   vertical-align: middle;
 }
 
-.table td {
-  border-bottom: 1px solid #eceeef;
-}
-
-.table th {
-  color: #ffffff;
-  background-image: none;
-  background-color: rgba(23, 46, 60, 0.95);
-  border: 1px solid #172e3c;
-}
-
-.table thead th {
-  border: 1px solid #172e3c;
-}
-
 .table-list {
   width: auto;
 }
@@ -116,12 +103,6 @@ a .fa {
   width: 12px;
 }
 
-.nav-pills .nav-item.show .nav-link,
-.nav-pills .nav-link.active {
-  background: #172e3c;
-  border-color: rgba(240, 50, 20, 0.95);
-}
-
 .btn {
   cursor: pointer;
   font-size: 0.7rem;
@@ -133,13 +114,7 @@ a .fa {
 }
 
 .btn-primary {
-  background: #172e3c;
-  border-color: #172e3c;
-}
-
-.btn-outline-primary {
-  color: #172e3c;
-  border-color: #172e3c;
+  color: #ffffff !important;
 }
 
 .btn-primary:hover,
@@ -196,50 +171,6 @@ a .fa {
 .update-sortable,
 .close-sortable {
   display: none;
-}
-
-.ui-datepicker {
-  width: 22em;
-  padding: .5em .5em 0;
-  background: rgba(255, 255, 255, 0.98);
-  display: none;
-}
-
-.ui-datepicker-trigger {
-  cursor: pointer;
-}
-
-.ui-datepicker select.ui-datepicker-month,
-.ui-datepicker select.ui-datepicker-year {
-  font-family: "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", Arial, sans-serif;
-  display: inline;
-  width: auto;
-  padding: .3rem .5rem;
-  line-height: 1;
-  font-size: 0.8rem;
-  color: #464a4c;
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: .25rem;
-}
-
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
-  border: none;
-  background: none;
-  font-weight: bold;
-  color: #1c94c4;
-}
-
-.ui-datepicker td {
-  cursor: pointer;
-  font-size: 0.8rem;
-  padding: 0.5rem;
-  vertical-align: middle;
-}
-
-.ui-datepicker td:hover {
-  background: #f0faf0;
 }
 
 /* login */
