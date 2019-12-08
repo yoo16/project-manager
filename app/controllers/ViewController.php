@@ -75,10 +75,6 @@ class ViewController extends ProjectController
     function action_new()
     {
         $this->view = DB::model('View')->newPage();
-
-        $this->forms['is_overwrite']['name'] = 'view[is_overwrite]';
-        $this->forms['is_overwrite']['value'] = true;
-        $this->forms['is_overwrite']['label'] = LABEL_TRUE;
     }
 
     /**
@@ -90,30 +86,17 @@ class ViewController extends ProjectController
     function action_edit()
     {
         $this->view = DB::model('View')->editPage();
-
-        // $this->forms['is_overwrite']['name'] = 'view[is_overwrite]';
-        // $this->forms['is_overwrite']['value'] = true;
-        // $this->forms['is_overwrite']['label'] = LABEL_TRUE;
     }
 
     /**
-     * 新規作成追加処理
+     * add
      *
      * @param
      * @return void
      */
     function action_add()
     {
-        if (!isPost()) exit;
-        $posts = $this->pw_posts['view'];
-
-        $view = DB::model('View')->insert($posts);
-
-
-        if ($view->errors) {
-            exit;
-        }
-        $this->redirectTo(['action' => 'list']);;
+        $this->redirectForAdd($this->insertByModel('View'));
     }
 
     /**
@@ -124,15 +107,7 @@ class ViewController extends ProjectController
      */
     function action_update()
     {
-        $project = DB::model('View')
-            ->fetch($this->pw_gets['id'])
-            ->post()
-            ->update();
-
-        if (!$project->errors) {
-            $this->clearPwPosts();
-        }
-        $this->redirectTo(['action' => 'list']);;
+        $this->redirectForUpdate($this->updateByModel('View'));
     }
 
     /**
@@ -143,12 +118,14 @@ class ViewController extends ProjectController
      */
     function action_delete()
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            DB::model('View')->delete($this->pw_gets['id']);
-        }
-        $this->redirectTo();
+        $this->redirectForDelete($this->deleteByModel('View'));
     }
 
+    /**
+     * change overwrite
+     *
+     * @return void
+     */
     function action_change_overwrite()
     {
         $view = DB::model('View')->fetch($this->pw_gets['id']);

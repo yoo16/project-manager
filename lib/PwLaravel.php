@@ -4,6 +4,16 @@ class PwLaravel
     public $path;
     public $dev_null = '> /dev/null 2>&1';
 
+    public $resource_actions = [
+        'index',
+        'create',
+        'store',
+        'show',
+        'edit',
+        'update',
+        'destroy',
+    ];
+
     function __construct($params = null)
     {
         if ($params['path']) $this->path = $params['path'];
@@ -58,6 +68,17 @@ class PwLaravel
     }
 
     /**
+     * remove Controller
+     *
+     * @param string $name
+     * @return void
+     */
+    public function removeController($name)
+    {
+        PwFile::removeFile(PwLaravel::controllerPath($name));
+    }
+
+    /**
      * create view
      *
      * @param string $name
@@ -82,7 +103,46 @@ class PwLaravel
     }
 
     /**
-     * blade file name
+     * create view
+     *
+     * @param Page $page
+     * @param array $options
+     * @return void
+     */
+    public function createRoute($page, $options = null)
+    {
+        $route = $page->relation('Route')->all();
+        //TODO web or api
+        $template = BASE_DIR . "app/views/templates/laravel/route/web.phtml";
+        if (file_exists($template)) {
+            ob_start();
+            include $template;
+            $contents = ob_get_contents();
+            ob_end_clean();
+        }
+
+        $file_path = "{$this->path}routes/web{$page->value['name']}.php";
+        $contents = "<?php".PHP_EOL.$contents;
+
+        file_put_contents($file_path, $contents);
+    }
+
+    /**
+     * controller file path
+     *
+     * @param  string $name
+     * @return string
+     */
+    public function controllerPath($name)
+    {
+        $dir = $this->controllerDir();
+        $file_name = Controller::fileName($name);
+        $path = "{$dir}{$file_name}";
+        return $path;
+    }
+
+    /**
+     * blade file path
      *
      * @param  string $controller
      * @param  string $action
@@ -122,6 +182,44 @@ class PwLaravel
     }
 
     /**
+     * route dir
+     *
+     * @param Page $page
+     * @return string
+     */
+    public function routeFile($page)
+    {
+        $middleware = ($page->value['middleware']) ? $page->value['middleware'] : 'web'; 
+        $file_name = "{$middleware}{$page->value['name']}.php";
+
+        $dir = $this->routeDir();
+        $path = "{$dir}{$file_name}";
+        return $path;
+    }
+
+    /**
+     * route dir
+     *
+     * @return string
+     */
+    public function routeDir()
+    {
+        $path = "{$this->path}routes/";
+        return $path;
+    }
+
+    /**
+     * controller dir
+     *
+     * @return string
+     */
+    public function controllerDir()
+    {
+        $path = "{$this->path}app/Http/Controllers/";
+        return $path;
+    }
+
+    /**
      * view dir
      *
      * @return string
@@ -132,15 +230,4 @@ class PwLaravel
         return $path;
     }
 
-    /**
-     * controller name by name
-     *
-     * @param string $name
-     * @return string
-     */
-    public function controllerNameByName($name)
-    {
-        $name.= 'Controller';
-        return $name;
-    }
 }

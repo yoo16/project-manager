@@ -35,6 +35,7 @@ define('LABEL_CANCEL', 'キャンセル');
 define('LABEL_BACK', '戻る');
 define('LABEL_CONFIRM', '確認');
 define('LABEL_SEND', '送信');
+define('LABEL_RUN', '実行');
 define('LABEL_SAVE', '保存');
 define('LABEL_UPDATE', '更新');
 define('LABEL_DELETE', '削除');

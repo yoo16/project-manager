@@ -1,17 +1,17 @@
 <? include('_header.phtml') ?>
 
 <div>
-  <?= PwForm::linkModal('#add-project-path-window', LABEL_ADD) ?>
+  <?= PwForm::linkModal('#add_project_path_window', LABEL_ADD) ?>
 </div>
 
-<? include('add_project_path_window.phtml'); ?>
+<? include('views/components/add_project_path_window.phtml'); ?>
 
 <table class="table">
   <thead class="thead-default">
     <tr>
       <td></td>
       <td>Local project path</td>
-      <td>Exists</td>
+      <td>project exists</td>
     </tr>
   </thead>
   <? if (is_array($this->user_project_setting->values)): ?>
@@ -29,12 +29,11 @@
         <? if (file_exists($user_project_setting['project_path'])): ?>
         <? if (file_exists($user_project_setting['project_path']."app/")): ?><label class="badge badge-success">exists</label><? else: ?>
         <label class="badge badge-danger">not found php-work</label>
-        <div>
-          <a href="<?= PHP_WORK_GIT_URL ?>" target="_blank"><?= PHP_WORK_GIT_URL ?></a>
-        </div>
+        <a class="btn btn-primary" href="<?= $this->urlFor(['action' => 'git_download'], ['user_project_setting_id' => $user_project_setting['id']]) ?>">Download php-work</a>
       <? endif ?>
     <? else: ?>
     <label class="badge badge-danger">not exists</label>
+    <a class="btn btn-primary" href="<?= $this->urlFor(['action' => 'git_download'], ['user_project_setting_id' => $user_project_setting['id']]) ?>">Download php-work</a>
   <? endif ?>
 </td>
 </tr>

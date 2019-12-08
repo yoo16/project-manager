@@ -228,8 +228,12 @@ class PageController extends ProjectController
 
         $laravel = new PwLaravel($params);
 
-        $options[] = '--api';
-        $name = $laravel->controllerNameByName($page->value['name']);
+        if ($this->pw_posts['is_overwrite']) {
+            $laravel->removeController($page->value['name']);
+        }
+        //$options[] = '--api';
+        $options[] = '--resource';
+        $name = Controller::className($page->value['name']);
         $laravel->makeController($name, $options);
 
         $options = [];
@@ -239,4 +243,5 @@ class PageController extends ProjectController
 
         $this->redirectTo(['action' => 'list']);
     }
+
 }

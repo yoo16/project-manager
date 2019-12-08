@@ -933,4 +933,53 @@ class PwFile {
             if ($iterator) return $iterator->count();
         }
     }
+
+    /**
+     * git clone
+     *
+     * @param string $url
+     * @return void
+     */
+    static function gitClone($url, $local_path)
+    {
+        if (!$local_path) return;
+
+        $php_work_path = 'php-work';
+        if (!file_exists($php_work_path)) {
+            $cmd = "git clone {$url}";
+            exec($cmd);
+        }
+
+        $cmd = "mv php-work {$local_path}";
+        exec($cmd);
+    }
+
+    /**
+     * curl get
+     *
+     * @param string $url
+     * @return boolean
+     */
+    static function curlGet($url, $options = []) {
+        $ch  = curl_init($url);
+        $tmp = tmpfile();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_HEADERFUNCTION => function($ch, $header) use (&$filename) {
+                $regex = '/^Content-Disposition: attachment; filename="*(.+?)"*$/i';
+                if (preg_match($regex, $header, $matches)) {
+                    $filename = rtrim($matches[1]);
+                }
+                return strlen($header);
+            },
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_FILE => $tmp,
+            CURLOPT_FAILONERROR => true,
+            CURLOPT_SSL_VERIFYPEER => $options['is_ssl_verifypeer'],
+        ]);
+        if (!curl_exec($ch)) return false;
+        return true;
+    }
+
 }

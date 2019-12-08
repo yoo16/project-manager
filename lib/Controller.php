@@ -205,6 +205,19 @@ class Controller extends RuntimeException
     }
 
     /**
+     * controller class file name
+     *
+     * @param  string $name
+     * @return string
+     */
+    static function fileName($name, $ext = 'php')
+    {
+        $name = Controller::className($name);
+        $file_name = "{$name}.{$ext}";
+        return $file_name;
+    }
+
+    /**
      * controller name
      *
      * @return void

@@ -1,6 +1,4 @@
 *.log
-app/settings/debian.php
-app/settings/debian8.php
 vendor/*
 composer.lock
 HOSTNAME
@@ -9,13 +7,6 @@ tmp
 .phpintel
 .vscode/
 composer.json
-db/records/db_hosts_debian8.csv
-script/upload_git_kona
 app/controllers/CheckController.php
 app/settings/pgsql/debian8.php
-app/settings/pgsql/kona.php
-app/settings/kona.telepath.php
 app/settings/vagrant.php
-db/db_info/db_hosts_debian8.csv
-db/db_info/db_hosts_kona.csv
-app/settings/kona.php

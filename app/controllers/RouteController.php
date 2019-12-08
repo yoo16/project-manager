@@ -52,8 +52,6 @@ class RouteController extends PageController {
     */
     function action_new() {
         $this->route = DB::model('Route')->newPage();
-
-        $this->route->value['controller'] = $this->page->value['name'].'Controller';
     }
 
    /**
@@ -104,6 +102,20 @@ class RouteController extends PageController {
     */
     function action_update_sort() {
         $this->updateSort('Route');
+    }
+
+    function export_route()
+    {
+        $page = DB::model('Page')->fetch($this->pw_posts['page_id']);
+        $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
+
+        $params['path'] = $user_project_setting->value['project_path'];
+
+        $laravel = new PwLaravel($params);
+        $options = [];
+        $laravel->createRoute($page, $options);
+
+        $this->redirectTo(['action' => 'list']);
     }
 
 }

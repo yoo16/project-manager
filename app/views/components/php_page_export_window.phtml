@@ -43,6 +43,12 @@
                   <input type="hidden" name="page_id" value="<?= $this->page->value['id'] ?>">
                   <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
                 </form>
+
+                <form action="<?= $this->urlFor(['controller' => 'route', 'action' => 'export_route']) ?>" method="post">
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export route?">export route</button>
+                  <input type="hidden" name="page_id" value="<?= $this->page->value['id'] ?>">
+                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+                </form>
                 <? endif ?>
 
                 <? if ($this->model->value): ?>

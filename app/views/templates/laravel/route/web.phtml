@@ -1,0 +1,3 @@
+<? foreach ($route->values as $route->value): ?>
+Route::<?= $route->value['method'] ?>('<?= $route->value['uri'] ?>', '<?= $route->value['action'] ?>');
+<? endforeach ?>

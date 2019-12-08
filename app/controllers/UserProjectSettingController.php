@@ -81,12 +81,7 @@ class UserProjectSettingController extends ProjectController {
     * @return void
     */
     function action_add() {
-        if (!isPost()) exit;
-        $user_project_setting = DB::model('UserProjectSetting')->insert($this->pw_posts['user_project_setting']);
-        if ($user_project_setting->errors) {
-            $this->addErrorByModel($user_project_setting);
-        }
-        $this->redirectTo(['controller' => 'project', 'action' => 'export_list', 'id' => $this->project['id']]);
+        $this->redirectForAdd($this->insertByModel('UserProjectSetting'));
     }
 
    /**
@@ -96,15 +91,7 @@ class UserProjectSettingController extends ProjectController {
     * @return void
     */
     function action_update() {
-        if (!isPost()) exit;
-        $posts = $this->pw_posts["user_project_setting"];
-        $user_project_setting = DB::model('UserProjectSetting')->update($posts, $this->pw_gets['id']);
-
-        if ($user_project_setting->errors) {
-            $errors['user_project_settings'] = $user_project_setting->errors;
-            $this->setErrors($errors);
-        }
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
+        $this->redirectForUpdate($this->updateByModel('UserProjectSetting'));
     }
 
    /**
@@ -114,9 +101,21 @@ class UserProjectSettingController extends ProjectController {
     * @return void
     */
     function action_delete() {
-        if (!isPost()) exit;
-        DB::model('UserProjectSetting')->delete($this->pw_gets['id']);
-        $this->redirectTo();
+        $this->redirectForDelete($this->deleteByModel('UserProjectSetting'));
+    }
+
+   /**
+    * git project download
+    *
+    * @param
+    * @return void
+    */
+    function action_git_download() {
+        $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_gets['user_project_setting_id']);
+        if (!file_exists($user_project_setting->value['project_path'])) {
+            PwFile::gitClone(PHP_WORK_GIT_URL, $user_project_setting->value['project_path']);
+        }
+        $this->redirectTo(['action' => 'list']);
     }
 
 }

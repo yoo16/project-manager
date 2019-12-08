@@ -27,7 +27,9 @@
         </div>
 
         <div class="modal-footer">
-          <?= PwForm::submit(LABEL_ADD) ?>
+          <input id="is_overwrite" type="checkbox" name="is_overwrite">
+          <label for="is_overwrite">Overwrite</label>
+          <?= PwForm::submit(LABEL_RUN) ?>
           <?= $this->linkJs(['pw-on-click' => 'hideArtisan', 'pw-controller' => 'page', 'label' => LABEL_CLOSE, 'class' => 'btn btn-outline-primary']) ?>
         </div>
 

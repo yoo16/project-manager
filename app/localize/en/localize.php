@@ -35,6 +35,7 @@ define('LABEL_CANCEL', 'Cancel');
 define('LABEL_BACK', 'Back');
 define('LABEL_CONFIRM', 'Confirm');
 define('LABEL_SEND', 'Send');
+define('LABEL_RUN', 'Run');
 define('LABEL_SAVE', 'Save');
 define('LABEL_UPDATE', 'Update');
 define('LABEL_DELETE', 'Delete');

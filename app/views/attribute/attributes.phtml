@@ -42,8 +42,8 @@
         <tr>
           <td>
             <? if (!PwModel::$required_columns[$attribute['name']]): ?>
-            <? endif ?>
             <?= $this->attribute->linkEdit([], $attribute) ?>
+            <? endif ?>
           </td>
 
           <td>
@@ -61,17 +61,19 @@
           </td>
 
           <td>
+            <? if (PwModel::$required_columns[$attribute['name']]): ?>
+            <?= $attribute['label'] ?>
+            <? else: ?>
             <form method="post" action="<?= $this->urlFor(['action' => 'update_label', 'id' => $attribute['id']]) ?>">
-              <div class="row">
                 <div class="input-group">
                   <?= PwForm::input(['class' => 'form-control form-control-sm'], 'attribute[label]', $attribute['label']) ?>
                   <span class="input-group-btn">
                     <?= PwForm::button(LABEL_UPDATE, ['class' => 'btn btn-primary btn-sm']) ?></span>
                 </div>
-              </div>
               <?= PwForm::hidden('pg_class_id', $attribute['pg_attribute']['pg_class_id']) ?>
               <?= PwForm::hidden('database_id', $this->database->value['id']) ?>
             </form>
+            <? endif ?>
           </td>
 
           <td>

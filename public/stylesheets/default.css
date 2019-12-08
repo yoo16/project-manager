@@ -47,7 +47,7 @@ select.form-control:not([size]):not([multiple]) {
 }
 
 .form-group {
-  margin: 0;
+  margin: 0.3rem 0;
 }
 
 .col-12 {

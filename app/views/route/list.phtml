@@ -11,7 +11,6 @@
     <tr>
       <th>&nbsp;</th>
       <th><?= LABEL_ROUTES_URI ?></th>
-      <th><?= LABEL_ROUTES_CONTROLLER ?></th>
       <th><?= LABEL_ROUTES_ACTION ?></th>
       <th><?= LABEL_ROUTES_METHOD ?></th>
     </tr>
@@ -22,7 +21,6 @@
   <tr row-id="<?= $values['id'] ?>">
     <td><?= $this->route->linkEdit([], $values) ?></td>
     <td><?= $values['uri'] ?></td>
-    <td><?= $values['controller'] ?></td>
     <td><?= $values['action'] ?></td>
     <td><?= $values['method'] ?></td>
   </tr>
