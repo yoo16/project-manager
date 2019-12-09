@@ -1,6 +1,26 @@
 <h2>Setting</h2>
 
 <div class="hero-unit">
+  <? if ($this->pgsql_entity->is_connection_error) : ?>
+    <div class="alert alert-danger">
+      <p>
+        Not Found project-manager's database '<?= DB_NAME ?>' on PostgreSQL
+      </p>
+      <p>createdb <?= DB_NAME ?></p>
+      <p>
+        * If you want createdb on browser, please set the permission on pg_hba.conf, postgresql.conf
+      </p>
+      <a class="btn btn-primary" href="<?= $this->urlFor(['action' => 'create_database']) ?>" onClick="return confirm('createdb for PostgreSQL?')">Create Database</a>
+    </div>
+  <? endif ?>
+
+  <? if (!$this->database->is_success) : ?>
+    <div class="alert alert-danger">
+      Not Found <?= DB_NAME ?>'s tables.
+      <?= $this->linkTo(['action' => 'pgsql'], ['label' => 'Create Table', 'class' => 'btn btn-primary']) ?>
+    </div>
+  <? endif ?>
+
   <div class="alert alert-success">
     <h1>Hello, project-manager! </h1>
     <p>
@@ -29,16 +49,6 @@
     </p>
     <a class="btn btn-primary" href="<?= PHP_WORK_GIT_URL ?>" target="_blank">Download php-work(GitHub)</a>
   </div>
-
-  <? if ($this->pgsql_entity->is_connection_error): ?>
-  <div class="alert alert-danger">
-    Not Found project-manager's database '<?= DB_NAME ?>'
-    <p>createdb <?= DB_NAME ?></p>
-    <a class="btn btn-primary" href="<?= $this->linkTo('create_database') ?>"
-      onClick="return confirm('createdb for PostgreSQL?')">Create Database</a>
-    * If you want createdb on browser, please set the permission on pg_hba.conf, postgresql.conf
-  </div>
-  <? endif ?>
 
   <h2>setting file</h2>
   <div class="alert alert-success">
@@ -69,66 +79,60 @@ define('DB_USERS_CSV', DB_DIR.'db_info/db_users.csv');
 define('DB_PORTS_CSV', DB_DIR.'db_info/db_ports.csv');
 </pre>
 
-<h3>PHP define</h3>
-<table class="table">
-  <tr>
-    <th>PROJECT_NAME</th>
-    <td><?= undefineLabel('PROJECT_NAME', PROJECT_NAME) ?></td>
-  </tr>
-  <tr>
-    <th>PROJECT_DIR</th>
-    <td><?= undefineLabel('PROJECT_DIR', PROJECT_DIR) ?></td>
-  </tr>
-  <tr>
-    <th>LOG_DIR</th>
-    <td><?= undefineLabel('LOG_DIR', LOG_DIR) ?></td>
-  </tr>
-  <tr>
-    <th>DB_DIR</th>
-    <td><?= undefineLabel('DB_DIR', DB_DIR) ?></td>
-  </tr>
-  <tr>
-    <th>TMP_DIR</th>
-    <td><?= undefineLabel('TMP_DIR', TMP_DIR) ?></td>
-  </tr>
-  <tr>
-    <th>DEBUG</th>
-    <td><?= undefineLabel('DEBUG', DEBUG) ?></td>
-  </tr>
-  <tr>
-    <th>SQL_LOG</th>
-    <td><?= undefineLabel('SQL_LOG', SQL_LOG) ?></td>
-  </tr>
-  <tr>
-    <th>COMAND_PHP_PATH</th>
-    <td><?= undefineLabel('COMAND_PHP_PATH', COMAND_PHP_PATH) ?></td>
-  </tr>
-  <tr>
-    <th>DB_HOSTS_CSV</th>
-    <td><?= undefineLabel('DB_HOSTS_CSV', DB_HOSTS_CSV) ?></td>
-  </tr>
-  <tr>
-    <th>DB_USERS_CSV</th>
-    <td><?= undefineLabel('DB_USERS_CSV', DB_USERS_CSV) ?></td>
-  </tr>
-  <tr>
-    <th>DB_HOSTS_CSV</th>
-    <td><?= undefineLabel('DB_HOSTS_CSV', DB_HOSTS_CSV) ?></td>
-  </tr>
-</table>
+  <h3>PHP define</h3>
+  <table class="table">
+    <tr>
+      <th>PROJECT_NAME</th>
+      <td><?= undefineLabel('PROJECT_NAME', PROJECT_NAME) ?></td>
+    </tr>
+    <tr>
+      <th>PROJECT_DIR</th>
+      <td><?= undefineLabel('PROJECT_DIR', PROJECT_DIR) ?></td>
+    </tr>
+    <tr>
+      <th>LOG_DIR</th>
+      <td><?= undefineLabel('LOG_DIR', LOG_DIR) ?></td>
+    </tr>
+    <tr>
+      <th>DB_DIR</th>
+      <td><?= undefineLabel('DB_DIR', DB_DIR) ?></td>
+    </tr>
+    <tr>
+      <th>TMP_DIR</th>
+      <td><?= undefineLabel('TMP_DIR', TMP_DIR) ?></td>
+    </tr>
+    <tr>
+      <th>DEBUG</th>
+      <td><?= undefineLabel('DEBUG', DEBUG) ?></td>
+    </tr>
+    <tr>
+      <th>SQL_LOG</th>
+      <td><?= undefineLabel('SQL_LOG', SQL_LOG) ?></td>
+    </tr>
+    <tr>
+      <th>COMAND_PHP_PATH</th>
+      <td><?= undefineLabel('COMAND_PHP_PATH', COMAND_PHP_PATH) ?></td>
+    </tr>
+    <tr>
+      <th>DB_HOSTS_CSV</th>
+      <td><?= undefineLabel('DB_HOSTS_CSV', DB_HOSTS_CSV) ?></td>
+    </tr>
+    <tr>
+      <th>DB_USERS_CSV</th>
+      <td><?= undefineLabel('DB_USERS_CSV', DB_USERS_CSV) ?></td>
+    </tr>
+    <tr>
+      <th>DB_HOSTS_CSV</th>
+      <td><?= undefineLabel('DB_HOSTS_CSV', DB_HOSTS_CSV) ?></td>
+    </tr>
+  </table>
 
   <h2>PostgreSQL</h2>
-  <? if (!$this->database->is_success): ?>
-  <div class="alert alert-danger">
-    Not Found <?= DB_NAME ?>'s tables.
-    <?= $this->linkTo(['action' => 'pgsql'], ['label' => 'Create Table', 'class' => 'btn btn-primary']) ?>
-  </div>
-  <? endif ?>
 
   <div class="alert alert-success">
     <?= DB_SETTING_FILE ?>
   </div>
-<pre>
+  <pre>
 define('DB_NAME', 'project_manager');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'postgres');
@@ -136,7 +140,7 @@ define('DB_PORT', '5432');
 define('DB_PASS', '');
 </pre>
 
-<h3>PHP define</h3>
+  <h3>PHP define</h3>
   <table class="table">
     <tr>
       <th>DB_NAME</th>
@@ -159,10 +163,10 @@ define('DB_PASS', '');
     <tr>
       <th>pg_connection()</th>
       <td>
-        <? if ($this->pg_connection): ?>
-        <?= $this->pg_connection ?>
-        <? else: ?>
-        <?= undefineLabelTag() ?>
+        <? if ($this->pg_connection) : ?>
+          <?= $this->pg_connection ?>
+        <? else : ?>
+          <?= undefineLabelTag() ?>
         <? endif ?>
       </td>
     </tr>

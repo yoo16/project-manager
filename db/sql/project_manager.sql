@@ -254,6 +254,19 @@ id SERIAL PRIMARY KEY NOT NULL
 , updated_at TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS "routes" (
+id SERIAL PRIMARY KEY NOT NULL
+, action VARCHAR(256)
+, controller VARCHAR
+, created_at TIMESTAMP
+, method VARCHAR(8) NOT NULL
+, middleware VARCHAR(256)
+, page_id INT4 NOT NULL
+, sort_order INT4
+, updated_at TIMESTAMP
+, uri VARCHAR(256)
+);
+
 CREATE TABLE IF NOT EXISTS "users" (
 id SERIAL PRIMARY KEY NOT NULL
 , birthday_at TIMESTAMP
@@ -498,6 +511,12 @@ ALTER TABLE relation_databases
       REFERENCES projects(id)
       ON UPDATE NO ACTION
       ON DELETE NO ACTION
+;
+ALTER TABLE routes
+      ADD CONSTRAINT routes_page_id_fkey FOREIGN KEY (page_id)
+      REFERENCES pages(id)
+      ON UPDATE NO ACTION
+      ON DELETE CASCADE
 ;
 ALTER TABLE users
       ADD CONSTRAINT users_email_key

@@ -105,7 +105,10 @@ class PwPgsql extends PwEntity
     function createDatabase()
     {
         if (!$this->dbname) return;
+        if (pg_connect($this->pg_info)) return;
+
         $cmd = "createdb -U {$this->user} -E UTF8 --host {$this->host} --port {$this->port} {$this->dbname} 2>&1";
+
         exec($cmd, $output, $return);
 
         $results['cmd'] = $cmd;
@@ -726,6 +729,8 @@ class PwPgsql extends PwEntity
                 $this->sql_files[$db_name].= $indexes_sql[$db_name];
             }
         }
+
+        return $this->sql_files;
     }
 
     /**
@@ -777,8 +782,12 @@ class PwPgsql extends PwEntity
      */
     function createTablesForProject()
     {
-        $sql = $this->createTablesSQLForProject();
-        return $this->query($sql);
+        $sql_files = $this->createTablesSQLForProject();
+        if (!$sql_files) return;
+        foreach ($sql_files as $sql) {
+            $this->query($sql);
+        }
+        return;
     }
 
     /**

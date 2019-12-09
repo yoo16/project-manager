@@ -22,18 +22,24 @@
 <h3>Create Table SQL</h3>
 <div class="card">
   <div class="card-block overflow-list">
-    <? if ($this->sql): ?><?= nl2br($this->sql) ?><? else: ?><?= undefineLabelTag() ?><? endif ?>
+    <? if ($this->sql_files): ?>
+    <? foreach ($this->sql_files as $sql_file): ?>
+    <?= nl2br($sql_file) ?>
+    <? endforeach ?>
+    <? else: ?>
+    <?= undefineLabelTag() ?>
+    <? endif ?>
   </div>
 
   <div class="card-footer text-center">
     <? if (!$this->pg_connection): ?>
-    <a class="btn btn-primary confirm-dialog" href="<?= $this->linkTo('create_database') ?>" message="createdb for PostgreSQL?"><?= LABEL_CREATE ?></a>
+    <a class="btn btn-primary confirm-dialog" href="<?= $this->urlFor(['action' => 'create_database']) ?>" message="createdb for PostgreSQL?"><?= LABEL_CREATE ?></a>
   <? else: ?>
-  <? if ($this->sql): ?>
-  <a class="btn btn-primary confirm-dialog" href="<?= $this->linkTo('create_tables') ?>" message="Init Database? *Data will be deleted on database."><?= LABEL_UPDATE ?></a>
+  <? if ($this->sql_files): ?>
+  <a class="btn btn-primary confirm-dialog" href="<?= $this->urlFor(['action' => 'create_tables']) ?>" message="Init Database? *Data will be deleted on database."><?= LABEL_UPDATE ?></a>
+  <? endif ?>
 <? endif ?>
-<? endif ?>
-  <a class="btn btn-outline-primary" href="<?= $this->linkTo('index') ?>"><?= LABEL_BACK ?></a>
+  <a class="btn btn-outline-primary" href="<?= $this->urlFor(['action' => 'index']) ?>"><?= LABEL_BACK ?></a>
 </div>
 </div>
 

@@ -167,7 +167,7 @@ function undefineLabel($key, $value) {
     return $tag;
 }
 
-function undefineLabelTag($key, $value) {
+function undefineLabelTag($key = null, $value = null) {
     $tag = '<label class="badge badge-danger">Undefined</label>';
     return $tag;
 }

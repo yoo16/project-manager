@@ -19,7 +19,6 @@ class _MenuItem extends PwPgsql {
         'action' => array('type' => 'varchar', 'length' => 256),
         'controller' => array('type' => 'varchar', 'length' => 256, 'default' => ''),
         'created_at' => array('type' => 'timestamp'),
-        'is' => array('type' => 'bool'),
         'is_provide' => array('type' => 'bool'),
         'menu_id' => array('type' => 'int4', 'is_required' => true),
         'name' => array('type' => 'varchar', 'length' => 256, 'is_required' => true),
