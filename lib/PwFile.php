@@ -945,13 +945,11 @@ class PwFile {
         if (!$local_path) return;
         $php_work_path = 'php-work';
         if (!file_exists($php_work_path)) {
-            $cmd = "git clone {$url} 2>&1";
-            dump($cmd);
-            exec($cmd, $results);
+            $cmd = "git clone {$url} {$local_path} 2>&1";
+            exec($cmd);
         }
-
-        $cmd = "mv php-work {$local_path}";
-        exec($cmd);
+        //$cmd = "mv php-work {$local_path}";
+        //exec($cmd);
     }
 
     /**

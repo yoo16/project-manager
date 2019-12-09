@@ -119,7 +119,7 @@ class AdminController extends AppController {
     * @return void
     */ 
     function action_logout() {
-        PwSession::clearSession('admin', 'admin');
+        PwSession::clearWithKey('admin', 'admin');
         $this->redirectTo(['controller' => 'admin', 'action' => 'login']);
     }
 

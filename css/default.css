@@ -1,0 +1,259 @@
+@charset "UTF-8";
+body {
+  font-family: "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", Arial, sans-serif;
+}
+
+body,
+table {
+  font-size: 0.8rem;
+}
+
+a:not([href]):not([tabindex]) {
+  color: #0088cc;
+}
+
+input[type="text"],
+input[type="password"] {
+  font-size: 0.8rem;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6,
+h1, h2, h3, h4, h5, h6 {
+  padding: 8px 0;
+  font-size: 1rem;
+}
+
+.container-fluid {
+  padding: 0;
+}
+
+.form-control {
+  display: inline;
+  padding: .3rem .5rem;
+  line-height: 1;
+  font-size: 0.8rem;
+}
+
+textarea.form-control {
+  padding: 0.5rem;
+}
+
+select.form-control:not([size]):not([multiple]) {
+  height: 2rem;
+}
+
+#main {
+  padding-right: 2rem;
+}
+
+.form-group {
+  margin: 0.3rem 0;
+}
+
+.col-12 {
+  width: 100%;
+}
+
+.table.max {
+  width: 100%;
+}
+
+.table {
+  /*width: auto;*/
+  border: 1px solid #eceeef;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+.table.table-form {
+  table-layout: fixed;
+}
+
+.table.table-auto {
+  width: auto;
+}
+
+.table td,
+.table th {
+  padding: 0.5rem 0.8rem;
+  vertical-align: middle;
+}
+
+.table-list {
+  width: auto;
+}
+
+.sortable-selected {
+  background-color: rgba(200, 220, 230, 0.95);
+}
+
+a {
+  color: #0088cc;
+  text-decoration: none;
+}
+
+a .fa {
+  width: 22px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.btn .fa {
+  width: 12px;
+}
+
+.btn {
+  cursor: pointer;
+  font-size: 0.7rem;
+  margin: 0.1rem;
+}
+
+.btn-sm {
+  font-size: 0.7rem;
+}
+
+.btn-primary {
+  color: #ffffff !important;
+}
+
+.btn-primary:hover,
+.btn-outline-primary:hover {
+  background: rgba(200, 200, 200, 0.95);
+  border-color: rgba(200, 200, 200, 0.95);
+}
+
+.btn-danger {
+  color: white !important;
+}
+
+.btn-secondary {
+  color: white;
+  background: #172e3c;
+}
+
+.btn-secondary:hover {
+  color: rgba(230, 230, 210, 0.95);
+  background: rgba(200, 200, 200, 0.95);
+}
+
+#log-window {
+  display: none;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  font-size: 0.8rem;
+}
+
+#log-contents {
+  overflow: scroll;
+  max-height: 40rem;
+}
+
+#indicator {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: rgba(255, 255, 255, 0.3);
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
+#indicator img {
+  margin-top: 10rem;
+}
+
+.number {
+  text-align: right;
+}
+
+.update-sortable,
+.close-sortable {
+  display: none;
+}
+
+/* login */
+.card {
+  background-color: white;
+}
+
+.card-header,
+.card-footer {
+  padding: 5px 15px;
+}
+
+.card-block {
+  padding: 6px;
+}
+
+.side-fix-menu {
+  top: 2%;
+  left: 0%;
+  position: fixed;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  -webkit-box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+          box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-sticky {
+  position: relative;
+  top: 0;
+  height: calc(100vh - 48px);
+  padding-top: .5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+@supports ((position: -webkit-sticky) or (position: sticky)) {
+  .sidebar-sticky {
+    position: -webkit-sticky;
+    position: sticky;
+  }
+}
+
+.sidebar .nav-link {
+  font-weight: 500;
+  color: #333;
+}
+
+.sidebar .nav-link .feather {
+  margin-right: 4px;
+  color: #999;
+}
+
+.sidebar .nav-link.active {
+  color: #007bff;
+}
+
+.sidebar .nav-link:hover .feather,
+.sidebar .nav-link.active .feather {
+  color: inherit;
+}
+
+.sidebar-heading {
+  font-size: .75rem;
+  text-transform: uppercase;
+}
+
+.navbar-brand {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  font-size: 1rem;
+  background-color: rgba(0, 0, 0, 0.25);
+  -webkit-box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.25);
+          box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.25);
+}
+
+.navbar .form-control {
+  padding: .75rem 1rem;
+  border-width: 0;
+  border-radius: 0;
+}
+/*# sourceMappingURL=default.css.map */
