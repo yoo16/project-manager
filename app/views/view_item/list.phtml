@@ -7,14 +7,6 @@
 
   <?= $this->linkTo(['controller' => 'view'], ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
   <?= $this->linkTo(['action' => 'add_all'], ['label' => LABEL_ALL.LABEL_ADD, 'class' => 'btn btn-primary']) ?>
-
-  <?= $this->linkTo(['controller' => 'view_item_group'],
-    [
-    'label' => LABEL_VIEW_ITEM_GROUPS,
-    'class' => 'btn btn-outline-primary',
-    'view_id' => $this->view->value['id']
-    ]
-  ) ?>
 </div>
 
 <table id="sortable-table" class="table table-list">

@@ -44,4 +44,43 @@ class ViewItem extends _ViewItem {
         }
     }
 
+
+    /**
+     * create all by page
+     *
+     * @param Page $page
+     * @return void
+     */
+    function createAllByPage($page)
+    {
+        $page->bindBelongsTo('Model');
+        $attribute = $page->model->relationMany('Attribute')->idIndex()->all();
+
+        if (!$attribute->values) return;
+        foreach ($attribute->values as $attribute) {
+            if (!in_array($attribute['name'], PwEntity::$app_columns)) {
+                $view_item = DB::model('ViewItem');
+                $view_item->where('view_id', $this->view->value['id'])
+                          ->where('attribute_id', $attribute['id'])
+                          ->one();
+
+                $posts = [];
+                if (!$view_item->value['id']) {
+                    $posts['view_id'] = $this->view->value['id'];
+                    $posts['attribute_id'] = $attribute['id'];
+
+                    if ($this->view->value['name'] == 'edit') {
+                        if ($attribute['type'] == 'bool') {
+                            $posts['csv'] = 'active';
+                            $posts['form_type'] = 'radio';
+                        }
+                    }
+                    //TODO define label
+                    //$posts['label'] = $attribute['label'];
+                    DB::model('ViewItem')->insert($posts);
+                }
+            }
+        }
+    }
+
 }

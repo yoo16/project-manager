@@ -15,21 +15,21 @@ class View extends _View {
     /**
      * generate default actions
      * 
-     * @param array $page
+     * @param Page $page
      * @return void
      */
     function generateDefaultActions($page) {
-        if (!$page) return;
+        if (!$page->value) return;
 
         foreach (View::$default_actions as $action) {
             $view = DB::model('View')
-                     ->where("page_id = {$page['id']}")
-                     ->where("name = '{$action['name']}'")
+                     ->where('page_id', $page->value['id'])
+                     ->where('name', $action['name'])
                      ->one();
 
             if (!$view->value['id']) {
                 $posts = null;
-                $posts['page_id'] = $page['id'];
+                $posts['page_id'] = $page->value['id'];
                 $posts['name'] = $action['name'];
                 $posts['label'] = $action['label'];
                 $posts['is_overwrite'] = true;

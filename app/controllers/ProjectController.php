@@ -196,6 +196,25 @@ class ProjectController extends AppController
         $this->redirectTo(['controller' => 'page', 'action' => 'list'], $params);
     }
 
+
+    /**
+     * export php all files
+     *
+     * @return void
+     */
+    function action_export_all()
+    {
+        if (!isPost()) exit;
+        $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
+        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
+
+        $this->project->exportPHPControllers(true);
+        $this->project->exportPHPViews(true);
+
+        $params['project_id'] = $this->project->value['id'];
+        $this->redirectTo(['controller' => 'model', 'action' => 'list'], $params);
+    }
+
     /**
      * export php model & view & controller
      *
@@ -438,14 +457,17 @@ class ProjectController extends AppController
     }
 
 
+    /**
+     * export
+     *
+     * @return void
+     */
     function action_export()
     {
         $project = DB::model('Project')->fetch($this->pw_gets['id'])->value;
         $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_gets['user_project_setting_id'])->value;
 
         $project_path = $user_project_setting['project_path'];
-
-        $app_path = "{$project_path}app/";
 
         $cmd = "mkdir -p {$project_path}";
         exec($cmd, $output, $return);
@@ -456,54 +478,44 @@ class ProjectController extends AppController
             exec($cmd, $output, $return);
         }
 
-        $dot_git_path = "{$project_path}/.git";
-        if (file_exists($dot_git_path)) {
-            $cmd = "rm -rf {$dot_git_path}";
-            exec($cmd, $output, $return);
-        }
+        PwFile::deleteDotGit($project_path);
 
         $this->redirectTo(['action' => 'export_list', 'id' => $project['id']]);
     }
 
+    /**
+     * create
+     *
+     * @return void
+     */
     function action_create()
     {
         $project = DB::model('Project')->fetch($this->pw_gets['id']);
         $phpwork_path = DB_DIR . "phpwork";
     }
 
-
-    function action_edit_user_project_setting()
-    {
-        $this->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_gets['id']);
-        $this->project = DB::model('Project')->fetch($this->user_project_setting->value['project_id']);
-    }
-
+    /**
+     * delete user project setting
+     *
+     * @return void
+     */
     function action_delete_user_project_setting()
     {
         if (!isPost()) exit;
-        $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_gets['id']);
-        if ($user_project_setting->value) {
-            DB::model('UserProjectSetting')->delete($user_project_setting->value['id']);
-        }
+        DB::model('UserProjectSetting')->delete($this->pw_gets['id']);
         $this->redirectTo(['action' => 'export_list', 'id' => $user_project_setting->value['project_id']]);
     }
 
-    function action_download_phpwork()
-    {
-        $cmd = "git clone https://github.com/yoo16/phpwork.git 2>&1";
-        exec($cmd, $output, $return);
-
-        $results['cmd'] = $cmd;
-        $results['output'] = $output;
-        $results['return'] = $return;
-    }
-
+    /**
+     * sync db
+     * TODO: model functions
+     *
+     * @return void
+     */
     function action_sync_db()
     {
         if (!isPost()) exit;
-        if (!$this->database->value['id']) {
-            $this->redirectTo(['controller' => 'project']);
-        }
+        if (!$this->database->value['id']) $this->redirectTo(['controller' => 'project']);
 
         $pgsql_entity = new PwPgsql($this->database->pgInfo());
         $this->pg_classes = $pgsql_entity->tableArray();
@@ -521,8 +533,8 @@ class ProjectController extends AppController
             $model_values['class_name'] = PwFile::phpClassName($model_values['entity_name']);
 
             $model = DB::model('Model')
-                ->where("name = '{$pg_class['relname']}'")
-                ->where("database_id = {$this->database->value['id']}")
+                ->where('name', $pg_class['relname'])
+                ->where('database_id', $this->database->value['id'])
                 ->one();
 
             if ($model->value['id']) {
@@ -573,51 +585,26 @@ class ProjectController extends AppController
         $this->redirectTo(['controller' => 'model']);
     }
 
-
-    function action_create_git_dir()
-    {
-        $user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
-        $path = $user_project_setting->value['project_path'];
-        if ($path && !file_exists($path)) {
-            PwFile::createDir($path);
-        }
-        if ($path && file_exists($path)) {
-            $cmd = "chmod 775 {$path}";
-            exec($cmd, $output, $return);
-            $this->results['cmd'] = $cmd;
-            $this->results['output'] = $output;
-            $this->results['return'] = $return;
-        }
-    }
-
+    /**
+     * git clone php-work
+     *
+     * @return void
+     */
     function action_git_clone_php_work()
     {
         $user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
-        $path = $user_project_setting->value['project_path'];
-        if ($path && !file_exists($path)) {
-            PwFile::createDir($path);
-        }
-        if ($path && file_exists($path)) {
-            $cmd = "chmod 775 {$path}";
-            exec($cmd, $output, $return);
-            $this->results['cmd'] = $cmd;
-            $this->results['output'] = $output;
-            $this->results['return'] = $return;
-
-            $url = PHP_WORK_GIT_URL;
-            $cmd = "git clone {$url} {$path}";
-            exec($cmd, $output, $return);
-            $this->results['cmd'] = $cmd;
-            $this->results['output'] = $output;
-            $this->results['return'] = $return;
-        }
+        if ($path = $user_project_setting->value['project_path']) $results = PwFile::gitClone(PHP_WORK_GIT_URL, $path);
     }
 
+    /**
+     * csv export
+     *
+     * @return void
+     */
     function csv_export()
     {
         $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
         $this->project->exportRecord();
-
         $this->redirectTo(['controller' => 'record', 'action' => 'list']);
     }
 
@@ -633,6 +620,13 @@ class ProjectController extends AppController
     }
 
 
+    /**
+     * analyze
+     * 
+     * TODO: lib functions
+     *
+     * @return void
+     */
     function analyze()
     {
         $this->database = $this->project->belongsTo('Database');

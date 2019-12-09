@@ -155,7 +155,8 @@ class ViewController extends ProjectController
     function action_create_default_view()
     {
         if ($this->page->value['id']) {
-            DB::model('View')->generateDefaultActions($this->page->value);
+            DB::model('View')->generateDefaultActions($this->page);
+            DB::model('ViewItem')->createAllByPage($this->page);
         }
         $this->redirectTo(['action' => 'list']);
     }

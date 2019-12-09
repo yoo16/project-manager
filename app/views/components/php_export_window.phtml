@@ -42,6 +42,13 @@
               <? if (file_exists($user_project_setting['project_path']."app/")): ?>
 
               <div class="form-inline">
+                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_all']) ?>"
+                  method="post">
+                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export all files?">All Files</button>
+                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
+                </form>
+
                 <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_php_models']) ?>"
                   method="post">
                   <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">PHP

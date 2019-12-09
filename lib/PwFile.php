@@ -940,17 +940,41 @@ class PwFile {
      * @param string $url
      * @return void
      */
-    static function gitClone($url, $local_path)
+    static function gitClone($url, $path)
     {
-        if (!$local_path) return;
-        $php_work_path = 'php-work';
-        if (!file_exists($php_work_path)) {
-            $cmd = "git clone {$url} {$local_path} 2>&1";
-            exec($cmd);
+        if (!$path) return;
+        if ($path && !file_exists($path)) PwFile::createDir($path);
+        if ($path && file_exists($path)) {
+            $cmd = "chmod 775 {$path}";
+            exec($cmd, $output, $return);
+            $results['cmd'] = $cmd;
+            $results['output'] = $output;
+            $results['return'] = $return;
+
+            $cmd = "git clone {$url} {$path}";
+            exec($cmd, $output, $return);
+            $results['cmd'] = $cmd;
+            $results['output'] = $output;
+            $results['return'] = $return;
         }
-        //$cmd = "mv php-work {$local_path}";
-        //exec($cmd);
+        return $results;
     }
+
+    /**
+     * delete .git
+     *
+     * @param string $path
+     * @return void
+     */
+    static function deleteDotGit($path)
+    {
+        $dot_git_path = "{$path}/.git";
+        if (file_exists($dot_git_path)) {
+            $cmd = "rm -rf {$dot_git_path}";
+            exec($cmd, $output, $return);
+        }
+    }
+
 
     /**
      * curl get

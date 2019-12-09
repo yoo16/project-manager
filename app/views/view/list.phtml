@@ -3,6 +3,14 @@
 
 <div class="pt-3">
   <?= PwForm::linkModal('#add-window', LABEL_ADD) ?>
+  <?= $this->linkTo(
+    ['controller' => 'view', 'action' => 'create_default_view', 'page_id' => $this->page->value['id']],
+    [
+      'label' => 'Quick create views',
+      'class' => 'btn btn-outline-primary confirm-dialog',
+      'message' => 'Create quick views?'
+    ]
+  ) ?>
   <?= $this->linkTo(['controller' => 'page'], ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
 </div>
 

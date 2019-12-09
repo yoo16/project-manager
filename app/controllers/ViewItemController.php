@@ -174,37 +174,7 @@ class ViewItemController extends ProjectController {
     * @return void
     */
     function action_add_all() {
-        $this->page->bindBelongsTo('Model');
-        $attribute = $this->page->model
-                                ->relationMany('Attribute')
-                                ->idIndex()
-                                ->all();
-
-        foreach ($attribute->values as $attribute) {
-            if (!in_array($attribute['name'], PwEntity::$app_columns)) {
-                $view_item = DB::model('ViewItem');
-                $view_item->where('view_id', $this->view->value['id'])
-                          ->where('attribute_id', $attribute['id'])
-                          ->one();
-
-                $posts = null;
-                if (!$view_item->value['id']) {
-                    $posts['view_id'] = $this->view->value['id'];
-                    $posts['attribute_id'] = $attribute['id'];
-
-                    if ($this->view->value['name'] == 'edit') {
-                        if ($attribute['type'] == 'bool') {
-                            $posts['csv'] = 'active';
-                            $posts['form_type'] = 'radio';
-                        }
-                    }
-                    //TODO define label
-                    //$posts['label'] = $attribute['label'];
-
-                    DB::model('ViewItem')->insert($posts);
-                }
-            }
-        }
+        DB::model('ViewItem')->createAllByPage($this->page);
         $this->redirectTo(['action' => 'list']);;
     }
 
