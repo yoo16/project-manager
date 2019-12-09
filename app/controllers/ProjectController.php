@@ -331,11 +331,13 @@ class ProjectController extends AppController
         $this->redirectTo(['controller' => 'page', 'action' => 'list'], $params);
     }
 
+    /**
+     * export DB for Excel
+     */
     function action_export_db()
     {
-        $database = DB::model('Database')
-            ->fetch($this->project->value['database_id'])
-            ->exportDatabase();
+        $database = DB::model('Database')->fetch($this->project->value['database_id']);
+        $database->exportDatabase();
 
         if ($this->project->value) {
             $params['project_id'] = $this->project->value['id'];

@@ -29,11 +29,11 @@
         <? if (file_exists($user_project_setting['project_path'])): ?>
         <? if (file_exists($user_project_setting['project_path']."app/")): ?><label class="badge badge-success">exists</label><? else: ?>
         <label class="badge badge-danger">not found php-work</label>
-        <a class="btn btn-primary" href="<?= $this->urlFor(['action' => 'git_download'], ['user_project_setting_id' => $user_project_setting['id']]) ?>">Download php-work</a>
+        <a class="btn btn-primary" href="<?= $this->urlFor(['action' => 'git_clone'], ['user_project_setting_id' => $user_project_setting['id']]) ?>">git clone php-work</a>
       <? endif ?>
     <? else: ?>
     <label class="badge badge-danger">not exists</label>
-    <a class="btn btn-primary" href="<?= $this->urlFor(['action' => 'git_download'], ['user_project_setting_id' => $user_project_setting['id']]) ?>">Download php-work</a>
+    <a class="btn btn-primary" href="<?= $this->urlFor(['action' => 'git_clone'], ['user_project_setting_id' => $user_project_setting['id']]) ?>">git clone php-work</a>
   <? endif ?>
 </td>
 </tr>

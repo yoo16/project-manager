@@ -127,9 +127,9 @@
         <? else: ?>
         <?= PwForm::linkButton(
                 [
-                'controller' => 'project',
-                'action' => 'export_list',
-                'id' => $this->project->value['id']
+                'controller' => 'user_project_setting',
+                'action' => 'list',
+                'project_id' => $this->project->value['id']
                 ],
                 ['label' => LABEL_EXPORT.LABEL_SETTING]
                 ) ?>

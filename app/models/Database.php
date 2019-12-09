@@ -56,6 +56,14 @@ class Database extends _Database {
      */
     function exportDatabase($file_path = '') {
         date_default_timezone_set('Asia/Tokyo');
+
+        $autoloader_path = BASE_DIR.'vendor/autoload.php';
+        if (!file_exists($autoloader_path)) {
+            echo "Please, install PHPExcel on {$autoloader_path}.<br>".PHP_EOL;
+            echo "composer require phpoffice/phpexcel".PHP_EOL;
+            exit;
+        }
+
         require BASE_DIR.'/vendor/autoload.php';
 
         $pgsql_entity = new PwPgsql($this->pgInfo());
@@ -63,7 +71,7 @@ class Database extends _Database {
 
         $file_name = "{$this->value['name']}.xlsx";
         $tmp_dir = BASE_DIR.'tmp/';
-        $export_path = "{$tmp_dir}{$file_name}";
+        //$export_path = "{$tmp_dir}{$file_name}";
 
         $this->cell_height = 25;
 

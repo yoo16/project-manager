@@ -110,7 +110,7 @@ class UserProjectSettingController extends ProjectController {
     * @param
     * @return void
     */
-    function action_git_download() {
+    function action_git_clone() {
         $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_gets['user_project_setting_id']);
         if (!file_exists($user_project_setting->value['project_path'])) {
             PwFile::gitClone(PHP_WORK_GIT_URL, $user_project_setting->value['project_path']);
