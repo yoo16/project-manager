@@ -13,6 +13,22 @@ class View extends _View {
     }
 
     /**
+     * get by action
+     *
+     * @param Page $page
+     * @param  string $action
+     * @return View $view
+     */
+    function getByAction($page, $action)
+    {
+        $view = DB::model('View')
+                    ->where('page_id', $page->value['id'])
+                    ->where('name', $action)
+                    ->one();
+        return $view;
+    }
+
+    /**
      * generate default actions
      * 
      * @param Page $page
@@ -22,11 +38,7 @@ class View extends _View {
         if (!$page->value) return;
 
         foreach (View::$default_actions as $action) {
-            $view = DB::model('View')
-                     ->where('page_id', $page->value['id'])
-                     ->where('name', $action['name'])
-                     ->one();
-
+            $view = DB::model('View')->getByAction($page, $action['name']);
             if (!$view->value['id']) {
                 $posts = null;
                 $posts['page_id'] = $page->value['id'];

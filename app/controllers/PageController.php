@@ -32,16 +32,31 @@ class PageController extends ProjectController
     function before_rendering($action)
     { }
 
+    /**
+     * index
+     *
+     * @return void
+     */
     function index()
     {
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * cancel
+     *
+     * @return void
+     */
     function action_cancel()
     {
         $this->index();
     }
 
+    /**
+     * list
+     *
+     * @return void
+     */
     function action_list()
     {
         //$this->user = DB::model('User')->all(true);
@@ -57,6 +72,11 @@ class PageController extends ProjectController
             ->values;
     }
 
+    /**
+     * new
+     *
+     * @return void
+     */
     function action_new()
     {
         $this->page = DB::model('Page')->takeValues($this->session['posts']);
@@ -66,6 +86,11 @@ class PageController extends ProjectController
         $this->forms['is_overwrite']['label'] = LABEL_TRUE;
     }
 
+    /**
+     * edit
+     *
+     * @return void
+     */
     function action_edit()
     {
         $this->page = DB::model('Page')->fetch($this->pw_gets['id']);
@@ -79,6 +104,11 @@ class PageController extends ProjectController
         $this->forms['is_overwrite']['label'] = LABEL_TRUE;
     }
 
+    /**
+     * add
+     *
+     * @return void
+     */
     function action_add()
     {
         if (!isPost()) exit;
@@ -133,59 +163,45 @@ class PageController extends ProjectController
         $this->redirectForDelete($this->deleteByModel('Page'));
     }
 
+    /**
+     * import from models
+     *
+     * @return void
+     */
     function action_import_from_models()
     {
-        $this->model = $this->project->hasMany('Model');
-
-        foreach ($this->model->values as $model) {
-            $posts['model_id'] = $model['id'];
-            $posts['project_id'] = $this->project->value['id'];
-            $posts['label'] = $model['label'];
-            $posts['name'] = $model['class_name'];
-            $posts['class_name'] = $model['class_name'];
-            $posts['entity_name'] = $model['entity_name'];
-            $posts['extends_class_name'] = '';
-
-            $page = DB::model('Page');
-            $page->where('project_id', $this->project->value['id'])
-                ->where('name', $model['class_name'])
-                ->one();
-
-            if (!$page->value['id']) $page = DB::model('Page')->insert($posts);
-            if ($page->value['id']) {
-                DB::model('View')->generateDefaultActions($page->value);
-            }
-        }
+        Page::createFromProject($this->project);
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * create page from model
+     *
+     * @return void
+     */
+    function action_creates_from_project()
+    {
+        Page::createFromProject($this->project);
+        $this->redirectTo(['action' => 'list']);;
+    }
+
+    /**
+     * create page from model
+     *
+     * @return void
+     */
     function action_create_page_from_model()
     {
-        $model = DB::model('Model')->fetch($_REQUEST['model_id'])->value;
-
-        if ($this->project->value['id'] && $model['id']) {
-            $posts['model_id'] = $model['id'];
-            $posts['project_id'] = $this->project->value['id'];
-            $posts['label'] = $model['label'];
-            $posts['name'] = $model['class_name'];
-            $posts['class_name'] = $model['class_name'];
-            $posts['entity_name'] = $model['entity_name'];
-            $posts['extends_class_name'] = '';
-            $posts['is_overwrite'] = true;
-
-            $page = DB::model('Page');
-            $page->where('project_id', $this->project->value['id'])
-                ->where('name', $model['class_name'])
-                ->one();
-
-            if (!$page->value['id']) {
-                $page = DB::model('Page')->insert($posts);
-            }
-        }
-
+        $model = DB::model('Model')->fetch($_REQUEST['model_id']);
+        if ($model->value) Page::createFromModel($this->project, $model);
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * change overwrite
+     *
+     * @return void
+     */
     function action_change_overwrite()
     {
         $page = DB::model('Page')->fetch($this->pw_gets['id']);
@@ -196,6 +212,11 @@ class PageController extends ProjectController
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * change all 'overwrite off'
+     *
+     * @return void
+     */
     function action_all_off_overwrite()
     {
         $page = $this->project->relationMany('Page')->all();
@@ -218,7 +239,11 @@ class PageController extends ProjectController
         $this->updateSort('Page');
     }
 
-    //laravel
+    /**
+     * Laravel artisan
+     * 
+     * @return void
+     */
     function artisan()
     {
         $page = DB::model('Page')->fetch($this->pw_posts['page_id']);
@@ -228,9 +253,9 @@ class PageController extends ProjectController
 
         $laravel = new PwLaravel($params);
 
-        if ($this->pw_posts['is_overwrite']) {
-            $laravel->removeController($page->value['name']);
-        }
+        if ($this->pw_posts['is_overwrite']) $laravel->removeController($page->value['name']);
+
+        //TODO api option
         //$options[] = '--api';
         $options[] = '--resource';
         $name = Controller::className($page->value['name']);

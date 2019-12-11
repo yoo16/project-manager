@@ -20,6 +20,12 @@ class ViewItem extends _ViewItem {
         parent::validate();
     }
 
+    /**
+     * hidden vlaue
+     *
+     * @param ViewItem $view_item
+     * @return void
+     */
     static function hiddenValue($view_item) {
         if ($view_item['attribute_id']) {
             $attribute = DB::model('Attribute')->fetch($view_item['attribute_id']);
@@ -44,6 +50,25 @@ class ViewItem extends _ViewItem {
         }
     }
 
+    /**
+     * get by attribute
+     * 
+     * TODO: view is instance by setView() ?
+     *
+     * @param View $view
+     * @param Attribute $attribute
+     * @return void
+     */
+    function getByAttribute($view, $attribute)
+    {
+        if (!$view->value) return;
+        if (!$attribute->value) return;
+
+        $view_item = DB::model('ViewItem');
+        $view_item->where('view_id', $view->value['id'])
+                  ->where('attribute_id', $attribute->value['id'])
+                  ->one();
+    }
 
     /**
      * create all by page
@@ -54,23 +79,34 @@ class ViewItem extends _ViewItem {
     function createAllByPage($page)
     {
         $page->bindBelongsTo('Model');
-        $attribute = $page->model->relationMany('Attribute')->idIndex()->all();
+        $view = DB::model('View')->where('page_id', $page->value['id'])->all();
+        if (!$view->values) return;
+        foreach ($view->values as $view->value) {
+            $this->createByView($page->model, $view);
+        }
+    }
 
+    /**
+     * create by view
+     *
+     * @return void
+     */
+    function createByView($model, $view)
+    {
+        $attribute = $model->relation('Attribute')->idIndex()->all();
         if (!$attribute->values) return;
-        foreach ($attribute->values as $attribute) {
-            if (!in_array($attribute['name'], PwEntity::$app_columns)) {
-                $view_item = DB::model('ViewItem');
-                $view_item->where('view_id', $this->view->value['id'])
-                          ->where('attribute_id', $attribute['id'])
-                          ->one();
+        if (!$view->value) return;
 
-                $posts = [];
+        foreach ($attribute->values as $attribute->value) {
+            if (!in_array($attribute->value['name'], PwEntity::$app_columns)) {
+                $view_item = DB::model('ViewItem')->getByAttribute($view, $attribute);
                 if (!$view_item->value['id']) {
-                    $posts['view_id'] = $this->view->value['id'];
-                    $posts['attribute_id'] = $attribute['id'];
+                    $posts = [];
+                    $posts['view_id'] = $view->value['id'];
+                    $posts['attribute_id'] = $attribute->value['id'];
 
-                    if ($this->view->value['name'] == 'edit') {
-                        if ($attribute['type'] == 'bool') {
+                    if ($view->value['name'] == 'edit') {
+                        if ($attribute->value['type'] == 'bool') {
                             $posts['csv'] = 'active';
                             $posts['form_type'] = 'radio';
                         }

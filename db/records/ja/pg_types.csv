@@ -4,7 +4,6 @@ value,label
 "int4","integer (int4)"
 "int8","bigint (int8)"
 "real","real"
-"double","double"
 "double precision","double precision"
 "float","float"
 "float4","float4"

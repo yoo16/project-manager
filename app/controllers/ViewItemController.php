@@ -251,7 +251,7 @@ class ViewItemController extends ProjectController {
         if (!$view_item_group_member->value) {
             $view_item_group_member = DB::model('ViewItemGroupMember')->insert($posts);
         }
-        $this->redirectTo(['action' => 'list']);;
+        $this->redirectTo(['action' => 'list']);
     }
 
    /**

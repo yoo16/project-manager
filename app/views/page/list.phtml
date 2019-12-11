@@ -7,6 +7,14 @@
 <div class="pt-3">
   <form action="<?= $this->urlFor(['action' => 'import_from_models']) ?>" method="post">
     <?= PwForm::linkModal('#add-window', LABEL_ADD) ?>
+    <?= $this->linkTo(
+      ['controller' => 'page', 'action' => 'creates_from_project'],
+      [
+        'class' => 'btn btn-outline-primary confirm-dialog',
+        'label' => 'Create all',
+        'message' => 'Do you create pages from all models.'
+      ]
+    ) ?>
     <?= PwForm::submit(LABEL_IMPORT, ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you import from Models?']) ?>
     <?= PwForm::hidden('project_id', $this->project->value['id']) ?>
   </form>

@@ -16,6 +16,11 @@ class Page extends _Page {
         parent::validate();
     }
 
+    /**
+     * default value
+     *
+     * @return void
+     */
     function default_value() {
         $this->value['dev_url'] = 'http://';
         return $this->value;
@@ -77,4 +82,49 @@ class Page extends _Page {
         return $path;
     }
 
+    /**
+     * create from model
+     *
+     * @param Project $project
+     * @return void
+     */
+    static function createFromProject($project)
+    {
+        $model = $project->hasMany('Model');
+        if (!$model->values) return;
+        foreach ($model->values as $model->value) {
+            if ($model->value) $page = Page::createFromModel($project, $model);
+        }
+    }
+
+    /**
+     * create from model
+     *
+     * @param Project $project
+     * @param Model $model
+     * @return Page $page
+     */
+    static function createFromModel($project, $model)
+    {
+        if (!($project->value['id'] && $model->value['id'])) return;
+        $posts['model_id'] = $model->value['id'];
+        $posts['project_id'] = $project->value['id'];
+        $posts['label'] = $model->value['label'];
+        $posts['name'] = $model->value['class_name'];
+        $posts['class_name'] = $model->value['class_name'];
+        $posts['entity_name'] = $model->value['entity_name'];
+        $posts['extends_class_name'] = '';
+        $posts['is_overwrite'] = true;
+
+        $page = DB::model('Page')
+                    ->where('project_id', $project->value['id'])
+                    ->where('name', $model->value['class_name'])
+                    ->one();
+        if (!$page->value['id']) $page = DB::model('Page')->insert($posts);
+        if ($page->value['id']) {
+            DB::model('View')->generateDefaultActions($page);
+            DB::model('ViewItem')->createAllByPage($page);
+        }
+        return $page;
+    }
 }

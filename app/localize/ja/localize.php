@@ -2,6 +2,7 @@
 require('_localize.php');
 
 define('LABEL_NAME', '名称');
+define('LABEL_LABEL', 'ラベル');
 define('LABEL_LAST_NAME', '姓');
 define('LABEL_FIRST_NAME', '名');
 define('LABEL_LAST_NAME_KANA', 'せい');

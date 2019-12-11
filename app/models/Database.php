@@ -50,6 +50,7 @@ class Database extends _Database {
 
     /**
      * export database
+     * TODO: refectoring
      *
      * @param file_path $file_path
      * @return bool
@@ -197,8 +198,8 @@ class Database extends _Database {
     /**
      * excel sheet name
      *
-     * @param  [type] $sheet_name [description]
-     * @return [type]             [description]
+     * @param  string $sheet_name
+     * @return string
      */
     function excelSheetName($sheet_name) {
         if (mb_strlen($sheet_name) > 30) {
@@ -209,8 +210,8 @@ class Database extends _Database {
 
     /**
      * excel draw border
-     * @param  [type] $numbers [description]
-     * @return [type]          [description]
+     * @param  integer
+     * @return void
      */ 
     function drawBorders($row, $numbers) {
         for ($col = 0; $col <= $numbers; $col++) {
@@ -223,8 +224,8 @@ class Database extends _Database {
 
     /**
      * excel draw border
-     * @param  [type] $numbers [description]
-     * @return [type]          [description]
+     * @param  integer $numbers
+     * @return void
      */ 
     function drawFillColor($row, $numbers, $color) {
         for ($col = 0; $col <= $numbers; $col++) {
@@ -239,8 +240,8 @@ class Database extends _Database {
     /**
      * excel auto size
      *
-     * @param  [type] $numbers [description]
-     * @return [type]          [description]
+     * @param  integer $numbers
+     * @return void
      */
     function autoSize($numbers) {
         for ($col = 0; $col <= $numbers; $col++) {
@@ -248,6 +249,13 @@ class Database extends _Database {
         }
     }
 
+    /**
+     * create excel attributes
+     *
+     * @param integer $row
+     * @param array $pg_attributes
+     * @return void
+     */
     function createExcelAttributes($row, $pg_attributes) {
         //TODO array setting
         $this->sheet->setCellValueByColumnAndRow(0, $row, 'attribute');
@@ -280,6 +288,13 @@ class Database extends _Database {
         return $row;
     }
 
+    /**
+     * create excel constraints
+     *
+     * @param integer $row
+     * @param array $pg_class
+     * @return void
+     */
     function createExcelConstraints($row, $pg_class) {
         if ($pg_class['pg_constraint']) {
             $this->sheet->setCellValueByColumnAndRow(0, $row, 'constraint');
@@ -291,7 +306,8 @@ class Database extends _Database {
             $this->drawFillColor($row, 3, 'FFEEEEEE');
             $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
 
-            foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
+            foreach ($pg_class['pg_constraint'] as $pg_constraints) {
+                $index = 0;
                 foreach ($pg_constraints as $pg_constraint) {
                     $is_numbering_constraint = PwPgsql::isNumberingName($pg_constraint['conname']);
                     if (!$is_numbering_constraint) {
@@ -304,6 +320,7 @@ class Database extends _Database {
 
                         $this->drawBorders($row, 3);
                         $this->sheet->getRowDimension($row)->setRowHeight($this->cell_height);
+                        $index++;
                     }
                 }
             }
@@ -342,4 +359,36 @@ class Database extends _Database {
         return $values;
     }
 
+    /**
+     * import
+     * TODO $params structure
+     *
+     * @param array $params
+     * @return void
+     */
+    static function import($params)
+    {
+        if (!$params['host']) $params['host'] = DB_HOST;
+        $pgsql = new PwPgsql();
+        $pg_database = $pgsql->setDBHost($params['host'])
+                             ->setDBName($params['database_name'])
+                             ->pgDatabase($params['database_name']);
+
+        if ($pg_database) {
+            $database = DB::model('Database')
+                                    ->where('name', $params['database_name'])
+                                    ->where('hostname', $params['host'])
+                                    ->one();
+
+            if (!$database->value) {
+                $project_manager_pgsql = new PwPgsql();
+                $posts['name'] = $pg_database['datname'];
+                $posts['user_name'] = $project_manager_pgsql->user;
+                $posts['hostname'] = $params['host'];
+                $posts['port'] = $project_manager_pgsql->port;
+
+                DB::model('Database')->insert($posts);
+            }
+        }
+    }
 }

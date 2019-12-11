@@ -18,6 +18,14 @@ class Tag {
         return $instance;
     }
 
+    /**
+     * output table item
+     *
+     * @param array $view_item
+     * @param array $model
+     * @param array $attribute
+     * @return void
+     */
     function tableItemForAttribute($attribute, $view_item) {
         $entity = '$values'."['{$attribute['name']}']";
 
@@ -38,6 +46,14 @@ class Tag {
         if ($tag) $this->php($tag);
     }
 
+    /**
+     * output form input
+     *
+     * @param array $view_item
+     * @param array $model
+     * @param array $attribute
+     * @return void
+     */
     function formInput($view_item, $model, $attribute) {
         $entity = '$this->'.$model['entity_name'];
         if ($attribute['type'] == 'bool') {
@@ -51,6 +67,13 @@ class Tag {
         if ($method) $this->php($param);
     }
 
+    /**
+     * output php tag
+     *
+     * @param string $value
+     * @param boolean $has_equal
+     * @return void
+     */
     function phpTag($value = null, $has_equal = true) {
         if ($has_equal) {
             return '<?= '.$value.' ?>';
@@ -59,13 +82,28 @@ class Tag {
         }
     }
 
+    /**
+     * output php
+     *
+     * @param string $value
+     * @return void
+     */
     function php($value = null) {
         if ($value) $this->value = $value;
         $this->value = $this->phpTag($this->value);
         $this->output();
     }
 
-    //TODO function param
+    /**
+     * output table item url
+     *
+     * @param array $attribute
+     * @param array $page
+     * @param array $model
+     * @param array $view_item
+     * @param array $params
+     * @return void
+     */
     function tableItemUrlForAttribute($attribute, $page, $model, $view_item, $params = null) {
         $entity = '$values'."['{$attribute['name']}']";
         if ($attribute['type'] == 'bool') {
@@ -104,62 +142,133 @@ class Tag {
         $this->output();
     }
 
+    /**
+     * output if
+     *
+     * @return void
+     */
     function ifs($value = null) {
         if ($value) $this->value = $value;
         $this->value = '<? if ('.$this->value.'): ?>'.PHP_EOL;
         $this->output();
     }
 
+    /**
+     * output endif
+     *
+     * @return void
+     */
     function ife() {
         $this->value = '<? endif ?>'.PHP_EOL;
         $this->output();
     }
 
+    /**
+     * output foreach
+     *
+     * @return void
+     */
     function foreachs($value = null) {
         if ($value) $this->value = $value;
         $this->value = '<? foreach ('.$this->value.'): ?>'.PHP_EOL;
         $this->output();
     }
 
+
+    /**
+     * output end foreach
+     *
+     * @return void
+     */
     function foreache() {
         $this->value = '<? endforeach ?>'.PHP_EOL;
         $this->output();
     }
 
+    /**
+     * add
+     *
+     * @param string $value
+     * @return void
+     */
     function add($value) {
         $this->value.= $value;
         return $this;
     }
 
+    /**
+     * if condition
+     *
+     * @param string $condition
+     * @return void
+     */
     function ifcondition($condition) {
         $this->condition = $condition;
         return $this;
     }
 
+    /**
+     * join
+     *
+     * @param string $value
+     * @return void
+     */
     function join($value) {
         $this->value.= $value;
         return $this;
     }
 
+    /**
+     * output $this
+     *
+     * @param string $value
+     * @return void
+     */
     function this($value) {
         $this->value = '$this->'.$value;
         return $this;
     }
 
+    /**
+     * output PHP
+     *
+     * @param array $params
+     * @return void
+     */
     function outputPHP() {
         $params['is_php'] = true;
         $this->output($params);
     }
 
+    /**
+     * output If
+     *
+     * @param array $params
+     * @return void
+     */
     function outputIf($params = null) {
         $this->ifs();
         $this->output($params);
     }
 
+    /**
+     * output
+     *
+     * @param array $params
+     * @return void
+     */
     function output($params = null) {
         echo($this->value);
     }
 
+    /**
+     * hidden
+     *
+     * @param ViewItem $view_item
+     * @param Model $model
+     * @param Attribute $attribute
+     * @return void
+     */
     function hidden($view_item, $model, $attribute) {
         $name = "{$model['entity_name']}[{$attribute[$view_item['attribute_id']]['name']}]";
         $value = ViewItem::hiddenValue($view_item);
@@ -168,7 +277,17 @@ class Tag {
         return $tag;
     }
 
-    function formPassword($view_item, $model, $attribute) {
+    /**
+     * formPassword
+     * 
+     * TODO: use $view_item
+     *
+     * @param ViewItem $view_item
+     * @param Model $model
+     * @param Attribute $attribute
+     * @return void
+     */
+    function formPassword($view_item, $model, $attribute, $params = null) {
         if ($params) {
             $tag = '$this->'.$model['entity_name']."->formPassword('{$attribute['name']}', $params)";
         } else {
@@ -177,6 +296,14 @@ class Tag {
         return $tag;
     }
 
+    /**
+     * formParams
+     *
+     * @param ViewItem $view_item
+     * @param Model $model
+     * @param Attribute $attribute
+     * @return void
+     */
     function formParams($view_item, $model, $attribute) {
         //model
         if ($view_item['csv']) {
@@ -235,6 +362,14 @@ class Tag {
         return $params;
     }
 
+    /**
+     * formParams
+     *
+     * @param ViewItem $view_item
+     * @param Model $model
+     * @param Attribute $attribute
+     * @return void
+     */
     function formSelect($view_item, $model, $attribute) {
         $params = $this->formParams($view_item, $model, $attribute);
 
@@ -247,6 +382,14 @@ class Tag {
         echo($tag);
     }
 
+    /**
+     * formParams
+     *
+     * @param ViewItem $view_item
+     * @param Model $model
+     * @param Attribute $attribute
+     * @return void
+     */
     function formRadio($view_item, $model, $attribute) {
         $params = $this->formParams($view_item, $model, $attribute);
 
@@ -259,7 +402,12 @@ class Tag {
         echo($tag);
     }
 
-
+    /**
+     * requestInstance
+     *
+     * @param PageModel $page_model
+     * @return void
+     */
     function requestInstance($page_model) {
         if ($page_model->values) {
             foreach ($page_model->values as $page_model_value) {
@@ -272,6 +420,12 @@ class Tag {
         }
     }
 
+    /**
+     * pageFilters
+     *
+     * @param PageFilter $page_filter
+     * @return void
+     */
     function pageFilters($page_filter) {
         if ($page_filter->values) {
             foreach ($page_filter->values as $value) {
@@ -348,11 +502,21 @@ class Tag {
         }
     }
 
+    /**
+     * sortableLink
+     *
+     * @return void
+     */
     function sortbleLink() {
         $tag = $this->phpTag("include('views/components/lib/sortable.phtml')", false);
         echo($tag).PHP_EOL;
     }
 
+    /**
+     * valuesId
+     *
+     * @return void
+     */
     function valuesId() {
         $tag = '<?= $values[\'id\'] ?>';
         return $tag;
