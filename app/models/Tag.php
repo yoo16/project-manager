@@ -455,9 +455,6 @@ class Tag {
 
         $return_space = PHP_EOL.'                                ';
 
-        $filter_entity = '$this->filters';
-        $filter = "->filter({$filter_entity})";
-
         if ($page->value['list_sort_order_columns']) {
             $sort_order_columns = explode(',', $page->value['list_sort_order_columns']);
             //TODO asc desc

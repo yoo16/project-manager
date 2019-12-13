@@ -1534,4 +1534,18 @@ class PwEntity {
         PwCSv::streamDownload($file_name, $this->values, $options);
     }
 
+    /**
+     * json decode
+     *
+     * @param string $key
+     * @return PwEntity
+     */
+    public function jsonDecode($key)
+    {
+        if (array_key_exists($key, $this->value)) {
+            $this->value[$key] = json_decode($this->value[$key], true);
+        }
+        return $this;
+    }
+
 }

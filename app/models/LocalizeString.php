@@ -90,4 +90,15 @@ class LocalizeString extends _LocalizeString {
             }
         }
     }
+
+    /**
+     * export by project
+     *
+     * @return void
+     */
+    function exportAll($project)
+    {
+        $model = $project->relation('Model')->all();
+        if ($model->values) $this->importsByModel($model, $project);
+    }
 }

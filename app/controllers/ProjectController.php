@@ -22,13 +22,6 @@ class ProjectController extends AppController
     {
         parent::before_action($action);
 
-        if (!defined('IS_PM_ADMIN') || !IS_PM_ADMIN) {
-            if (!DB::model('Database')->myList()) {
-                $this->redirectTo(['controller' => 'database']);
-                exit;
-            }
-        }
-
         $this->project = $this->model('Project');
         if ($this->project->value) {
             $this->database = DB::model('Database')->fetch($this->project->value['database_id']);
@@ -210,6 +203,9 @@ class ProjectController extends AppController
 
         $this->project->exportPHPControllers(true);
         $this->project->exportPHPViews(true);
+        $this->project->exportRecord();
+
+        DB::model('LocalizeString')->exportAll($this->project);
 
         $params['project_id'] = $this->project->value['id'];
         $this->redirectTo(['controller' => 'model', 'action' => 'list'], $params);

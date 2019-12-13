@@ -66,13 +66,10 @@ class LocalizeStringController extends ProjectController {
         $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
         if ($_REQUEST['model_id']) {
             $model = DB::model('Model')->where('id', $_REQUEST['model_id'])->all();
+            DB::model('LocalizeString')->importByModel($model, $this->project);
         } else {
-            $model = $this->project->relation('Model')->all();
+            DB::model('LocalizeString')->exportAll($this->project);
         }
-        DB::model('LocalizeString')->importsByModel($model, $this->project);
-
-        $model = DB::model('Model')->fetch($_REQUEST['model_id']);
-        LocalizeString::importByModel($model, $this->project);
 
         if ($_REQUEST['redirect']) {
             $this->redirectTo($this->redirectParams());
@@ -171,12 +168,8 @@ class LocalizeStringController extends ProjectController {
     * @return void
     */
     function action_edit() {
-        $this->localize_string = DB::model('LocalizeString')
-                    ->fetch($this->pw_gets['id'])
-                    ->takeValues($this->session['posts']);
-        //TODO entity
-        $this->localize_string->value['label'] = json_decode($this->localize_string->value['label'], true);
-
+        $this->localize_string = DB::model('LocalizeString')->editPage();
+        $this->localize_string->jsonDecode('label');
         $this->lang = DB::model('Lang')->all();
     }
 
