@@ -112,7 +112,7 @@ class ViewItem extends _ViewItem {
         if (!$view->value) return;
 
         foreach ($attribute->values as $attribute->value) {
-            if (!array_key_exists($attribute->value['name'], PwEntity::$app_columns)) {
+            if (!in_array($attribute->value['name'], PwEntity::$app_columns)) {
                 $view_item = DB::model('ViewItem')->getByAttribute($view, $attribute);
                 if (!$view_item->value['id']) {
                     $posts = [];

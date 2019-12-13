@@ -410,7 +410,7 @@ class PwPgsql extends PwEntity
         $this->db_info = $params;
         if (!$params) return $this;
         foreach ($params as $key => $value) {
-            if (array_key_exists($key, self::$pg_info_columns)) {
+            if (in_array($key, self::$pg_info_columns)) {
                 $this->$key = $value;
             }
         }
@@ -451,7 +451,7 @@ class PwPgsql extends PwEntity
             $key_values = explode('=', $pg_info);
             $key = $key_values[0];
             $value = $key_values[1];
-            if (array_key_exists($key, self::$pg_info_columns)) {
+            if (in_array($key, self::$pg_info_columns)) {
                 $this->$key = $value;
             }
         }
@@ -1645,8 +1645,7 @@ class PwPgsql extends PwEntity
      */
     public function allBy($column)
     {
-        $columns = array_keys($this->columns);
-        if (!array_key_exists($column, $columns)) exit("Not found column: {$column}");
+        if (!array_key_exists($column, $this->columns)) exit("Not found column: {$column}");
         $this->values_index_column = $column;
         $this->get();
         return $this;
@@ -3859,17 +3858,19 @@ class PwPgsql extends PwEntity
      * @param string $table_name
      * @return array
      **/
-    function pgAttributes($table_name = null)
+    function pgAttributes($table_name = null, $schema_name = 'public')
     {
         $sql = "SELECT pg_class.oid AS pg_class_id, * FROM pg_class 
                 LEFT JOIN pg_attribute ON pg_class.oid = pg_attribute.attrelid
                 LEFT JOIN information_schema.columns ON information_schema.columns.table_name = pg_class.relname
                 AND information_schema.columns.column_name = pg_attribute.attname 
                 WHERE pg_attribute.attnum > 0
+                AND table_schema = '{$schema_name}'
                 AND atttypid > 0";
 
         if ($table_name) $sql .= " AND relname = '{$table_name}'";
         $sql .= ' ORDER BY pg_attribute.attname;';
+
         return $this->fetchRows($sql);
     }
 

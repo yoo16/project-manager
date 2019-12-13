@@ -69,7 +69,7 @@
       </td>
       <td>
         <div>
-          <? if (array_key_exists($this->view->value['name'], ['new' ,'edit'])): ?>
+          <? if (in_array($this->view->value['name'], ['new' ,'edit'])): ?>
           <? if ($view_item['form_type'] == 'select'): ?>
           <select class="form-control">
             <option>
@@ -141,7 +141,7 @@
 
   <? if ($this->page->model->attribute->values): ?>
   <? foreach ($this->page->model->attribute->values as $view_item): ?>
-    <? if (!array_key_exists($view_item['name'], PwEntity::$app_columns)): ?>
+    <? if (!in_array($view_item['name'], PwEntity::$app_columns)): ?>
   <tr>
     <td>
       <form action="<?= $this->urlFor(['action' => 'add_for_attribute']) ?>" method="post">

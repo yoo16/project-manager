@@ -43,6 +43,11 @@ class ModelController extends ProjectController {
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * list
+     *
+     * @return void
+     */
     function action_list() {
         $this->pg_classes = $this->database->pgsql()->tableArray();
         $this->model = $this->project
@@ -342,51 +347,29 @@ class ModelController extends ProjectController {
     }
 
 
+    /**
+     * delete require columns
+     *
+     * @return void
+     */
     function action_delete_require_columns() {
         $model = $this->project->hasMany('Model');
-
         $database = DB::model('Database')->fetch($this->project->value['database_id']);
-        $columns = array_keys(PwModel::$required_columns);
+        $model->deleteRequiredColumns($database);
 
-        $pgsql = $database->pgsql();
-        if ($model->values) {
-            foreach ($model->values as $model_value) {
-                $model = DB::model('Model')->fetch($model_value['id']);
-                $attribute = $model->hasMany('Attribute');
-
-                foreach ($attribute->values as $attribute_value) {
-                    if (array_key_exists($attribute_value['name'], $columns)) {
-                        DB::model('Attribute')->delete($attribute_value['id']);
-                    }
-                }
-            }
-            foreach ($columns as $column) {
-                $pgsql->dropColumn($model_value['name'], $column);
-            }
-        }
         $this->redirectTo(['controller' => 'model', 'action' => 'list']);
     }
 
+    /**
+     * add require columns
+     *
+     * @return void
+     */
     function action_add_require_columns() {
         $model = $this->project->hasMany('Model');
-
         $database = DB::model('Database')->fetch($this->project->value['database_id']);
-        $add_columns = array_keys(PwModel::$required_columns);
-        if ($model->values) {
-            foreach ($model->values as $model_value) {
-                $model = DB::model('Model')->fetch($model_value['id']);
-                $attribute = $model->hasMany('Attribute');
+        $model->addRequiredColumns($database);
 
-                foreach ($attribute->values as $attribute_value) {
-                    $attribute_names[$attribute_value['name']] = $attribute_value['name'];
-                }
-                foreach ($add_columns as $add_column) {
-                    if (!$attribute_names[$add_column]) {
-                        Attribute::insertForModelRequire($add_column, $database, $model_value);
-                    }
-                }
-            }
-        }
         $this->redirectTo(['controller' => 'model', 'action' => 'list']);
     }
 
@@ -460,52 +443,11 @@ class ModelController extends ProjectController {
         $this->redirectTo(['controller' => 'model', 'action' => 'list']);
     }
 
-    function rebuild_fk_attributes() {
-        $database = DB::model('Database')->fetch($this->project->value['database_id']);
-        $pgsql = $database->pgsql();
-
-        $model = $this->project->relationMany('Model')->all();
-
-        foreach ($model->values as $model_value) {
-            $foreigns = $pgsql->pgForeignConstraints($model_value['pg_class_id']);
-
-            foreach ($foreigns as $foreign) {
-                $attribute = DB::model('Attribute')
-                                    ->where("model_id = {$model_value['id']}")
-                                    ->where("name = '{$foreign['attname']}'")
-                                    ->one();
-
-                $fk_model = DB::model('Model')
-                                    ->where("pg_class_id = {$foreign['foreign_class_id']}")
-                                    ->one();
-
-                if ($attribute->value && $fk_model->value) {
-                    $fk_attribute = DB::model('Attribute')
-                                    ->where("model_id = '{$fk_model->value['id']}'")
-                                    ->where("name = '{$foreign['foreign_attname']}'")
-                                    ->one();
-
-                    if ($fk_attribute->value) {
-                        $posts['fk_attribute_id'] = $fk_attribute->value['id'];
-                        DB::model('Attribute')->update($posts, $attribute->value['id']);
-                        if ($attribute->sql_error) {
-                            echo($attribute->sql_error).PHP_EOL;
-                            exit;
-                        }
-                    } else {
-                        echo('Not found fk_attribute').PHP_EOL;
-                        exit;
-                    }
-                } else {
-                    echo('Not found fk_model').PHP_EOL;
-                    exit;
-                }
-            }
-        }
-        $this->redirectTo(['action' => 'list']);;
-    }
-
-
+    /**
+     * constraionts
+     *
+     * @return void
+     */
     function action_constraints() {
         $database = $this->project->belongsTo('Database');
         $pgsql = $database->pgsql();

@@ -202,7 +202,7 @@ class PwModel {
         //     $propaties[] = "'old_name' => '{$attribute['old_name']}'";
         // }
         if (isset($attribute['default_value'])) {
-            if (array_key_exists($attribute['type'], PwPgsql::$number_types)) {
+            if (in_array($attribute['type'], PwPgsql::$number_types)) {
                 if (is_numeric($attribute['default_value'])) {
                     $propaties[] = "'default' => {$attribute['default_value']}";
                 }

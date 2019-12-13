@@ -550,7 +550,6 @@ class Project extends _Project {
 
     }
 
-
     /**
      * sync by DB
      *
@@ -591,5 +590,115 @@ class Project extends _Project {
         }
 
         Model::updateForeignKey($this);
+    }
+
+    /**
+     * rebuildFkAttributes
+     *
+     * @return void
+     */
+    function rebuildFkAttributes()
+    {
+        $database = DB::model('Database')->fetch($this->value['database_id']);
+        $pgsql = $database->pgsql();
+        $model = $this->relationMany('Model')->all();
+
+        foreach ($model->values as $model->value) {
+            $foreigns = $pgsql->pgForeignConstraints($model->value['pg_class_id']);
+
+            if ($foreigns) {
+                foreach ($foreigns as $foreign) {
+                    $attribute = DB::model('Attribute')
+                                        ->where('model_id', $model->value['id'])
+                                        ->where('name', $foreign['attname'])
+                                        ->one();
+    
+                    $fk_model = DB::model('Model')->where('pg_class_id', $foreign['foreign_class_id'])->one();
+    
+                    if ($attribute->value && $fk_model->value) {
+                        $fk_attribute = DB::model('Attribute')
+                                        ->where('model_id', $fk_model->value['id'])
+                                        ->where('name', $foreign['foreign_attname'])
+                                        ->one();
+    
+                        if ($fk_attribute->value) {
+                            $posts['fk_attribute_id'] = $fk_attribute->value['id'];
+                            DB::model('Attribute')->update($posts, $attribute->value['id']);
+                            if ($attribute->sql_error) {
+                                dump($attribute->sql_error);
+                            }
+                        } else {
+                            dump('Not found fk_attribute');
+                        }
+                    } else {
+                        dump('Not found fk_model');
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * documents
+     *
+     * @return array $documents
+     */
+    function documents()
+    {
+        if (!$this->user_project_setting->value) return;
+        if (file_exists($this->user_project_setting->value['project_path'])) {
+            $project_path = $this->user_project_setting->value['project_path'];
+
+            //TODO: structure
+
+            //php controller
+            $app_path = "{$project_path}app/models/";
+            $this->getDocuments($app_path, 'model', 'php');
+
+            //php model
+            $app_path = "{$project_path}app/controllers/";
+            $this->getDocuments($app_path, 'controller', 'php');
+
+            //php views
+            $app_path = "{$project_path}app/views/";
+            $this->getDocuments($app_path, 'view', 'phtml');
+
+            //php lib
+            $app_path = "{$project_path}lib/";
+            $this->getDocuments($app_path, 'lib', 'php');
+
+            //php localize
+            $app_path = "{$project_path}app/localize/";
+            $this->getDocuments($app_path, 'localize', 'php');
+
+            //php helper
+            $app_path = "{$project_path}app/helper/";
+            $this->getDocuments($app_path, 'helper', 'php');
+
+            //php setting
+            $app_path = "{$project_path}app/settings/";
+            $this->getDocuments($app_path, 'setting', 'php');
+
+            //js controller
+            $app_path = "{$project_path}public/javascripts/controllers/";
+            $this->getDocuments($app_path, 'js-controller', 'js');
+
+            //js lib
+            $app_path = "{$project_path}public/javascripts/lib/";
+            $this->getDocuments($app_path, 'js-lib', 'js');
+
+            //sass
+            $app_path = "{$project_path}public/sass/";
+            $this->getDocuments($app_path, 'sass', 'scss');
+
+            //csv
+            $app_path = "{$project_path}db/";
+            $this->getDocuments($app_path, 'csv', 'csv');
+
+            //sql
+            $app_path = "{$project_path}db/";
+            $this->getDocuments($app_path, 'sql', 'sql');
+        }
+        return $this->documents;
     }
 }

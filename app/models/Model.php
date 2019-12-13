@@ -491,4 +491,59 @@ class Model extends _Model {
         $pgsql_entity->updateTableComment($model->value['name'], $this->value['label']);
     }
 
+    /**
+     * add columns
+     *
+     * @param Database $database
+     * @param Model $model
+     * @return void
+     */
+    function addRequiredColumns($database, $model)
+    {
+        if (!$database->value) return;
+        if (!$model->values) return;
+        $add_columns = array_keys(PwModel::$required_columns);
+        if ($model->values) {
+            foreach ($model->values as $model_value) {
+                $model = DB::model('Model')->fetch($model_value['id']);
+                $attribute = $model->hasMany('Attribute');
+
+                foreach ($attribute->values as $attribute_value) {
+                    $attribute_names[$attribute_value['name']] = $attribute_value['name'];
+                }
+                foreach ($add_columns as $add_column) {
+                    if (!$attribute_names[$add_column]) {
+                        Attribute::insertForModelRequire($add_column, $database, $model_value);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * delete columns
+     *
+     * @param Database $database
+     * @param Model $model
+     * @return void
+     */
+    function deleteRequiredColumns($database, $model)
+    {
+        if (!$database->value) return;
+        if (!$model->values) return;
+        $pgsql = $database->pgsql();
+        foreach ($model->values as $model->value) {
+            $attribute = $model->hasMany('Attribute');
+            if ($attribute->values) {
+                foreach ($attribute->values as $attribute_value) {
+                    if (array_key_exists($attribute_value['name'], PwModel::$required_columns)) {
+                        DB::model('Attribute')->delete($attribute_value['id']);
+                    }
+                }
+            }
+        }
+        foreach (PwModel::$required_columns as $column) {
+            $pgsql->dropColumn($model_value['name'], $column);
+        }
+    }
 }

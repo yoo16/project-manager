@@ -58,7 +58,7 @@ class Tag {
         $entity = '$this->'.$model['entity_name'];
         if ($attribute['type'] == 'bool') {
             $method = "formCheckbox('{$attribute['name']}')";
-        } else if (array_key_exists($attribute['type'], ['int2', 'int4', 'int8', 'float', 'float8', 'double', 'double precision', 'real'])) {
+        } else if (in_array($attribute['type'], ['int2', 'int4', 'int8', 'float', 'float8', 'double', 'double precision', 'real'])) {
             $method = "formInput('{$attribute['name']}', ['class' => 'form-control col-4 number'])";
         } else {
             $method = "formInput('{$attribute['name']}', ['class' => 'form-control'])";

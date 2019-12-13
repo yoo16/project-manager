@@ -727,7 +727,7 @@ class Controller extends RuntimeException
             return ($html_params['menu_group'] == $this->menu_group);
         }
         if (isset($html_params['menu_groups']) && $this->menu_groups) {
-            return (array_key_exists($html_params['menu_groups'], $this->menu_groups));
+            return (in_array($html_params['menu_groups'], $this->menu_groups));
         }
     }
 

@@ -12,7 +12,7 @@ define('TMP_DIR', BASE_DIR . 'tmp/');
 define('DB_DIR', BASE_DIR.'db/');
 
 define('DEBUG', true);
-define('SQL_LOG', false);
+define('SQL_LOG', true);
 
 //shell
 define('COMAND_PHP_PATH', '/usr/bin/php');

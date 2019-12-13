@@ -522,6 +522,15 @@ class ProjectController extends AppController
         $this->updateSort('Project');
     }
 
+    /**
+     * rebuild fk attributes
+     *
+     * @return void
+     */
+    function action_rebuild_fk_attributes() {
+        $this->project->rebuildFkAttributes();
+        $this->redirectTo(['action' => 'list']);;
+    }
 
     /**
      * analyze
@@ -543,63 +552,11 @@ class ProjectController extends AppController
         $this->user_project_setting = $this->project->relation('UserProjectSetting');
         $this->user_project_setting->all();
 
+        //TODO
         if (count($this->user_project_setting->vlaues) == 0) $this->user_project_setting->value = $this->user_project_setting->values[0];
 
-        if ($this->user_project_setting->value) {
-            if (file_exists($this->user_project_setting->value['project_path'])) {
-                $project_path = $this->user_project_setting->value['project_path'];
-
-                //php controller
-                $app_path = "{$project_path}app/models/";
-                $this->project->getDocuments($app_path, 'model', 'php');
-
-                //php model
-                $app_path = "{$project_path}app/controllers/";
-                $this->project->getDocuments($app_path, 'controller', 'php');
-
-                //php views
-                $app_path = "{$project_path}app/views/";
-                $this->project->getDocuments($app_path, 'view', 'phtml');
-
-                //php lib
-                $app_path = "{$project_path}lib/";
-                $this->project->getDocuments($app_path, 'lib', 'php');
-
-                //php localize
-                $app_path = "{$project_path}app/localize/";
-                $this->project->getDocuments($app_path, 'localize', 'php');
-
-                //php helper
-                $app_path = "{$project_path}app/helper/";
-                $this->project->getDocuments($app_path, 'helper', 'php');
-
-                //php setting
-                $app_path = "{$project_path}app/settings/";
-                $this->project->getDocuments($app_path, 'setting', 'php');
-
-                //js controller
-                $app_path = "{$project_path}public/javascripts/controllers/";
-                $this->project->getDocuments($app_path, 'js-controller', 'js');
-
-                //js lib
-                $app_path = "{$project_path}public/javascripts/lib/";
-                $this->project->getDocuments($app_path, 'js-lib', 'js');
-
-                //sass
-                $app_path = "{$project_path}public/sass/";
-                $this->project->getDocuments($app_path, 'sass', 'scss');
-
-                //csv
-                $app_path = "{$project_path}db/";
-                $this->project->getDocuments($app_path, 'csv', 'csv');
-
-                //sql
-                $app_path = "{$project_path}db/";
-                $this->project->getDocuments($app_path, 'sql', 'sql');
-
-                $this->documents = $this->project->documents;
-            }
-        }
+        $this->project->setUserProjectSetting($this->user_project_setting);
+        $this->project->documents();
     }
     
 }

@@ -260,26 +260,25 @@ class PwTag {
      * @return string
      */
     static function attribute($params) {
-        if (is_array($params)) {
-            $escape_columns = ['label',
-                               'icon_name',
-                               'http_params',
-                               'menu_group',
-                               'is_use_selected',
-                               'selected_key',
-                               'selected_value',
-                               'is_confirm',
-                               'is_check_delete'
-                            ];
-            foreach ($params as $key => $value) {
-                if (!array_key_exists($key, $escape_columns)) {
-                    $attributes[] = "{$key}=\"{$value}\"";
-                }
+        if (!is_array($params)) return;
+        //TODO structure
+        $escape_columns = ['label',
+                           'icon_name',
+                           'http_params',
+                           'menu_group',
+                           'is_use_selected',
+                           'selected_key',
+                           'selected_value',
+                           'is_confirm',
+                           'is_check_delete'];
+        foreach ($params as $key => $value) {
+            if (!in_array($key, $escape_columns)) {
+                $attributes[] = "{$key}=\"{$value}\"";
             }
-            if ($attributes) {
-                $attribute = implode(' ', $attributes);
-                return $attribute;
-            }
+        }
+        if ($attributes) {
+            $attribute = implode(' ', $attributes);
+            return $attribute;
         }
     }
 
@@ -333,7 +332,7 @@ class PwTag {
         $escape_columns = ['label', 'name'];
         if (is_array($params)) {
             foreach ($params as $key => $value) {
-                if (!array_key_exists($key, $escape_columns)) {
+                if (!in_array($key, $escape_columns)) {
                     $attributes[] = "{$key}=\"{$value}\"";
                 }
             }
