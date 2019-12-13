@@ -61,22 +61,43 @@ class Attribute extends _Attribute {
         }
     }
 
-    function importByModel($model, $database) {
-        if (!$model) return;
+    /**
+     * imports by model
+     *
+     * @param Model $model
+     * @param Database $database
+     * @return void
+     */
+    function importsByModel($model, $database) {
+        if (!$model->values) return;
+        foreach ($model->values as $model->value)
+        {
+            $this->importByModel($model, $database);
+        }
+    }
 
+    /**
+     * import by model
+     *
+     * @param Model $model
+     * @param Database $database
+     * @return void
+     */
+    function importByModel($model, $database) {
+        if (!$model->value) return;
         if (!$database->value) return;
 
-        $pg_attributes = $database->pgsql()->attributeArray($model['name']); 
-
+        $pg_attributes = $database->pgsql()->attributeArray($model->value['name']); 
         if (!$pg_attributes) return;
+
         foreach ($pg_attributes as $pg_attribute) {
             $attribute = DB::model('Attribute')
-                                ->where("model_id = '{$model['id']}'")
-                                ->where("name = '{$pg_attribute['attname']}'")
+                                ->where('model_id', $model->value['id'])
+                                ->where('name', $pg_attribute['attname'])
                                 ->one();
 
-            $value = null;
-            $value['model_id'] = $model['id'];
+            $value = [];
+            $value['model_id'] = $model->value['id'];
             $value['name'] = $pg_attribute['attname'];
             $value['type'] = $pg_attribute['udt_name'];
             if ($pg_attribute['comment']) $value['label'] = $pg_attribute['comment'];
@@ -87,11 +108,7 @@ class Attribute extends _Attribute {
             $value['is_required'] = ($pg_attribute['attnotnull'] == 't');
 
             if ($pg_attribute['attnum'] > 0) {
-                if ($attribute->value['id']) {
-                    $attribute = DB::model('Attribute')->update($value, $attribute->value['id']);
-                } else {
-                    $attribute = DB::model('Attribute')->insert($value);
-                }
+                $attribute = DB::model('Attribute')->save($value, $attribute->value['id']);
             }
         }
     }
@@ -169,4 +186,26 @@ class Attribute extends _Attribute {
         self::changeSerialInt('int4', $database, $model, $attribute);
     }
 
+
+    /**
+     * database values
+     *
+     * @param Database $database
+     * @return void
+     */
+    function valuesByDatabase($database)
+    {
+        $attribute = $model->hasMany('Attribute');
+        if (!$this->values) return;
+        foreach ($this->values as $attribute) {
+            if ($attribute['fk_attribute_id']) {
+                $fk_attribute = DB::model('Attribute')->fetch($attribute['fk_attribute_id']);
+                if ($fk_attribute->value) {
+                    $model = DB::model('Model')->fetch($fk_attribute->value['model_id']);
+                    if ($model->value) $this->fk_models[$attribute['name']] = $model->value;
+                }
+            }
+        }
+        return $database->pgsql()->table($model->value['name'])->get()->values;
+    }
 }

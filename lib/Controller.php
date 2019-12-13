@@ -1349,6 +1349,8 @@ class Controller extends RuntimeException
 
     /**
      * after action
+     * 
+     * TODO
      *
      * @param string $action
      * @return void
@@ -1950,11 +1952,8 @@ class Controller extends RuntimeException
      */
     function jsControllerName()
     {
-        if ($this->js_controller) {
-            return $this->js_controller;
-        } else {
-            return $this->pw_controller;
-        }
+        if ($this->js_controller) return $this->js_controller;
+        return $this->pw_controller;
     }
 
     /**
@@ -1970,6 +1969,8 @@ class Controller extends RuntimeException
     /**
      * images dirctory path
      *
+     * @param string $file_name
+     * @return string $dir
      * @return string
      */
     function image($file_name, $dir = 'images')
@@ -2056,6 +2057,7 @@ class Controller extends RuntimeException
         $memory_mb = round($memory_peak / (1024 * 1024));
         if ($memory_mb > APP_MEMORY_LIMIT) {
             $msg = "memory peak : {$memory_mb}MB";
+            dump($msg);
             return true;
         }
     }
@@ -2063,6 +2065,6 @@ class Controller extends RuntimeException
 
 PwSetting::load();
 Controller::loadLib();
-if (!$_REQUEST) PwLocalize::loadLocalizeFile($lang);
+PwLocalize::loadLocalizeFile($lang);
 PwLoader::autoloadModel();
 PwSetting::loadApplication();

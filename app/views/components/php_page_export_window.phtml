@@ -74,7 +74,7 @@
                 <? if ($this->page->value): ?>
                 <div>
                   <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_php_page']) ?>" method="post">
-                    <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP controller files?">Controller/View</button>
+                    <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP controller & view files?">Page</button>
                     <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
                     <input type="hidden" name="page_id" value="<?= $this->page->value['id'] ?>">
                     <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">

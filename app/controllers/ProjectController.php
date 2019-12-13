@@ -196,17 +196,13 @@ class ProjectController extends AppController
     function action_export_php_page()
     {
         if (!isPost()) exit;
-        $this->page = DB::model('Page')->fetch($this->pw_posts['page_id']);
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
-        $this->model = DB::model('Model')->fetch($this->page->value['model_id']);
+        $page = DB::model('Page')->fetch($this->pw_posts['page_id']);
+        var_dump($page->value);
+        exit;
+        $this->project->exportPHPPage($page);
 
-        $this->project->exportPHPController($this->page, $_REQUEST['is_overwrite']);
-        $this->project->exportPHPView($this->page->value, $_REQUEST['is_overwrite']);
-
-        LocalizeString::importByModel($this->model, $this->project);
-
-        $params['page_id'] = $this->pw_posts['page_id'];
-        $this->redirectTo(['controller' => 'view', 'action' => 'list'], $params);
+        $this->redirectTo(['controller' => 'view', 'action' => 'list'], ['page_id' => $this->pw_posts['page_id']]);
     }
 
     /**
@@ -403,33 +399,6 @@ class ProjectController extends AppController
         $this->redirectTo(['controller' => 'attribute', 'action' => 'list'], $params);;
     }
 
-
-    /**
-     * export
-     *
-     * @return void
-     */
-    function action_export()
-    {
-        $project = DB::model('Project')->fetch($this->pw_gets['id'])->value;
-        $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_gets['user_project_setting_id'])->value;
-
-        $project_path = $user_project_setting['project_path'];
-
-        $cmd = "mkdir -p {$project_path}";
-        exec($cmd, $output, $return);
-
-        if (file_exists($project_path)) {
-            $git_path = PHP_WORK_GIT_URL;
-            $cmd = "git clone {$git_path} {$project_path}";
-            exec($cmd, $output, $return);
-        }
-
-        PwFile::deleteDotGit($project_path);
-
-        $this->redirectTo(['action' => 'export_list', 'id' => $project['id']]);
-    }
-
     /**
      * create
      *
@@ -549,11 +518,10 @@ class ProjectController extends AppController
         $this->tables = $this->pgsql->pgTables();
         $this->attributes = $this->pgsql->pgAttributes();
 
+        //TODO
         $this->user_project_setting = $this->project->relation('UserProjectSetting');
         $this->user_project_setting->all();
-
-        //TODO
-        if (count($this->user_project_setting->vlaues) == 0) $this->user_project_setting->value = $this->user_project_setting->values[0];
+        if ($this->user_project_setting->values) $this->user_project_setting->value = $this->user_project_setting->values[0];
 
         $this->project->setUserProjectSetting($this->user_project_setting);
         $this->project->documents();

@@ -202,12 +202,31 @@ class Project extends _Project {
     }
 
     /**
+     * export PHP page
+     *
+     * @param Page $page
+     * @param Model $model
+     * @return void
+     */
+    function exportPHPPage($page, $model)
+    {
+        
+        $this->model = DB::model('Model')->fetch($this->page->value['model_id']);
+
+        $this->exportPHPController($page, $_REQUEST['is_overwrite']);
+        $this->exportPHPView($page->value, $_REQUEST['is_overwrite']);
+
+        LocalizeString::importByModel($model, $this);
+    }
+
+    /**
      * export php model
      * 
      * @param Model $model
      * @return bool
      */
-    function exportPythonModel($pgsql, $model) {
+    function exportPythonModel($pgsql, $model)
+    {
         $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
 
         $values = [];
@@ -511,7 +530,7 @@ class Project extends _Project {
 
         //TODO globe?
         while ($file_name = readdir($dir)) {
-            $is_except = array_key_exists($file_name, $this->except_dirs);
+            if ($this->except_dirs) $is_except = array_key_exists($file_name, $this->except_dirs);
             if ($file_name == '.' || $file_name == '..' || $is_except) {
 
             } else {
@@ -586,7 +605,7 @@ class Project extends _Project {
             }
 
             $attribute = new Attribute();
-            $attribute->importByModel($model->value, $this->database);
+            $attribute->importByModel($model, $this->database);
         }
 
         Model::updateForeignKey($this);

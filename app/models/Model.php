@@ -478,7 +478,7 @@ class Model extends _Model {
         if ($create_sql) $result = $pgsql_entity->query($create_sql);
 
         $attribute = DB::model('Attribute');
-        $attribute->importByModel($this->value, $database);
+        $attribute->importByModel($this, $database);
 
         //update pg_class_id
         $pg_class = $pgsql_entity->pgClassByRelname($this->value['name']);
@@ -489,6 +489,37 @@ class Model extends _Model {
 
         //comment label
         $pgsql_entity->updateTableComment($model->value['name'], $this->value['label']);
+    }
+
+    /**
+     * sync by model
+     *
+     * @param Database $database
+     * @return void
+     */
+    function sync($database) {
+        if (!$this->value) return;
+        $pgsql = new PwPgsql($database->pgInfo());
+        if ($pg_class = $pgsql->pgClassByRelname($this->value['name'])) {
+            $posts['pg_class_id'] = $pg_class['pg_class_id'];
+            $update_model = $this->update($posts);
+            DB::model('Attribute')->importByModel($update_model, $this->database);
+        }
+    }
+
+    /**
+     * sync DB
+     *
+     * @param Project $project
+     * @param Database $database
+     * @return void
+     */
+    function syncByProject($project, $database) {
+        $model = $project->relation('Model')->all();
+        if (!$model->values) return;
+        foreach ($model->values as $model->value) {
+            $this->sync($model);
+        }
     }
 
     /**
@@ -544,6 +575,62 @@ class Model extends _Model {
         }
         foreach (PwModel::$required_columns as $column) {
             $pgsql->dropColumn($model_value['name'], $column);
+        }
+    }
+
+    /**
+     * add By Pgclass
+     *
+     * @param array $posts
+     * @param Project $project
+     * @return void
+     */
+    function addForPgclass($posts, $project)
+    {
+        $pg_class = $pgsql->pgClassByRelname($posts['name']);
+        if (!$pg_class) $this->addError('PgClass', "Not found: {$posts['name']}");
+
+        $posts['project_id'] = $project->value['id'];
+        $posts['database_id'] = $project->value['database_id'];
+        $posts['relfilenode'] = $pg_class['relfilenode'];
+        $posts['pg_class_id'] = $pg_class['pg_class_id'];
+        $posts['name'] = $pg_class['relname'];
+        $posts['entity_name'] = PwFile::pluralToSingular($pg_class['relname']);
+        $posts['class_name'] = PwFile::phpClassName($posts['entity_name']);
+
+        $model = DB::model('Model')->insert($posts);
+        return $model;
+    }
+
+    /**
+     * check relations
+     *
+     * @param Project $project
+     * @return void
+     */
+    function checkRelations($project, $pgsql)
+    {
+        $model = $project->relation('Model')->all();
+        foreach ($model->values as $model->value) {
+            $pg_foreign_constraints = $pgsql->pgForeignConstraints($model->value['pg_class_id']);
+            if ($pg_foreign_constraints) {
+                foreach ($pg_foreign_constraints as $pg_foreign_constraint) {
+                    $attribute = DB::model('Attribute')->where('model_id', $model->value['id'])
+                                                       ->where('name', $pg_foreign_constraint['attname'])
+                                                       ->where('fk_attribute_id IS NULL OR fk_attribute_id = 0')
+                                                       ->one();
+                    if ($attribute->id) {
+                        $fk_model = DB::model('Model')->where('name', $pg_foreign_constraint['foreign_relname'])->one();
+
+                        $fk_attribute = DB::model('Attribute')->where('model_id', $fk_model->value['id'])
+                                                              ->where('name', 'id')
+                                                              ->one();
+
+                        $posts['fk_attribute_id'] = $fk_attribute->value['id'];
+                        $attribute->update($posts);
+                    }
+                }
+            }
         }
     }
 }

@@ -50,21 +50,37 @@ class ModelController extends ProjectController {
      */
     function action_list() {
         $this->pg_classes = $this->database->pgsql()->tableArray();
+
         $this->model = $this->project
-                            ->relationMany('Model')
+                            ->relation('Model')
                             ->order('name')
                             ->all()
                             ->bindValuesArray($this->pg_classes, 'pg_class', 'name');
     }
 
+    /**
+     * new
+     *
+     * @return void
+     */
     function action_new() {
 
     }
 
+    /**
+     * edit
+     *
+     * @return void
+     */
     function action_edit() {
         $this->model = DB::model('Model')->fetch($this->pw_gets['id']);
     }
 
+    /**
+     * add
+     *
+     * @return void
+     */
     function action_add() {
         if (!isPost()) exit;
 
@@ -83,38 +99,24 @@ class ModelController extends ProjectController {
                 }
             }
 
-            if (!$results) {
-                echo("SQL Error: {$pgsql->sql}");
-                exit;
-            }
-            if ($posts['label']) {
-                $results = $pgsql->updateTableComment($posts['name'], $posts['label']);
-            }
-            
-            $pg_class = $pgsql->pgClassByRelname($posts['name']);
-            if (!$pg_class) {
-                echo("Not found: {$table_name} pg_class");
-                exit;
-            }
+            if (!$results) $this->addError('SQL', "SQL Error: {$pgsql->sql}");
+            if ($posts['label']) $results = $pgsql->updateTableComment($posts['name'], $posts['label']);
 
-            $posts['project_id'] = $this->project->value['id'];
-            $posts['database_id'] = $this->project->value['database_id'];
-            $posts['relfilenode'] = $pg_class['relfilenode'];
-            $posts['pg_class_id'] = $pg_class['pg_class_id'];
-            $posts['name'] = $pg_class['relname'];
-            $posts['entity_name'] = PwFile::pluralToSingular($pg_class['relname']);
-            $posts['class_name'] = PwFile::phpClassName($posts['entity_name']);
-
-            $model = DB::model('Model')->insert($posts);
+            $model = DB::model('Model')->addForPgclass($posts);
 
             $attribute = new Attribute();
-            $attribute->importByModel($model->value, $this->database);
+            $attribute->importByModel($model, $this->database);
         }
 
         unset($this->session['posts']);
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * update
+     *
+     * @return void
+     */
     function action_update() {
         if (!isPost()) exit;
 
@@ -271,78 +273,37 @@ class ModelController extends ProjectController {
         $this->redirectTo(['controller' => 'relation_database', 'action' => 'list']);
     }
 
+    /**
+     * check relation
+     * 
+     * TODO: refactoring
+     *
+     * @return void
+     */
     function action_check_relation() {
-        $database = $this->project->belongsTo('Database');
-        $models = $this->project->relationMany('Model')
-                               ->all()
-                               ->values;
-
-        $pgsql = $this->database->pgsql();
-        foreach ($models as $model) {
-            $pg_foreign_constraints = $pgsql->pgForeignConstraints($model['pg_class_id']);
-            if ($pg_foreign_constraints) {
-                foreach ($pg_foreign_constraints as $pg_foreign_constraint) {
-                    $attribute = DB::model('Attribute')->where('model_id', $model['id'])
-                                                       ->where("name = '{$pg_foreign_constraint['attname']}'")
-                                                       ->where("fk_attribute_id IS NULL OR fk_attribute_id = 0")
-                                                       ->one();
-                    if ($attribute->id) {
-                        $fk_model = DB::model('Model')->where("name = '{$pg_foreign_constraint['foreign_relname']}'")
-                                                      ->one()
-                                                      ->value;
-
-                        $fk_attribute = DB::model('Attribute')->where("model_id = {$fk_model['id']}")
-                                                       ->where("name = 'id'")
-                                                       ->one()
-                                                       ->value;
-
-                        $posts['fk_attribute_id'] = $fk_attribute['id'];
-                        $attribute->update($posts);
-                    }
-                }
-            }
-        }
+        DB::model('Model')->checkRelations($this->project, $this->database->pgsql());
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * sync models
+     *
+     * @return void
+     */
     function action_sync_models() {
         if (!$this->database->value['id']) $this->redirectTo(['controller' => 'project']);
-
-        $model = $this->project->relationMany('Model')->all();
-
-        if ($model->values) {
-            foreach ($model->values as $model_values) {
-                $pgsql_entity = new PwPgsql($this->database->pgInfo());
-                $pg_class = $pgsql_entity->pgClassByRelname($model_values['name']);
-
-                if ($pg_class) {
-                    $model_values['pg_class_id'] = $pg_class['pg_class_id'];
-                    $model = DB::model('Model')->update($model_values, $model_values['id']);
-
-                    $attribute = new Attribute();
-                    $attribute->importByModel($model_values, $this->database);
-                }
-            }
-        }
-
+        DB::model('Model')->syncByProject($this->project, $this->database);
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * sync model
+     *
+     * @return void
+     */
     function action_sync_model() {
         if (!$this->database->value['id']) $this->redirectTo(['controller' => 'project']);
-
-        $model = DB::model('Model')->fetch($this->pw_gets['id']);
-        if ($model->value) {
-            $pgsql_entity = new PwPgsql($this->database->pgInfo());
-            $pg_class = $pgsql_entity->pgClassByRelname($model->value['name']);
-            if ($pg_class) {
-                $posts['pg_class_id'] = $pg_class['pg_class_id'];
-                $model = $model->update($posts);
-
-                $attribute = new Attribute();
-                $attribute->importByModel($model->value, $this->database);
-            }
-        }
+        DB::model('Model')->fetch($this->pw_gets['id'])->sync($this->database);
         $this->redirectTo(['action' => 'list']);;
     }
 
@@ -380,10 +341,8 @@ class ModelController extends ProjectController {
      */
     function action_update_comments() {
         $model = $this->project->hasMany('Model');
-
         $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();
-
         if ($model->values) {
             foreach ($model->values as $model_value) {
                 if ($model_value['label']) {
@@ -396,6 +355,8 @@ class ModelController extends ProjectController {
 
     /**
      * restore column comment from another database
+     * 
+     * TODO: refactoring
      *
      * @return
      */
@@ -457,7 +418,16 @@ class ModelController extends ProjectController {
         }
     }
 
+    /**
+     * values
+     * 
+     * TODO: refectoring
+     *
+     * @return void
+     */
     function action_values() {
+        $database = $this->project->belongsTo('Database');
+
         $this->model = DB::model('Model')->fetch($this->pw_gets['id']);
         $this->attribute = $this->model->hasMany('Attribute');
 
@@ -466,40 +436,26 @@ class ModelController extends ProjectController {
                 $fk_attribute = DB::model('Attribute')->fetch($attribute['fk_attribute_id']);
                 if ($fk_attribute->value) {
                     $model = DB::model('Model')->fetch($fk_attribute->value['model_id']);
-                    if ($model->value) {
-                        $this->fk_models[$attribute['name']] = $model->value;
-                    }
+                    if ($model->value) $this->fk_models[$attribute['name']] = $model->value;
                 }
             }
         }
 
-        $database = $this->project->belongsTo('Database');
-
         $this->pg_class = $database->pgsql()->pgClassArray($this->model->value['pg_class_id']);
-
-        $this->values = $database->pgsql()
-                                 ->table($this->model->value['name'])
-                                 ->all()
-                                 ->values;
+        $this->values = DB::model('Attribute')->valuesByDatabase($database);
     }
 
+    /**
+     * add value
+     *
+     * @return void
+     */
     function action_add_value() {
         if (!isPost()) exit;
-
-        $posts = $this->pw_posts['model'];
-
         $this->model = DB::model('Model')->fetch($this->pw_gets['id']);
-
         $database = $this->project->belongsTo('Database');
-        $pgsql = $database->pgsql()->table($this->model->value['name'])->insert($posts);
-
-        if ($pgsql->sql_error) {
-            echo($pgsql->sql_error.PHP_EOL);
-            echo($pgsql->sql.PHP_EOL);
-            echo($pgsql->dbname.PHP_EOL);
-            echo($pgsql->host.PHP_EOL);
-            exit;
-        }
+        $pgsql = $database->pgsql()->table($this->model->value['name'])->insert($this->pw_posts['model']);
+        if ($pgsql->sql_error) $this->addError('SQL', $pgsql->sql_error);
         $this->redirectTo(['action' => 'values', 'id' => $this->pw_gets['id']]);
     }
 
