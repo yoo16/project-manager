@@ -95,10 +95,44 @@ class Project extends _Project {
     }
 
     /**
+     * set user project setting
+     *
+     * @return Project
+     */
+    function setUserProjectSetting($user_project_setting)
+    {
+        $this->user_project_setting = $user_project_setting;
+        return $this;
+    }
+
+    /**
+     * export PHP 
+     *
+     * @param UserProjectSetting $user_project_setting
+     * @param boolen $is_fource
+     * @return void
+     */
+    function exportPHPAll($is_fource = false)
+    {
+        if (!$this->value) return;
+        if (!$this->user_project_setting->value) return;
+
+        //TODO setter
+        $this->user_project_setting = $user_project_setting;
+
+        $this->exportPHPControllers($is_fource);
+        $this->exportPHPViews($is_fource);
+        $this->exportRecord();
+
+        DB::model('LocalizeString')->exportAll($this->project);;
+    }
+
+    /**
      * export php
      * @return bool
      */
-    function exportPHPModels($pgsql) {
+    function exportPHPModels($pgsql)
+    {
         $this->bindMany('Model');
 
         if (!$this->model->values) return;
@@ -231,7 +265,7 @@ class Project extends _Project {
      */
     function exportLaravelModel($pgsql, $model) {
         $escapes = ['migration', 'password_resets'];
-        if (in_array($model->value['entity_name'], $escapes)) return;
+        if (array_key_exists($model->value['entity_name'], $escapes)) return;
         $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
 
         $values = null;
@@ -477,7 +511,7 @@ class Project extends _Project {
 
         //TODO globe?
         while ($file_name = readdir($dir)) {
-            $is_except = in_array($file_name, $this->except_dirs);
+            $is_except = array_key_exists($file_name, $this->except_dirs);
             if ($file_name == '.' || $file_name == '..' || $is_except) {
 
             } else {
@@ -516,4 +550,46 @@ class Project extends _Project {
 
     }
 
+
+    /**
+     * sync by DB
+     *
+     * @param Database $database
+     * @return void
+     */
+    function syncByDB($database)
+    {
+        $pgsql_entity = new PwPgsql($database->pgInfo());
+        $this->pg_classes = $pgsql_entity->tableArray();
+
+        foreach ($this->pg_classes as $pg_class) {
+            $model_values = null;
+            if ($this->project->value['database_id']) $model_values['database_id'] = $this->project->value['database_id'];
+            if ($this->project->value['id']) $model_values['project_id'] = $this->project->value['id'];
+            if ($pg_class['relfilenode']) $model_values['relfilenode'] = $pg_class['relfilenode'];
+            if ($pg_class['pg_class_id']) $model_values['pg_class_id'] = $pg_class['pg_class_id'];
+            if ($pg_class['relname']) $model_values['name'] = $pg_class['relname'];
+            if ($pg_class['comment']) $model_values['label'] = $pg_class['comment'];
+
+            $model_values['entity_name'] = PwFile::pluralToSingular($pg_class['relname']);
+            $model_values['class_name'] = PwFile::phpClassName($model_values['entity_name']);
+
+            //TODO resolve over head
+            $model = DB::model('Model')
+                ->where('name', $pg_class['relname'])
+                ->where('database_id', $database->value['id'])
+                ->one();
+
+            if ($model->value['id']) {
+                $model = DB::model('Model')->update($model_values, $model->value['id']);
+            } else {
+                $model = DB::model('Model')->insert($model_values);
+            }
+
+            $attribute = new Attribute();
+            $attribute->importByModel($model->value, $this->database);
+        }
+
+        Model::updateForeignKey($this);
+    }
 }

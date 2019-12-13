@@ -272,7 +272,7 @@ class PwTag {
                                'is_check_delete'
                             ];
             foreach ($params as $key => $value) {
-                if (!in_array($key, $escape_columns)) {
+                if (!array_key_exists($key, $escape_columns)) {
                     $attributes[] = "{$key}=\"{$value}\"";
                 }
             }
@@ -333,7 +333,7 @@ class PwTag {
         $escape_columns = ['label', 'name'];
         if (is_array($params)) {
             foreach ($params as $key => $value) {
-                if (!in_array($key, $escape_columns)) {
+                if (!array_key_exists($key, $escape_columns)) {
                     $attributes[] = "{$key}=\"{$value}\"";
                 }
             }

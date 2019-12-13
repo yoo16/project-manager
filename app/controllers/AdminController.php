@@ -47,7 +47,7 @@ class AdminController extends AppController {
     }
 
     function checkLogin($action) {
-        if (!in_array($action, $this->escape_auth_actions)) {
+        if (!array_key_exists($action, $this->escape_auth_actions)) {
             $this->admin = PwSession::get('admin', 'admin');
             if (!$this->admin['id']) {
                 $this->redirectTo(['controller' => 'admin', 'action' => 'login']);

@@ -310,7 +310,7 @@ class PwForm {
      */
     static function radioTag($attributes = null) {
         foreach (self::$except_columns as $except_column) {
-            if (!in_array($except_column, self::$radio_columns)) {
+            if (!array_key_exists($except_column, self::$radio_columns)) {
                 if ($attributes[$except_column]) unset($attributes[$except_column]);
             }
         }
@@ -418,7 +418,7 @@ class PwForm {
         if (isset($params['filter_values']) && $values && is_array($params['filter_values']) && $params['value']) {
             foreach ($values as $index => $value) {
                 $_value = $value[$params['value']];
-                if (in_array($_value, $params['filter_values'])) {
+                if (array_key_exists($_value, $params['filter_values'])) {
                     unset($values[$index]);
                 }
             }

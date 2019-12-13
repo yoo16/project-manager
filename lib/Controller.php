@@ -727,7 +727,7 @@ class Controller extends RuntimeException
             return ($html_params['menu_group'] == $this->menu_group);
         }
         if (isset($html_params['menu_groups']) && $this->menu_groups) {
-            return (in_array($html_params['menu_groups'], $this->menu_groups));
+            return (array_key_exists($html_params['menu_groups'], $this->menu_groups));
         }
     }
 
@@ -946,6 +946,10 @@ class Controller extends RuntimeException
     {
         if ($_POST) PwSession::set('pw_posts', $_POST);
         $this->pw_posts = PwSession::get('pw_posts');
+        //TODO multi session
+        if (isset($this->pw_posts['csrf_token'])) {
+            $this->isCsrf();
+        }
     }
 
     /**
@@ -1789,7 +1793,7 @@ class Controller extends RuntimeException
      */
     function checkAuth($action)
     {
-        if (in_array($action, $this->pw_login_escapes)) return;
+        if (array_key_exists($action, $this->pw_login_escapes)) return;
         if (!$this->auth_model) exit('Not setting auth_model');
         if (!class_exists($this->auth_model)) exit('Not found auth_model');
         $this->pw_auth = PwSession::getWithKey('pw_auth', DB::model($this->auth_model)->entity_name);
@@ -1807,7 +1811,7 @@ class Controller extends RuntimeException
      */
     function checkPwAdmin($action)
     {
-        if (in_array($action, $this->pw_admin_escapes)) {
+        if (array_key_exists($action, $this->pw_admin_escapes)) {
             return;
         }
         $this->pw_admin = PwSession::get('pw_admin');
@@ -1815,6 +1819,29 @@ class Controller extends RuntimeException
             $this->redirectTo(['controller' => $this->pw_admin_controller, 'action' => 'login']);
             exit;
         }
+    }
+
+    /**
+     * csrf
+     *
+     * @return void
+     */
+    function csrf()
+    {
+        $toke_byte = openssl_random_pseudo_bytes(16);
+        $csrf_token = bin2hex($toke_byte);
+        PwSession::set('csrf_token', $csrf_token);
+    }
+
+    /**
+     * is csrf
+     *
+     * @return boolean
+     */
+    function isCsrf()
+    {
+        //TODO multi session
+        return ($this->pw_posts['csrf_token'] == PwSession::get('csrf_token'));
     }
 
     /**

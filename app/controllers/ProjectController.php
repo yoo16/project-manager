@@ -24,6 +24,8 @@ class ProjectController extends AppController
 
         $this->project = $this->model('Project');
         if ($this->project->value) {
+            $user_project_setting = $this->model('Project');
+            if ($user_project_setting->value) $this->project->setUserProjectSetting($user_project_setting->value);
             $this->database = DB::model('Database')->fetch($this->project->value['database_id']);
             $this->user_project_setting = $this->project->hasMany('UserProjectSetting');
         }
@@ -80,8 +82,8 @@ class ProjectController extends AppController
      */
     function action_list()
     {
-        $this->database = DB::model('Database')->all();
-        $this->project = DB::model('Project')->all()->bindById('Database');
+        $this->database = DB::model('Database')->get();
+        $this->project = DB::model('Project')->get()->bindById('Database');
     }
 
     /**
@@ -91,20 +93,9 @@ class ProjectController extends AppController
      */
     function action_edit()
     {
-        $this->project = DB::model('Project');
-        $this->project->fetch($this->pw_gets['id'])
-                      ->takeValues($this->pw_posts['project']);
-
+        $this->project = DB::model('Project')->editPage();
         $this->database = DB::model('Database')->fetch($this->project->value['database_id']);
-
-        $this->user_project_setting = DB::model('UserProjectSetting');
-        $this->user_project_setting->where('user_id', $this->login_user->value['id'])
-                                   ->where('project_id', $this->project->value['id'])
-                                   ->first();
-        if (!$this->user_project_setting->value) {
-            $posts['user_id'] = $this->login_user->value['id'];
-            $posts['project_id'] = $this->project->value['id'];
-        }
+        //TODO multiuser
     }
 
     /**
@@ -114,15 +105,7 @@ class ProjectController extends AppController
      */
     function action_add()
     {
-        $project = DB::model('Project');
-        $project->fetch($this->pw_gets['id'])
-                ->post()
-                ->insert();
-
-        if ($project->errors) {
-            $this->addErrorByModel($project);
-        }
-        $this->redirectTo(['action' => 'list']);;
+        $this->redirectForAdd($this->insertByModel('Project'), ['invalid' => 'list']);
     }
 
     /**
@@ -132,12 +115,7 @@ class ProjectController extends AppController
      */
     function action_update()
     {
-        $project = DB::model('Project')->update($_REQUEST['project'], $this->pw_gets['id']);
-
-        if ($project->errors) {
-            $this->addError('projects', $project->errors);
-        }
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
+        $this->redirectForUpdate($this->updateByModel('Project'), ['invalid' => 'list']);
     }
 
     /**
@@ -147,15 +125,7 @@ class ProjectController extends AppController
      */
     function action_delete()
     {
-        if (!isPost()) exit;
-
-        $project = DB::model('Project')->delete($this->pw_gets['id']);
-        if ($project->errors) {
-            $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
-        } else {
-            $this->clearPwPosts();
-            $this->redirectTo();
-        }
+        $this->redirectForDelete($this->deleteByModel('Project'));
     }
 
     /**
@@ -165,7 +135,6 @@ class ProjectController extends AppController
      */
     function action_export_default_values()
     {
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
         $this->project->exportPHPDefaultValues();
 
         $params['project_id'] = $this->project->value['id'];
@@ -181,8 +150,6 @@ class ProjectController extends AppController
     {
         if (!isPost()) exit;
         $this->page = DB::model('Page')->fetch($this->pw_posts['page_id']);
-
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
         $this->project->exportPHPViewsEdit($_REQUEST['is_overwrite']);
 
         $params['project_id'] = $this->project->value['id'];
@@ -199,16 +166,11 @@ class ProjectController extends AppController
     {
         if (!isPost()) exit;
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
-
-        $this->project->exportPHPControllers(true);
-        $this->project->exportPHPViews(true);
-        $this->project->exportRecord();
+        $this->project->exportPHPAll(true);
 
         DB::model('LocalizeString')->exportAll($this->project);
 
-        $params['project_id'] = $this->project->value['id'];
-        $this->redirectTo(['controller' => 'model', 'action' => 'list'], $params);
+        $this->redirectTo(['controller' => 'model', 'action' => 'list'], ['project_id' => $this->project->value['id']]);
     }
 
     /**
@@ -220,7 +182,6 @@ class ProjectController extends AppController
     {
         if (!isPost()) exit;
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
         $this->project->exportPHP();
 
         $params['project_id'] = $this->project->value['id'];
@@ -239,7 +200,6 @@ class ProjectController extends AppController
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
         $this->model = DB::model('Model')->fetch($this->page->value['model_id']);
 
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
         $this->project->exportPHPController($this->page, $_REQUEST['is_overwrite']);
         $this->project->exportPHPView($this->page->value, $_REQUEST['is_overwrite']);
 
@@ -258,7 +218,6 @@ class ProjectController extends AppController
     {
         if (!isPost()) exit;
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
 
         $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();
@@ -282,7 +241,6 @@ class ProjectController extends AppController
         if (!isPost()) exit;
         $this->model = DB::model('Model')->fetch($this->pw_posts['model_id']);
         $this->project = DB::model('Project')->fetch($this->model->value['project_id']);
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
 
         //localize import & export
         LocalizeString::importByModel($this->model, $this->project);
@@ -306,7 +264,6 @@ class ProjectController extends AppController
     {
         if (!isPost()) exit;
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
         $this->project->exportPHPControllers($_REQUEST['is_overwrite']);
         $this->project->exportPHPViews($_REQUEST['is_overwrite']);
 
@@ -323,7 +280,6 @@ class ProjectController extends AppController
     {
         if (!isPost()) exit;
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
         $this->project->exportPHPControllers($_REQUEST['is_overwrite']);
 
         $params['project_id'] = $this->project->value['id'];
@@ -339,7 +295,6 @@ class ProjectController extends AppController
     {
         if (!isPost()) exit;
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
         $this->project->exportPHPViews($_REQUEST['is_overwrite']);
 
         $params['project_id'] = $this->project->value['id'];
@@ -379,7 +334,6 @@ class ProjectController extends AppController
     {
         if (!isPost()) exit;
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
 
         $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();
@@ -400,7 +354,6 @@ class ProjectController extends AppController
         if (!isPost()) exit;
         $this->model = DB::model('Model')->fetch($this->pw_posts['model_id']);
         $this->project = DB::model('Project')->fetch($this->model->value['project_id']);
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
 
         $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();
@@ -420,7 +373,6 @@ class ProjectController extends AppController
     {
         if (!isPost()) exit;
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
 
         $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();
@@ -441,7 +393,6 @@ class ProjectController extends AppController
         if (!isPost()) exit;
         $this->model = DB::model('Model')->fetch($this->pw_posts['model_id']);
         $this->project = DB::model('Project')->fetch($this->model->value['project_id']);
-        $this->project->user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
 
         $database = DB::model('Database')->fetch($this->project->value['database_id']);
         $pgsql = $database->pgsql();
@@ -491,18 +442,6 @@ class ProjectController extends AppController
     }
 
     /**
-     * delete user project setting
-     *
-     * @return void
-     */
-    function action_delete_user_project_setting()
-    {
-        if (!isPost()) exit;
-        DB::model('UserProjectSetting')->delete($this->pw_gets['id']);
-        $this->redirectTo(['action' => 'export_list', 'id' => $user_project_setting->value['project_id']]);
-    }
-
-    /**
      * sync db
      * TODO: model functions
      *
@@ -513,41 +452,9 @@ class ProjectController extends AppController
         if (!isPost()) exit;
         if (!$this->database->value['id']) $this->redirectTo(['controller' => 'project']);
 
-        $pgsql_entity = new PwPgsql($this->database->pgInfo());
-        $this->pg_classes = $pgsql_entity->tableArray();
+        DB::model('Project')->syncByDB($this->database);
 
-        foreach ($this->pg_classes as $pg_class) {
-            $model_values = null;
-            if ($this->project->value['database_id']) $model_values['database_id'] = $this->project->value['database_id'];
-            if ($this->project->value['id']) $model_values['project_id'] = $this->project->value['id'];
-            if ($pg_class['relfilenode']) $model_values['relfilenode'] = $pg_class['relfilenode'];
-            if ($pg_class['pg_class_id']) $model_values['pg_class_id'] = $pg_class['pg_class_id'];
-            if ($pg_class['relname']) $model_values['name'] = $pg_class['relname'];
-            if ($pg_class['comment']) $model_values['label'] = $pg_class['comment'];
-
-            $model_values['entity_name'] = PwFile::pluralToSingular($pg_class['relname']);
-            $model_values['class_name'] = PwFile::phpClassName($model_values['entity_name']);
-
-            $model = DB::model('Model')
-                ->where('name', $pg_class['relname'])
-                ->where('database_id', $this->database->value['id'])
-                ->one();
-
-            if ($model->value['id']) {
-                $model = DB::model('Model')->update($model_values, $model->value['id']);
-            } else {
-                $model = DB::model('Model')->insert($model_values);
-            }
-
-            $attribute = new Attribute();
-            $attribute->importByModel($model->value, $this->database);
-        }
-
-        //update constraint : fi_attribute_id and action
-        Model::updateForeignKey($this->project);
-
-        $params['project_id'] = $this->project->value['id'];
-        $this->redirectTo(['controller' => 'model', 'action' => 'list']);
+        $this->redirectTo(['controller' => 'model', 'action' => 'list'], ['project_id' => $this->project->value['id']]);
     }
 
     /**

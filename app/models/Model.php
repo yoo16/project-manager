@@ -190,7 +190,7 @@ class Model extends _Model {
         foreach ($model->values as $model->value) {
             $attributes = DB::model('Attribute')->where('model_id', $model->value['id'])->all()->values;
             foreach ($attributes as $attribute) {
-                if (in_array($attribute['name'], $coulmn_keys)) {
+                if (array_key_exists($attribute['name'], $coulmn_keys)) {
                     $column = $attribute['name'];
                     $comment = $columns[$column];
                     if ($attribute['name'] == $column) {
@@ -385,7 +385,7 @@ class Model extends _Model {
             $propaties[] = "'old_name' => '{$attribute['old_name']}'";
         }
         if (isset($attribute['default_value'])) {
-            if (in_array($attribute['type'], PwPgsql::$number_types)) {
+            if (array_key_exists($attribute['type'], PwPgsql::$number_types)) {
                 if (is_numeric($attribute['default_value'])) {
                     $propaties[] = "'default' => {$attribute['default_value']}";
                 }
@@ -423,7 +423,7 @@ class Model extends _Model {
             $propaties[] = "'old_name': '{$attribute['old_name']}'";
         }
         if (isset($attribute['default_value'])) {
-            if (in_array($attribute['type'], PwPgsql::$number_types)) {
+            if (array_key_exists($attribute['type'], PwPgsql::$number_types)) {
                 if (is_numeric($attribute['default_value'])) {
                     $propaties[] = "'default': {$attribute['default_value']}";
                 }
@@ -465,7 +465,7 @@ class Model extends _Model {
         $columns = PwModel::$required_columns;
         $required_columns = array_keys(PwModel::$required_columns);
         foreach ($attribute->values as $value) {
-            if (!in_array($value['name'], $required_columns)) {
+            if (!array_key_exists($value['name'], $required_columns)) {
                 $column['name'] = $value['name'];
                 $column['type'] = $value['type'];
                 $column['length'] = $value['length'];

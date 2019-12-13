@@ -355,7 +355,7 @@ class ModelController extends ProjectController {
                 $attribute = $model->hasMany('Attribute');
 
                 foreach ($attribute->values as $attribute_value) {
-                    if (in_array($attribute_value['name'], $columns)) {
+                    if (array_key_exists($attribute_value['name'], $columns)) {
                         DB::model('Attribute')->delete($attribute_value['id']);
                     }
                 }

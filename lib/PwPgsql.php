@@ -410,7 +410,7 @@ class PwPgsql extends PwEntity
         $this->db_info = $params;
         if (!$params) return $this;
         foreach ($params as $key => $value) {
-            if (in_array($key, self::$pg_info_columns)) {
+            if (array_key_exists($key, self::$pg_info_columns)) {
                 $this->$key = $value;
             }
         }
@@ -451,7 +451,7 @@ class PwPgsql extends PwEntity
             $key_values = explode('=', $pg_info);
             $key = $key_values[0];
             $value = $key_values[1];
-            if (in_array($key, self::$pg_info_columns)) {
+            if (array_key_exists($key, self::$pg_info_columns)) {
                 $this->$key = $value;
             }
         }
@@ -1646,7 +1646,7 @@ class PwPgsql extends PwEntity
     public function allBy($column)
     {
         $columns = array_keys($this->columns);
-        if (!in_array($column, $columns)) exit("Not found column: {$column}");
+        if (!array_key_exists($column, $columns)) exit("Not found column: {$column}");
         $this->values_index_column = $column;
         $this->get();
         return $this;

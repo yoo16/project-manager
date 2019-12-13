@@ -21,6 +21,20 @@ class ViewItem extends _ViewItem {
     }
 
     /**
+     * delete by view items
+     *
+     * @return void
+     */
+    function deleteViewItems()
+    {
+        $view_item = $this->relationMany('ViewItem')->all();
+        if (!$view_item->values) return;
+        foreach ($view_item->values as $view_item) {
+            DB::model('ViewItem')->delete($view_item['id']);
+        }
+    }
+
+    /**
      * hidden vlaue
      *
      * @param ViewItem $view_item
@@ -98,7 +112,7 @@ class ViewItem extends _ViewItem {
         if (!$view->value) return;
 
         foreach ($attribute->values as $attribute->value) {
-            if (!in_array($attribute->value['name'], PwEntity::$app_columns)) {
+            if (!array_key_exists($attribute->value['name'], PwEntity::$app_columns)) {
                 $view_item = DB::model('ViewItem')->getByAttribute($view, $attribute);
                 if (!$view_item->value['id']) {
                     $posts = [];

@@ -30,7 +30,6 @@ class ApiController extends ProjectController {
     * @return void
     */
     function index() {
-        PwSession::clear('posts');
         $this->redirectTo(['action' => 'list']);;
     }
 
@@ -41,7 +40,6 @@ class ApiController extends ProjectController {
     * @return void
     */
     function action_cancel() {
-        PwSession::clear('posts');
         $this->redirectTo(['action' => 'list']);;
     }
 
@@ -54,8 +52,6 @@ class ApiController extends ProjectController {
     function action_list() {
         if (!$this->project->value) $this->redirectTo(['controller' => 'root']);
         $this->api = $this->project->relationMany('Api')->all();
-
-                
     }
 
    /**
@@ -65,7 +61,7 @@ class ApiController extends ProjectController {
     * @return void
     */
     function action_new() {
-        $this->api = DB::model('Api')->init()->takeValues($this->pw_posts['api']);
+        $this->api = DB::model('Api')->newPage();
     }
 
    /**
@@ -75,11 +71,7 @@ class ApiController extends ProjectController {
     * @return void
     */
     function action_edit() {
-        $this->checkEdit();
-
-        $this->api = DB::model('Api')
-                    ->fetch($this->pw_gets['id'])
-                    ->takeValues($this->pw_posts['api']);
+        $this->api = DB::model('Api')->editPage();
     }
 
    /**

@@ -121,7 +121,14 @@ class ViewItemController extends ProjectController {
         }
     }
 
+    /**
+     * add for attribute
+     *
+     * @return void
+     */
     function action_add_for_attribute() {
+        //TODO refactoring
+
         if (!isPost()) return;
         $posts = $this->session['posts'] = $_REQUEST["view_item"];
         $posts['view_id'] = $this->view->value['id'];
@@ -138,14 +145,6 @@ class ViewItemController extends ProjectController {
         }
    
         $view_item = DB::model('ViewItem')->insert($posts);
-
-        if ($view_item->errors) {
-            var_dump($view_item->sql);
-            var_dump($view_item->sql_error);
-            var_dump($view_item->errors);
-            exit;
-        }
-
         $this->redirectTo(['action' => 'list']);;
     }
 
@@ -185,11 +184,7 @@ class ViewItemController extends ProjectController {
     * @return void
     */
     function action_remove_all() {
-        $view_item = $this->view->relationMany('ViewItem')->all();
-
-        foreach ($view_item->values as $view_item) {
-            DB::model('ViewItem')->delete($view_item['id']);
-        }
+        $this->view->deleteViewItems();
         $this->redirectTo(['action' => 'list']);;
     }
 
@@ -200,11 +195,7 @@ class ViewItemController extends ProjectController {
     * @return void
     */
     function action_update() {
-        if (!isPost()) exit;
-        $posts = $this->session['posts'] = $_REQUEST["view_item"];
-        $view_item = DB::model('ViewItem')->update($posts, $this->pw_gets['id']);
-
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
+        $this->redirectForUpdate($this->updateByModel('ViewItem'));
     }
 
    /**
@@ -214,9 +205,7 @@ class ViewItemController extends ProjectController {
     * @return void
     */
     function action_delete() {
-        if (!isPost()) exit;
-        DB::model('ViewItem')->delete($this->pw_gets['id']);
-        $this->redirectTo();
+        $this->redirectForDelete($this->deleteByModel('ViewItem'));
     }
 
     /**
