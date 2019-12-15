@@ -252,7 +252,7 @@ class ProjectController extends AppController
         $this->project->user_project_setting = $this->model('UserProjectSetting');
 
         //localize import & export
-        LocalizeString::importByModel($this->model, $this->project);
+        DB::model('LocalizeString')->importByModel($this->model, $this->project);
         $this->project->exportAttributeLabels();
 
         $database = DB::model('Database')->fetch($this->project->value['database_id']);

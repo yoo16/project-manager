@@ -63,15 +63,22 @@ class AttributeController extends ModelController {
 
     }
 
+    /**
+     * edit
+     *
+     * @return void
+     */
     function edit() {
-        $this->attribute = DB::model('Attribute')
-                        ->fetch($this->pw_gets['id'])
-                        ->takeValues($this->session['posts']);
-
+        $this->attribute = DB::model('Attribute')->editPage();
         $pgsql = $this->database->pgsql();
         $this->pg_attribute = $pgsql->pgAttributeByAttnum($this->model->value['pg_class_id'], $this->attribute->value['attnum']);
     }
 
+    /**
+     * add
+     *
+     * @return void
+     */
     function action_add() {
         if (!isPost()) exit;
 
@@ -172,6 +179,11 @@ class AttributeController extends ModelController {
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * delete
+     *
+     * @return void
+     */
     function action_delete() {
         if (!isPost()) exit;
         $attribute = DB::model('Attribute')->fetch($this->pw_gets['id']);
@@ -204,6 +216,11 @@ class AttributeController extends ModelController {
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * add column
+     *
+     * @return void
+     */
     function add_column() {
         if (!isPost()) exit;
 
@@ -232,7 +249,11 @@ class AttributeController extends ModelController {
         $this->redirectTo(['action' => 'list']);;
     }
 
-
+    /**
+     * update label
+     *
+     * @return void
+     */
     function action_update_label() {
         if (!isPost()) exit;
         $posts = $this->pw_posts['attribute'];
@@ -245,6 +266,11 @@ class AttributeController extends ModelController {
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * change required
+     *
+     * @return void
+     */
     function action_change_required() {
         $attribute = DB::model('Attribute')->fetch($this->pw_gets['id']);
         if ($attribute->value['id'] && $attribute->value['attnum']) {
@@ -259,6 +285,11 @@ class AttributeController extends ModelController {
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * rename constraint
+     *
+     * @return void
+     */
     function action_rename_constraint() {
         if (!isPost()) exit;
         $database = DB::model('Database')->fetch($this->pw_posts['database_id']);
@@ -269,6 +300,11 @@ class AttributeController extends ModelController {
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * delete constraint
+     *
+     * @return void
+     */
     function action_delete_constraint() {
         if (!isPost()) exit;
         $database = DB::model('Database')->fetch($this->pw_posts['database_id']);
@@ -508,6 +544,11 @@ class AttributeController extends ModelController {
         }
     }
 
+    /**
+     * update old name
+     *
+     * @return void
+     */
     function action_update_old_name() {
         $posts['old_name'] = $this->pw_posts['old_name'];
 
@@ -515,19 +556,34 @@ class AttributeController extends ModelController {
         $this->redirectTo(['controller' => 'relation_database', 'action' => 'diff_model']);
     }
 
+    /**
+     * delete old name
+     *
+     * @return void
+     */
     function action_delete_old_name() {
         $posts['old_name'] = '';
         DB::model('Attribute')->fetch($this->pw_gets['id'])->update($posts);
         $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
     }
 
-    function action_sync_model() {
+    /**
+     * sync by model
+     *
+     * @return void
+     */
+    function action_sync_by_model() {
         $model = DB::model('Model')->fetch($this->pw_gets['id']);
         if ($model->value['id']) $model->syncDB($this->database);
         $this->redirectTo(['action' => 'list']);;
     }
 
-    function action_sync_attribute() {
+    /**
+     * sync attribute
+     *
+     * @return void
+     */
+    function action_sync_by_attribute() {
         $attribute = DB::model('Attribute')->fetch($this->pw_gets['id']);
 
         if ($attribute->value['id']) {

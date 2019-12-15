@@ -21,7 +21,6 @@ class ModelController extends ProjectController {
 
         if (!$this->project->value['id'] || !$this->database->value['id']) {
             $this->redirectTo(['controller' => 'project']);
-            exit;
         }
     }
     
@@ -140,8 +139,7 @@ class ModelController extends ProjectController {
             $model = $model->update($posts);
         }
         if ($model->errors) {
-            $this->flash['errors'] = $model->errors;
-            exit;
+            $this->addErrorByModel($model);
         } else {
             unset($this->session['posts']);
         }
@@ -285,6 +283,20 @@ class ModelController extends ProjectController {
         $this->redirectTo(['action' => 'list']);;
     }
 
+
+    /**
+     * sync from DB
+     *
+     * @return void
+     */
+    function action_sync_from_db() {
+        $model = DB::model('Model')->fetch($this->pw_gets['id']);
+        if ($model->value['id']) {
+            $model->syncFromDB($this->project, $this->database);
+        }
+        $this->redirectTo(['action' => 'list']);;
+    }
+
     /**
      * sync models
      *
@@ -306,7 +318,6 @@ class ModelController extends ProjectController {
         DB::model('Model')->fetch($this->pw_gets['id'])->sync($this->database);
         $this->redirectTo(['action' => 'list']);;
     }
-
 
     /**
      * delete require columns

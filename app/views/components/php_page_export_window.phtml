@@ -14,6 +14,10 @@
       </div>
 
       <div class="modal-body">
+        <div>
+          <input id="is_overwrite" type="checkbox" name="is_overwrite"> overwrite
+          <input id="project_id" type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+        </div>
         <? if (is_array($this->user_project_setting->values)): ?>
         <table class="table">
           <? foreach ($this->user_project_setting->values as $user_project_setting): ?>
@@ -52,23 +56,41 @@
                 <? endif ?>
 
                 <? if ($this->model->value): ?>
-                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_php_model']) ?>" method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP model?">PHP Model</button>
-                  <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
+                <?= $this->linkJs(
+                  [
+                  'label' => 'PHP Model',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_php_model',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'message' => 'Do you export PHP model file?'
+                   ]
+                ) ?>
 
-                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_python_model']) ?>" method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Python model?">Python Model</button>
-                  <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
+                <?= $this->linkJs(
+                  [
+                  'label' => 'Python Model',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_python_model',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'message' => 'Do you export Python model file?'
+                   ]
+                ) ?>
 
-                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_laravel_model']) ?>" method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Laravel model?">Laravel Model</button>
-                  <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
+                <?= $this->linkJs(
+                  [
+                  'label' => 'Laravel Model',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_laravel_model',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'message' => 'Do you export Laravel model file?'
+                   ]
+                ) ?>
                 <? endif ?>
 
                 <? if ($this->page->value): ?>

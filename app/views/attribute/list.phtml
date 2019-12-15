@@ -6,12 +6,20 @@
   <div class="row">
     <?= PwForm::linkModal('#add-attribute', LABEL_ADD) ?>
     <?= $this->linkTo(['controller' => 'model'], ['label' => LABEL_BACK, 'class' => 'btn btn-outline-primary']) ?>
-    <?= $this->linkTo([ 'action' => 'sync_model', 'id' => $this->model->value['id'] ],
+    <?= $this->linkTo([ 'action' => 'sync_by_model', 'id' => $this->model->value['id'] ],
       [
       'class' => 'btn btn-outline-primary confirm-dialog',
-      'label' => 'Sync DB',
+      'label' => 'Sync from Model',
       'icon_name' => 'sync',
-      'message' => 'Do you sync from DB?'
+      'message' => 'Do you sync Model to DB?'
+      ]
+      ) ?>
+    <?= $this->linkTo(['controller' => 'model', 'action' => 'sync_from_db', 'id' => $this->model->value['id'] ],
+      [
+      'class' => 'btn btn-outline-primary confirm-dialog',
+      'label' => 'Sync from DB',
+      'icon_name' => 'sync',
+      'message' => 'Do you sync DB to Model?'
       ]
       ) ?>
     <?= PwForm::hidden('project_id', $this->project->value['id']) ?>

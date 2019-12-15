@@ -88,7 +88,6 @@ class ApiController extends ProjectController {
         if ($api->errors) {
             $this->addError('apis', $api->errors);
             $this->redirectTo('new');
-            exit;
         } else {
             $this->redirectTo('index');
         }

@@ -26,6 +26,7 @@
       <thead class="thead-default">
         <tr>
           <th></th>
+          <th>attnum</th>
           <th>Name</th>
           <th>Label</th>
           <th>Relation</th>
@@ -44,6 +45,10 @@
             <? if (!PwModel::$required_columns[$attribute['name']]): ?>
             <?= $this->attribute->linkEdit([], $attribute) ?>
             <? endif ?>
+          </td>
+
+          <td>
+            <?= $attribute['attnum'] ?>
           </td>
 
           <td>
@@ -144,7 +149,7 @@
             <? endif ?>
             <? else: ?>
             <label class="badge badge-pill badge-danger">unsync</label>
-            <form action="<?= $this->urlFor(['action' => 'add_column', 'id' => $attribute['id']]) ?>" method="post">
+            <form action="<?= $this->urlFor(['action' => 'sync_by_attribute', 'id' => $attribute['id']]) ?>" method="post">
               <?= PwForm::submit(LABEL_ADD, ['class' => 'btn btn-outline-primary']) ?>
               <?= PwForm::hidden('model_id', $this->model->value['id']) ?>
               <?= PwForm::hidden('table_name', $this->model->value['name']) ?>

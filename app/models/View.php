@@ -36,11 +36,10 @@ class View extends _View {
      */
     function generateDefaultActions($page) {
         if (!$page->value) return;
-
         foreach (View::$default_actions as $action) {
             $view = DB::model('View')->getByAction($page, $action['name']);
             if (!$view->value['id']) {
-                $posts = null;
+                $posts = [];
                 $posts['page_id'] = $page->value['id'];
                 $posts['name'] = $action['name'];
                 $posts['label'] = $action['label'];

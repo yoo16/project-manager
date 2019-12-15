@@ -458,12 +458,12 @@ class Model extends _Model {
         $pg_class = $pgsql_entity->pgClassByRelname($this->value['name']);
 
         //create table
-        $attribute = $this->relationMany('Attribute')->all();
+        $attribute = $this->relation('Attribute')->get();
         if (!$attribute->values) return;
 
         $columns = PwModel::$required_columns;
         foreach ($attribute->values as $value) {
-            if (!array_key_exists($value['name'], PwModel::$required_columns)) {
+            if (!array_key_exists($value['name'], $columns)) {
                 $column['name'] = $value['name'];
                 $column['type'] = $value['type'];
                 $column['length'] = $value['length'];
@@ -487,6 +487,24 @@ class Model extends _Model {
 
         //comment label
         $pgsql_entity->updateTableComment($model->value['name'], $this->value['label']);
+    }
+
+    /**
+     * sync by model
+     *
+     * @param Database $database
+     * @return void
+     */
+    function syncFromDB($project, $database)
+    {
+        $pgsql = new PwPgsql($database->pgInfo());
+        if ($pg_class = $pgsql->pgClassByRelname($this->value['name'])) {
+            $model = DB::model('Model')
+                    ->where('project_id', $project->value['id'])
+                    ->where('name', $pg_class['relname'])
+                    ->one();
+            if ($model->value) DB::model('Attribute')->importByModel($model, $database);
+        }
     }
 
     /**

@@ -121,7 +121,6 @@ class Page extends _Page {
                     ->where('name', $model->value['class_name'])
                     ->one();
         if (!$page->value['id']) $page = DB::model('Page')->insert($posts);
-        exit;
         if ($page->value['id']) {
             DB::model('View')->generateDefaultActions($page);
             DB::model('ViewItem')->createAllByPage($page);
