@@ -2,7 +2,7 @@
 /**
  * PageModel 
  * 
- * @create  2017/10/03 18:45:29 
+ * @create  2019/08/29 12:24:08 
  */
 
 require_once 'PwPgsql.php';
@@ -51,8 +51,8 @@ class _PageModel extends PwPgsql {
                         ],
     ];
     public $index_keys = [
-    'page_models_model_id_page_id_key' => 'CREATE UNIQUE INDEX page_models_model_id_page_id_key ON page_models USING btree (model_id, page_id)',
-    'page_models_pkey' => 'CREATE UNIQUE INDEX page_models_pkey ON page_models USING btree (id)',
+    'page_models_pkey' => 'CREATE UNIQUE INDEX page_models_pkey ON public.page_models USING btree (id)',
+    'page_models_model_id_page_id_key' => 'CREATE UNIQUE INDEX page_models_model_id_page_id_key ON public.page_models USING btree (model_id, page_id)',
     ];
 
 

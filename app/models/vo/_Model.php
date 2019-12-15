@@ -2,7 +2,7 @@
 /**
  * Model 
  * 
- * @create  2017/08/21 13:46:26 
+ * @create  2019/08/29 12:24:07 
  */
 
 require_once 'PwPgsql.php';
@@ -54,8 +54,8 @@ class _Model extends PwPgsql {
                         ],
     ];
     public $index_keys = [
-    'models_name_project_id_key' => 'CREATE UNIQUE INDEX models_name_project_id_key ON models USING btree (name, project_id)',
-    'models_pkey' => 'CREATE UNIQUE INDEX models_pkey ON models USING btree (id)',
+    'models_pkey' => 'CREATE UNIQUE INDEX models_pkey ON public.models USING btree (id)',
+    'models_name_project_id_key' => 'CREATE UNIQUE INDEX models_name_project_id_key ON public.models USING btree (name, project_id)',
     ];
 
 

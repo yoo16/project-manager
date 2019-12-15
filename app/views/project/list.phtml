@@ -7,7 +7,6 @@
 <div>
   <?= PwForm::linkModal('#add-window', LABEL_ADD) ?>
   <? include('views/components/lib/sortable.phtml') ?>
-  <?= PwForm::linkModal('#help-project', 'Help', ['class' => 'btn btn-outline-primary']) ?>
 </div>
 
 <div class="content">
@@ -45,6 +44,7 @@
           [
           'label' => LABEL_SETTING,
           'http_params' => ['project_id' => $values['id']],
+          'class' => 'btn btn-sm btn-outline-primary',
           ]
         ) ?>
       </td>
@@ -52,7 +52,8 @@
         <?= $this->linkTo(['action' => 'analyze'],
         [
         'http_params' => ['project_id' => $values['id']],
-        'label' => 'analyze'
+        'label' => 'analyze',
+        'class' => 'btn btn-sm btn-outline-primary',
         ]
         ) ?>
       </td>

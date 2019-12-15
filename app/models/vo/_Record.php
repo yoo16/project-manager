@@ -2,7 +2,7 @@
 /**
  * Record 
  * 
- * @create  2017/09/20 17:10:43 
+ * @create  2019/08/29 12:24:09 
  */
 
 require_once 'PwPgsql.php';
@@ -37,7 +37,7 @@ class _Record extends PwPgsql {
     ];
 
     public $index_keys = [
-    'records_pkey' => 'CREATE UNIQUE INDEX records_pkey ON records USING btree (id)',
+    'records_pkey' => 'CREATE UNIQUE INDEX records_pkey ON public.records USING btree (id)',
     ];
 
 

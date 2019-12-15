@@ -186,11 +186,10 @@ class Model extends _Model {
         $model = $project->hasMany('Model');
         if (!$model->values) return;
 
-        $coulmn_keys = array_keys($columns);
         foreach ($model->values as $model->value) {
             $attributes = DB::model('Attribute')->where('model_id', $model->value['id'])->all()->values;
             foreach ($attributes as $attribute) {
-                if (array_key_exists($attribute['name'], $coulmn_keys)) {
+                if (array_key_exists($attribute['name'], $columns)) {
                     $column = $attribute['name'];
                     $comment = $columns[$column];
                     if ($attribute['name'] == $column) {
@@ -385,7 +384,7 @@ class Model extends _Model {
             $propaties[] = "'old_name' => '{$attribute['old_name']}'";
         }
         if (isset($attribute['default_value'])) {
-            if (array_key_exists($attribute['type'], PwPgsql::$number_types)) {
+            if (in_array($attribute['type'], PwPgsql::$number_types)) {
                 if (is_numeric($attribute['default_value'])) {
                     $propaties[] = "'default' => {$attribute['default_value']}";
                 }
@@ -423,7 +422,7 @@ class Model extends _Model {
             $propaties[] = "'old_name': '{$attribute['old_name']}'";
         }
         if (isset($attribute['default_value'])) {
-            if (array_key_exists($attribute['type'], PwPgsql::$number_types)) {
+            if (in_array($attribute['type'], PwPgsql::$number_types)) {
                 if (is_numeric($attribute['default_value'])) {
                     $propaties[] = "'default': {$attribute['default_value']}";
                 }
@@ -463,9 +462,8 @@ class Model extends _Model {
         if (!$attribute->values) return;
 
         $columns = PwModel::$required_columns;
-        $required_columns = array_keys(PwModel::$required_columns);
         foreach ($attribute->values as $value) {
-            if (!array_key_exists($value['name'], $required_columns)) {
+            if (!array_key_exists($value['name'], PwModel::$required_columns)) {
                 $column['name'] = $value['name'];
                 $column['type'] = $value['type'];
                 $column['length'] = $value['length'];
@@ -567,7 +565,7 @@ class Model extends _Model {
             $attribute = $model->hasMany('Attribute');
             if ($attribute->values) {
                 foreach ($attribute->values as $attribute_value) {
-                    if (array_key_exists($attribute_value['name'], PwModel::$required_columns)) {
+                    if (in_array($attribute_value['name'], PwModel::$required_columns)) {
                         DB::model('Attribute')->delete($attribute_value['id']);
                     }
                 }
@@ -580,13 +578,17 @@ class Model extends _Model {
 
     /**
      * add By Pgclass
+     * 
+     * TODO: $project, $database bind
      *
      * @param array $posts
      * @param Project $project
+     * @param Database $database
      * @return void
      */
-    function addForPgclass($posts, $project)
+    function addForPgclass($posts, $project, $database)
     {
+        $pgsql = $database->pgsql();
         $pg_class = $pgsql->pgClassByRelname($posts['name']);
         if (!$pg_class) $this->addError('PgClass', "Not found: {$posts['name']}");
 

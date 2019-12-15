@@ -42,6 +42,7 @@ class PwFile {
         'penises'   =>  'penis',
         'equipment' =>  'equipment',
         'information'   =>  'information',
+        'database'   =>  'database',
         'rice'      =>  'rice',
         'money'     =>  'money',
         'species'   =>  'species',
@@ -820,7 +821,7 @@ class PwFile {
         $last_value = end($values);
         $last_index = key($values);
 
-        if (array_key_exists(strtolower($last_value), $irregular_rules)) {
+        if (in_array(strtolower($last_value), $irregular_rules)) {
             $last_value = $irregular_rules[strtolower($last_value)];
         } else {
             foreach($singular_rules as $key => $singular_rule) {

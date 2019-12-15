@@ -193,7 +193,7 @@ class Attribute extends _Attribute {
      * @param Database $database
      * @return void
      */
-    function valuesByDatabase($database)
+    function valuesByDatabase($database, $model)
     {
         $attribute = $model->hasMany('Attribute');
         if (!$this->values) return;

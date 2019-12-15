@@ -154,9 +154,10 @@ class RelationDatabaseController extends ProjectController {
                         $pm_pgsql->table($table_name);
                         if ($pm_pgsql->columns) {
                             $pm_columns = array_keys($pm_pgsql->columns);
+                            //TODO array_key_exists
                             $columns = array_keys($pgsql->columns);
                             foreach ($pm_columns as $pm_column) {
-                                if (array_key_exists($pm_column, $columns)) {
+                                if (in_array($pm_column, $columns)) {
                                     $attribute = DB::model('Attribute')
                                                         ->where("model_id = '{$model->value['id']}'")
                                                         ->where("name = '{$pm_column}'")

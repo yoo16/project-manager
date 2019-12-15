@@ -2,7 +2,7 @@
 /**
  * LocalizeString 
  * 
- * @create  2017/10/03 00:56:54 
+ * @create  2019/08/29 12:24:07 
  */
 
 require_once 'PwPgsql.php';
@@ -36,13 +36,13 @@ class _LocalizeString extends PwPgsql {
 
     public $unique = [
             'localize_strings_name_project_id_key' => [
-                        'project_id',
                         'name',
+                        'project_id',
                         ],
     ];
     public $index_keys = [
-    'localize_strings_name_project_id_key' => 'CREATE UNIQUE INDEX localize_strings_name_project_id_key ON localize_strings USING btree (name, project_id)',
-    'localize_strings_pkey' => 'CREATE UNIQUE INDEX localize_strings_pkey ON localize_strings USING btree (id)',
+    'localize_strings_pkey' => 'CREATE UNIQUE INDEX localize_strings_pkey ON public.localize_strings USING btree (id)',
+    'localize_strings_name_project_id_key' => 'CREATE UNIQUE INDEX localize_strings_name_project_id_key ON public.localize_strings USING btree (project_id, name)',
     ];
 
 

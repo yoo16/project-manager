@@ -100,6 +100,11 @@ class AttributeController extends ModelController {
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * update
+     *
+     * @return void
+     */
     function action_update() {
         if (!isPost()) exit;
 
@@ -156,6 +161,7 @@ class AttributeController extends ModelController {
             }
 
             if ($posts['type'] != 'varchar') $posts['length'] = null;                
+
             $attribute = DB::model('Attribute')->update($posts, $this->pw_gets['id']);
         }
 

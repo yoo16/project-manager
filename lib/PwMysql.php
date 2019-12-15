@@ -355,7 +355,7 @@ class PwMysql extends PwEntity
         $this->db_info = $params;
         if (!$params) return $this;
         foreach ($params as $key => $value) {
-            if (array_key_exists($key, self::$mysql_info_columns)) {
+            if (in_array($key, self::$mysql_info_columns)) {
                 $this->$key = $value;
             }
         }
@@ -396,7 +396,7 @@ class PwMysql extends PwEntity
             $key_values = explode('=', $mysql_info);
             $key = $key_values[0];
             $value = $key_values[1];
-            if (array_key_exists($key, self::$mysql_info_columns)) {
+            if (in_array($key, self::$mysql_info_columns)) {
                 $this->$key = $value;
             }
         }
@@ -1423,7 +1423,7 @@ class PwMysql extends PwEntity
     {
         $columns = array_keys($this->columns);
         
-        if (!array_key_exists($column, $columns)) {
+        if (!in_array($column, $columns)) {
             exit("Not found column: {$column}");
         }
         $this->values_index_column = $column;
@@ -4419,7 +4419,7 @@ class PwMysql extends PwEntity
      * @return PwPgsql
      */
     function updatesEmptySortOrder() {
-        if (!array_key_exists('sort_order', $this->columns)) return $this;
+        if (!in_array('sort_order', $this->columns)) return $this;
         $this->select([$this->id_column, 'sort_order'])->where('sort_order IS NULL')->get();
         if (!$this->values) return $this;
 

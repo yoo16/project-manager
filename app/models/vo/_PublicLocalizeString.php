@@ -2,7 +2,7 @@
 /**
  * PublicLocalizeString 
  * 
- * @create  2018/04/23 12:35:57 
+ * @create  2019/08/29 12:24:08 
  */
 
 require_once 'PwPgsql.php';
@@ -24,7 +24,7 @@ class _PublicLocalizeString extends PwPgsql {
     public $primary_key = 'public_localize_strings_pkey';
 
     public $index_keys = [
-    'public_localize_strings_pkey' => 'CREATE UNIQUE INDEX public_localize_strings_pkey ON public_localize_strings USING btree (id)',
+    'public_localize_strings_pkey' => 'CREATE UNIQUE INDEX public_localize_strings_pkey ON public.public_localize_strings USING btree (id)',
     ];
 
 

@@ -102,7 +102,7 @@ class ModelController extends ProjectController {
             if (!$results) $this->addError('SQL', "SQL Error: {$pgsql->sql}");
             if ($posts['label']) $results = $pgsql->updateTableComment($posts['name'], $posts['label']);
 
-            $model = DB::model('Model')->addForPgclass($posts);
+            $model = DB::model('Model')->addForPgclass($posts, $this->project, $this->database);
 
             $attribute = new Attribute();
             $attribute->importByModel($model, $this->database);
@@ -442,7 +442,7 @@ class ModelController extends ProjectController {
         }
 
         $this->pg_class = $database->pgsql()->pgClassArray($this->model->value['pg_class_id']);
-        $this->values = DB::model('Attribute')->valuesByDatabase($database);
+        $this->values = DB::model('Attribute')->valuesByDatabase($database, $this->model);
     }
 
     /**

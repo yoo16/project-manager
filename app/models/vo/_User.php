@@ -2,7 +2,7 @@
 /**
  * User 
  * 
- * @create  2017/10/18 12:58:58 
+ * @create  2019/08/29 12:24:09 
  */
 
 require_once 'PwPgsql.php';
@@ -37,8 +37,8 @@ class _User extends PwPgsql {
                         ],
     ];
     public $index_keys = [
-    'users_email_key' => 'CREATE UNIQUE INDEX users_email_key ON users USING btree (email)',
-    'users_pkey' => 'CREATE UNIQUE INDEX users_pkey ON users USING btree (id)',
+    'users_pkey' => 'CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)',
+    'users_email_key' => 'CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email)',
     ];
 
 

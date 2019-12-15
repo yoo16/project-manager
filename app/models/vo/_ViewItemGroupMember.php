@@ -2,7 +2,7 @@
 /**
  * ViewItemGroupMember 
  * 
- * @create  2017/11/29 13:05:37 
+ * @create  2019/08/29 12:24:09 
  */
 
 require_once 'PwPgsql.php';
@@ -48,8 +48,8 @@ class _ViewItemGroupMember extends PwPgsql {
                         ],
     ];
     public $index_keys = [
-    'view_item_group_members_pkey' => 'CREATE UNIQUE INDEX view_item_group_members_pkey ON view_item_group_members USING btree (id)',
-    'view_item_group_members_view_item_group_id_view_item_id_key' => 'CREATE UNIQUE INDEX view_item_group_members_view_item_group_id_view_item_id_key ON view_item_group_members USING btree (view_item_group_id, view_item_id)',
+    'view_item_group_members_pkey' => 'CREATE UNIQUE INDEX view_item_group_members_pkey ON public.view_item_group_members USING btree (id)',
+    'view_item_group_members_view_item_group_id_view_item_id_key' => 'CREATE UNIQUE INDEX view_item_group_members_view_item_group_id_view_item_id_key ON public.view_item_group_members USING btree (view_item_group_id, view_item_id)',
     ];
 
 

@@ -2,7 +2,7 @@
 /**
  * Page 
  * 
- * @create  2017/08/21 13:46:26 
+ * @create  2019/08/29 12:24:08 
  */
 
 require_once 'PwPgsql.php';
@@ -68,7 +68,7 @@ class _Page extends PwPgsql {
     ];
 
     public $index_keys = [
-    'pages_pkey' => 'CREATE UNIQUE INDEX pages_pkey ON pages USING btree (id)',
+    'pages_pkey' => 'CREATE UNIQUE INDEX pages_pkey ON public.pages USING btree (id)',
     ];
 
 

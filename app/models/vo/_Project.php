@@ -2,7 +2,7 @@
 /**
  * Project 
  * 
- * @create  2017/08/21 13:46:26 
+ * @create  2019/08/29 12:24:08 
  */
 
 require_once 'PwPgsql.php';
@@ -28,7 +28,7 @@ class _Project extends PwPgsql {
     public $primary_key = 'projects_pkey';
 
     public $index_keys = [
-    'projects_pkey' => 'CREATE UNIQUE INDEX projects_pkey ON projects USING btree (id)',
+    'projects_pkey' => 'CREATE UNIQUE INDEX projects_pkey ON public.projects USING btree (id)',
     ];
 
 

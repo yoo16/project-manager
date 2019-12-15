@@ -2,7 +2,7 @@
 /**
  * ApiAction 
  * 
- * @create  2018/07/23 15:25:24 
+ * @create  2019/08/29 12:24:05 
  */
 
 require_once 'PwPgsql.php';
@@ -37,13 +37,13 @@ class _ApiAction extends PwPgsql {
 
     public $unique = [
             'api_actions_name_api_id_key' => [
-                        'name',
                         'api_id',
+                        'name',
                         ],
     ];
     public $index_keys = [
-    'api_actions_pkey' => 'CREATE UNIQUE INDEX api_actions_pkey ON api_actions USING btree (id)',
-    'api_actions_name_api_id_key' => 'CREATE UNIQUE INDEX api_actions_name_api_id_key ON api_actions USING btree (name, api_id)',
+    'api_actions_pkey' => 'CREATE UNIQUE INDEX api_actions_pkey ON public.api_actions USING btree (id)',
+    'api_actions_name_api_id_key' => 'CREATE UNIQUE INDEX api_actions_name_api_id_key ON public.api_actions USING btree (name, api_id)',
     ];
 
 

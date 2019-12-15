@@ -479,7 +479,7 @@ class PwEntity {
         if (!isset($this->before_value)) return;
         $changes = [];
         foreach ($this->value as $column_name => $value) {
-            if (!array_key_exists($column_name, self::$except_columns)) {
+            if (!in_array($column_name, self::$except_columns)) {
                 if ($value !== $this->before_value[$column_name]) {
                     $changes[$column_name] = $this->value[$column_name];
                 }
@@ -507,7 +507,7 @@ class PwEntity {
      */
     private function castBool($value) {
         if (is_bool($value)) return $value;
-        return array_key_exists($value, array('t', 'true', 'on', '1'));
+        return in_array($value, array('t', 'true', 'on', '1'));
     }
 
     /**
@@ -1406,7 +1406,7 @@ class PwEntity {
         if (!$this->errors) return;
         $columns = array_column($this->errors, 'column');
         if (!$columns) return;
-        return array_key_exists($column, $columns);
+        return in_array($column, $columns);
     }
 
     /**
@@ -1542,7 +1542,7 @@ class PwEntity {
      */
     public function jsonDecode($key)
     {
-        if (array_key_exists($key, $this->value)) {
+        if (in_array($key, $this->value)) {
             $this->value[$key] = json_decode($this->value[$key], true);
         }
         return $this;

@@ -320,9 +320,7 @@ class PwMigration {
         $values = [];
         foreach ($db_infos as $key => $db_info) {
             $pgsql = new PwPgsql($db_info);
-            $from_model = $pgsql
-                        ->table($model->old_name)
-                        ->get();
+            $from_model = $pgsql->table($model->old_name)->get();
 
             foreach ($from_model->values as $value) {
                 $id = $value[$model->old_id_column];

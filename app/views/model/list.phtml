@@ -8,6 +8,15 @@
   <div class="pt-3">
     <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'sync_db']) ?>" method="post">
       <?= PwForm::linkModal('#add-window', LABEL_ADD) ?>
+      <?= $this->linkTo(
+        ['controller' => 'page', 'action' => 'creates_from_project'],
+        [
+          'class' => 'btn btn-outline-primary confirm-dialog',
+          'label' => 'Quick Create',
+          'message' => 'Do you create pages from all models.',
+          'http_params' => ['project_id' => $this->project->value['id']]
+        ]
+      ) ?>
       <?= PwForm::submit('Import from DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you import from DB?']) ?>
       <?= PwForm::hidden('project_id', $this->project->value['id']) ?>
       <?= PwForm::linkModal('#help-model', 'Help', ['class' => 'btn btn-outline-primary']) ?>

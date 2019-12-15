@@ -2,7 +2,7 @@
 /**
  * Admin 
  * 
- * @create  2017/10/18 12:58:52 
+ * @create  2019/08/29 12:24:05 
  */
 
 require_once 'PwPgsql.php';
@@ -37,9 +37,9 @@ class _Admin extends PwPgsql {
                         ],
     ];
     public $index_keys = [
-    'admins_email_key' => 'CREATE UNIQUE INDEX admins_email_key ON admins USING btree (email)',
-    'admins_login_name_key' => 'CREATE UNIQUE INDEX admins_login_name_key ON admins USING btree (login_name)',
-    'admins_pkey' => 'CREATE UNIQUE INDEX admins_pkey ON admins USING btree (id)',
+    'admins_pkey' => 'CREATE UNIQUE INDEX admins_pkey ON public.admins USING btree (id)',
+    'admins_email_key' => 'CREATE UNIQUE INDEX admins_email_key ON public.admins USING btree (email)',
+    'admins_login_name_key' => 'CREATE UNIQUE INDEX admins_login_name_key ON public.admins USING btree (login_name)',
     ];
 
 

@@ -2,7 +2,7 @@
 /**
  * Lang 
  * 
- * @create  2017/10/03 03:28:17 
+ * @create  2019/08/29 12:24:07 
  */
 
 require_once 'PwPgsql.php';
@@ -32,9 +32,9 @@ class _Lang extends PwPgsql {
                         ],
     ];
     public $index_keys = [
-    'langs_lang_key' => 'CREATE UNIQUE INDEX langs_lang_key ON langs USING btree (lang)',
-    'langs_name_key' => 'CREATE UNIQUE INDEX langs_name_key ON langs USING btree (name)',
-    'langs_pkey' => 'CREATE UNIQUE INDEX langs_pkey ON langs USING btree (id)',
+    'langs_pkey' => 'CREATE UNIQUE INDEX langs_pkey ON public.langs USING btree (id)',
+    'langs_lang_key' => 'CREATE UNIQUE INDEX langs_lang_key ON public.langs USING btree (lang)',
+    'langs_name_key' => 'CREATE UNIQUE INDEX langs_name_key ON public.langs USING btree (name)',
     ];
 
 

@@ -2,7 +2,7 @@
 /**
  * PageFilter 
  * 
- * @create  2017/11/24 16:17:25 
+ * @create  2019/08/29 12:24:07 
  */
 
 require_once 'PwPgsql.php';
@@ -44,7 +44,7 @@ class _PageFilter extends PwPgsql {
     ];
 
     public $index_keys = [
-    'page_filters_pkey' => 'CREATE UNIQUE INDEX page_filters_pkey ON page_filters USING btree (id)',
+    'page_filters_pkey' => 'CREATE UNIQUE INDEX page_filters_pkey ON public.page_filters USING btree (id)',
     ];
 
 

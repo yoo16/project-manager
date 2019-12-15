@@ -117,9 +117,6 @@ class Project extends _Project {
         if (!$this->value) return;
         if (!$this->user_project_setting->value) return;
 
-        //TODO setter
-        $this->user_project_setting = $user_project_setting;
-
         $this->exportPHPControllers($is_fource);
         $this->exportPHPViews($is_fource);
         $this->exportRecord();
@@ -133,12 +130,10 @@ class Project extends _Project {
      */
     function exportPHPModels($pgsql)
     {
-        $this->bindMany('Model');
-
-        if (!$this->model->values) return;
-        foreach ($this->model->values as $model) {
-            $this->model->value = $model;
-            $this->exportPHPModel($pgsql, $this->model);
+        $model = $this->relation('Model')->get();
+        if (!$model->values) return;
+        foreach ($model->values as $model->value) {
+            $this->exportPHPModel($pgsql, $model);
         }
     }
 
@@ -155,9 +150,7 @@ class Project extends _Project {
         $values = [];
         $values['project'] = $this->value;
         
-        $attribute = $model->relation('Attribute')
-                           ->order('name')
-                           ->all();
+        $attribute = $model->relation('Attribute')->order('name')->all();
 
         $values['model'] = $model->value;
         $values['attribute'] = $attribute->values;
@@ -284,7 +277,7 @@ class Project extends _Project {
      */
     function exportLaravelModel($pgsql, $model) {
         $escapes = ['migration', 'password_resets'];
-        if (array_key_exists($model->value['entity_name'], $escapes)) return;
+        if (in_array($model->value['entity_name'], $escapes)) return;
         $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
 
         $values = null;
@@ -530,7 +523,7 @@ class Project extends _Project {
 
         //TODO globe?
         while ($file_name = readdir($dir)) {
-            if ($this->except_dirs) $is_except = array_key_exists($file_name, $this->except_dirs);
+            if ($this->except_dirs) $is_except = in_array($file_name, $this->except_dirs);
             if ($file_name == '.' || $file_name == '..' || $is_except) {
 
             } else {

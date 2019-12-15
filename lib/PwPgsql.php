@@ -9,6 +9,7 @@
 
 require_once 'PwEntity.php';
 
+//TODO any methods move to PwEntity.php
 //TODO pg_escape_identifier
 //TODO pg_escape_literal
 //TODO pg_field_num, pg_field_name
@@ -312,7 +313,13 @@ class PwPgsql extends PwEntity
      */
     function defaultDBInfo()
     {
-        if (!defined('DB_NAME') || !DB_NAME) exit('not found DB_NAME');
+        if (!defined('DB_NAME') || !DB_NAME) {
+            $file_path = PwSetting::hostSettingFilePath();
+            $errors['title'] = 'Setting File Error';
+            $errors['message'] = "Not found DB_NAME";
+            $errors['file_path'] = $file_path;
+            Controller::showError($errors);
+        }
         if (defined('DB_NAME')) $this->dbname = DB_NAME;
         if (defined('DB_HOST')) $this->host = DB_HOST;
         if (defined('DB_PORT')) $this->port = DB_PORT;
@@ -321,7 +328,6 @@ class PwPgsql extends PwEntity
         $this->loadDBInfo();
         return $this;
     }
-
     /**
      * database name
      * 

@@ -2,7 +2,7 @@
 /**
  * ApiGroup 
  * 
- * @create  2018/07/23 15:12:21 
+ * @create  2019/08/29 12:24:06 
  */
 
 require_once 'PwPgsql.php';
@@ -23,7 +23,7 @@ class _ApiGroup extends PwPgsql {
     public $primary_key = 'api_groups_pkey';
 
     public $index_keys = [
-    'api_groups_pkey' => 'CREATE UNIQUE INDEX api_groups_pkey ON api_groups USING btree (id)',
+    'api_groups_pkey' => 'CREATE UNIQUE INDEX api_groups_pkey ON public.api_groups USING btree (id)',
     ];
 
 

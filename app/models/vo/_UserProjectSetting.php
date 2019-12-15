@@ -2,7 +2,7 @@
 /**
  * UserProjectSetting 
  * 
- * @create  2017/08/21 13:46:26 
+ * @create  2019/08/29 12:24:09 
  */
 
 require_once 'PwPgsql.php';
@@ -27,7 +27,7 @@ class _UserProjectSetting extends PwPgsql {
     public $primary_key = 'user_project_settings_pkey';
 
     public $index_keys = [
-    'user_project_settings_pkey' => 'CREATE UNIQUE INDEX user_project_settings_pkey ON user_project_settings USING btree (id)',
+    'user_project_settings_pkey' => 'CREATE UNIQUE INDEX user_project_settings_pkey ON public.user_project_settings USING btree (id)',
     ];
 
 

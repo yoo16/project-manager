@@ -4,9 +4,6 @@
  *
  * @copyright 2017 copyright Yohei Yoshikawa (http://yoo-s.com)
  */
-
-PwLoader::autoloadModel();
-
 require_once 'Controller.php';
 
 class AppController extends Controller {
@@ -15,6 +12,7 @@ class AppController extends Controller {
     var $layout = 'root';
     //TODO
     var $is_pw_auth = true;
+    var $js_controllers = ['ProjectController'];
 
     function before_action($action = null) {
         $pgsql_entity = new PwPgsql();

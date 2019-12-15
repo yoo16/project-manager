@@ -81,7 +81,7 @@ class PwLogger {
                         $error = self::fetchError($error_row);
                         $error_row = '';
                         if ($error) {
-                            if (!$tmp || !array_key_exists($error['value'], $tmp)) {
+                            if (!$tmp || !in_array($error['value'], $tmp)) {
                                 $tmp[] = $error['value'];
                                 $values[$error['key']][] = $error['value'];
                             }

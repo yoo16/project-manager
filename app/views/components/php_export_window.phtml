@@ -3,23 +3,18 @@
     <div class="modal-content" style="width:50rem; margin-left: -10rem;">
 
       <div class="modal-header">
-        <h5 class="modal-title">PHP Export</h5>
+        <h5 class="modal-title">PHP Export : <?= $this->project->value['name'] ?></h5>
         <button type="button" class="close pw-modal-close" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
       <div class="modal-body">
-        <div class="alert alert-success">
-          <p>
-            if you export php models, need download PHP Framework 'php-work'.
-          </p>
-          <a class="btn btn-primary" href="<?= PHP_WORK_GIT_URL ?>" target="_blank">Download php-work(GitHub)</a>
-        </div>
-        <h5>
-          <?= $this->project->value['name'] ?>
-        </h5>
         <? if (is_array($this->user_project_setting->values)): ?>
+        <div>
+          <input id="is_overwrite" type="checkbox" name="is_overwrite"> overwrite
+          <input id="project_id" type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+        </div>
         <table class="table">
           <? foreach ($this->user_project_setting->values as $user_project_setting): ?>
           <tr>
@@ -42,76 +37,102 @@
               <? if (file_exists($user_project_setting['project_path']."app/")): ?>
 
               <div class="form-inline">
-                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_all']) ?>"
-                  method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export all files?">All Files</button>
-                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
+                <?= $this->linkJs(
+                  [
+                  'label' => 'All Files',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_all',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'message' => 'Do you export all files?'
+                   ]
+                ) ?>
 
-                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_php_models']) ?>"
-                  method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">PHP
-                    Model</button>
-                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
-                &nbsp;
-                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_php_controller_view']) ?>"
-                  method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP files?">Controller/View</button>
-                  <div>
-                    <input type="checkbox" name="is_overwrite" value="1"> overwrite
-                  </div>
-                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
-                &nbsp;
-                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_sql']) ?>" method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP SQL?">SQL</button>
-                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
-                &nbsp;
-                <form action="<?= $this->urlFor(['controller' => 'localize_string', 'action' => 'export']) ?>" method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP Localize files?">Localize</button>
-                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
-                &nbsp;
-                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'csv_export']) ?>"
-                  method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export CSV files?">CSV</button>
-                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
-                &nbsp;
-                <? if (defined('IS_DEVELOPER') && IS_DEVELOPER): ?>
-                &nbsp;
-                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_php_view_edit']) ?>"
-                  method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP View edit files?">View Edit</button>
-                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
-                <? endif ?>
+                <?= $this->linkJs(
+                  [
+                  'label' => 'PHP models',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_php_models',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'message' => 'Do you export PHP models?'
+                   ]
+                ) ?>
 
-                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_python_models']) ?>"
-                  method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Python Models?">Python Model</button>
-                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
+                <?= $this->linkJs(
+                  [
+                  'label' => 'PHP pages',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_php_controller_view',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'message' => 'Do you export PHP Controller and View files?'
+                   ]
+                ) ?>
 
-                <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_laravel_models']) ?>"
-                  method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export Laravel Models?">Laravel Model</button>
-                  <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
+                <?= $this->linkJs(
+                  [
+                  'label' => 'SQL',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_php_controller_view',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'message' => 'Do you export SQL?'
+                   ]
+                ) ?>
 
-                &nbsp;
-              </div>
+                <?= $this->linkJs(
+                  [
+                  'label' => 'PHP Localize',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_php_localize',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'message' => 'Do you export PHP Localize files?'
+                   ]
+                ) ?>
+
+                <?= $this->linkJs(
+                  [
+                  'label' => 'CSV',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_csv',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'message' => 'Do you export CSV files?'
+                   ]
+                ) ?>
+
+                <?= $this->linkJs(
+                  [
+                  'label' => 'Python Model',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_python_models',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'message' => 'Do you export Python model files?'
+                   ]
+                ) ?>
+
+                <?= $this->linkJs(
+                  [
+                  'label' => 'Laravel Model',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_laravel_models',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'message' => 'Do you export Laravel model files?'
+                   ]
+                ) ?>
+
               <? endif ?>
               <? endif ?>
             </td>

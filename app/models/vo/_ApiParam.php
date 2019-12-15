@@ -2,7 +2,7 @@
 /**
  * ApiParam 
  * 
- * @create  2017/11/07 18:03:16 
+ * @create  2019/08/29 12:24:06 
  */
 
 require_once 'PwPgsql.php';
@@ -17,7 +17,7 @@ class _ApiParam extends PwPgsql {
         'api_action_id' => ['type' => 'int4', 'is_required' => true],
         'created_at' => ['type' => 'timestamp'],
         'name' => ['type' => 'varchar', 'length' => 256, 'is_required' => true],
-        'note' => ['type' => 'text', 'default' => ''],
+        'note' => ['type' => 'text'],
         'sort_order' => ['type' => 'int4'],
         'type' => ['type' => 'varchar', 'length' => 16],
         'updated_at' => ['type' => 'timestamp'],
@@ -26,7 +26,7 @@ class _ApiParam extends PwPgsql {
     public $primary_key = 'api_params_pkey';
 
     public $index_keys = [
-    'api_params_pkey' => 'CREATE UNIQUE INDEX api_params_pkey ON api_params USING btree (id)',
+    'api_params_pkey' => 'CREATE UNIQUE INDEX api_params_pkey ON public.api_params USING btree (id)',
     ];
 
 

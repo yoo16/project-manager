@@ -2,7 +2,7 @@
 /**
  * View 
  * 
- * @create  2017/08/21 13:46:27 
+ * @create  2019/08/29 12:24:10 
  */
 
 require_once 'PwPgsql.php';
@@ -14,21 +14,22 @@ class _View extends PwPgsql {
     public $entity_name = 'view';
 
     public $columns = [
-        'created_at' => ['type' => 'timestamp'],
-        'is_overwrite' => ['type' => 'bool'],
-        'label' => ['type' => 'varchar', 'length' => 256],
         'label_width' => ['type' => 'int4'],
         'name' => ['type' => 'varchar', 'length' => 256, 'is_required' => true],
         'note' => ['type' => 'text'],
         'page_id' => ['type' => 'int4', 'is_required' => true],
         'sort_order' => ['type' => 'int4'],
+        'table_catalog' => ['type' => 'varchar'],
+        'table_name' => ['type' => 'varchar'],
+        'table_schema' => ['type' => 'varchar'],
         'updated_at' => ['type' => 'timestamp'],
+        'view_definition' => ['type' => 'varchar'],
     ];
 
     public $primary_key = 'views_pkey';
 
     public $index_keys = [
-    'views_pkey' => 'CREATE UNIQUE INDEX views_pkey ON views USING btree (id)',
+    'views_pkey' => 'CREATE UNIQUE INDEX views_pkey ON public.views USING btree (id)',
     ];
 
 

@@ -13,7 +13,7 @@ class Controller extends RuntimeException
     static $routes = ['controller', 'action', 'id'];
 
     public $lang = 'ja';
-    public $name;
+    public $name = 'root';
     public $with_layout = true;
     public $pw_layout = null;
     public $pw_layout_file = null;
@@ -503,6 +503,7 @@ class Controller extends RuntimeException
      * renderError
      *
      * @param  array $errors
+     * @param  boolean $is_continue
      * @return void
      */
     function renderError($errors, $is_continue = true)
@@ -520,6 +521,28 @@ class Controller extends RuntimeException
             echo ($content_for_layout);
         }
         if (!$is_continue) exit;
+    }
+
+    /**
+     * showError
+     *
+     * @param  array $errors
+     * @return void
+     */
+    static function showError($errors)
+    {
+        if (!$errors) return;
+        $error_layout = BASE_DIR . "app/views/layouts/error.phtml";
+        if (file_exists($error_layout)) include $error_layout;
+        $error_template = BASE_DIR . "app/views/components/lib/php_error.phtml";
+        if (file_exists($error_template)) {
+            ob_start();
+            include $error_template;
+            $content_for_layout = ob_get_contents();
+            ob_end_clean();
+            echo ($content_for_layout);
+        }
+        exit;
     }
 
     /**
@@ -1795,7 +1818,7 @@ class Controller extends RuntimeException
      */
     function checkAuth($action)
     {
-        if (array_key_exists($action, $this->pw_login_escapes)) return;
+        if (in_array($action, $this->pw_login_escapes)) return;
         if (!$this->auth_model) exit('Not setting auth_model');
         if (!class_exists($this->auth_model)) exit('Not found auth_model');
         $this->pw_auth = PwSession::getWithKey('pw_auth', DB::model($this->auth_model)->entity_name);
@@ -1813,7 +1836,7 @@ class Controller extends RuntimeException
      */
     function checkPwAdmin($action)
     {
-        if (array_key_exists($action, $this->pw_admin_escapes)) {
+        if (in_array($action, $this->pw_admin_escapes)) {
             return;
         }
         $this->pw_admin = PwSession::get('pw_admin');

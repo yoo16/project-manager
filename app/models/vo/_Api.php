@@ -2,7 +2,7 @@
 /**
  * Api 
  * 
- * @create  2017/11/07 17:52:14 
+ * @create  2019/08/29 12:24:06 
  */
 
 require_once 'PwPgsql.php';
@@ -45,7 +45,7 @@ class _Api extends PwPgsql {
     ];
 
     public $index_keys = [
-    'apis_pkey' => 'CREATE UNIQUE INDEX apis_pkey ON apis USING btree (id)',
+    'apis_pkey' => 'CREATE UNIQUE INDEX apis_pkey ON public.apis USING btree (id)',
     ];
 
 

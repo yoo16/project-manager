@@ -1,30 +1,34 @@
 <div class="php_error">
-  <div class="card">
-
-    <div class="card-block">
-      <table class="table">
-      <? foreach ($errors as $key => $error) : ?>
-      <? if ($key == 'params') : ?>
-        <tr>
-          <th><?= $key ?></th>
-          <td>
-            <dl>
-        <? foreach ($error as $param_key => $param) : ?>
-            <dt><?= $key ?></dt>
-            <dd><?= $param ?></dd>
+    <div class="card">
+      <div class="card-header">
+        <h3>Error</h3>
+      </div>
+  
+      <div class="card-block">
+        <table class="table">
+        <? foreach ($errors as $key => $error) : ?>
+        <? if ($key == 'params') : ?>
+          <tr>
+            <th><?= $key ?></th>
+            <td>
+              <dl>
+          <? foreach ($error as $param_key => $param) : ?>
+              <dt><?= $key ?></dt>
+              <dd><?= $param ?></dd>
+          <? endforeach ?>
+              </dl>
+            </td>
+          </tr>
+        <? else : ?>
+          <tr>
+            <th><?= $key ?></th>
+            <td><?= $error ?></td>
+          </tr>
+        <? endif ?>
         <? endforeach ?>
-            </dl>
-          </td>
-        </tr>
-      <? else : ?>
-        <tr>
-          <th><?= $key ?></th>
-          <td><?= $error ?></td>
-        </tr>
-      <? endif ?>
-      <? endforeach ?>
-      </table>
+        </table>
+      </div>
+  
     </div>
-
   </div>
-</div>
+  
