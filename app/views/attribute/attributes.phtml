@@ -26,7 +26,6 @@
       <thead class="thead-default">
         <tr>
           <th></th>
-          <th>attnum</th>
           <th>Name</th>
           <th>Label</th>
           <th>Relation</th>
@@ -41,14 +40,10 @@
         <? if ($this->attribute->values): ?>
         <? foreach ($this->attribute->values as $attribute): ?>
         <tr>
-          <td>
+          <td id="attnum_<?= $attribute['attnum'] ?>">
             <? if (!PwModel::$required_columns[$attribute['name']]): ?>
             <?= $this->attribute->linkEdit([], $attribute) ?>
             <? endif ?>
-          </td>
-
-          <td>
-            <?= $attribute['attnum'] ?>
           </td>
 
           <td>
