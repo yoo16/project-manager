@@ -293,7 +293,31 @@ class Tag {
         } else {
             $tag = '$this->'.$model['entity_name']."->formPassword('{$attribute['name']}')";
         }
-        return $tag;
+        //return $tag;
+        $tag;
+        echo($tag);
+    }
+
+
+    /**
+     * formSelectDate
+     * 
+     * TODO: use $view_item
+     *
+     * @param ViewItem $view_item
+     * @param Model $model
+     * @param Attribute $attribute
+     * @return void
+     */
+    function formSelectDate($view_item, $model, $attribute, $params = null) {
+        $params = $this->formParams($view_item, $model, $attribute);
+        if ($params) {
+            $tag = '$this->'.$model['entity_name']."->formSelectDate('{$attribute['name']}', $params)";
+        } else {
+            $tag = '$this->'.$model['entity_name']."->formSelectDate('{$attribute['name']}')";
+        }
+        $tag = $this->phpTag($tag);
+        echo($tag);
     }
 
     /**

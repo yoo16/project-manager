@@ -6,3 +6,4 @@ value,label
 "textarea","textarea"
 "checkbox","checkbox"
 "hidden","hidden"
+"selectdate","select date"

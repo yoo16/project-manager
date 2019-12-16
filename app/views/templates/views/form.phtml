@@ -16,6 +16,8 @@
   <? Tag::init()->formRadio($view_item, $values['model'], $values['attribute'][$view_item['attribute_id']]); ?>
   <? elseif ($view_item['form_type'] == 'password'): ?>
   <? Tag::init()->formPassword($view_item, $values['model'], $values['attribute'][$view_item['attribute_id']]) ?>
+  <? elseif ($view_item['form_type'] == 'selectdate'): ?>
+  <? Tag::init()->formSelectDate($view_item, $values['model'], $values['attribute'][$view_item['attribute_id']]) ?>
   <? else: ?>
   <? Tag::init()->formInput($view_item, $values['model'], $values['attribute'][$view_item['attribute_id']]) ?>
   <? endif ?>

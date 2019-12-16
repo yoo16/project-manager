@@ -450,14 +450,14 @@ class Project extends _Project {
 
                 if ($view->value['name'] == 'edit') {
                     //new
-                    $form_template_path = View::templateNameFilePath('new');
-                    $form_path = View::projectNameFilePath($this->user_project_setting, $page, 'new');
-                    file_put_contents($form_path, PwFile::bufferFileContetns($form_template_path, $values));
+                    $template_path = View::templateNameFilePath('new');
+                    $path = View::projectNameFilePath($this->user_project_setting, $page, 'new');
+                    file_put_contents($path, PwFile::bufferFileContetns($template_path, $values));
 
                     //form
-                    $new_template_path = View::templateNameFilePath('form_for_table');
-                    $new_file_path = View::projectNameFilePath($this->user_project_setting, $page, 'form');
-                    file_put_contents($new_file_path, PwFile::bufferFileContetns($new_template_path, $values));
+                    $template_path = View::templateNameFilePath('form_for_table');
+                    $path = View::projectNameFilePath($this->user_project_setting, $page, 'form');
+                    file_put_contents($path, PwFile::bufferFileContetns($template_path, $values));
                 }
             } 
         }
