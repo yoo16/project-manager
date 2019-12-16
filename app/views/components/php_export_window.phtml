@@ -12,7 +12,7 @@
       <div class="modal-body">
         <? if (is_array($this->user_project_setting->values)): ?>
         <div>
-          <input id="is_overwrite" type="checkbox" name="is_overwrite"> overwrite
+          <input type="checkbox" name="is_overwrite" value="1"> overwrite
           <input id="project_id" type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
         </div>
         <table class="table">
@@ -82,6 +82,18 @@
                   'api-action' => 'export_sql',
                   'user_project_setting_id' => $user_project_setting['id'],
                   'message' => 'Do you export SQL?'
+                   ]
+                ) ?>
+
+                <?= $this->linkJs(
+                  [
+                  'label' => 'PostgreSQL Setting',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_pg_setting',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'message' => 'Do you export PostgresSQL setting file?'
                    ]
                 ) ?>
 

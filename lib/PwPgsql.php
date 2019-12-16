@@ -8,6 +8,7 @@
 //namespace Libs;
 
 require_once 'PwEntity.php';
+//require_once 'impl/iPwSQL.php';
 
 //TODO any methods move to PwEntity.php
 //TODO pg_escape_identifier
@@ -1056,7 +1057,7 @@ class PwPgsql extends PwEntity
      * @param string $sql
      * @return array
      */
-    function fetchRows($sql)
+    public function fetchRows($sql)
     {
         if ($rs = $this->query($sql)) {
             $rows = pg_fetch_all($rs);
@@ -1918,7 +1919,7 @@ class PwPgsql extends PwEntity
     }
 
     /**
-     * inserts
+     * copy from
      * 
      * @param  array $rows
      * @return PwPgsql
@@ -1951,7 +1952,7 @@ class PwPgsql extends PwEntity
      * @param  array $rows
      * @return PwPgsql
      */
-    function inserts($rows)
+    public function inserts($rows)
     {
         if (!$rows) return $this;
         $model_columns = array_keys($this->columns);
@@ -2011,7 +2012,7 @@ class PwPgsql extends PwEntity
                 $current_value = $this->values[$id];
                 if ($current_value['sort_order'] != $order) {
                     $posts['sort_order'] = (int) $order;
-                    $class = DB::model($class_name)->update($posts, $id);
+                    DB::model($class_name)->update($posts, $id);
                 }
             }
         }
@@ -4304,13 +4305,26 @@ class PwPgsql extends PwEntity
      * add pg primary key
      *
      * @param  string $table_name
-     * @param  array $columns
+     * @param  string $column_name
      * @return boolean
      */
     function addPgPrimaryKey($table_name, $column_name)
     {
         if (!$table_name || !$column_name) return;
         $sql = "ALTER TABLE {$table_name} ADD PRIMARY KEY ({$column_name});";
+        return $this->query($sql);
+    }
+
+    /**
+     * delete pg primary key
+     * @return boolean
+     */
+    public function deletePgPrimaryKey()
+    {
+        if (!$this->table_name || !$this->id_column) return;
+
+        $this->reloadPrimaryKey();
+        $sql = "ALTER TABLE {$this->table_name} DROP CONSTRAINT PRIMARY KEY ({$this->primary_key});";
         return $this->query($sql);
     }
 
@@ -4668,7 +4682,7 @@ class PwPgsql extends PwEntity
      */
     static function oldDbInfoByOldHost($old_host, $old_db)
     {
-        if (!defined('OLD_DB_INFO')) return;
+        if (!defined('OLD_DB_INFO') || !OLD_DB_INFO) return;
         $old_db_infos = OLD_DB_INFO;
         foreach ($old_db_infos as $key => $_old_db_infos) {
             foreach ($_old_db_infos as $system => $old_db_info) {
@@ -4698,7 +4712,7 @@ class PwPgsql extends PwEntity
         }
 
         if ($is_drop_primary) {
-            $result = $this->deletePgPrimaryKey($this->name);
+            $result = $this->deletePgPrimaryKey();
             if (!$result) {
                 echo("Error: delete primary key").PHP_EOL;
                 exit;

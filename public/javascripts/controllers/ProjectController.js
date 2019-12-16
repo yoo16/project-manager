@@ -13,8 +13,8 @@ var ProjectController = function () {
         let api_controller = node.controller();
         let user_project_setting_id = node.attr('user_project_setting_id');
         let project_id = PwNode.id('project_id').value();
-        let is_overwrite = 0;
-        if (PwNode.id('is_overwrite').checked()) is_overwrite = 1;
+        var is_overwrite = 0;
+        if (PwNode.byName('is_overwrite').checked()) is_overwrite = 1;
 
         if (!project_id) window.alert('Not found project_id');
         if (!user_project_setting_id) window.alert('Not found user_project_setting_id');

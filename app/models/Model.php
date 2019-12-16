@@ -222,17 +222,17 @@ class Model extends _Model {
     /**
      * project path
      * 
-     * @param array $user_project_setting
-     * @param array $model
+     * @param UserProjectSetting $user_project_setting
+     * @param Model $model
      * @param string $base_dir
      * @return string
      */
     static function projectFilePath($user_project_setting, $model, $base_dir = 'app/models/') {
-        if (!$user_project_setting) return;
-        if (!$model['name']) return;
-        if (!file_exists($user_project_setting['project_path'])) return;
+        if (!$user_project_setting->value) return;
+        if (!$model->value['name']) return;
+        if (!file_exists($user_project_setting->value['project_path'])) return;
 
-        $name = PwFile::pluralToSingular($model['name']);
+        $name = PwFile::pluralToSingular($model->value['name']);
         $file_name = PwFile::phpClassName($name).EXT_PHP;
         $path = $user_project_setting['project_path']."{$base_dir}{$file_name}";
         return $path;

@@ -4,5 +4,7 @@
     define('DB_HOST', 'localhost');
     define('DB_USER', 'postgres');
     define('DB_PORT', '5432');
-    //define('DB_PASS', PROJECT_MANAGER_DB_PASS);
+    define('DB_PASS', '');
+    define('MIGRATE_DB', '');
+    define('OLD_DB_INFO', '');
     //define('PG_INFO', 'host=localhost user=postgres dbname='.PROJECT_MANAGER_DB_NAME);

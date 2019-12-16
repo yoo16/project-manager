@@ -76,36 +76,35 @@ class View extends _View {
     /**
      * project path
      * 
-     * @param array $user_project_setting
-     * @param array $page
-     * @param array $view
+     * @param UserProjectSetting $user_project_setting
+     * @param Page $page
+     * @param View $view
      * @return string
      */
     static function projectFilePath($user_project_setting, $page, $view) {
-        if (!$user_project_setting) return;
-        if (!file_exists($user_project_setting['project_path'])) return;
+        if (!$user_project_setting->value) return;
+        if (!file_exists($user_project_setting->value['project_path'])) return;
 
-        $view_dir = $user_project_setting['project_path']."app/views/{$page['entity_name']}/";
-        if (!file_exists($view_dir)) {
-            PwFile::createDir($view_dir);
-        }
-        $path = "{$view_dir}{$view['name']}.phtml";
+        $view_dir = $user_project_setting->value['project_path']."app/views/{$page->value['entity_name']}/";
+        if (!file_exists($view_dir)) PwFile::createDir($view_dir);
+        $path = "{$view_dir}{$view->value['name']}.phtml";
         return $path;
     }
 
     /**
      * project path
      * 
-     * @param array $user_project_setting
-     * @param array $page
+     * @param UserProjectSetting $user_project_setting
+     * @param Page $page
      * @param string $name
      * @return string
      */
     static function projectNameFilePath($user_project_setting, $page, $name) {
-        if (!$user_project_setting) return;
-        if (!file_exists($user_project_setting['project_path'])) return;
+        if (!$user_project_setting->value) return;
+        if (!$page->value) return;
+        if (!file_exists($user_project_setting->value['project_path'])) return;
 
-        $view_dir = $user_project_setting['project_path']."app/views/{$page['entity_name']}/";
+        $view_dir = $user_project_setting->value['project_path']."app/views/{$page->value['entity_name']}/";
         if (!file_exists($view_dir)) {
             PwFile::createDir($view_dir);
         }
@@ -116,16 +115,15 @@ class View extends _View {
     /**
      * project path
      * 
-     * @param array $user_project_setting
-     * @param array $page
-     * @param array $view
+     * @param UserProjectSetting $user_project_setting
+     * @param Page $page
      * @return string
      */
     static function headerFilePath($user_project_setting, $page) {
-        if (!$user_project_setting) return;
-        if (!file_exists($user_project_setting['project_path'])) return;
+        if (!$user_project_setting->value) return;
+        if (!file_exists($user_project_setting->value['project_path'])) return;
 
-        $view_dir = $user_project_setting['project_path']."app/views/{$page['entity_name']}/";
+        $view_dir = $user_project_setting->value['project_path']."app/views/{$page->value['entity_name']}/";
         if (!file_exists($view_dir)) {
             PwFile::createDir($view_dir);
         }
@@ -136,11 +134,11 @@ class View extends _View {
     /**
      * local path
      * 
-     * @param array $view
+     * @param View $view
      * @return string
      */
     static function templateFilePath($view) {
-        $path = TEMPLATE_DIR."views/{$view['name']}.phtml";
+        $path = TEMPLATE_DIR."views/{$view->value['name']}.phtml";
         return $path;
     }
 

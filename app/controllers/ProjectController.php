@@ -177,6 +177,10 @@ class ProjectController extends AppController
         if (!isPost()) exit;
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
         $this->project->user_project_setting = $this->model('UserProjectSetting');
+        $this->database = $this->project->belongsTo('Database');
+
+        $this->project->exportPgsqlSetting($this->project->user_project_setting, $this->database);
+
         $this->project->exportPHPAll($this->pw_posts['is_overwrite']);
         DB::model('LocalizeString')->exportAll($this->project);
 
@@ -477,6 +481,18 @@ class ProjectController extends AppController
     {
         $this->user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
         $this->project->exportSQL($this->user_project_setting);
+        $this->redirectTo(['controller' => 'model']);
+    }
+
+    /**
+     * export PostgreSQL setting
+     *
+     * @return void
+     */
+    function action_export_pg_setting()
+    {
+        $this->user_project_setting = DB::model('UserProjectSetting')->fetch($_REQUEST['user_project_setting_id']);
+        $this->project->exportPgsqlSetting($this->user_project_setting, $this->database);
         $this->redirectTo(['controller' => 'model']);
     }
 
