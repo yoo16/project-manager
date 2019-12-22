@@ -40,7 +40,7 @@
         <?= $values['database']['name'] ?>
       </td>
       <td>
-        <?= $this->linkTo(['action' => 'export_list'],
+        <?= $this->linkTo(['controller' => 'user_project_setting'],
           [
           'label' => LABEL_SETTING,
           'http_params' => ['project_id' => $values['id']],

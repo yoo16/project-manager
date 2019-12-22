@@ -234,61 +234,61 @@ class Model extends _Model {
 
         $name = PwFile::pluralToSingular($model->value['name']);
         $file_name = PwFile::phpClassName($name).EXT_PHP;
-        $path = $user_project_setting['project_path']."{$base_dir}{$file_name}";
+        $path = $user_project_setting->value['project_path']."{$base_dir}{$file_name}";
         return $path;
     }
 
     /**
      * project path
      * 
-     * @param array $user_project_setting
-     * @param array $model
+     * @param UserProjectSetting $user_project_setting
+     * @param Model $model
      * @return string
      */
     static function projectVoFilePath($user_project_setting, $model) {
-        if (!$user_project_setting) return;
-        if (!$model['name']) return;
-        if (!file_exists($user_project_setting['project_path'])) return;
+        if (!$user_project_setting->value) return;
+        if (!$model->value['name']) return;
+        if (!file_exists($user_project_setting->value['project_path'])) return;
 
-        $name = PwFile::pluralToSingular($model['name']);
+        $name = PwFile::pluralToSingular($model->value['name']);
         $file_name = PwFile::phpClassName($name).EXT_PHP;
-        $path = $user_project_setting['project_path']."app/models/vo/_{$file_name}";
+        $path = $user_project_setting->value['project_path']."app/models/vo/_{$file_name}";
         return $path;
     }
 
     /**
      * project python path
      * 
-     * @param array $user_project_setting
-     * @param array $model
+     * @param UserProjectSetting $user_project_setting
+     * @param Model $model
      * @return string
      */
     static function projectPythonFilePath($user_project_setting, $model) {
-        if (!$user_project_setting) return;
-        if (!$model['name']) return;
-        if (!file_exists($user_project_setting['project_path'])) return;
+        if (!$user_project_setting->value) return;
+        if (!$model->value['name']) return;
+        if (!file_exists($user_project_setting->value['project_path'])) return;
 
-        $name = $model['entity_name'];
+        $name = $model->value['entity_name'];
         $file_name = $name.EXT_PYTHON;
-        $path = $user_project_setting['project_path']."app/python3/models/{$file_name}";
+        $path = $user_project_setting->value['project_path']."app/python3/models/{$file_name}";
         return $path;
     }
 
     /**
      * project python path
      * 
-     * @param array $user_project_setting
-     * @param array $model
+     * @param UserProjectSetting $user_project_setting
+     * @param Model $model
      * @return string
      */
     static function projectPythonVoFilePath($user_project_setting, $model) {
-        if (!$user_project_setting) return;
-        if (!$model['name']) return;
-        if (!file_exists($user_project_setting['project_path'])) return;
+        if (!$user_project_setting->value) return;
+        if (!$model->value['name']) return;
+        if (!file_exists($user_project_setting->value['project_path'])) return;
 
-        $name = $model['entity_name'];
+        $name = $model->value['entity_name'];
         $file_name = $name.EXT_PYTHON;
-        $path = $user_project_setting['project_path']."app/python3/models/vo/{$file_name}";
+        $path = $user_project_setting->value['project_path']."app/python3/models/vo/{$file_name}";
         return $path;
     }
 

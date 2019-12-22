@@ -133,6 +133,10 @@ class Project extends _Project {
         if (!$this->value) return;
         if (!$this->user_project_setting->value) return;
 
+        $this->database = $this->belongsTo('Database');
+        $pgsql = $this->database->pgsql();
+
+        $this->exportPHPModels($pgsql);
         $this->exportPHPControllers($is_fource);
         $this->exportPHPViews($is_fource);
         $this->exportRecord();
@@ -182,7 +186,7 @@ class Project extends _Project {
         $values['primary'] = $pg_constraints['primary'];
         $values['index'] = $pgsql->pgIndexesByTableName($model->value['name']);
 
-        $model_path = Model::projectFilePath($this->user_project_setting, $model->value);
+        $model_path = Model::projectFilePath($this->user_project_setting, $model);
 
         if (!file_exists($model_path)) {
             $model_template_path = Model::templateFilePath();
@@ -190,7 +194,7 @@ class Project extends _Project {
             file_put_contents($model_path, $contents);
         }
 
-        $vo_model_path = Model::projectVoFilePath($this->user_project_setting, $model->value);
+        $vo_model_path = Model::projectVoFilePath($this->user_project_setting, $model);
         $vo_model_template_path = Model::voTemplateFilePath();
         $contents = PwFile::bufferFileContetns($vo_model_template_path, $values);
         file_put_contents($vo_model_path, $contents);
@@ -257,14 +261,14 @@ class Project extends _Project {
         $values['foreign'] = $pg_constraints['foreign'];
         $values['primary'] = $pg_constraints['primary'];
 
-        $model_path = Model::projectPythonFilePath($this->user_project_setting->value, $model->value);
+        $model_path = Model::projectPythonFilePath($this->user_project_setting, $model);
         if (!file_exists($model_path)) {
             $model_template_path = Model::pythonTemplateFilePath();
             $contents = PwFile::bufferFileContetns($model_template_path, $values);
             file_put_contents($model_path, $contents);
         }
 
-        $python_vo_model_path = Model::projectPythonVoFilePath($this->user_project_setting->value, $model->value);
+        $python_vo_model_path = Model::projectPythonVoFilePath($this->user_project_setting, $model);
         $python_vo_model_template_path = Model::pythonVoTemplateFilePath();
         $contents = PwFile::bufferFileContetns($python_vo_model_template_path, $values);
         file_put_contents($python_vo_model_path, $contents);
@@ -308,7 +312,7 @@ class Project extends _Project {
         $values['foreign'] = $pg_constraints['foreign'];
         $values['primary'] = $pg_constraints['primary'];
 
-        $create_migrate_file_path = Model::projectLaravelMigrateFilePath($this->user_project_setting->value, $model->value);
+        $create_migrate_file_path = Model::projectLaravelMigrateFilePath($this->user_project_setting, $model);
         $create_migrate_template_file_path = Model::laravelMigrationCreateTemplateFilePath();
         $contents = PwFile::bufferFileContetns($create_migrate_template_file_path, $create_migrate_file_path);
         file_put_contents($create_migrate_file_path, $contents);
