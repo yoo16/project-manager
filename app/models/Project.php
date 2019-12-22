@@ -141,7 +141,7 @@ class Project extends _Project {
         $this->exportPHPViews($is_fource);
         $this->exportRecord();
 
-        DB::model('LocalizeString')->exportAll($this->project);;
+        DB::model('LocalizeString')->exportAll($this);
     }
 
     /**
