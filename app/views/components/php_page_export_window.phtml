@@ -17,6 +17,7 @@
         <div>
           <input id="is_overwrite" type="checkbox" name="is_overwrite"> overwrite
           <input id="project_id" type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
+          <input id="page_id" type="hidden" name="page_id" value="<?= $this->page->value['id'] ?>">
         </div>
         <? if (is_array($this->user_project_setting->values)): ?>
         <table class="table">
@@ -41,20 +42,6 @@
               <? if (file_exists($user_project_setting['project_path']."app/")): ?>
 
               <div class="form-inline">
-                <? if ($this->page->value): ?>
-                <form action="<?= $this->urlFor(['controller' => 'page', 'action' => 'artisan']) ?>" method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you run artisan make controller?">artisan controller</button>
-                  <input type="hidden" name="page_id" value="<?= $this->page->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
-
-                <form action="<?= $this->urlFor(['controller' => 'route', 'action' => 'export_route']) ?>" method="post">
-                  <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export route?">export route</button>
-                  <input type="hidden" name="page_id" value="<?= $this->page->value['id'] ?>">
-                  <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                </form>
-                <? endif ?>
-
                 <? if ($this->model->value): ?>
                 <?= $this->linkJs(
                   [
@@ -94,17 +81,19 @@
                 <? endif ?>
 
                 <? if ($this->page->value): ?>
-                <div>
-                  <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_php_page']) ?>" method="post">
-                    <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export PHP controller & view files?">Page</button>
-                    <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
-                    <input type="hidden" name="page_id" value="<?= $this->page->value['id'] ?>">
-                    <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
-                    <input type="checkbox" name="is_overwrite" value="1"> overwrite
-                  </form>
-                </div>
                 <? endif ?>
                 <div>
+                  <?= $this->linkJs(
+                      [
+                      'label' => 'PHP Page',
+                      'class' => 'btn btn-primary btn-sm',
+                      'pw-on-click' => 'export_php',
+                      'pw-controller' => 'project',
+                      'api-action' => 'export_php_page',
+                      'user_project_setting_id' => $user_project_setting['id'],
+                      'message' => 'Do you export Controller & View File?'
+                       ]
+                    ) ?>
                   <?= $this->linkTo(
                     [
                     'controller' => 'localize_string',

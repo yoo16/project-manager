@@ -212,6 +212,7 @@ class ProjectController extends AppController
         if (!isPost()) exit;
         $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
         $this->project->user_project_setting = $this->model('UserProjectSetting');
+
         $page = DB::model('Page')->fetch($this->pw_posts['page_id']);
         $this->project->exportPHPPage($page);
 

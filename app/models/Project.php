@@ -218,12 +218,11 @@ class Project extends _Project {
      * export PHP page
      *
      * @param Page $page
-     * @param Model $model
      * @return void
      */
-    function exportPHPPage($page, $model)
+    function exportPHPPage($page)
     {
-        $this->model = DB::model('Model')->fetch($this->page->value['model_id']);
+        $this->model = DB::model('Model')->fetch($page->value['model_id']);
 
         $this->exportPHPController($page, $_REQUEST['is_overwrite']);
         $this->exportPHPView($page, $_REQUEST['is_overwrite']);
@@ -398,8 +397,8 @@ class Project extends _Project {
             $page->parent = DB::model('Page')->fetch($page->value['parent_page_id']);
             $values['page'] = $page;
         }
-        $page_model = $page->relation('PageModel')->join('Model', 'id', 'model_id')->all();
-        $values['page_filter'] = DB::model('PageFilter')->where('page_id', $page->value['id'])->all();
+        //$page_model = $page->relation('PageModel')->join('Model', 'id', 'model_id')->all();
+        //$values['page_filter'] = DB::model('PageFilter')->where('page_id', $page->value['id'])->all();
 
         $page_path = Page::projectFilePath($this->user_project_setting, $page);
 
