@@ -17,7 +17,7 @@
           'http_params' => ['project_id' => $this->project->value['id']]
         ]
       ) ?>
-      <?= PwForm::submit('Import from DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Dou you import from DB?']) ?>
+      <?= PwForm::submit('Import from DB', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => 'Do you import from DB?']) ?>
       <?= PwForm::hidden('project_id', $this->project->value['id']) ?>
       <?= PwForm::linkModal('#help-model', 'Help', ['class' => 'btn btn-outline-primary']) ?>
     </form>

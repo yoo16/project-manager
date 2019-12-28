@@ -86,7 +86,7 @@ class Attribute extends _Attribute {
     function importByModel($model, $database) {
         if (!$model->value) return;
         if (!$database->value) return;
-
+        
         $pg_attributes = $database->pgsql()->attributeArray($model->value['name']); 
         if (!$pg_attributes) return;
 

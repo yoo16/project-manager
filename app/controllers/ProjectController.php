@@ -450,7 +450,8 @@ class ProjectController extends AppController
     function action_sync_db()
     {
         if (!isPost()) exit;
-        DB::model('Project')->syncByDB($this->database);
+        $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
+        $this->project->syncByDB($this->database);
         $this->redirectTo(['controller' => 'model', 'action' => 'list'], ['project_id' => $this->project->value['id']]);
     }
 

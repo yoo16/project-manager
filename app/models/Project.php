@@ -592,34 +592,34 @@ class Project extends _Project {
     function syncByDB($database)
     {
         $pgsql_entity = new PwPgsql($database->pgInfo());
-        $this->pg_classes = $pgsql_entity->tableArray();
+        $pg_classes = $pgsql_entity->tableArray();
 
-        foreach ($this->pg_classes as $pg_class) {
-            $model_values = null;
-            if ($this->project->value['database_id']) $model_values['database_id'] = $this->project->value['database_id'];
-            if ($this->project->value['id']) $model_values['project_id'] = $this->project->value['id'];
-            if ($pg_class['relfilenode']) $model_values['relfilenode'] = $pg_class['relfilenode'];
-            if ($pg_class['pg_class_id']) $model_values['pg_class_id'] = $pg_class['pg_class_id'];
-            if ($pg_class['relname']) $model_values['name'] = $pg_class['relname'];
-            if ($pg_class['comment']) $model_values['label'] = $pg_class['comment'];
+        foreach ($pg_classes as $pg_class) {
+            $posts = null;
+            if ($database->value['id']) $posts['database_id'] = $database->value['id'];
+            if ($this->value['id']) $posts['project_id'] = $this->value['id'];
+            if ($pg_class['relfilenode']) $posts['relfilenode'] = $pg_class['relfilenode'];
+            if ($pg_class['pg_class_id']) $posts['pg_class_id'] = $pg_class['pg_class_id'];
+            if ($pg_class['relname']) $posts['name'] = $pg_class['relname'];
+            if ($pg_class['comment']) $posts['label'] = $pg_class['comment'];
 
-            $model_values['entity_name'] = PwFile::pluralToSingular($pg_class['relname']);
-            $model_values['class_name'] = PwFile::phpClassName($model_values['entity_name']);
+            $posts['entity_name'] = PwFile::pluralToSingular($pg_class['relname']);
+            $posts['class_name'] = PwFile::phpClassName($posts['entity_name']);
 
             //TODO resolve over head
             $model = DB::model('Model')
                 ->where('name', $pg_class['relname'])
-                ->where('database_id', $database->value['id'])
+                ->where('project_id', $this->value['id'])
                 ->one();
 
             if ($model->value['id']) {
-                $model = DB::model('Model')->update($model_values, $model->value['id']);
+                $model = DB::model('Model')->update($posts, $model->value['id']);
             } else {
-                $model = DB::model('Model')->insert($model_values);
+                $model = DB::model('Model')->insert($posts);
             }
-
-            $attribute = new Attribute();
-            $attribute->importByModel($model, $this->database);
+            if ($model->value) {
+                DB::model('Attribute')->importByModel($model, $database);
+            }
         }
 
         Model::updateForeignKey($this);
