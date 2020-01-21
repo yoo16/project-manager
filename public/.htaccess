@@ -22,24 +22,3 @@ DirectoryIndex index.html index.php dispatch.php
 #order deny,allow
 #allow from 127.0.0.1 192.168.
 #deny from all
-
-### phtml
-php_flag short_open_tag On
-php_flag asp_tags On
-
-### error output
-php_value display_errors On
-php_value log_errors On
-
-### mbstring
-php_flag magic_quotes_gpc Off
-php_value mbstring.language "Japanese"
-php_value mbstring.internal_encoding "UTF-8"
-php_value default_charset "UTF-8"
-
-### output SJIS/EUC-JP
-#php_flag output_buffering On
-#php_flag mbstring.encoding_translation On
-#php_value mbstring.http_input "auto"
-#php_value mbstring.http_output "SJIS"
-#php_value output_handler "mb_output_handler"

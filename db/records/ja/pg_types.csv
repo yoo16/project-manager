@@ -11,4 +11,5 @@ value,label
 "varchar","varchar"
 "text","text"
 "timestamp","timestamp"
+"jsonb","jsonb"
 "bytea","bytea"

@@ -352,8 +352,9 @@ class Database extends _Database {
         $values['user'] = 'postgres';
 
         if ($this->value['hostname']) $values['host'] = $this->value['hostname'];
-        if ($this->value['port']) $values['port'] = $this->value['port'];
         if ($this->value['user_name']) $values['user'] = $this->value['user_name'];
+        if ($this->value['port']) $values['port'] = $this->value['port'];
+        if ($this->value['password']) $values['password'] = $this->value['password'];
 
         if (!$values['dbname']) return;
         return $values;

@@ -20,6 +20,7 @@ class _Database extends PwPgsql {
         'is_lock' => ['type' => 'bool'],
         'name' => ['type' => 'varchar', 'is_required' => true],
         'port' => ['type' => 'int4', 'is_required' => true],
+        'password' => ['type' => 'varchar', 'length' => 256],
         'type' => ['type' => 'varchar'],
         'updated_at' => ['type' => 'timestamp'],
         'user_name' => ['type' => 'varchar', 'is_required' => true],

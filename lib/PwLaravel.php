@@ -20,6 +20,39 @@ class PwLaravel
     }
 
     /**
+     * create project
+     *
+     * @param string $name
+     * @param array $options
+     * @return void
+     */
+    public static function createProject($name, $options = null)
+    {
+        $cmd = 'composer create-project laravel/laravel ict-kids --prefer-dist';
+        if ($options) {
+            $option = implode(' ', $options);
+            $cmd.= " {$option}";
+        }
+        exec($cmd);
+    }
+
+
+    /**
+     * add VueJS
+     *
+     * @param string $name
+     * @param array $options
+     * @return void
+     */
+    public static function addVueJS($name, $options = null)
+    {
+        $cmd = 'composer require laravel/ui --dev';
+        exec($cmd);
+        $cmd = 'php artisan preset vue';
+        exec($cmd);
+    }
+    
+    /**
      * command make
      *
      * @param string $type

@@ -27,6 +27,11 @@
     </tr>
 
     <tr>
+      <th><?= LABEL_PASSWORD ?></th>
+      <td><?= $this->database->formPassword('password', ['class' => 'form-control']) ?></td>
+    </tr>
+
+    <tr>
       <th>Delete Lock</th>
       <td>
         <?= $this->database->formCheckbox('is_lock') ?>

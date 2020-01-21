@@ -72,7 +72,7 @@ class ModelController extends ProjectController {
      * @return void
      */
     function action_edit() {
-        $this->model = DB::model('Model')->fetch($this->pw_gets['id']);
+        $this->model = DB::model('Model')->editPage();
     }
 
     /**
@@ -146,6 +146,11 @@ class ModelController extends ProjectController {
         $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
     }
 
+    /**
+     * duplicate
+     *
+     * @return void
+     */
     function action_duplicate() {
         $model = DB::model('Model')->fetch($this->pw_gets['id']);
         if ($model->value['id']) {
@@ -189,6 +194,11 @@ class ModelController extends ProjectController {
         $this->redirectTo(['action' => 'list'], ['model_id' => $new_model->value['id']]);
     }
 
+    /**
+     * delete
+     *
+     * @return void
+     */
     function action_delete() {
         if (!isPost()) exit;
 
@@ -224,6 +234,11 @@ class ModelController extends ProjectController {
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * add table
+     *
+     * @return void
+     */
     function action_add_table() {
         if (!isPost()) exit;
 
@@ -245,6 +260,11 @@ class ModelController extends ProjectController {
         $this->redirectTo(['action' => 'list']);;
     }
 
+    /**
+     * old table list
+     *
+     * @return void
+     */
     function action_old_table_list() {
         $this->layout = null;
 

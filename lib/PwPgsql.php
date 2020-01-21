@@ -50,7 +50,7 @@ class PwPgsql extends PwEntity
         'd' => 'SET DEFAULT'
     ];
 
-    public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'double', 'real'];
+    public static $number_types = ['int2', 'int4', 'int8', 'float', 'float8', 'double', 'double precision', 'real'];
 
     /**
      * constructor
