@@ -81,18 +81,7 @@ class UserController extends AppController {
     * @return void
     */
     function action_add() {
-        if (!isPost()) exit;
-        $posts = $this->pw_posts["user"];
-        $user = DB::model('User')->insert($posts);
-
-        if ($user->errors) {
-            $errors['users'] = $user->errors;
-            $this->setErrors($errors);
-            $this->redirectTo(['action' => 'new']);;
-            exit;
-        } else {
-            $this->redirectTo();
-        }
+        $this->redirectForAdd($this->insertByModel('User'), ['invalid' => 'list']);
     }
 
    /**
@@ -102,15 +91,7 @@ class UserController extends AppController {
     * @return void
     */
     function action_update() {
-        if (!isPost()) exit;
-        $posts = $this->pw_posts["user"];
-        $user = DB::model('User')->update($posts, $this->pw_gets['id']);
-
-        if ($user->errors) {
-            $errors['users'] = $user->errors;
-            $this->setErrors($errors);
-        }
-        $this->redirectTo(['action' => 'edit', 'id' => $this->pw_gets['id']]);
+        $this->redirectForUpdate($this->updateByModel('User'), ['invalid' => 'list']);
     }
 
    /**
@@ -120,9 +101,7 @@ class UserController extends AppController {
     * @return void
     */
     function action_delete() {
-        if (!isPost()) exit;
-        DB::model('User')->delete($this->pw_gets['id']);
-        $this->redirectTo();
+        $this->redirectForDelete($this->deleteByModel('User'), ['invalid' => 'list']);
     }
 
 }

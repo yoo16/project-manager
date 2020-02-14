@@ -246,27 +246,32 @@ class PageController extends ProjectController
      */
     function artisan()
     {
-        $page = DB::model('Page')->fetch($this->pw_posts['page_id']);
-        $user_project_setting = DB::model('UserProjectSetting')->fetch($this->pw_posts['user_project_setting_id']);
-
+        $user_project_setting = $this->fetchByModel('UserProjectSetting', 'user_project_setting_id');
         $params['path'] = $user_project_setting->value['project_path'];
+        $params['is_overwrite'] = $this->pw_posts['is_overwrite'];
 
-        $laravel = new PwLaravel($params);
-
-        if ($this->pw_posts['is_overwrite']) $laravel->removeController($page->value['name']);
-
-        //TODO api option
-        //$options[] = '--api';
-        $options[] = '--resource';
-        $name = Controller::className($page->value['name']);
-        $laravel->makeController($name, $options);
-
-        $options = [];
-        $options['action'][] = 'index';
-        $name = strtolower($page->value['name']);
-        $laravel->createView($name, $options);
+        $page = $this->fetchByModel('Page', 'page_id');
+        $page->laravelMakeController($params);
+        $page->laravelMakeView($params);
 
         $this->redirectTo(['action' => 'list']);
+    }
+
+    /**
+     * artisan_controller_command
+     * 
+     * @return void
+     */
+    function artisan_controller_command()
+    {
+        $user_project_setting = $this->fetchByModel('UserProjectSetting', 'user_project_setting_id');
+        $params['path'] = $user_project_setting->value['project_path'];
+        $params['is_overwrite'] = $this->pw_posts['is_overwrite'];
+
+        $page = $this->fetchByModel('Page', 'page_id');
+        $results['cmd'] = $page->laravelControllerCommand($params);
+
+        $this->renderJson($results);
     }
 
 }

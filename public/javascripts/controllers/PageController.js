@@ -19,10 +19,26 @@ var PageController = function() {
         page_id_node.setValue(page_id);
 
         pw_ui.showModal('artisan_controller_window');
+
+        this.changePathForArtisan(node);
     }
 
     this.hideArtisan = function(node) {
         pw_ui.hideModal('artisan_controller_window');
+    }
+
+    this.changePathForArtisan = function(node) {
+        var params = {};
+        params.id = node.attr('page_id');
+
+        let user_project_setting = PwNode.id('artisan_controller_user_project_setting_id');
+        params.user_project_setting_id = user_project_setting.selected();
+
+        pw_app.postHtml({controller: this.name, action: 'artisan_controller_command'}, params, {callback: callback});
+        function callback(json) {
+            let values = JSON.parse(json);
+            PwNode.id('artisan_make_controller_cmd').html(values.cmd);
+        }
     }
 }
 

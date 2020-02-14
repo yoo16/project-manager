@@ -3,27 +3,35 @@
     <div class="modal-content">
       <form method="post" action="<?= $this->urlFor(['action' => 'artisan']) ?>">
         <div class="modal-header">
-          <h5 class="modal-title">Artisan Controller</h5>
+          <h3>
+            Artisan Make Controller
+            :
+            <span id="artisan_name"></span>
+          </h3>
+
         </div>
         <div class="modal-body">
           <dl>
-            <dt>Controller</dt>
-            <dd>
-              <div id="artisan_name"></div>
-            </dd>
             <dt>Path</dt>
             <dd>
               <?= PwForm::select([
+              'id' => 'artisan_controller_user_project_setting_id',
               'name' => 'user_project_setting_id',
               'model' => 'UserProjectSetting',
               'value' => 'id',
               'label' => ['User:login_name:user_id', 'project_path'],
               'where' => "project_id = {$this->project->value['id']}",
               'label_models' => ['User' => []],
-              'label_separate' => ' : '
+              'label_separate' => ' : ',
+              'pw-change' => 'changePathForArtisan',
               ]) ?>
             </dd>
+            <dt>CMD</dt>
+            <dd>
+              <div id="artisan_make_controller_cmd"></div>
+            </dd>
           </dl>
+
         </div>
 
         <div class="modal-footer">

@@ -2,7 +2,7 @@
 class PwLaravel
 {
     public $path;
-    public $dev_null = '> /dev/null 2>&1';
+    static $dev_null = '> /dev/null 2>&1';
 
     static public $resource_actions = [
         'index',
@@ -105,7 +105,7 @@ class PwLaravel
             $option = implode(' ', $options);
             $cmd.= " {$option}";
         }
-        //$cmd.= " {$this->dev_null}";
+        $cmd.= " ".self::$dev_null;
         return $cmd;
     }
 
@@ -115,14 +115,15 @@ class PwLaravel
      * @param string $type
      * @param string $name
      * @param array $options
-     * @return void
+     * @return string
      */
-    public function artisanMake($type, $name, $options = null)
+    public function artisanMakeCmd($type, $name, $options = null)
     {
+        $this->cmd = '';
         if (!defined('COMAND_PHP_PATH')) exit('Not defined COMAND_PHP_PATH.');
-        if ($this->path) $cmd = "cd {$this->path} && ";
-        $cmd.= PwLaravel::cmdMake($type, $name, $options);
-        return $cmd;
+        if ($this->path) $this->cmd = "cd {$this->path} && ";
+        $this->cmd.= PwLaravel::cmdMake($type, $name, $options);
+        return $this->cmd;
     }
 
     /**
@@ -134,8 +135,11 @@ class PwLaravel
      */
     public function makeController($name, $options = null)
     {
-        $cmd = $this->artisanMake('controller', $name, $options);
-        exec($cmd);
+        $this->cmd = $this->artisanMakeCmd('controller', $name, $options);
+        exec($this->cmd, $output, $return_var);
+        dump($this->cmd);
+        dump($output);
+        dump($return_var);
     }
 
     /**
