@@ -16,11 +16,6 @@ class Project extends _Project {
         parent::validate();
     }
 
-    function default_value() {
-        $this->value['dev_url'] = 'http://';
-        return $this->value;
-    }
-
     /**
      * pg constraint values
      *
@@ -276,44 +271,55 @@ class Project extends _Project {
 
     /**
      * export laravel models1
+     * 
+     * @param array $params
      * @return bool
      */
-    function exportLaravelModels($pgsql) {
-        $this->bindMany('Model');
-        if (!$this->model->values) return;
-        foreach ($this->model->values as $model) {
-            $this->model->value = $model;
-            $this->exportLaravelModel($pgsql, $this->model);
+    function exportLaravelModels($params) {
+        $model = $this->relation('Model')->get();
+        //$this->bindMany('Model');
+        if (!$model->values) return;
+        foreach ($model->values as $model->value) {
+            $params['model'] = $model;
+            $this->exportLaravelModel($params);
         }
     }
 
     /**
      * export laravel model
      * 
-     * @param Model $model
+     * @param array $params
      * @return bool
      */
-    function exportLaravelModel($pgsql, $model) {
-        $escapes = ['migration', 'password_resets'];
+    function exportLaravelModel($params) {
+        //TODO
+        $database = $params['database'];
+        $model = $params['model'];
+        if (!$database) return;
+        if (!$model) return;
+
+        $escapes = ['migration'];
         if (in_array($model->value['entity_name'], $escapes)) return;
+
+        $pgsql = $database->pgsql();
         $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
 
-        $values = null;
-        $values['project'] = $this->value;
-        
         $attribute = $model->relation('Attribute')->order('name')->all();
 
-        $values['model'] = $model->value;
-        $values['attribute'] = $attribute->values;
-        
+        $create_migrate_file_path = Model::projectLaravelMigrateFilePath($this->user_project_setting, $model);
+        $create_migrate_template_file_path = Model::laravelMigrationCreateTemplateFilePath();
+
         $pg_constraints = $this->pgConstraintValues($pg_class);
+
+        $values = [];
+        $values['project'] = $this->value;
+        $values['model'] = $model;
+        $values['attribute'] = $attribute;
         $values['unique'] = $pg_constraints['unique'];
         $values['foreign'] = $pg_constraints['foreign'];
         $values['primary'] = $pg_constraints['primary'];
 
-        $create_migrate_file_path = Model::projectLaravelMigrateFilePath($this->user_project_setting, $model);
-        $create_migrate_template_file_path = Model::laravelMigrationCreateTemplateFilePath();
-        $contents = PwFile::bufferFileContetns($create_migrate_template_file_path, $create_migrate_file_path);
+        $contents = PwFile::bufferFileContetns($create_migrate_template_file_path, $values);
         file_put_contents($create_migrate_file_path, $contents);
     }
 
@@ -397,8 +403,6 @@ class Project extends _Project {
             $page->parent = DB::model('Page')->fetch($page->value['parent_page_id']);
             $values['page'] = $page;
         }
-        //$page_model = $page->relation('PageModel')->join('Model', 'id', 'model_id')->all();
-        //$values['page_filter'] = DB::model('PageFilter')->where('page_id', $page->value['id'])->all();
 
         $page_path = Page::projectFilePath($this->user_project_setting, $page);
 

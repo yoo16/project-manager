@@ -74,6 +74,7 @@ class DatabaseController extends AppController {
         $posts = $this->pw_posts['database'];
         $database = DB::model('Database')->insert($posts);
 
+        //TODO refecoring
         $this->flash['results'] = $database->pgsql()->createDatabase();
 
         if ($database->errors) {
@@ -90,11 +91,16 @@ class DatabaseController extends AppController {
      * @return void
      */
     function action_update() {
-        if (!isPost()) exit;
-        $posts = $this->pw_posts['database'];
-        $database = DB::model('Database')->update($posts, $this->pw_gets['id']);
-
-        $this->redirectTo(['action' => 'list']);;
+        $database = $this->fetchByModel('Database');
+        if ($this->pw_posts['database']['name'] && ($database->value['name'] != $this->pw_posts['database']['name'])) {
+            $pgsql = new PwPgsql();
+            $pgsql->renameDatabase($database->value['name'], $this->pw_posts['database']['name']);
+            if ($pgsql->sql_error) {
+                $database->addError('SQL', $pgsql->sql_error);
+                $this->redirectForUpdate($database);
+            }
+        }
+        $this->redirectForUpdate($this->updateByModel('Database'));
     }
 
 

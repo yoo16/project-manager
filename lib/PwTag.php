@@ -12,6 +12,84 @@ class PwTag {
     static $stylesheet_dir = 'stylesheets';
 
     /**
+     * php tag for object
+     *
+     * @param string $name
+     * @return void
+     */
+    static function phpObj($name)
+    {
+        return '$'.$name;
+    }
+
+    /**
+     * php tag arrow for object
+     *
+     * @param string $name
+     * @return void
+     */
+    static function phpObjArrow()
+    {
+        return '->';
+    }
+
+    /**
+     * php tag for object and value
+     *
+     * @param string $name
+     * @return string
+     */
+    static function phpObjValue($name, $value = '')
+    {
+        return self::phpObj($name).self::phpObjArrow()."{$value}";
+    }
+
+    /**
+     * php tag for object and value
+     *
+     * @param string $name
+     * @param string $function_name
+     * @param string $value
+     * @return string
+     */
+    static function phpFunction($params)
+    {
+        //TODO structure for params
+        return $params['function'].self::phpBrackets($params['value'], $params['is_string_value']);
+    }
+
+    /**
+     * php tag for object and value
+     *
+     * @param string $name
+     * @param string $function_name
+     * @param string $value
+     * @return string
+     */
+    static function phpObjFunction($params)
+    {
+        //TODO structure for params
+        return self::phpObjValue($params['name'], $params['function']).self::phpBrackets($params['value'], $params['is_string_value']);
+    }
+
+    /**
+     * php tag for object
+     *
+     * @param string $name
+     * @return void
+     */
+    static function phpBrackets($name, $is_string = true)
+    {
+        if (is_null($name)) {
+            return "($name)";
+        } else if ($is_string) {
+            return "('$name')";
+        } else {
+            return "($name)";
+        }
+    }
+
+    /**
      * base url
      *
      * @return string

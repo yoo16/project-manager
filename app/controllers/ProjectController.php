@@ -398,15 +398,11 @@ class ProjectController extends AppController
      */
     function action_export_laravel_models()
     {
-        if (!isPost()) exit;
-        $this->project = DB::model('Project')->fetch($this->pw_posts['project_id']);
-        $this->project->user_project_setting = $this->model('UserProjectSetting');
+        $this->project = $this->fetchByModel('Project', 'project_id');
+        $this->project->bindOne('UserProjectSetting');
+        $params['database'] = DB::model('Database')->fetch($this->project->value['database_id']);
 
-        $database = DB::model('Database')->fetch($this->project->value['database_id']);
-        $pgsql = $database->pgsql();
-
-        $this->project->exportLaravelModels($pgsql);
-
+        $this->project->exportLaravelModels($params);
         $this->renderJson(['results' => true]);
     }
 

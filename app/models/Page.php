@@ -17,16 +17,6 @@ class Page extends _Page {
     }
 
     /**
-     * default value
-     *
-     * @return void
-     */
-    function default_value() {
-        $this->value['dev_url'] = 'http://';
-        return $this->value;
-    }
-
-    /**
      * class name
      * 
      * @param Page $page

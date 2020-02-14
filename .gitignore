@@ -8,5 +8,7 @@ tmp
 .vscode/
 composer.json
 app/controllers/CheckController.php
-app/settings/pgsql/debian8.php
-app/settings/vagrant.php
+app/settings/*.php
+!app/settings/default.php
+app/settings/pgsql/*.php
+!app/settings/pgsql/default.php

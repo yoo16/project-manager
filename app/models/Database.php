@@ -335,9 +335,7 @@ class Database extends _Database {
      * @return PwPgsql
      */
     function pgsql() {
-        if ($pg_info = $this->pgInfo()) {
-            return new PwPgsql($pg_info);
-        }
+        if ($pg_info = $this->pgInfo()) return new PwPgsql($pg_info);
     }
 
     /**

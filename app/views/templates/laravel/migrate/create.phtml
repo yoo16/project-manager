@@ -13,6 +13,14 @@ class crate_<?= $model->value['name'] ?>_table extends Migration
      */
     public function up()
     {
+        Schema::create('<?= $values['model']->value['name'] ?>', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->timestamps();
+<? foreach($values['attribute']->values as $attribute_value): ?>
+<? $attribute = DB::model('Attribute')->setValue($attribute_value) ?>
+            <?= PwLaravel::migrateFunction(DB::model('Attribute')->setValue($attribute_value)) ?>;
+<? endforeach ?>
+        });
     }
 
     /**
@@ -22,5 +30,6 @@ class crate_<?= $model->value['name'] ?>_table extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('<?= $values['model']->value['name'] ?>');
     }
 }
