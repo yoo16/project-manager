@@ -7,6 +7,7 @@
 require_once 'vo/_Page.php';
 
 class Page extends _Page {
+    public $laravel;
 
     function __construct($params=null) {
         parent::__construct($params);        
@@ -116,5 +117,38 @@ class Page extends _Page {
             DB::model('ViewItem')->createAllByPage($page);
         }
         return $page;
+    }
+
+
+    /**
+     * Undocumented function
+     *
+     * @param array $params
+     * @return void
+     */
+    public function laravelControllerCommand(array $params)
+    {
+        $laravel = new PwLaravel($params);
+        if ($params['is_overwrite']) $laravel->removeController($this->value['name']);
+
+        $options[] = '--resource';
+        $name = Controller::className($this->value['name']);
+        $cmd = $laravel->artisanMakeCmd('controller', $name, $options);
+        return $cmd;
+    }
+    
+    public function laravelMakeController(array $params)
+    {
+        $cmd = $this->laravelControllerCommand($params);
+        exec($cmd, $output, $return_var);
+    }
+
+    public function laravelMakeView(array $params)
+    {
+        $laravel = new PwLaravel($params);
+        $options = [];
+        $options['action'][] = 'index';
+        $name = strtolower($this->value['name']);
+        $laravel->createView($name, $options);
     }
 }
