@@ -65,7 +65,7 @@ class PwModel {
         $model_name = PwFile::phpClassNameFromPwEntityName($table_name);
 
         $pg_attributes = $pgsql->pgAttributes($table_name);
-        $pg_constraints = self::pgConstraintValues($pgsql->pgClassArray($pg_class['pg_class_id']));
+        $pg_constraints = PwPgsql::pgConstraintValues($pgsql->pgClassArray($pg_class['pg_class_id']));
 
         $values['model']['class_name'] = $model_name;
         $values['model']['name'] = $pg_class['relname'];
@@ -219,34 +219,6 @@ class PwModel {
         $propaty = implode(', ', $propaties);
         $value = "'{$attribute['name']}' => [{$propaty}]";
         return $value;
-    }
-
-    /**
-     * pg_constraint values
-     *
-     * @param array $pg_class
-     * @return array
-     */
-    static function pgConstraintValues($pg_class) {
-        foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
-            if ($pg_constraints) {
-                foreach ($pg_constraints as $pg_constraint) {
-                    if ($type == 'unique') {
-                        foreach ($pg_constraint as $pg_constraint_unique) {
-                            $unique[$pg_constraint_unique['conname']][] = $pg_constraint_unique;
-                        }
-                    } else if ($type == 'foreign') {
-                        $foreign[$pg_constraint['conname']] = $pg_constraint;
-                    } else if ($type == 'primary') {
-                        $primary = $pg_constraint['conname'];
-                    }
-                }
-            }
-        }
-        if ($unique) $values['unique'] = $unique;
-        if ($foreign) $values['foreign'] = $foreign;
-        if ($primary) $values['primary'] = $primary;
-        return $values;
     }
 
 }

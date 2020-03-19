@@ -14,7 +14,7 @@ class PwLaravel
         'destroy',
     ];
 
-    static public $escape_functions = [
+    static public $escape_columns = [
         'id',
         'created_at',
         'updated_at',
@@ -25,7 +25,7 @@ class PwLaravel
     ];
 
     static public $migration_types = [
-        'primary' => ['name' => 'bigIncrements'], //mediumIncrements
+        'primary' => ['name' => 'bigIncrements'], //TODO mediumIncrements
         'varchar' => ['name' => 'string'],
         'bool' => ['name' => 'boolean'],
         'int2' => ['name' => 'integer'],
@@ -49,7 +49,7 @@ class PwLaravel
     ];
 
     static public $migration_optional_functions = [
-        'is_required' => ['name' => 'nullable'],
+        'nullable' => ['name' => 'nullable'],
     ];
 
     function __construct($params = null)
@@ -74,6 +74,58 @@ class PwLaravel
         exec($cmd);
     }
 
+    /**
+     * export laravel models
+     * 
+     * @param Project $project
+     * @return bool
+     */
+    static function exportModels($project) {
+        $database = DB::model('Database')->fetch($project->value['database_id']);
+        $model = $project->relation('Model')->get();
+        if (!$model->values) return;
+        foreach ($model->values as $model->value) {
+            self::exportModel($project, $database, $model);
+        }
+    }
+
+    /**
+     * export laravel model
+     * 
+     * @param Project $project
+     * @param Database $database
+     * @param Model $model
+     * @return bool
+     */
+    static function exportModel($project, $database, $model) {
+        if (!$database) return;
+        if (!$model) return;
+
+        $escapes = ['migration'];
+        if (in_array($model->value['entity_name'], $escapes)) return;
+
+        $pgsql = $database->pgsql();
+        $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
+
+        $attribute = $model->relation('Attribute')->order('name')->all();
+
+        $create_migrate_file_path = Model::projectLaravelMigrateFilePath($project->user_project_setting, $model);
+        $create_migrate_template_file_path = Model::laravelMigrationCreateTemplateFilePath();
+
+        $pg_constraints = PwPgsql::pgConstraintValues($pg_class);
+
+        $values = [];
+        $values['project'] = $project->value;
+        $values['model'] = $model;
+        $values['attribute'] = $attribute;
+        $values['unique'] = $pg_constraints['unique'];
+        $values['foreign'] = $pg_constraints['foreign'];
+        $values['primary'] = $pg_constraints['primary'];
+        $values['className'] = "Create".ucfirst($model->value['name'])."Table";
+        
+        $contents = PwFile::bufferFileContetns($create_migrate_template_file_path, $values);
+        file_put_contents($create_migrate_file_path, $contents);
+    }
 
     /**
      * add VueJS
@@ -89,7 +141,18 @@ class PwLaravel
         $cmd = 'php artisan preset vue';
         exec($cmd);
     }
-    
+
+    /**
+     * seed
+     *
+     * @return void
+     */
+    public static function seed()
+    {
+        $cmd = 'php artisan db:seed';
+        exec($cmd);
+    }
+
     /**
      * command make
      *
@@ -330,7 +393,6 @@ class PwLaravel
     static public function migrateFunction($attribute, $is_end_tag = false)
     {
         if (!$attribute->value) return;
-        //if (self::isEscapeAttribute($attribute)) return;
 
         $params = [];
         $params['name'] = 'table';
@@ -338,11 +400,15 @@ class PwLaravel
         $params['value'] = $attribute->value['name'];
         $params['is_string_value'] = true;
         $tag =  PwTag::phpObjFunction($params);
-        if (self::isNullableAttribute($attribute)) {
-            $tag.= PwTag::phpObjArrow().PwTag::phpFunction(
-                ['function' => self::migrateOptionalFunctionName('is_required')]
-            );
+        if (!self::isEscapeAttribute($attribute) && !$attribute->value['is_required']) {
+            dump(['nullable']);
+            $tag.= PwTag::phpObjArrow().PwTag::phpFunction(['function' => 'nullable']);
         }
+        // if (self::isNullableAttribute($attribute)) {
+        //     $tag.= PwTag::phpObjArrow().PwTag::phpFunction(
+        //         ['function' => self::migrateOptionalFunctionName('is_required')]
+        //     );
+        // }
         if ($is_end_tag) $tag.= ';';
         return $tag;
     }
@@ -366,7 +432,9 @@ class PwLaravel
      */
     static public function migrateOptionalFunctionName($key)
     {
-        return self::$migration_optional_functions[$key]['name'];
+        //TODO
+        if ($key != 'is_required') return 'nullable';
+        //return self::$migration_optional_functions[$key]['name'];
     }
 
     /**
@@ -388,8 +456,19 @@ class PwLaravel
      */
     static public function isEscapeAttribute($attribute)
     {
-        return (in_array($attribute->value['name'], self::$nullable_attributes));
-        return ($attribute->value['is_required']);
+        return (in_array($attribute->value['name'], self::$escape_columns));
+    }
+
+    /**
+     * migrate class name
+     *
+     * @param Model $model
+     * @return string;
+     */
+    static public function migrateClassName($model)
+    {
+        $class_name = "Create".ucfirst($model->value['name'])."Table";
+        return $class_name;
     }
 
 }

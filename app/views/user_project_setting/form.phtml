@@ -4,15 +4,18 @@
     <tr>
       <th><?= LABEL_USER ?></th>
       <td>
-          <?= $this->user_project_setting->formSelect('user_id', [
+          <?= $form = $this->user_project_setting->formSelect('user_id', [
                         'unselect' => true,
                         'label_separate' => '-',
                         'label' => ['login_name'],
                         'model' => 'User',
-                        
-                        
-                        
                         ]) ?>
+          <? if (!$from): ?>
+          <div>
+          Please, create user!!
+          </div>
+          <?= $this->linkTo(['controller' => 'user'], ['label' => 'create', 'class' => 'btn btn-primary']) ?>
+          <? endif ?>
       </td>
     </tr>
 

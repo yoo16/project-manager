@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class crate_<?= $model->value['name'] ?>_table extends Migration
+class crate_<?= $values['model']->value['name'] ?>_table extends Migration
 {
     /**
      * Run the migrations.
@@ -13,6 +13,7 @@ class crate_<?= $model->value['name'] ?>_table extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('<?= $values['model']->value['name'] ?>')) return;
         Schema::create('<?= $values['model']->value['name'] ?>', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();

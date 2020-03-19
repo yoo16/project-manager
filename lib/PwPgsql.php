@@ -789,12 +789,16 @@ class PwPgsql extends PwEntity
      */
     function createTablesForProject()
     {
+        $results = [];
         $sql_files = $this->createTablesSQLForProject();
         if (!$sql_files) return;
         foreach ($sql_files as $sql) {
             $this->query($sql);
+            if ($this->sql_error) {
+                $results[] = $this->sql_error;
+            }
         }
-        return;
+        return $results;
     }
 
     /**
@@ -4737,6 +4741,35 @@ class PwPgsql extends PwEntity
         $sql = "UPDATE {$this->table_name} SET sort_order = {$this->id_column} WHERE sort_order IS NULL;";
         $results = $this->query($sql);
         return $this;
+    }
+
+    /**
+     * pg constraint values
+     *
+     * @param  PgClass $pg_class
+     * @return void
+     */
+    static function pgConstraintValues($pg_class) {
+        if (!$pg_class['pg_constraint']) return;
+        foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
+            if ($pg_constraints) {
+                foreach ($pg_constraints as $pg_constraint) {
+                    if ($type == 'unique') {
+                        foreach ($pg_constraint as $pg_constraint_unique) {
+                            $unique[$pg_constraint_unique['conname']][] = $pg_constraint_unique;
+                        }
+                    } else if ($type == 'foreign') {
+                        $foreign[$pg_constraint['conname']] = $pg_constraint;
+                    } else if ($type == 'primary') {
+                        $primary = $pg_constraint['conname'];
+                    }
+                }
+            }
+        }
+        if ($unique) $values['unique'] = $unique;
+        if ($foreign) $values['foreign'] = $foreign;
+        if ($primary) $values['primary'] = $primary;
+        return $values;
     }
 
 }

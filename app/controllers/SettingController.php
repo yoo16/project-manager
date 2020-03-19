@@ -41,6 +41,7 @@ class SettingController extends AppController {
     function action_create_tables() {
         $pgsql_entity = new PwPgsql();
         $this->results = $pgsql_entity->createTablesForProject();
+        var_dump($pgsql_entity->errors);
         $this->sql = $pgsql_entity->sql;
     }
 

@@ -17,35 +17,6 @@ class Project extends _Project {
     }
 
     /**
-     * pg constraint values
-     *
-     * @param  PgClass $pg_class
-     * @return void
-     */
-    function pgConstraintValues($pg_class) {
-        if (!$pg_class['pg_constraint']) return;
-        foreach ($pg_class['pg_constraint'] as $type => $pg_constraints) {
-            if ($pg_constraints) {
-                foreach ($pg_constraints as $pg_constraint) {
-                    if ($type == 'unique') {
-                        foreach ($pg_constraint as $pg_constraint_unique) {
-                            $unique[$pg_constraint_unique['conname']][] = $pg_constraint_unique;
-                        }
-                    } else if ($type == 'foreign') {
-                        $foreign[$pg_constraint['conname']] = $pg_constraint;
-                    } else if ($type == 'primary') {
-                        $primary = $pg_constraint['conname'];
-                    }
-                }
-            }
-        }
-        if ($unique) $values['unique'] = $unique;
-        if ($foreign) $values['foreign'] = $foreign;
-        if ($primary) $values['primary'] = $primary;
-        return $values;
-    }
-    
-    /**
      * exportAttributeLabels
      *
      * @return void
@@ -55,12 +26,12 @@ class Project extends _Project {
             echo('Not found user_project_setting').PHP_EOL;
             exit;
         }
-        $localize_strings = $this->hasMany('LocalizeString')->values;
-        $file_name = "_localize.php";
+        $localize_string = $this->hasMany('LocalizeString');
+        if (!$localize_string->values) return;
         foreach (['ja', 'en'] as $lang) {
             $row = null;
             $path = Attribute::localizeFilePath($this->user_project_setting->value, $lang);
-            foreach ($localize_strings as $localize_string) {
+            foreach ($localize_string->values as $localize_string) {
                 $labels = json_decode($localize_string['label'], true);
                 $label = $labels[$lang];
                 if ($label) $row.= "define('{$localize_string['name']}', '{$label}');\n";
@@ -175,7 +146,7 @@ class Project extends _Project {
                                         ->one()
                                         ->value['old_name'];
 
-        $pg_constraints = $this->pgConstraintValues($pg_class);
+        $pg_constraints = PwPgsql::pgConstraintValues($pg_class);
         $values['unique'] = $pg_constraints['unique'];
         $values['foreign'] = $pg_constraints['foreign'];
         $values['primary'] = $pg_constraints['primary'];
@@ -250,7 +221,7 @@ class Project extends _Project {
                                         ->one()
                                         ->value['old_name'];
 
-        $pg_constraints = $this->pgConstraintValues($pg_class);
+        $pg_constraints = PwPgsql::pgConstraintValues($pg_class);
         $values['unique'] = $pg_constraints['unique'];
         $values['foreign'] = $pg_constraints['foreign'];
         $values['primary'] = $pg_constraints['primary'];
@@ -266,61 +237,6 @@ class Project extends _Project {
         $python_vo_model_template_path = Model::pythonVoTemplateFilePath();
         $contents = PwFile::bufferFileContetns($python_vo_model_template_path, $values);
         file_put_contents($python_vo_model_path, $contents);
-    }
-
-
-    /**
-     * export laravel models1
-     * 
-     * @param array $params
-     * @return bool
-     */
-    function exportLaravelModels($params) {
-        $model = $this->relation('Model')->get();
-        //$this->bindMany('Model');
-        if (!$model->values) return;
-        foreach ($model->values as $model->value) {
-            $params['model'] = $model;
-            $this->exportLaravelModel($params);
-        }
-    }
-
-    /**
-     * export laravel model
-     * 
-     * @param array $params
-     * @return bool
-     */
-    function exportLaravelModel($params) {
-        //TODO
-        $database = $params['database'];
-        $model = $params['model'];
-        if (!$database) return;
-        if (!$model) return;
-
-        $escapes = ['migration'];
-        if (in_array($model->value['entity_name'], $escapes)) return;
-
-        $pgsql = $database->pgsql();
-        $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
-
-        $attribute = $model->relation('Attribute')->order('name')->all();
-
-        $create_migrate_file_path = Model::projectLaravelMigrateFilePath($this->user_project_setting, $model);
-        $create_migrate_template_file_path = Model::laravelMigrationCreateTemplateFilePath();
-
-        $pg_constraints = $this->pgConstraintValues($pg_class);
-
-        $values = [];
-        $values['project'] = $this->value;
-        $values['model'] = $model;
-        $values['attribute'] = $attribute;
-        $values['unique'] = $pg_constraints['unique'];
-        $values['foreign'] = $pg_constraints['foreign'];
-        $values['primary'] = $pg_constraints['primary'];
-
-        $contents = PwFile::bufferFileContetns($create_migrate_template_file_path, $values);
-        file_put_contents($create_migrate_file_path, $contents);
     }
 
     //controllers
