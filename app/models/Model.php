@@ -345,10 +345,10 @@ class Model extends _Model {
      */
     static function projectLaravelMigrateFilePath($user_project_setting, $model) {
         if (!$user_project_setting) return;
-        if (!$model->value['entity_name']) return;
+        if (!$model->value['name']) return;
         if (!file_exists($user_project_setting->value['project_path'])) return;
 
-        $name = $model->value['entity_name'];
+        $name = $model->value['name'];
         $date_string = date('Y_m_d_000000'); 
         $file_name = "{$date_string}_create_{$name}_table.php";
         $dir = $path = $user_project_setting->value['project_path']."database/migrations/";

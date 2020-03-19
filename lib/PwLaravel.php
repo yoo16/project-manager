@@ -401,14 +401,8 @@ class PwLaravel
         $params['is_string_value'] = true;
         $tag =  PwTag::phpObjFunction($params);
         if (!self::isEscapeAttribute($attribute) && !$attribute->value['is_required']) {
-            dump(['nullable']);
             $tag.= PwTag::phpObjArrow().PwTag::phpFunction(['function' => 'nullable']);
         }
-        // if (self::isNullableAttribute($attribute)) {
-        //     $tag.= PwTag::phpObjArrow().PwTag::phpFunction(
-        //         ['function' => self::migrateOptionalFunctionName('is_required')]
-        //     );
-        // }
         if ($is_end_tag) $tag.= ';';
         return $tag;
     }
