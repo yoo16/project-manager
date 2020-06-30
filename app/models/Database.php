@@ -25,9 +25,14 @@ class Database extends _Database {
     }
 
     
+    /**
+     * my list
+     *
+     * @return array
+     */
     function myList() {
         $database_name = DB_NAME;
-        $database = DB::model('Database')->where("name != '{$database_name}'")
+        $database = DB::model('Database')->where('name', $database_name, '!=')
                                          ->limit(1)
                                          ->all();
         return $database->values;

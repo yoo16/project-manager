@@ -72,6 +72,7 @@ class DatabaseController extends AppController {
     function action_add() {
         if (!isPost()) exit;
         $posts = $this->pw_posts['database'];
+
         $database = DB::model('Database')->insert($posts);
 
         //TODO refecoring
@@ -92,8 +93,10 @@ class DatabaseController extends AppController {
      */
     function action_update() {
         $database = $this->fetchByModel('Database');
-        if ($this->pw_posts['database']['name'] && ($database->value['name'] != $this->pw_posts['database']['name'])) {
-            $pgsql = new PwPgsql();
+        $pgsql = $database->pgsql();
+        if (!$pgsql->checkDatabase()) {
+            $pgsql->createDatabase();
+        } else if ($this->pw_posts['database']['name'] && ($database->value['name'] != $this->pw_posts['database']['name'])) {
             $pgsql->renameDatabase($database->value['name'], $this->pw_posts['database']['name']);
             if ($pgsql->sql_error) {
                 $database->addError('SQL', $pgsql->sql_error);

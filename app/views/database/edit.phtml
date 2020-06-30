@@ -4,9 +4,9 @@
 
     <? include('_edit.phtml') ?>
 
+    <input type="hidden" name="id" value="<?= $this->database->value['id'] ?>">
     <input class="btn btn-primary" type="submit" value="<?=LABEL_UPDATE ?>">
     <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
-
   </form>
 
   <? if ($this->database->value['id'] && !$this->database->value['is_lock']): ?>

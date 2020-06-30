@@ -107,15 +107,18 @@ class PwPgsql extends PwEntity
     function createDatabase()
     {
         if (!$this->dbname) return;
-        if (pg_connect($this->pg_info)) return;
+        if ($this->checkDatabase()) return;
 
-        $cmd = "createdb -U {$this->user} -E UTF8 --host {$this->host} --port {$this->port} {$this->dbname} 2>&1";
+        $info = "pgsql:host={$this->host} port={$this->port} user={$this->user}";
+        if ($this->password) $info.= " password={$this->password}";
 
-        exec($cmd, $output, $return);
+        $pdo = new PDO($info);
+        $cmd = "CREATE DATABASE {$this->dbname}";
+        $result = $pdo->exec($cmd);
 
+        dump($cmd);
+        dump($result);
         $results['cmd'] = $cmd;
-        $results['output'] = $output;
-        $results['return'] = $return;
         return $results;
     }
 
@@ -971,7 +974,7 @@ class PwPgsql extends PwEntity
         if (!$this->dbname) return true;
         if (!$this->host) return true;
         if ($pg = $this->connection()) {
-            return pg_connection_status($pg);
+            return (pg_connection_status($pg) == PGSQL_CONNECTION_OK);
         }
         if ($pg) pg_close($pg);
         return $pg;
@@ -1003,6 +1006,8 @@ class PwPgsql extends PwEntity
     function checkConnection()
     {
         $connection = $this->connection();
+        var_dump($connection);
+        exit;
         if (!$connection) $this->is_connection_error = true;
         return $connection;
     }
