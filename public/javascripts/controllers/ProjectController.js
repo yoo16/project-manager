@@ -13,6 +13,8 @@ var ProjectController = function () {
         let api_controller = node.controller();
         let user_project_setting_id = node.attr('user_project_setting_id');
         let project_id = PwNode.id('project_id').value();
+        //TODO
+        if (!project_id) project_id = node.attr('project_id');
         let model_id = node.attr('model_id');
         var is_overwrite = 0;
         if (PwNode.byName('is_overwrite').checked()) is_overwrite = 1;

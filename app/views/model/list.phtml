@@ -82,6 +82,20 @@
           <?= PwForm::button(LABEL_CREATE, ['class' => 'btn btn-sm btn-primary confirm-dialog', 'message' => "Create page?"]) ?>
           <?= PwForm::hidden('model_id', $model['id']) ?>
         </form>
+                        
+        <?= $this->linkJs(
+          [
+          'label' => 'Laravel',
+          'class' => 'btn btn-outline-primary btn-sm',
+          'pw-on-click' => 'export_php',
+          'pw-controller' => 'project',
+          'api-action' => 'export_laravel_model_cotroller',
+          'user_project_setting_id' => $this->user_project_setting->value['id'],
+          'project_id' => $this->project->value['id'],
+          'model_id' => $model['id'],
+          'message' => 'Do you export Laravel Model Controller file?'
+           ]
+        ) ?>
       </td>
       <td>
         <? if ($model['pg_class_id'] == $model['pg_class']['pg_class_id']): ?>

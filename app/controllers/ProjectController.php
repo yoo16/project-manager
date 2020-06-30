@@ -413,15 +413,41 @@ class ProjectController extends AppController
      */
     function action_export_laravel_model()
     {
-        $model = DB::model('Model')->fetch($this->pw_posts['model_id']);
-        $project = DB::model('Project')->fetch($model->value['project_id']);
+        $model = $this->fetchByModel('Model', 'model_id');
+        $project = $this->fetchByModel('Project', 'project_id');
         $project->bindOne('UserProjectSetting');
-        dump($model->value);
         $database = DB::model('Database')->fetch($project->value['database_id']);
 
         PwLaravel::exportModel($project, $database, $model);
 
         $this->renderJson(['results' => true]);
+    }
+
+    /**
+     * laravel model controller
+     *
+     * @return void
+     */
+    function export_laravel_model_cotroller()
+    {
+        $model = $this->fetchByModel('Model', 'model_id');
+        $project = $this->fetchByModel('Project', 'project_id');
+        $project->bindOne('UserProjectSetting');
+        $database = DB::model('Database')->fetch($project->value['database_id']);
+
+        $params['path'] = $project->user_project_setting->value['project_path'];
+        $params['is_overwrite'] = $this->pw_posts['is_overwrite'];
+
+        $model_name = $model->modelName();
+        dump($model->value['name']);
+        dump($project->value['name']);
+        dump($model_name);
+        dump($params['path']);
+
+        $laravel = new PwLaravel($params);
+        $laravel->makeModelController($model_name);
+
+        $this->redirectTo(['action' => 'list']);
     }
 
     /**

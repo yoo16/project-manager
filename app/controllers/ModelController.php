@@ -55,6 +55,9 @@ class ModelController extends ProjectController {
                             ->order('name')
                             ->all()
                             ->bindValuesArray($this->pg_classes, 'pg_class', 'name');
+
+        //TODO
+        $this->user_project_setting = DB::model('UserProjectSetting')->first();
     }
 
     /**
@@ -515,5 +518,6 @@ class ModelController extends ProjectController {
     function action_update_sort() {
         $this->updateSort('Model');
     }
+
 
 }

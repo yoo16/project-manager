@@ -79,6 +79,19 @@
                   'message' => 'Do you export Laravel model file?'
                    ]
                 ) ?>
+
+                <?= $this->linkJs(
+                  [
+                  'label' => 'Laravel Model Controller',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_laravel_model_cotroller',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'model_id' => $this->model->value['id'],
+                  'message' => 'Do you export Laravel Model Controller file?'
+                   ]
+                ) ?>
                 <? endif ?>
 
                 <? if ($this->page->value): ?>

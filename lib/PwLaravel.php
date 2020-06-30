@@ -166,6 +166,7 @@ class PwLaravel
         $cmd = COMAND_PHP_PATH." artisan make:{$type} {$name}";
         if ($options) {
             $option = implode(' ', $options);
+        var_dump($option);
             $cmd.= " {$option}";
         }
         $cmd.= " ".self::$dev_null;
@@ -199,6 +200,27 @@ class PwLaravel
     public function makeController($name, $options = null)
     {
         $this->cmd = $this->artisanMakeCmd('controller', $name, $options);
+        exec($this->cmd, $output, $return_var);
+        dump($this->cmd);
+        dump($output);
+        dump($return_var);
+    }
+
+    /**
+     * artisan make Controller
+     *
+     * @param string $model_name
+     * @param array $options
+     * @return void
+     */
+    public function makeModelController($model_name, $options = null)
+    {
+        $controller_name = "{$model_name}Controller";
+        $options[] = "--model={$model_name}";
+        $options[] = "--resource";
+
+        $this->cmd = $this->artisanMakeCmd('controller', $controller_name, $options);
+
         exec($this->cmd, $output, $return_var);
         dump($this->cmd);
         dump($output);

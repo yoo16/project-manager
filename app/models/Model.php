@@ -6,6 +6,15 @@ class Model extends _Model {
     function validate() {
         parent::validate();
     }
+    
+    /**
+     * model name
+     * 
+     * @return string
+     */
+    public function modelName() {
+        return PwFile::phpClassNameFromPwEntityName($this->value['name']);
+    }
 
     /**
      * check DB foreign key

@@ -121,7 +121,7 @@ class Page extends _Page {
 
 
     /**
-     * Undocumented function
+     * laravelControllerCommand
      *
      * @param array $params
      * @return void
@@ -137,10 +137,32 @@ class Page extends _Page {
         return $cmd;
     }
     
+    /**
+     * Laravel make controller
+     *
+     * @param array $params
+     * @return void
+     */
     public function laravelMakeController(array $params)
     {
         $cmd = $this->laravelControllerCommand($params);
         exec($cmd, $output, $return_var);
+    }
+    
+    /**
+     * Laravel make model controller
+     *
+     * @param array $params
+     * @return void
+     */
+    public function laravelMakeModelController(array $params)
+    {
+        $laravel = new PwLaravel($params);
+        if ($params['is_overwrite']) $laravel->removeController($this->value['name']);
+
+        $options[] = '--resource';
+        $name = Controller::className($this->value['name']);
+        $cmd = $laravel->artisanMakeCmd('controller', $name, $options);
     }
 
     public function laravelMakeView(array $params)
