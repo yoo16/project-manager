@@ -82,14 +82,14 @@
 
                 <?= $this->linkJs(
                   [
-                  'label' => 'Laravel Model Controller',
+                  'label' => 'Laravel Controller',
                   'class' => 'btn btn-primary btn-sm',
                   'pw-on-click' => 'export_php',
                   'pw-controller' => 'project',
-                  'api-action' => 'export_laravel_model_cotroller',
+                  'api-action' => 'export_laravel_cotroller',
                   'user_project_setting_id' => $user_project_setting['id'],
                   'model_id' => $this->model->value['id'],
-                  'message' => 'Do you export Laravel Model Controller file?'
+                  'message' => 'Do you export Laravel Controller file?'
                    ]
                 ) ?>
                 <? endif ?>

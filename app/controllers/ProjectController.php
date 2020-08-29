@@ -401,9 +401,27 @@ class ProjectController extends AppController
         $project = $this->fetchByModel('Project', 'project_id');
         $project->bindOne('UserProjectSetting');
 
-        PwLaravel::exportModels($project);
+        $this->exportModels($project);
 
         $this->renderJson(['results' => true]);
+    }
+
+    function generateParamsForModel()
+    {
+        $model = $this->fetchByModel('Model', 'model_id');
+        $project = $this->fetchByModel('Project', 'project_id')->bindOne('UserProjectSetting');
+        $database = DB::model('Database')->fetch($project->value['database_id']);
+
+        $params = [
+            'project' => $project,
+            'database' => $database,
+            'model' => $model,
+            'path' => $project->user_project_setting->value['project_path'],
+        ];
+
+        $params['is_overwrite'] = $this->pw_posts['is_overwrite'];
+
+        return $params;
     }
 
     /**
@@ -413,42 +431,27 @@ class ProjectController extends AppController
      */
     function action_export_laravel_model()
     {
-        $model = $this->fetchByModel('Model', 'model_id');
-        $project = $this->fetchByModel('Project', 'project_id');
-        $project->bindOne('UserProjectSetting');
-        $database = DB::model('Database')->fetch($project->value['database_id']);
+        $params = $this->generateParamsForModel();
 
-        $params = ['path' => $project->user_project_setting->value['project_path']];
         $laravel = new PwLaravel($params);
-
-        //TODO static or class method ?
-        $results['model'] = PwLaravel::exportModel($project, $database, $model);
-        $results['migrate'] = $laravel->migrate();
-        //$results['make']['model'] = $laravel->makeModel($model->modelName());
+        $results = $laravel->exportModel();
         dump($results);
 
         $this->renderJson(['results' => $results]);
     }
 
     /**
-     * laravel model controller
+     * laravel controller
      *
      * @return void
      */
-    function export_laravel_model_cotroller()
+    function export_laravel_cotroller()
     {
-        $model = $this->fetchByModel('Model', 'model_id');
-        $project = $this->fetchByModel('Project', 'project_id');
-        $project->bindOne('UserProjectSetting');
-        $database = DB::model('Database')->fetch($project->value['database_id']);
-
-        $params['path'] = $project->user_project_setting->value['project_path'];
-        $params['is_overwrite'] = $this->pw_posts['is_overwrite'];
-
-        $model_name = $model->modelName();
+        $params = $this->generateParamsForModel();
 
         $laravel = new PwLaravel($params);
-        $laravel->makeModelController($model_name);
+        $results = $laravel->exportController();
+        dump($results);
 
         $this->redirectTo(['action' => 'list']);
     }

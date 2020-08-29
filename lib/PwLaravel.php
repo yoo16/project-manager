@@ -1,7 +1,13 @@
 <?php
 class PwLaravel
 {
+    public $settings;
     public $path;
+    public $project;
+    public $database;
+    public $model;
+    public $options;
+    public $commands = [];
     static $dev_null = '> /dev/null 2>&1';
 
     static public $resource_actions = [
@@ -39,7 +45,7 @@ class PwLaravel
         'text' => ['name' => 'text'],
         'jsonb' => ['name' => 'jsonb'],
         'timestamp' => ['name' => 'timestamp'],
-        'datetime' =>['name' => 'dateTime'],
+        'datetime' => ['name' => 'dateTime'],
         'date' => ['name' => 'date'],
         'cidr' => ['name' => 'ipAddress'],
         'inet' => ['name' => 'ipAddress'],
@@ -55,6 +61,70 @@ class PwLaravel
     function __construct($params = null)
     {
         if ($params['path']) $this->path = $params['path'];
+        if ($params['project']) $this->project = $params['project'];
+        if ($params['database']) $this->database = $params['database'];
+        if ($params['model']) $this->model = $params['model'];
+        if ($params['options']) $this->options = $params['options'];
+    }
+
+    /**
+     * command
+     *
+     * @param string $cmd
+     * @return void
+     */
+    public function exec($cmd)
+    {
+        exec($cmd, $output, $return_var);
+
+        $results['cmd'] = $cmd;
+        $results['output'] = $output;
+        $results['return_var'] = $return_var;
+
+        dump($cmd);
+        $this->commands[] = $results;
+        return $results;
+    }
+
+    private static function addCmdOption($options)
+    {
+        if ($options) return " " . implode(' ', $options);
+    }
+
+    /**
+     * artisan command
+     *
+     * @param string $main
+     * @param string $name
+     * @param array $options
+     * @return string
+     */
+    public function artisanCmd($main, $name = null, $options = null)
+    {
+        if (!defined('COMAND_PHP_PATH')) exit('Not defined COMAND_PHP_PATH.');
+        $cmd = '';
+
+        if ($this->path) $cmd = "cd {$this->path} && ";
+
+        $cmd .= COMAND_PHP_PATH . " artisan {$main}";
+        if ($name) $cmd .= " {$name}";
+        $cmd .= $this->addCmdOption($options);
+        $cmd .= " " . self::$dev_null;
+        return $this->exec($cmd);
+    }
+
+    /**
+     * artisan make command
+     *
+     * @param string $type
+     * @param string $name
+     * @param array $options
+     * @return string
+     */
+    public function artisanMakeCmd($type, $name, $options = null)
+    {
+        $main = "make:{$type}";
+        return $this->artisanCmd($main, $name, $options);
     }
 
     /**
@@ -64,119 +134,189 @@ class PwLaravel
      * @param array $options
      * @return void
      */
-    public static function createProject($name, $options = null)
+    public function createProject($name, $options = null)
     {
         $cmd = "composer create-project laravel/laravel {$name} --prefer-dist";
-        if ($options) {
-            $option = implode(' ', $options);
-            $cmd.= " {$option}";
-        }
-        exec($cmd);
+        $cmd .= self::addCmdOption($options);
+        $this->exec($cmd);
     }
 
     /**
-     * export laravel models
+     * exportModels
      * 
-     * @param Project $project
-     * @return bool
+     * @return void
      */
-    static function exportModels($project) {
-        $database = DB::model('Database')->fetch($project->value['database_id']);
-        $model = $project->relation('Model')->get();
-        if (!$model->values) return;
-        foreach ($model->values as $model->value) {
-            self::exportModel($project, $database, $model);
+    function exportModels()
+    {
+        if (!$this->project->value) return;
+        if (!$this->model->values) return;
+        foreach ($this->model->values as $this->model->value) {
+            $this->exportModel();
         }
     }
 
     /**
-     * export laravel model
+     * export Migrate
      * 
-     * @param Project $project
-     * @param Database $database
-     * @param Model $model
      * @return array
      */
-    static function exportModel($project, $database, $model) {
-        $results = [];
-
-        if (!$database) return;
-        if (!$model) return;
-
-        //TODO collect()
-        $escapes = ['migration'];
-        if (in_array($model->value['entity_name'], $escapes)) return;
-
-        $pgsql = $database->pgsql();
-        $pg_class = $pgsql->pgClassArray($model->value['pg_class_id']);
-
-        $attribute = $model->relation('Attribute')->order('name')->all();
-
-        $pg_constraints = PwPgsql::pgConstraintValues($pg_class);
-
-        $values = [];
-        $values['project'] = $project->value;
-        $values['project_path'] = $project->user_project_setting->value['project_path'];
-        $values['model'] = $model;
-        $values['attribute'] = $attribute;
-        $values['unique'] = $pg_constraints['unique'];
-        $values['foreign'] = $pg_constraints['foreign'];
-        $values['primary'] = $pg_constraints['primary'];
-        $values['modelName'] = $model->modelName();
-
-        //TODO name function
-        $values['requestName'] = "{$values['modelName']}Request";
-        $values['factoryName'] = "{$values['modelName']}Factory";
-        $values['seederName'] = ucfirst($model->value['name'])."TableSeeder";
-        $values['migrateClassName'] = "Create".ucfirst($model->value['name'])."Table";
-        
-        //migrate
-        $migrate_file_path = self::projectMigrateFilePath($project->user_project_setting, $model);
+    function exportMigrate($settings)
+    {
+        $migrate_file_path = self::projectMigrateFilePath($this->path, $this->model);
         if (!file_exists($migrate_file_path)) {
             $migrate_template_path = self::migrateCreateTemplatePath();
-            $contents = PwFile::bufferFileContetns($migrate_template_path, $values);
+            $contents = PwFile::bufferFileContetns($migrate_template_path, $settings);
             file_put_contents($migrate_file_path, $contents);
-        }
 
-        //Eloquent
-        $eloquent_file_path = self::projectEloquentFilePath($project->user_project_setting, $model);
+            $this->results['migrate']['path'] = $migrate_file_path;
+            $this->results['migrate']['template'] = $migrate_template_path;
+            return $this->results;
+        }
+    }
+
+
+    /**
+     * export laravel model
+     * 
+     * @return array
+     */
+    public function exportController()
+    {
+        $model_name = $this->model->modelName();
+        $controller_name = "{$model_name}Controller";
+        $options[] = "--resource";
+
+        return $this->makeController($controller_name, $options);
+    }
+
+    /**
+     * export Eloquent
+     * 
+     * @return array
+     */
+    public function exportEloquent($settings)
+    {
+        $eloquent_file_path = self::projectEloquentFilePath($this->path, $this->model);
         if (!file_exists($eloquent_file_path)) {
             $eloquent_template_path = self::laravelEloquentTemplatePath();
-            $contents = PwFile::bufferFileContetns($eloquent_template_path, $values);
+            $contents = PwFile::bufferFileContetns($eloquent_template_path, $settings);
             file_put_contents($eloquent_file_path, $contents);
+
+            $this->results['eloquent']['path'] = $eloquent_file_path;
+            $this->results['eloquent']['template'] = $eloquent_template_path;
+            return $this->results;
         }
-
-        $params = ['path' => $values['project_path']];
-        $laravel = new PwLaravel($params);
-
-        //Request
-        $laravel->makeRequest($values['requestName']);
-
-        //Factory
-        $laravel->makeFactory($values['factoryName']);
-
-        //Seeder
-        $laravel->makeSeeder($values['seederName']);
-
-        $_results['migrate']['path'] = $migrate_file_path;
-        $_results['migrate']['template'] = $migrate_template_path;
-        $_results['eloquent']['path'] = $eloquent_file_path;
-        $_results['eloquent']['template'] = $eloquent_template_path;
-        $results['model'] = $_results;
-        return $results;
     }
 
     /**
      * export laravel model
      * 
-     * @param Project $project
-     * @param Database $database
-     * @param Model $model
-     * @return bool
+     * @return array
      */
-    static function exportEloquent($project, $database, $model) {
+    public function exportModel()
+    {
+        if (!$this->database) return;
+        if (!$this->model->value) return;
 
+        $this->loadModelSettings();
+        if (!$this->settings['model']) return;
+
+        $settings = $this->settings['model'];
+
+        //migrate
+        $this->exportMigrate($settings);
+
+        //Eloquent
+        $this->exportEloquent($settings);
+
+        //Request
+        $this->makeRequest($this->requestName($this->model));
+
+        //Factory
+        $this->makeFactory($this->factoryName($this->model));
+
+        //Seeder
+        $this->makeSeeder($this->seederName($this->model));
+
+        //migrate
+        if ($this->options['is_migrate']) $this->migrate();
+
+        $this->results['commands'] = $this->commands;
+        return $this->results;
     }
+
+    /**
+     * Model Requret name
+     *
+     * @return void
+     */
+    function requestName($model)
+    {
+        return $model->modelName() . "Request";
+    }
+
+    /**
+     * Factory name
+     *
+     * @return void
+     */
+    function factoryName($model)
+    {
+        return $model->modelName() . "Factory";
+    }
+
+    /**
+     * Seeder name
+     *
+     * @return void
+     */
+    function seederName($model)
+    {
+        return ucfirst($model->value['name']) . "TableSeeder";
+    }
+
+    /**
+     * migrate class name
+     *
+     * @param Model $model
+     * @return string;
+     */
+    public function migrateClassName($model)
+    {
+        return "Create" . ucfirst($model->value['name']) . "Table";
+    }
+
+    /**
+     * loadModelSettings
+     *
+     * @return void
+     */
+    function loadModelSettings()
+    {
+        //TODO
+        $escapes = ['migration'];
+        if (in_array($this->model->value['entity_name'], $escapes)) return;
+
+        $values = [];
+        $values['project'] = $this->project->value;
+        $values['model'] = $this->model;
+        $values['attribute'] = $this->model->relation('Attribute')->order('name')->all();
+
+        $pgsql = $this->database->pgsql();
+        $pg_class = $pgsql->pgClassArray($this->model->value['pg_class_id']);
+        $pg_constraints = PwPgsql::pgConstraintValues($pg_class);
+        if ($pg_constraints) {
+            $values['unique'] = $pg_constraints['unique'];
+            $values['foreign'] = $pg_constraints['foreign'];
+            $values['primary'] = $pg_constraints['primary'];
+        }
+
+        $values['model_name'] = $this->model->modelName();
+        $values['migrate_class_name'] = $this->migrateClassName($this->model);
+
+        $this->settings['model'] = $values;
+    }
+
 
     /**
      * add VueJS
@@ -185,12 +325,12 @@ class PwLaravel
      * @param array $options
      * @return void
      */
-    public static function addVueJS($name, $options = null)
+    public function addVueJS($name, $options = null)
     {
         $cmd = 'composer require laravel/ui --dev';
         exec($cmd);
-        $cmd = 'php artisan preset vue';
-        exec($cmd);
+
+        return $this->artisanCmd('preset', 'vue', $options);
     }
 
     /**
@@ -198,10 +338,10 @@ class PwLaravel
      *
      * @return void
      */
-    public static function seed($options = null)
+    public function seed($options = null)
     {
-        $cmd = 'php artisan db:seed';
-        exec($cmd);
+        //TODO --class options
+        return $this->artisanCmd('db:seed');
     }
 
     /**
@@ -214,66 +354,7 @@ class PwLaravel
      */
     public function migrate($options = null)
     {
-        if ($this->path) $this->cmd = "cd {$this->path} && ";
-        $this->cmd.= COMAND_PHP_PATH." artisan migrate";
-
-        //TODO
-        if ($options) {
-            $option = implode(' ', $options);
-            $this->cmd.= " {$option}";
-        }
-        $this->cmd.= " 2>&1";
-        exec($this->cmd, $errors);
-
-        $results['cmd'] = $this->cmd;
-        $results['errors'] = $errors;
-        return $results;
-    }
-
-
-    /**
-     * command make
-     *
-     * @param string $type
-     * @param string $name
-     * @param array $options
-     * @return void
-     */
-    public static function cmdMake($type, $name, $options = null)
-    {
-        $cmd = COMAND_PHP_PATH." artisan make:{$type} {$name}";
-        if ($options) {
-            $option = implode(' ', $options);
-            $cmd.= " {$option}";
-        }
-        $cmd.= " ".self::$dev_null;
-        return $cmd;
-    }
-
-    /**
-     * artisan Controller
-     *
-     * @param string $type
-     * @param string $name
-     * @param array $options
-     * @return string
-     */
-    public function artisanMakeCmd($type, $name, $options = null)
-    {
-        $this->cmd = '';
-        if (!defined('COMAND_PHP_PATH')) exit('Not defined COMAND_PHP_PATH.');
-        if ($this->path) $this->cmd = "cd {$this->path} && ";
-        $this->cmd.= PwLaravel::cmdMake($type, $name, $options);
-        return $this->cmd;
-    }
-
-    public function exec()
-    {
-        exec($this->cmd, $output, $return_var);
-        $results['cmd'] = $this->cmd;
-        $results['output'] = $output;
-        $results['return_var'] = $return_var;
-        return $results;
+        return $this->artisanCmd('migrate');
     }
 
     /**
@@ -285,8 +366,7 @@ class PwLaravel
      */
     public function makeRequest($name, $options = null)
     {
-        $this->cmd = $this->artisanMakeCmd('request', $name, $options);
-        return $this->exec();
+        return $this->artisanMakeCmd('request', $name, $options);
     }
 
     /**
@@ -298,8 +378,7 @@ class PwLaravel
      */
     public function makeSeeder($name, $options = null)
     {
-        $this->cmd = $this->artisanMakeCmd('seeder', $name, $options);
-        return $this->exec();
+        return $this->artisanMakeCmd('seeder', $name, $options);
     }
 
     /**
@@ -311,8 +390,7 @@ class PwLaravel
      */
     public function makeFactory($name, $options = null)
     {
-        $this->cmd = $this->artisanMakeCmd('factory', $name, $options);
-        return $this->exec();
+        return $this->artisanMakeCmd('factory', $name, $options);
     }
 
 
@@ -325,8 +403,7 @@ class PwLaravel
      */
     public function makeController($name, $options = null)
     {
-        $this->cmd = $this->artisanMakeCmd('controller', $name, $options);
-        return $this->exec();
+        return $this->artisanMakeCmd('controller', $name, $options);
     }
 
     /**
@@ -342,8 +419,7 @@ class PwLaravel
         $options[] = "--model={$model_name}";
         $options[] = "--resource";
 
-        $this->cmd = $this->artisanMakeCmd('controller', $controller_name, $options);
-        return $this->exec();
+        return $this->artisanMakeCmd('controller', $controller_name, $options);
     }
 
     /**
@@ -355,8 +431,7 @@ class PwLaravel
      */
     public function makeModel($model_name, $options = null)
     {
-        $this->cmd = $this->artisanMakeCmd('model', $model_name, $options);
-        return $this->exec();
+        return $this->artisanMakeCmd('model', $model_name, $options);
     }
 
     /**
@@ -414,7 +489,7 @@ class PwLaravel
         }
 
         $file_path = "{$this->path}routes/web{$page->value['name']}.php";
-        $contents = "<?php".PHP_EOL.$contents;
+        $contents = "<?php" . PHP_EOL . $contents;
 
         file_put_contents($file_path, $contents);
     }
@@ -481,7 +556,7 @@ class PwLaravel
      */
     public function routeFile($page)
     {
-        $middleware = ($page->value['middleware']) ? $page->value['middleware'] : 'web'; 
+        $middleware = ($page->value['middleware']) ? $page->value['middleware'] : 'web';
         $file_name = "{$middleware}{$page->value['name']}.php";
 
         $dir = $this->routeDir();
@@ -533,7 +608,7 @@ class PwLaravel
         $result = '';
         if (!$attribute->values) return;
         foreach ($attribute->values as $attribute->value) {
-            $result.= self::migrateFunction($attribute).';';
+            $result .= self::migrateFunction($attribute) . ';';
         }
         return $result;
     }
@@ -556,9 +631,9 @@ class PwLaravel
         $params['is_string_value'] = true;
         $tag =  PwTag::phpObjFunction($params);
         if (!self::isGuardedAttribute($attribute) && !$attribute->value['is_required']) {
-            $tag.= PwTag::phpObjArrow().PwTag::phpFunction(['function' => 'nullable']);
+            $tag .= PwTag::phpObjArrow() . PwTag::phpFunction(['function' => 'nullable']);
         }
-        if ($is_end_tag) $tag.= ';';
+        if ($is_end_tag) $tag .= ';';
         return $tag;
     }
 
@@ -611,59 +686,49 @@ class PwLaravel
         } else if ($attribute['name']) {
             $value = $attribute['name'];
         }
-        dump($value);
         if ($value) return in_array($value, self::$guarded_columns);
-    }
-
-    /**
-     * migrate class name
-     *
-     * @param Model $model
-     * @return string;
-     */
-    static public function migrateClassName($model)
-    {
-        $class_name = "Create".ucfirst($model->value['name'])."Table";
-        return $class_name;
     }
 
     /**
      * project migrate path
      * 
-     * @param array $user_project_setting
-     * @param array $model
+     * @param array $path
+     * @param Model $model
      * @return string
      */
-    static function projectMigrateFilePath($user_project_setting, $model) {
-        if (!$user_project_setting) return;
+    static function projectMigrateFilePath($path, $model)
+    {
+        if (!$path) return;
         if (!$model->value['name']) return;
-        if (!file_exists($user_project_setting->value['project_path'])) return;
+        if (!file_exists($path)) return;
 
         $name = $model->value['name'];
-        $date_string = date('Y_m_d_000000'); 
+        $date_string = date('Y_m_d_000000');
         $file_name = "{$date_string}_create_{$name}_table.php";
-        $dir = $user_project_setting->value['project_path']."database/migrations/";
+        $dir = "{$path}database/migrations/";
         if (!file_exists($dir)) PwFile::createDir($dir);
         $path = "{$dir}{$file_name}";
         return $path;
     }
 
-        /**
+    /**
      * project Eloquent path
      * 
-     * @param array $user_project_setting
-     * @param array $model
+     * @param array path$
+     * @param Model $model
+     * @param array $options
      * @return string
      */
-    static function projectEloquentFilePath($user_project_setting, $model, $options = null) {
-        if (!$user_project_setting) return;
+    static function projectEloquentFilePath($path, $model, $options = null)
+    {
+        if (!$path) return;
         if (!$model->value['name']) return;
-        if (!file_exists($user_project_setting->value['project_path'])) return;
+        if (!file_exists($path)) return;
 
         $name = $model->modelName();
         $file_name = "{$name}.php";
         //TODO options
-        $dir = $user_project_setting->value['project_path']."app/";
+        $dir = "{$path}app/";
         $path = "{$dir}{$file_name}";
         return $path;
     }
@@ -673,8 +738,9 @@ class PwLaravel
      * 
      * @return string
      */
-    static function migrateCreateTemplatePath() {
-        $path = TEMPLATE_DIR.'laravel/migrate/create.phtml';
+    static function migrateCreateTemplatePath()
+    {
+        $path = TEMPLATE_DIR . 'laravel/migrate/create.phtml';
         return $path;
     }
 
@@ -683,9 +749,9 @@ class PwLaravel
      * 
      * @return string
      */
-    static function laravelEloquentTemplatePath() {
-        $path = TEMPLATE_DIR.'laravel/model/eloquent.phtml';
+    static function laravelEloquentTemplatePath()
+    {
+        $path = TEMPLATE_DIR . 'laravel/model/eloquent.phtml';
         return $path;
     }
-
 }
