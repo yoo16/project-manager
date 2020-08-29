@@ -1,0 +1,42 @@
+<?= '<?php' ?>
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class <?= $values['modelName'] ?> extends Model
+{
+    static $table_name = '<?= $values['model']->value['name'] ?>';
+    protected $table = '<?= $values['model']->value['name'] ?>';
+    protected $primaryKey = 'id';
+
+    protected $fillable = [
+<?php if ($values['attribute']->values) : ?>
+<?php foreach ($values['attribute']->values as $attribute) : ?>
+<? if (!PwLaravel::isGuardedAttribute($attribute)): ?>
+        '<?= $attribute['name'] ?>',
+<?php endif ?>
+<?php endforeach ?>
+<?php endif ?>
+    ];
+
+    protected $guarded = [
+<?php if ($values['attribute']->values) : ?>
+<?php foreach ($values['attribute']->values as $attribute) : ?>
+<? if (PwLaravel::isGuardedAttribute($attribute)): ?>
+        '<?= $attribute['name'] ?>',
+<?php endif ?>
+<?php endforeach ?>
+<?php endif ?>
+    ];
+
+    protected $dates = [
+    ];
+
+    protected $hidden = [
+    ];
+
+    protected $casts = [
+    ];
+
+}

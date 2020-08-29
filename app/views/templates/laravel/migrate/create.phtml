@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class <?= $values['className'] ?> extends Migration
+class <?= $values['migrateClassName'] ?> extends Migration
 {
     /**
      * Run the migrations.
@@ -19,7 +19,7 @@ class <?= $values['className'] ?> extends Migration
             $table->timestamps();
 <? foreach($values['attribute']->values as $attribute_value): ?>
 <? $attribute = DB::model('Attribute')->setValue($attribute_value) ?>
-<? if (!PwLaravel::isEscapeAttribute($attribute)): ?>
+<? if (!PwLaravel::isGuardedAttribute($attribute)): ?>
             <?= PwLaravel::migrateFunction(DB::model('Attribute')->setValue($attribute_value)) ?>;
 <? endif ?>
 <? endforeach ?>

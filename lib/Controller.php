@@ -298,6 +298,8 @@ class Controller extends RuntimeException
         if ($controller) {
             try {
                 session_start();
+                session_regenerate_id(true);
+
                 $lang = '';
                 $is_change_lang = false;
 

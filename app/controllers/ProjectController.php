@@ -418,9 +418,16 @@ class ProjectController extends AppController
         $project->bindOne('UserProjectSetting');
         $database = DB::model('Database')->fetch($project->value['database_id']);
 
-        PwLaravel::exportModel($project, $database, $model);
+        $params = ['path' => $project->user_project_setting->value['project_path']];
+        $laravel = new PwLaravel($params);
 
-        $this->renderJson(['results' => true]);
+        //TODO static or class method ?
+        $results['model'] = PwLaravel::exportModel($project, $database, $model);
+        $results['migrate'] = $laravel->migrate();
+        //$results['make']['model'] = $laravel->makeModel($model->modelName());
+        dump($results);
+
+        $this->renderJson(['results' => $results]);
     }
 
     /**
@@ -439,10 +446,6 @@ class ProjectController extends AppController
         $params['is_overwrite'] = $this->pw_posts['is_overwrite'];
 
         $model_name = $model->modelName();
-        dump($model->value['name']);
-        dump($project->value['name']);
-        dump($model_name);
-        dump($params['path']);
 
         $laravel = new PwLaravel($params);
         $laravel->makeModelController($model_name);
