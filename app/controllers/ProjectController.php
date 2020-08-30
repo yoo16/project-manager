@@ -104,7 +104,15 @@ class ProjectController extends AppController
      */
     function action_add()
     {
-        $this->redirectForAdd($this->insertByModel('Project'), ['invalid' => 'list']);
+        if ($this->pw_posts['user_project_setting']);
+
+        //TODO
+        $user = DB::model('User')->first();
+        $project = $this->insertByModel('Project');
+        if ($user->value && $project->value) {
+            $this->insertByModel('UserProjectSetting', null, [$user, $project]);
+        }
+        $this->redirectForAdd($project, ['invalid' => 'list']);
     }
 
     /**
@@ -451,6 +459,22 @@ class ProjectController extends AppController
 
         $laravel = new PwLaravel($params);
         $results = $laravel->exportController();
+        dump($results);
+
+        $this->redirectTo(['action' => 'list']);
+    }
+
+    /**
+     * laravel blade
+     *
+     * @return void
+     */
+    function export_laravel_blade()
+    {
+        $params = $this->generateParamsForModel();
+
+        $laravel = new PwLaravel($params);
+        $results = $laravel->exportBlade();
         dump($results);
 
         $this->redirectTo(['action' => 'list']);

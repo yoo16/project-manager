@@ -110,6 +110,7 @@ class PwLaravel
         if ($name) $cmd .= " {$name}";
         $cmd .= $this->addCmdOption($options);
         $cmd .= " " . self::$dev_null;
+
         return $this->exec($cmd);
     }
 
@@ -121,7 +122,7 @@ class PwLaravel
      * @param array $options
      * @return string
      */
-    public function artisanMakeCmd($type, $name, $options = null)
+    public function artisanMakeCmd($type, $name = null, $options = null)
     {
         $main = "make:{$type}";
         return $this->artisanCmd($main, $name, $options);
@@ -245,6 +246,38 @@ class PwLaravel
         return $this->results;
     }
 
+    /**
+     * export laravel model
+     * 
+     * @return array
+     */
+    public function exportBlade()
+    {
+        if (!$this->database) return;
+        if (!$this->model->value) return;
+
+        $this->exportMakeBladeCommand();
+
+        $this->makeBlade($this->model->value['entity_name']);
+
+        $this->results['commands'] = $this->commands;
+        return $this->results;
+    }
+
+    /**
+     * export make blade command
+     * 
+     * @return array
+     */
+    public function exportMakeBladeCommand()
+    {
+        if ($this->path) {
+            $this->copyMakeCommand();
+            $this->results['commands'] = $this->commands;
+            return $this->results;
+        }
+    }
+    
     /**
      * Model Requret name
      *
@@ -391,6 +424,19 @@ class PwLaravel
     public function makeFactory($name, $options = null)
     {
         return $this->artisanMakeCmd('factory', $name, $options);
+    }
+
+    /**
+     * artisan make blade
+     *
+     * @param string $name
+     * @param array $options
+     * @return return
+     */
+    public function makeBlade($name, $options = null)
+    {
+        $options[] = "--dir={$name}";
+        return $this->artisanMakeCmd('blade', null, $options);
     }
 
 
@@ -734,24 +780,52 @@ class PwLaravel
     }
 
     /**
-     * laravel migration template path
+     * copyMakeCommand 
+     *
+     * @return void
+     */
+    function copyMakeCommand()
+    {
+        $make_blade_name = 'MakeBlade.php';
+        $commands_path = "app/Console/Commands/";
+        $copy_from_path = TEMPLATE_DIR."laravel/command/*";
+        $copy_to_path = "{$this->path}{$commands_path}";
+        $make_blade_path = "{$this->path}{$commands_path}{$make_blade_name}";
+        //TODO check
+        if (!file_exists($make_blade_path)) {
+            $cmd = "cp -r {$copy_from_path} {$copy_to_path}";
+            $this->exec($cmd);
+        }
+    }
+
+    /**
+     * template path
+     * 
+     * @return string
+     */
+    static function exportTemplateFile($dir, $name)
+    {
+        $path = TEMPLATE_DIR . "laravel/{$dir}/{$name}";
+        return $path;
+    }
+
+    /**
+     * migration template path
      * 
      * @return string
      */
     static function migrateCreateTemplatePath()
     {
-        $path = TEMPLATE_DIR . 'laravel/migrate/create.phtml';
-        return $path;
+        return self::exportTemplateFile('migrate', 'create.phtml');
     }
 
     /**
-     * laravel eloquent template path
+     * eloquent template path
      * 
      * @return string
      */
     static function laravelEloquentTemplatePath()
     {
-        $path = TEMPLATE_DIR . 'laravel/model/eloquent.phtml';
-        return $path;
+        return self::exportTemplateFile('model', 'eloquent.phtml');
     }
 }

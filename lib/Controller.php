@@ -1552,12 +1552,13 @@ class Controller extends RuntimeException
      * @param array $posts
      * @return PwEntity
      */
-    function insertByModel($class_name, $posts = null)
+    function insertByModel($class_name, $posts = null, $relations = null)
     {
         if (!$this->is_force_get_update) $this->checkPost();
         if (!class_exists($class_name)) return;
         $model = DB::model($class_name);
         if (!$posts) $posts = $this->pw_posts[$model->entity_name];
+        if ($relations) $this->setPostsForRelations($class_name, $relations);
         $model->init()->insert($posts);
         if (!$model->errors) {
             $model->initSort();
@@ -1574,12 +1575,13 @@ class Controller extends RuntimeException
      * @param array $posts
      * @return PwEntity
      */
-    function updateByModel($class_name, $id = null, $posts = null)
+    function updateByModel($class_name, $id = null, $posts = null, $relations = nul)
     {
         if (!$this->is_force_get_update) $this->checkPost();
         if (!class_exists($class_name)) return;
         $model = DB::model($class_name);
         if (!$posts) $posts = $this->pw_posts[$model->entity_name];
+        if ($relations) $this->setPostsForRelations($class_name, $relations);
         if (!$id) $id = $this->pw_gets['id'];
         $model->update($posts, $id);
         if (!$model->errors) $this->clearPwPosts();
@@ -1601,6 +1603,24 @@ class Controller extends RuntimeException
         if (!$id) $id = $this->pw_gets['id'];
         $model->delete($id);
         return $model;
+    }
+
+    /**
+     * setPostsForRelations 
+     *
+     * @param Entity $model
+     * @return void
+     */
+    public function setPostsForRelations($name, $relations)
+    {
+        $model = DB::model($name);
+        if (!$model) return;
+        foreach ($relations as $relation) {
+            if ($id = $relation->value[$relation->id_column]) {
+                $relation_column = "{$relation->entity_name}_id";
+                $this->pw_posts[$model->entity_name][$relation_column] = $id;
+            }
+        }
     }
 
     /**

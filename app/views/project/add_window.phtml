@@ -12,11 +12,7 @@
           <dl>
             <dt>Name</dt>
             <dd>
-              <?= DB::model('Project')->formInput('name',
-            [
-            'class' => 'form-control'
-            ]
-            ) ?>
+              <?= DB::model('Project')->formInput('name', [ 'class' => 'form-control' ]) ?>
             </dd>
             <dt>Database</dt>
             <dd>
@@ -28,6 +24,10 @@
             'unselect' => true
             ]
             ) ?>
+            </dd>
+            <dt>Project Path</dt>
+            <dd>
+              <?= DB::model('UserProjectSetting')->formInput('project_path', [ 'class' => 'form-control' ]) ?>
             </dd>
           </dl>
         </div>

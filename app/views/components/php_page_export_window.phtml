@@ -92,6 +92,20 @@
                   'message' => 'Do you export Laravel Controller file?'
                    ]
                 ) ?>
+
+                <?= $this->linkJs(
+                  [
+                  'label' => 'Laravel Blade',
+                  'class' => 'btn btn-primary btn-sm',
+                  'pw-on-click' => 'export_php',
+                  'pw-controller' => 'project',
+                  'api-action' => 'export_laravel_blade',
+                  'user_project_setting_id' => $user_project_setting['id'],
+                  'model_id' => $this->model->value['id'],
+                  'message' => 'Do you export Laravel Blade file?'
+                   ]
+                ) ?>
+
                 <? endif ?>
 
                 <? if ($this->page->value): ?>

@@ -1549,4 +1549,17 @@ class PwEntity {
         return $this;
     }
 
+    /**
+     * setRelationIdByModel function
+     *
+     * @param Entity $model
+     * @return void
+     */
+    public function setRelationIdByModel($name, $column = null)
+    {
+        $model = DB::model($name);
+        if (!$column) $column = "{$this->entity_name}_id";
+        $this->value[$column] = $model->value[$model->id_column];
+    }
+
 }
