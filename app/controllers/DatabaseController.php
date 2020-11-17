@@ -104,7 +104,7 @@ class DatabaseController extends AppController {
                 $this->redirectForUpdate($database);
             }
         }
-        $this->redirectForUpdate($update_database);
+        $this->redirectForUpdate($database);
     }
 
 
