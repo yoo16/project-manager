@@ -62,12 +62,12 @@ class MakeBlade extends Command
             if (!file_exists($stub_file_path)) {
                 $stub_file_path = "{$stub_base_dir}_default.blade.stub";
             }
-
             $blade_file = "{$action}.blade.php";
-
-            $stub = File::get($stub_file_path);
             $blade_path = "{$blade_dir}{$blade_file}";
-            File::put($blade_path, $stub);
+            if (!file_exists($blade_path)) {
+                $stub = File::get($stub_file_path);
+                File::put($blade_path, $stub);
+            }
         }
     }
 }

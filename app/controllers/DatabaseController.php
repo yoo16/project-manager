@@ -92,8 +92,9 @@ class DatabaseController extends AppController {
      * @return void
      */
     function action_update() {
-        $database = $this->fetchByModel('Database');
+        $database = $this->updateByModel('Database');
         $pgsql = $database->pgsql();
+        
         if (!$pgsql->checkDatabase()) {
             $pgsql->createDatabase();
         } else if ($this->pw_posts['database']['name'] && ($database->value['name'] != $this->pw_posts['database']['name'])) {
@@ -103,7 +104,7 @@ class DatabaseController extends AppController {
                 $this->redirectForUpdate($database);
             }
         }
-        $this->redirectForUpdate($this->updateByModel('Database'));
+        $this->redirectForUpdate($update_database);
     }
 
 

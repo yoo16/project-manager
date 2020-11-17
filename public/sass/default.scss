@@ -48,6 +48,11 @@ select.form-control:not([size]):not([multiple]) {
 	padding-right: 2rem;
 }
 
+#import_list {
+    overflow: scroll;
+    height: 500px;
+}
+
 .form-group {
 	margin: 0.3rem 0;
 }

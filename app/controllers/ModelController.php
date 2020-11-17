@@ -175,6 +175,7 @@ class ModelController extends ProjectController {
             foreach ($attribute->values as $value) {
                 $value['name'] = "{$value['name']}";
                 $value['model_id'] = $new_model->value['id'];
+
                 unset($value['id']);
                 unset($value['attrelid']);
                 unset($value['attnum']);
