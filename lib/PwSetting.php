@@ -7,6 +7,34 @@
 
 class PwSetting {
 
+    static $libs = [
+        'PwHelper',
+        'DB',
+        'PwMail',
+        'PwCsv',
+        'PwMigration',
+        'PwDate',
+        'PwAuth',
+        'PwFile',
+        'PwFtp',
+        'PwForm',
+        'PwTag',
+        'PwDate',
+        'PwSession',
+        'PwLocalize',
+        'PwLoader',
+        'PwLogger',
+        'PwTimer',
+        'PwError',
+        'PwColor',
+        'PwPython',
+        'PwModel',
+        'PwLaravel',
+        'PwServe',
+    ];
+
+    static $dispatch = 'dispatch.php';
+
     /**
      * loadIniSet
      * 
@@ -41,12 +69,14 @@ class PwSetting {
         if (!defined('BASE_DIR')) define('BASE_DIR', dirname(dirname(__FILE__)) . '/');
         set_include_path(BASE_DIR.'app'.PATH_SEPARATOR.BASE_DIR.'lib');
         define('APP_DIR', BASE_DIR.'app/');
+        define('WEB_DIR', BASE_DIR.'public/');
+        define('LIB_DIR', BASE_DIR.'lib/');
         define('MODEL_DIR', APP_DIR.'models/');
         define('VIEW_DIR', APP_DIR.'views/');
         define('SCRIPT_DIR', BASE_DIR.'script/');
         define('CONTROLLER_DIR', APP_DIR.'controllers/');
         define('TEMPLATE_DIR', VIEW_DIR.'templates/');
-        define('LIB_TEMPLATE_DIR', BASE_DIR.'lib/templates/');
+        define('LIB_TEMPLATE_DIR', LIB_DIR.'templates/');
 
         require_once 'application_setting.php';
         if (!defined('ROOT_CONTROLLER_NAME')) define('ROOT_CONTROLLER_NAME', 'root');
@@ -142,6 +172,19 @@ class PwSetting {
     static function loadApplication() {
         $path = BASE_DIR.'app/application.php';
         PwSetting::loadFile($path);
+    }
+
+    /**
+     * load lib
+     * 
+     * @return void
+     */
+    static function loadLib()
+    {
+        foreach (self::$libs as $lib) {
+            $path = BASE_DIR . "lib/{$lib}.php";
+            if (file_exists($path)) @include_once $path;
+        }
     }
 
     /**

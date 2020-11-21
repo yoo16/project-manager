@@ -15,17 +15,6 @@ class AppController extends Controller {
     var $js_controllers = ['ProjectController'];
 
     function before_action($action = null) {
-        $pgsql_entity = new PwPgsql();
-
-        if (!$pgsql_entity->connection()) {
-            $this->redirectTo(['controller' => 'setting']);
-            exit;
-        }
-        $database = new Database();
-        if (!$database->checkProjectManager()) {
-            $this->redirectTo(['controller' => 'setting']);
-            exit;
-        }
         $this->loadDefaultCsvOptions();
     }
 

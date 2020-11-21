@@ -14,7 +14,7 @@ class RootController extends AppController {
     }
 
     function index() {
-        $this->redirectTo(['controller' => 'project']);
+        $this->redirectTo(['controller' => 'project/']);
     }
 
 }

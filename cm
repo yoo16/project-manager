@@ -1,0 +1,14 @@
+<?php
+if (strpos(php_sapi_name(), 'cgi') === 0)
+{
+	die("It needs php-cli!".PHP_EOL);
+}
+
+require_once "lib/PwSetting.php";
+PwSetting::load();
+PwSetting::loadLib();
+PwSetting::loadApplication();
+PwLoader::autoloadModel();
+
+$serve = new PwServe();
+$serve->start();

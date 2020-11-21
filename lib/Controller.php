@@ -45,31 +45,6 @@ class Controller extends RuntimeException
     public $pw_template = '';
     public $pw_template_path = '';
 
-    static $libs = [
-        'PwHelper',
-        'DB',
-        'PwMail',
-        'PwCsv',
-        'PwMigration',
-        'PwDate',
-        'PwAuth',
-        'PwFile',
-        'PwFtp',
-        'PwForm',
-        'PwTag',
-        'PwDate',
-        'PwSession',
-        'PwLocalize',
-        'PwLoader',
-        'PwLogger',
-        'PwTimer',
-        'PwError',
-        'PwColor',
-        'PwPython',
-        'PwModel',
-        'PwLaravel',
-    ];
-
     function __construct($name = null)
     {
         if (!$this->name) {
@@ -166,10 +141,7 @@ class Controller extends RuntimeException
      */
     static function loadLib()
     {
-        foreach (Controller::$libs as $lib) {
-            $path = BASE_DIR . "lib/{$lib}.php";
-            if (file_exists($path)) @include_once $path;
-        }
+        PwSetting::loadLib();
     }
 
     /**
@@ -288,7 +260,7 @@ class Controller extends RuntimeException
      * @param  array  $params
      * @return void
      */
-    static function dispatch($params = array())
+    static function dispatch($params = [])
     {
         //TODO
         if (empty($params['controller'])) $params = Controller::queryString();
@@ -777,7 +749,8 @@ class Controller extends RuntimeException
                 if ($params['id']) $elements[] = $params['id'];
             }
             if (count($elements) == 1) {
-                $url .= "{$elements[0]}/";
+                $element = str_replace('/', '', $elements[0]);
+                $url .= "{$element}/";
             } else {
                 $url .= implode('/', $elements);
             }
@@ -829,9 +802,12 @@ class Controller extends RuntimeException
      */
     private function pwProjectName()
     {
-        $path = str_replace('public', '', $_SERVER['PHP_SELF']);
-        $path = str_replace('dispatch.php', '', $path);
-        $this->pw_project_name = str_replace('/', '', $path);
+        // $path = str_replace('public', '', $_SERVER['PHP_SELF']);
+        $paths = explode('public', $_SERVER['PHP_SELF']);
+        $path = $paths[0];
+        if (!strpos($path, '.php')) {
+            $this->pw_project_name = str_replace('/', '', $path);
+        }
         return $this->pw_project_name;
     }
 
@@ -2127,7 +2103,7 @@ class Controller extends RuntimeException
 }
 
 PwSetting::load();
-Controller::loadLib();
+PwSetting::loadLib();
 PwLocalize::loadLocalizeFile($lang);
 PwLoader::autoloadModel();
 PwSetting::loadApplication();
