@@ -15,11 +15,11 @@
     <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
   </form>
 
-  <? if ($this->pg_table): ?>
+  <?php if ($this->pg_table): ?>
   <form id="" action="<?= $this->urlFor(['action' => 'drop_table', 'id' => $this->pg_table['tablename']]) ?>" method="post">
     <input class="btn btn-outline-danger" type="submit" value="<?= LABEL_DELETE ?>">
     <input type="hidden" name="database_id" value="<?= $this->database['id'] ?>">
     <input type="hidden" name="table_name" value="<?= $this->pg_table['tablename'] ?>">
   </form>
-<? endif ?>
+<?php endif ?>
 </div>

@@ -15,13 +15,13 @@
     </tr>
   </thead>
 
-  <? if ($this->user->values): ?>
-  <? foreach ($this->user->values as $values): ?>
+  <?php if ($this->user->values): ?>
+  <?php foreach ($this->user->values as $values): ?>
   <tr row-id="<?= $values['id'] ?>">
     <td><?= PwForm::linkButton(['action' => 'edit', 'id' => $values['id']], ['label' => LABEL_EDIT]) ?></td>
     <td><?= $values['login_name'] ?></td>
   </tr>
-  <? endforeach ?>
-  <? endif ?>
+  <?php endforeach ?>
+  <?php endif ?>
 
 </table>

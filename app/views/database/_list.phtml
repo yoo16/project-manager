@@ -10,9 +10,9 @@
     </tr>
   </thead>
 
-  <? if ($this->database->values): ?> 
+  <?php if ($this->database->values): ?> 
 
-  <? foreach ($this->database->values as $database): ?> 
+  <?php foreach ($this->database->values as $database): ?> 
   <tr>
     <td><?= $this->database->linkEdit([], $database) ?></td>
     <td>
@@ -28,8 +28,8 @@
     <td><?= $database['port'] ?></td>
     <td><?= PwForm::activeLabelTag($database['is_lock']) ?></td>
   </tr>
-  <? endforeach ?> 
+  <?php endforeach ?> 
 
-  <? endif ?> 
+  <?php endif ?> 
 
 </table>

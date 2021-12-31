@@ -5,14 +5,14 @@
 <div class="">
 
 
-  <? if ($this->pages): ?>
-    <? foreach ($this->pages as $page): ?>
+  <?php if ($this->pages): ?>
+    <?php foreach ($this->pages as $page): ?>
       <h3><?= $page['name'] ?>(<?= $page['label'] ?>)</h3>
 
       <table class="table">
         <thead class="thead-default">
         </thead>
-        <? foreach ($page['view'] as $view): ?>
+        <?php foreach ($page['view'] as $view): ?>
           <tr>
             <th class="w-25">
               <?= $view['label'] ?>(<?= $view['name'] ?>)
@@ -22,31 +22,31 @@
                 <div><?= nl2br($view['note']) ?></div>
 
               <dl>
-                <? foreach ($view['view_item'] as $view_item): ?>
-                  <? if ($view_item['note']): ?>
+                <?php foreach ($view['view_item'] as $view_item): ?>
+                  <?php if ($view_item['note']): ?>
                     <dt>
                       <?= $this->attributes[$view_item['attribute_id']]['label'] ?>
                       (<?= $this->attributes[$view_item['attribute_id']]['name'] ?>)
                     </dt>
                     <dd><?= nl2br($view_item['note']) ?></dd>
-                  <? endif ?>
-                  <? if ($view_item['csv'] && $view_item['csv'] != 'active'): ?>
+                  <?php endif ?>
+                  <?php if ($view_item['csv'] && $view_item['csv'] != 'active'): ?>
                     <dt>
                       <?= $this->attributes[$view_item['attribute_id']]['label'] ?>
                       (<?= $this->attributes[$view_item['attribute_id']]['name'] ?>)
                     </dt>
                     <dd>設定ファイル：<?= nl2br($view_item['csv']) ?>.csv</dd>
-                  <? endif ?>
-                <? endforeach ?>
+                  <?php endif ?>
+                <?php endforeach ?>
               </dl>
             </td>
 
           </tr>
-        <? endforeach ?>
+        <?php endforeach ?>
       </td>
 
     </tr>
   </table>
-<? endforeach ?>
-<? endif ?>
+<?php endforeach ?>
+<?php endif ?>
 </div>

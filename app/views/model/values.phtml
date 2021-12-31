@@ -26,27 +26,27 @@
     <table class="table table-headerfixed">
       <thead class="thead-default">
         <tr>
-        <? foreach ($this->values[0] as $column_name => $value): ?>
+        <?php foreach ($this->values[0] as $column_name => $value): ?>
         <th><?= $column_name ?></th>
-        <? endforeach ?>
+        <?php endforeach ?>
         </tr>
       </thead>
 
-      <? if ($this->values): ?>
-      <? foreach ($this->values as $values): ?>
+      <?php if ($this->values): ?>
+      <?php foreach ($this->values as $values): ?>
       <tr>
-        <? foreach ($values as $column_name => $value): ?>
+        <?php foreach ($values as $column_name => $value): ?>
         <td>
-        <? if ($model = $this->fk_models[$column_name]): ?>
+        <?php if ($model = $this->fk_models[$column_name]): ?>
         <a href="<?= $this->linkTo('values', $model['id']) ?>"><?= $value ?></a>
         <? else: ?>
         <?= $value ?>
-        <? endif ?>
+        <?php endif ?>
         </td>
-        <? endforeach ?>
+        <?php endforeach ?>
       </tr>
-      <? endforeach ?>
-      <? endif ?>
+      <?php endforeach ?>
+      <?php endif ?>
     </table>
   </div>
 </div>

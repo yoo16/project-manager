@@ -26,13 +26,13 @@
 
 <h2 class="h2">File</h2>
 <table class="table table-auto">
-  <? foreach ($this->project->documents as $type => $documents): ?>
+  <?php foreach ($this->project->documents as $type => $documents): ?>
   <tr>
     <th><?= $type ?></th>
     <td>
       <?= count($this->project->documents[$type]) ?>
     </td>
   </tr>
-  <? endforeach ?>
+  <?php endforeach ?>
 
 </table>

@@ -1,10 +1,10 @@
 
-<? if ($this->pg_classes): ?>
+<?php if ($this->pg_classes): ?>
 <h3><?= $this->model->value['name'] ?></h3>
 <table class="table table-sm">
-  <? foreach ($this->pg_classes as $database_name => $pg_classes): ?>
-  <? foreach ($pg_classes as $pg_class): ?>
-  <? if (!Model::isNumberingName($pg_class['relname'])): ?>
+  <?php foreach ($this->pg_classes as $database_name => $pg_classes): ?>
+  <?php foreach ($pg_classes as $pg_class): ?>
+  <?php if (!Model::isNumberingName($pg_class['relname'])): ?>
   <tr>
     <td>
       <?= $database_name ?>
@@ -24,8 +24,8 @@
         </form>
       </td>
     </tr>
-  <? endif ?>
-<? endforeach ?>
-<? endforeach ?>
+  <?php endif ?>
+<?php endforeach ?>
+<?php endforeach ?>
 </table>
-<? endif ?>
+<?php endif ?>

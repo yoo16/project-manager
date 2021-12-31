@@ -15,14 +15,14 @@
           </tr>
   </thead>
 
-  <? if ($this->menu->values): ?>
-  <? foreach ($this->menu->values as $values): ?>
+  <?php if ($this->menu->values): ?>
+  <?php foreach ($this->menu->values as $values): ?>
   <tr row-id="<?= $values['id'] ?>">
     <td><?= PwForm::linkButton(['action' => 'edit', 'id' => $values['id']], ['label' => LABEL_EDIT]) ?></td>
     <td><?= PwForm::activeLabelTag($values['is_provide']) ?></td>
     <td><?= $values['name'] ?></td>
   </tr>
-  <? endforeach ?>
-  <? endif ?>
+  <?php endforeach ?>
+  <?php endif ?>
 
 </table>

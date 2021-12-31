@@ -1,7 +1,7 @@
 <? include('views/components/project_header.phtml') ?>
 
 <h2>Page</h2>
-<? if ($this->page->value): ?>
+<?php if ($this->page->value): ?>
   <h3>
     <?= $this->page->value['label'] ?> : <?= $this->page->value['name'] ?>
     <?= PwForm::linkModal(
@@ -13,4 +13,4 @@
       ?>
   </h3>
   <? include('views/components/php_page_export_window.phtml') ?>
-<? endif ?>
+<?php endif ?>

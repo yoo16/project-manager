@@ -1,10 +1,10 @@
 <?= "<? include('_header.phtml') ?>" ?>
 
-<? if ($values['view']['note']): ?>
+<?php if ($values['view']['note']): ?>
   <div class="text-danger">
     <?= nl2br($values['view']['note']) ?>
   </div>
-<? endif ?>
+<?php endif ?>
 
 <div class="pt-3">
   <? Tag::init()->php('$this->linkTo([\'action\' => \'new\'], [\'label\' => LABEL_ADD, \'class\' => \'btn btn-primary\'] )') ?>
@@ -17,15 +17,15 @@
   <thead class="thead-default">
     <tr>
       <th>&nbsp;</th>
-<? foreach ($values['view']['view_item'] as $view_item): ?>
-<? if (!PwModel::$required_columns[$view_item['name']]): ?>
-<? if ($view_item['attribute_id']): ?>
+<?php foreach ($values['view']['view_item'] as $view_item): ?>
+<?php if (!PwModel::$required_columns[$view_item['name']]): ?>
+<?php if ($view_item['attribute_id']): ?>
       <th><?= Attribute::labelName($values['model'], $values['attribute'][$view_item['attribute_id']]) ?></th>
       <? else: ?>
       <th></th>
-<? endif ?>
-<? endif ?>
-<? endforeach ?>
+<?php endif ?>
+<?php endif ?>
+<?php endforeach ?>
     </tr>
   </thead>
 
@@ -33,15 +33,15 @@
   <? Tag::init()->foreachs('$this->'.$values['model']['entity_name'].'->values as $values') ?>
   <tr row-id="<?= Tag::init()->valuesId() ?>">
     <td><? Tag::init()->php('$this->'.$values['model']['entity_name'].'->linkEdit([], $values)') ?></td>
-<? foreach ($values['view']['view_item'] as $view_item): ?>
-<? if (!PwModel::$required_columns[$view_item['name']]): ?>
-<? if ($view_item['page_id']): ?>
+<?php foreach ($values['view']['view_item'] as $view_item): ?>
+<?php if (!PwModel::$required_columns[$view_item['name']]): ?>
+<?php if ($view_item['page_id']): ?>
     <td><? Tag::init()->tableItemUrlForAttribute ($values['attribute'][$view_item['attribute_id']], $values['pages'][$view_item['page_id']], $values['model'], $view_item) ?></td>
 <? else: ?>
     <td><? Tag::init()->tableItemForAttribute($values['attribute'][$view_item['attribute_id']], $view_item) ?></td>
-<? endif ?>
-<? endif ?>
-<? endforeach ?>
+<?php endif ?>
+<?php endif ?>
+<?php endforeach ?>
   </tr>
   <? Tag::init()->foreache() ?>
   <? Tag::init()->ife() ?>

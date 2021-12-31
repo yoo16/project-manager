@@ -13,13 +13,13 @@
     </tr>
   </thead>
 
-  <? if ($this->view_item_group->values): ?>
-    <? foreach ($this->view_item_group->values as $values): ?>
+  <?php if ($this->view_item_group->values): ?>
+    <?php foreach ($this->view_item_group->values as $values): ?>
       <tr row-id="<?= $values['id'] ?>">
         <td><?= $this->view_item_group->linkEdit([], $values) ?></td>
         <td><a href="<?= $this->urlFor(['controller' => 'view_item_group_member'], ['view_item_group_id' => $values['id']]) ?>"><?= $values['name'] ?></a></td>
       </tr>
-    <? endforeach ?>
-  <? endif ?>
+    <?php endforeach ?>
+  <?php endif ?>
 
 </table>

@@ -21,8 +21,8 @@
       </tr>
     </thead>
 
-    <? if (is_array($this->project->values)): ?>
-    <? foreach ($this->project->values as $values): ?>
+    <?php if (is_array($this->project->values)): ?>
+    <?php foreach ($this->project->values as $values): ?>
     <tr row-id="<?= $values['id']?>">
       <td>
         <?= $this->project->linkEdit([], $values) ?>
@@ -58,8 +58,8 @@
         ) ?>
       </td>
     </tr>
-    <? endforeach ?>
-    <? endif ?>
+    <?php endforeach ?>
+    <?php endif ?>
 
   </table>
 </div>

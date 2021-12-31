@@ -10,11 +10,11 @@
     <tr>
       <th>pg_connection()</th>
       <td>
-        <? if ($this->pg_connection): ?>
+        <?php if ($this->pg_connection): ?>
         <label class="badge badge-success">connected</label>
       <? else: ?>
       <?= undefineLabelTag() ?>
-    <? endif ?>
+    <?php endif ?>
   </td>
 </tr>
 </table>
@@ -22,23 +22,23 @@
 <h3>Create Table SQL</h3>
 <div class="card">
   <div class="card-block overflow-list">
-    <? if ($this->sql_files): ?>
-    <? foreach ($this->sql_files as $sql_file): ?>
+    <?php if ($this->sql_files): ?>
+    <?php foreach ($this->sql_files as $sql_file): ?>
     <?= nl2br($sql_file) ?>
-    <? endforeach ?>
+    <?php endforeach ?>
     <? else: ?>
     <?= undefineLabelTag() ?>
-    <? endif ?>
+    <?php endif ?>
   </div>
 
   <div class="card-footer text-center">
-    <? if (!$this->pg_connection): ?>
+    <?php if (!$this->pg_connection): ?>
     <a class="btn btn-primary confirm-dialog" href="<?= $this->urlFor(['action' => 'create_database']) ?>" message="createdb for PostgreSQL?"><?= LABEL_CREATE ?></a>
   <? else: ?>
-  <? if ($this->sql_files): ?>
+  <?php if ($this->sql_files): ?>
   <a class="btn btn-primary confirm-dialog" href="<?= $this->urlFor(['action' => 'create_tables']) ?>" message="Init Database? *Data will be deleted on database."><?= LABEL_UPDATE ?></a>
-  <? endif ?>
-<? endif ?>
+  <?php endif ?>
+<?php endif ?>
   <a class="btn btn-outline-primary" href="<?= $this->urlFor(['action' => 'index']) ?>"><?= LABEL_BACK ?></a>
 </div>
 </div>

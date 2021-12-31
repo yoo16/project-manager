@@ -13,9 +13,9 @@
       </tr>
     </thead>
 
-    <? if ($this->pg_constraints): ?>
-      <? foreach ($this->pg_constraints as $pg_constraints): ?>
-        <? foreach ($pg_constraints as $pg_constraint): ?>
+    <?php if ($this->pg_constraints): ?>
+      <?php foreach ($this->pg_constraints as $pg_constraints): ?>
+        <?php foreach ($pg_constraints as $pg_constraint): ?>
           <tr>
             <td><?= $pg_constraint['conname'] ?></td>
             <td><?= $pg_constraint['relname'] ?></td>
@@ -26,24 +26,24 @@
               <?= $pg_constraint['foreign_relname'] ?>.<?= $pg_constraint['foreign_attname'] ?>
             </td>
             <td>
-              <? if ($pg_constraint['confupdtype'] == 'c'): ?>
+              <?php if ($pg_constraint['confupdtype'] == 'c'): ?>
                 <? $class = 'badge badge-danger' ?>
               <? else: ?>
                 <? $class = 'badge badge-default' ?>
-              <? endif ?>
+              <?php endif ?>
               <span class="<?= $class ?>"><?= PwPgsql::$constraint_actions[$pg_constraint['confupdtype']] ?></span>
             </td>
             <td>
-              <? if ($pg_constraint['confdeltype'] == 'c'): ?>
+              <?php if ($pg_constraint['confdeltype'] == 'c'): ?>
                 <? $class = 'badge badge-danger' ?>
               <? else: ?>
                 <? $class = 'badge badge-default' ?>
-              <? endif ?>
+              <?php endif ?>
               <span class="<?= $class ?>"><?= PwPgsql::$constraint_actions[$pg_constraint['confdeltype']] ?></span>
             </td>
           </tr>
-        <? endforeach ?>
-      <? endforeach ?>
-    <? endif ?>
+        <?php endforeach ?>
+      <?php endforeach ?>
+    <?php endif ?>
   </table>
 </div>

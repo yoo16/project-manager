@@ -6,22 +6,22 @@
  * @create  <?= $values['page']->value['created_at'] ?> 
  */
 
-<? if ($values['page']->parent): ?>
+<?php if ($values['page']->parent): ?>
 require_once '<?= $values['page']->parent->value['name'] ?>Controller.php';
 <? else: ?>
 require_once 'AppController.php';
-<? endif ?>
+<?php endif ?>
 
-<? if ($parent = $values['page']->parent): ?>
+<?php if ($parent = $values['page']->parent): ?>
 class <?= $values['page']->value['name'] ?>Controller extends <?= $parent->value['name'] ?>Controller {
 <? else: ?>
 class <?= $values['page']->value['name'] ?>Controller extends AppController {
-<? endif ?>
+<?php endif ?>
 
     public $name = '<?= $values['page']->value['entity_name'] ?>';
-<? if ($values['page']->value['layout_name']): ?>
+<?php if ($values['page']->value['layout_name']): ?>
     public $layout = '<?= $values['page']->value['layout_name'] ?>';
-<? endif ?>
+<?php endif ?>
 
    /**
     * before_action
@@ -66,9 +66,9 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_new() {
-<? if ($model = $values['model']): ?>
+<?php if ($model = $values['model']): ?>
         $this-><?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->newPage();
-<? endif ?>
+<?php endif ?>
     }
 
    /**
@@ -78,9 +78,9 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_edit() {
-<? if ($model = $values['model']): ?>
+<?php if ($model = $values['model']): ?>
         $this-><?= $model->value['entity_name'] ?> = DB::model('<?= $model->value['class_name'] ?>')->editPage();
-<? endif ?>
+<?php endif ?>
     }
 
    /**
@@ -110,9 +110,9 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_delete() {
-<? if ($values['model']): ?>
+<?php if ($values['model']): ?>
         $this->redirectForDelete($this->deleteByModel('<?= $model->value['class_name'] ?>'));
-<? endif ?>
+<?php endif ?>
     }
 
    /**
@@ -122,9 +122,9 @@ class <?= $values['page']->value['name'] ?>Controller extends AppController {
     * @return void
     */
     function action_update_sort() {
-<? if ($values['model']): ?>
+<?php if ($values['model']): ?>
         $this->updateSort('<?= $model->value['class_name'] ?>');
-<? endif ?>
+<?php endif ?>
     }
 
 }

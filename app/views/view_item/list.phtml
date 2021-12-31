@@ -21,12 +21,12 @@
     </tr>
   </thead>
 
-  <? if ($this->view->view_item->values): ?>
+  <?php if ($this->view->view_item->values): ?>
   <tbody>
-    <? foreach ($this->view->view_item->values as $view_item): ?>
-    <? if ($view_item['form_model_id']): ?>
+    <?php foreach ($this->view->view_item->values as $view_item): ?>
+    <?php if ($view_item['form_model_id']): ?>
     <? $model = DB::model('Model')->fetch($view_item['form_model_id']) ?>
-    <? endif ?>
+    <?php endif ?>
     <tr row-id="<?= $view_item['id'] ?>">
       <td>
         <?= $this->linkTo(
@@ -50,30 +50,30 @@
         </div>
 
         <div>
-          <? if ($view_item['attribute_id']): ?>
+          <?php if ($view_item['attribute_id']): ?>
           <?= $this->page->model->attribute->values[$view_item['attribute_id']]['label'] ?>
           <? elseif ($view_item['localize_string_id']): ?>
           <?= $this->localize_string->values[$view_item['localize_string_id']]['name'] ?>
-          <? endif ?>
+          <?php endif ?>
         </div>
       </td>
 
       <td>
         <?= $this->pages[$view_item['page_id']]['name'] ?>
         <div>
-          <? if ($view_item['link_param_id_attribute_id']): ?>
+          <?php if ($view_item['link_param_id_attribute_id']): ?>
           id =
           <?= DB::model('Attribute')->fetch($view_item['link_param_id_attribute_id'])->value['name'] ?>
-          <? endif ?>
+          <?php endif ?>
         </div>
       </td>
       <td>
         <div>
-          <? if (in_array($this->view->value['name'], ['new' ,'edit'])): ?>
-          <? if ($view_item['form_type'] == 'select'): ?>
+          <?php if (in_array($this->view->value['name'], ['new' ,'edit'])): ?>
+          <?php if ($view_item['form_type'] == 'select'): ?>
           <select class="form-control">
             <option>
-              <? if ($view_item['where_attribute_id']): ?><?= $model->value['name'] ?>.<? endif ?>
+              <?php if ($view_item['where_attribute_id']): ?><?= $model->value['name'] ?>.<?php endif ?>
               <?= $view_item['label_column'] ?>
             </option>
           </select>
@@ -91,31 +91,31 @@
           <input class="form-control col-4" type="password" name="">
           <? else: ?>
           <input class="form-control col-4" type="text" name="">
-          <? endif ?>
-          <? endif ?>
+          <?php endif ?>
+          <?php endif ?>
         </div>
         <div>
           <?= PwForm::activeLabelTag($view_item['css_class']) ?>
         </div>
       </td>
       <td>
-        <? if ($view_item['form_model_id']): ?>
+        <?php if ($view_item['form_model_id']): ?>
         Model: <?= $model->value['name'] ?>
         <div>
-        <? if ($view_item['where_attribute_id']): ?>
+        <?php if ($view_item['where_attribute_id']): ?>
         <?= $model->value['name'] ?>.<?= DB::model('Attribute')->fetch($view_item['where_attribute_id'])->value['name'] ?>
-        <? endif ?>
-        <? endif ?>
+        <?php endif ?>
+        <?php endif ?>
 
-        <? if ($view_item['where_model_id']): ?>
+        <?php if ($view_item['where_model_id']): ?>
         =
         <?= DB::model('Model')->fetch($view_item['where_model_id'])->value['name'] ?>.id
-        <? endif ?>
+        <?php endif ?>
         </div>
 
-        <? if ($view_item['csv']): ?>csv :
+        <?php if ($view_item['csv']): ?>csv :
         <?= $view_item['csv'] ?>
-        <? endif ?>
+        <?php endif ?>
       </td>
 
       <td>
@@ -125,9 +125,9 @@
         </form>
       </td>
     </tr>
-    <? endforeach ?>
+    <?php endforeach ?>
   </tbody>
-  <? endif ?>
+  <?php endif ?>
 </table>
 
 <table class="table table-sm">
@@ -139,9 +139,9 @@
     </tr>
   </thead>
 
-  <? if ($this->page->model->attribute->values): ?>
-  <? foreach ($this->page->model->attribute->values as $view_item): ?>
-    <? if (!in_array($view_item['name'], PwEntity::$app_columns)): ?>
+  <?php if ($this->page->model->attribute->values): ?>
+  <?php foreach ($this->page->model->attribute->values as $view_item): ?>
+    <?php if (!in_array($view_item['name'], PwEntity::$app_columns)): ?>
   <tr>
     <td>
       <form action="<?= $this->urlFor(['action' => 'add_for_attribute']) ?>" method="post">
@@ -156,7 +156,7 @@
       <?= $view_item['label'] ?>
     </td>
   </tr>
-    <? endif ?>
-  <? endforeach ?>
-  <? endif ?>
+    <?php endif ?>
+  <?php endforeach ?>
+  <?php endif ?>
   </table>

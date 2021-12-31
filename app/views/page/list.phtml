@@ -38,8 +38,8 @@
     </tr>
   </thead>
 
-  <? if ($this->pages): ?>
-  <? foreach ($this->pages as $page): ?>
+  <?php if ($this->pages): ?>
+  <?php foreach ($this->pages as $page): ?>
   <tr>
     <td><?= PwForm::linkButton(['action' => 'edit', 'id' => $page['id']], ['label' => LABEL_EDIT]) ?></td>
     <td>
@@ -81,24 +81,24 @@
           ) ?>
     </td>
     <td>
-      <? if ($page['is_overwrite']): ?>
+      <?php if ($page['is_overwrite']): ?>
       <?= $this->linkTo(['action' => 'change_overwrite', 'id' => $page['id']], ['label' => 'overwrite', 'class' => 'badge badge-danger']) ?>
       <? else: ?>
       <?= $this->linkTo(['action' => 'change_overwrite', 'id' => $page['id']], ['label' => 'off', 'class' => 'badge badge-default']) ?>
-      <? endif ?>
+      <?php endif ?>
     </td>
     <td>
       <div><?= $page['entity_name'] ?></div>
       <div>
-        <? if ($page['model_id']): ?><?= $page['model']['name'] ?>
-        <? endif ?>
+        <?php if ($page['model_id']): ?><?= $page['model']['name'] ?>
+        <?php endif ?>
       </div>
     </td>
 
     <td><a class="btn btn-outline-primary confirm-dialog" message="Do you duplicate page?"
         href="<?= $this->urlFor(['action' => 'duplicate', 'id' => $page['id']]) ?>"><?= LABEL_DUPLICATE ?></a></td>
   </tr>
-  <? endforeach ?>
-  <? endif ?>
+  <?php endforeach ?>
+  <?php endif ?>
 
 </table>

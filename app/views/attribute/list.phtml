@@ -43,7 +43,7 @@
     ) ?>
 
     <form action="<?= $this->urlFor(['controller' => 'page', 'action' => 'create_page_from_model']) ?>" method="post">
-      <? if ($this->page->value): ?>
+      <?php if ($this->page->value): ?>
       <?= $this->linkTo(['controller' => 'view'],
         [
           'label' => 'View',
@@ -55,7 +55,7 @@
       <? else: ?>
       <?= PwForm::button('Create Page', ['class' => 'btn btn-outline-primary confirm-dialog', 'message' => "Do you create page from Model?"]) ?>
       <?= PwForm::hidden('model_id', $this->model->value['id']) ?>
-      <? endif ?>
+      <?php endif ?>
       <?= PwForm::linkModal('#help-attribute', 'Help', ['class' => 'btn btn-outline-primary']) ?>
     </form>
   </div>

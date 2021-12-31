@@ -6,7 +6,7 @@
         <th></th>
       </tr>
     </thead>
-    <? foreach ($this->model->attribute->values as $attribute): ?>
+    <?php foreach ($this->model->attribute->values as $attribute): ?>
     <tr>
       <td>
         <?= PwForm::checkbox([
@@ -16,7 +16,7 @@
           ) ?>
         </td>
       </tr>
-    <? endforeach ?>
+    <?php endforeach ?>
   </table>
   <input type="submit" class="btn btn-sm btn-primary" value="<?= LABEL_UPDATE ?>">
   <input type="hidden" name="model_id" value="<?= $this->model->value['id'] ?>">

@@ -69,7 +69,7 @@
           </td>
         </tr>
 
-        <? if ($this->attribute->value['fk_attribute_id']): ?>
+        <?php if ($this->attribute->value['fk_attribute_id']): ?>
 
         <tr>
           <th>Update Action</th>
@@ -84,19 +84,19 @@
             <?= $this->attribute->formSelect('delete_action', ['csv' => 'constraint_action', 'unselect' => true]) ?>
           </td>
         </tr>
-        <? endif ?>
+        <?php endif ?>
 
         <tr>
           <th>Old Column</th>
           <td>
-            <? if ($this->attribute->value['old_name']): ?>
+            <?php if ($this->attribute->value['old_name']): ?>
             <?= $this->attribute->value['old_name'] ?> &nbsp;
             <a class="btn btn-danger btn-sm" href="<?= $this->urlFor(['action' => 'delete_old_name', 'id' => $this->attribute->value['id']]) ?>">
               <?= LABEL_DELETE ?>
             </a>
             <? else: ?>
             <?= $this->attribute->formInput('old_name', ['class' => 'form-control']) ?>
-            <? endif ?>
+            <?php endif ?>
           </td>
         </tr>
 

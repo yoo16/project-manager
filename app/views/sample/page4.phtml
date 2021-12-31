@@ -5,17 +5,17 @@
   <h3>getImageTypes()</h3>
   <pre>PwFile::getImageTypes()</pre>
   <ul>
-    <? foreach(PwFile::getImageTypes() as $key => $value): ?>
+    <?php foreach(PwFile::getImageTypes() as $key => $value): ?>
     <li><?= $key ?> => <?= $value ?></li>
-    <? endforeach ?>
+    <?php endforeach ?>
   </ul>
 
   <h3>getImageExts()</h3>
   <pre>PwFile::getImageExts()</pre>
   <ul>
-    <? foreach(PwFile::getImageExts() as $key => $value): ?>
+    <?php foreach(PwFile::getImageExts() as $key => $value): ?>
     <li><?= $key ?> => <?= $value ?></li>
-    <? endforeach ?>
+    <?php endforeach ?>
   </ul>
 
   <h3>getImageTypeWithFileName($file_name)</h3>
@@ -31,16 +31,16 @@
   <pre>PwFile::loadFiles(BASE_DIR.'app/controllers/')</pre>
 
 
-  <? foreach(PwFile::loadFiles(BASE_DIR.'app/controllers/') as $key => $values): ?>
+  <?php foreach(PwFile::loadFiles(BASE_DIR.'app/controllers/') as $key => $values): ?>
   <table class="table">
-    <? foreach($values as $column => $value): ?>
+    <?php foreach($values as $column => $value): ?>
     <tr>
       <th><?= $column ?><th>
         <td><?= $value ?></td>
       </tr>
-      <? endforeach ?>
+      <?php endforeach ?>
     </table>
-    <? endforeach ?>
+    <?php endforeach ?>
 
     <h3>loadContents($key='file')</h3>
     <pre>PwFile::loadContents(BASE_DIR.'app/controllers/')</pre>

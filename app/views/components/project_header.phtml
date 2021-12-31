@@ -1,4 +1,4 @@
-<? if ($this->project->value['id']): ?>
+<?php if ($this->project->value['id']): ?>
 <h2><?= $this->project->value['name'] ?></h2>
 <?= $this->linkTo(['controller' => 'project', 'action' => 'edit', 'id' => $this->project->value['id']],
         [
@@ -25,7 +25,7 @@
       ]
       ) ?>
 <div class="row">
-  <? if ($this->database->value['id']): ?>
+  <?php if ($this->database->value['id']): ?>
   <table class="table">
     <tr>
       <th>Database</th>
@@ -76,6 +76,6 @@
       </td>
     </tr>
   </table>
-  <? endif ?>
+  <?php endif ?>
 </div>
-<? endif ?>
+<?php endif ?>

@@ -16,15 +16,15 @@
     </tr>
   </thead>
 
-  <? if ($this->record_item->values): ?>
-    <? foreach ($this->record_item->values as $values): ?>
+  <?php if ($this->record_item->values): ?>
+    <?php foreach ($this->record_item->values as $values): ?>
       <tr row-id="<?= $values['id'] ?>">
         <td><?= $this->record_item->linkEdit([], $values) ?></td>
         <td><?= $values['key'] ?></td>
         <td><?= $values['value'] ?></td>
         <td><?= $values['value_en'] ?></td>
       </tr>
-    <? endforeach ?>
-  <? endif ?>
+    <?php endforeach ?>
+  <?php endif ?>
 
 </table>

@@ -6,28 +6,28 @@
  * @create  <?= $values['page']['created_at'] ?> 
  */
 
-<? if ($values['page']['parent']): ?>
+<?php if ($values['page']['parent']): ?>
 require_once '<?= $values['page']['parent']['name'] ?>Controller.php';
 <? else: ?>
 require_once 'AppController.php';
-<? endif ?>
+<?php endif ?>
 
-<? if ($values['page']['parent']): ?>
+<?php if ($values['page']['parent']): ?>
 class <?= $values['page']['name'] ?>Controller extends <?= $values['page']['parent']['name'] ?>Controller {
 <? else: ?>
 class <?= $values['page']['name'] ?>Controller extends AppController {
-<? endif ?>
+<?php endif ?>
 
     public $name = '<?= $values['page']['entity_name'] ?>';
-<? if ($values['page']['view_name']): ?>
+<?php if ($values['page']['view_name']): ?>
     public $view = '<?= $values['page']['view_name'] ?>';
-<? endif ?>
-<? if ($values['page']['layout_name']): ?>
+<?php endif ?>
+<?php if ($values['page']['layout_name']): ?>
     public $layout = '<?= $values['page']['layout_name'] ?>';
-<? endif ?>
-<? if ($values['page_filter']): ?>
+<?php endif ?>
+<?php if ($values['page_filter']): ?>
     <? Tag::init()->pageFilters($values['page_filter']) ?>
-<? endif ?>
+<?php endif ?>
 
    /**
     * before_action

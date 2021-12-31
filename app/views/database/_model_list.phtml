@@ -16,9 +16,9 @@
     <th>relfilenode</th>
   </tr>
 
-  <? if (is_array($this->models)): ?>
+  <?php if (is_array($this->models)): ?>
 
-  <? foreach ($this->models as $key => $model): ?>
+  <?php foreach ($this->models as $key => $model): ?>
   <tr class="<?=tr_model($model) ?>">
     <td>
       <?= $this->linkTo(['controller' => 'model', 'action' => 'edit', 'id' => $model['id']],
@@ -37,15 +37,15 @@
         ) ?>
     </td>
     <td>
-      <? if ($model['relfilenode'] > 0): ?>
+      <?php if ($model['relfilenode'] > 0): ?>
       <?=$model['relfilenode'] ?>
       <? else: ?>
       <a href="<?= $this->urlFor(['controller' => 'create_table', 'id' => $model['id']) ?>">Create Table</a>
-      <? endif ?>
+      <?php endif ?>
     </td>
   </tr>
-  <? endforeach ?>
+  <?php endforeach ?>
 
-  <? endif ?>
+  <?php endif ?>
 
 </table>

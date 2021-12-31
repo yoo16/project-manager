@@ -1,17 +1,17 @@
 
-<? if ($this->results): ?>
+<?php if ($this->results): ?>
 <div class="alert alert-success">
 	Create database is successl
 </div>
 <h3>Create Table</h3>
 <div class="card">
   <div class="card-block overflow-list">
-    <? if ($this->sql): ?><?= nl2br($this->sql) ?><? else: ?>SQL Error<? endif ?>
+    <?php if ($this->sql): ?><?= nl2br($this->sql) ?><? else: ?>SQL Error<?php endif ?>
   </div>
 
   <div class="card-footer text-center">
     <a class="btn btn-outline-primary" href="<?= $this->linkTo('setting/') ?>"><?= LABEL_BACK ?></a>
   </div>
 </div>
-<? endif ?>
+<?php endif ?>
 

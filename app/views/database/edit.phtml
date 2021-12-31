@@ -9,9 +9,9 @@
     <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
   </form>
 
-  <? if ($this->database->value['id'] && !$this->database->value['is_lock']): ?>
+  <?php if ($this->database->value['id'] && !$this->database->value['is_lock']): ?>
   <form id="" action="<?= $this->urlFor(['action' => 'delete', 'id' => $this->database->value['id']]) ?>" method="post">
     <input class="btn btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
   </form>
-  <? endif ?>
+  <?php endif ?>
 </div>

@@ -19,40 +19,40 @@
         <h5>
           <?= $this->project->value['name'] ?>
         </h5>
-        <? if (is_array($this->user_project_setting->values)): ?>
+        <?php if (is_array($this->user_project_setting->values)): ?>
         <table class="table">
-          <? foreach ($this->user_project_setting->values as $user_project_setting): ?>
+          <?php foreach ($this->user_project_setting->values as $user_project_setting): ?>
           <tr>
             <td>
               <?= $user_project_setting['project_path'] ?>
             </td>
             <td>
-              <? if (file_exists($user_project_setting['project_path'])): ?>
-              <? if (file_exists($user_project_setting['project_path']."app/")): ?>
+              <?php if (file_exists($user_project_setting['project_path'])): ?>
+              <?php if (file_exists($user_project_setting['project_path']."app/")): ?>
               <label class="badge badge-success">exists</label>
               <? else: ?>
               <label class="badge badge-danger">not found php-work</label>
-              <? endif ?>
+              <?php endif ?>
               <? else: ?>
               <label class="badge badge-danger">not exists</label>
-              <? endif ?>
+              <?php endif ?>
             </td>
             <td>
-              <? if (file_exists($user_project_setting['project_path'])): ?>
-              <? if (file_exists($user_project_setting['project_path']."app/")): ?>
+              <?php if (file_exists($user_project_setting['project_path'])): ?>
+              <?php if (file_exists($user_project_setting['project_path']."app/")): ?>
               <form action="<?= $this->urlFor(['controller' => 'project', 'action' => 'export_sql_from_models']) ?>" method="post">
                 <button class="btn btn-sm btn-primary confirm-dialog" href="#" message="Do you export SQL from models?">
                   <?= LABEL_EXPORT ?></button>
                 <input type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
                 <input type="hidden" name="user_project_setting_id" value="<?= $user_project_setting['id'] ?>">
               </form>
-              <? endif ?>
-              <? endif ?>
+              <?php endif ?>
+              <?php endif ?>
             </td>
           </tr>
 
-          <? if (file_exists($user_project_setting['project_path'])): ?>
-          <? if (!file_exists($user_project_setting['project_path']."app/")): ?>
+          <?php if (file_exists($user_project_setting['project_path'])): ?>
+          <?php if (!file_exists($user_project_setting['project_path']."app/")): ?>
           <tr>
             <td>
               <small class="text-danger">
@@ -60,9 +60,9 @@
             </td>
             <td></td>
           </tr>
-          <? endif ?>
-          <? endif ?>
-          <? endforeach ?>
+          <?php endif ?>
+          <?php endif ?>
+          <?php endforeach ?>
 
         </table>
         <? else: ?>
@@ -74,7 +74,7 @@
               ],
               ['label' => LABEL_EXPORT.LABEL_SETTING]
               ) ?>
-        <? endif ?>
+        <?php endif ?>
 
       </div>
     </div>

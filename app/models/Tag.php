@@ -149,7 +149,7 @@ class Tag {
      */
     function ifs($value = null) {
         if ($value) $this->value = $value;
-        $this->value = '<? if ('.$this->value.'): ?>'.PHP_EOL;
+        $this->value = '<?php if ('.$this->value.'): ?>'.PHP_EOL;
         $this->output();
     }
 
@@ -159,7 +159,7 @@ class Tag {
      * @return void
      */
     function ife() {
-        $this->value = '<? endif ?>'.PHP_EOL;
+        $this->value = '<?php endif ?>'.PHP_EOL;
         $this->output();
     }
 
@@ -170,7 +170,7 @@ class Tag {
      */
     function foreachs($value = null) {
         if ($value) $this->value = $value;
-        $this->value = '<? foreach ('.$this->value.'): ?>'.PHP_EOL;
+        $this->value = '<?php foreach ('.$this->value.'): ?>'.PHP_EOL;
         $this->output();
     }
 
@@ -181,7 +181,7 @@ class Tag {
      * @return void
      */
     function foreache() {
-        $this->value = '<? endforeach ?>'.PHP_EOL;
+        $this->value = '<?php endforeach ?>'.PHP_EOL;
         $this->output();
     }
 

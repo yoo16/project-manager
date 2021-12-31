@@ -1,4 +1,4 @@
-<? if ($this->errors): ?>
+<?php if ($this->errors): ?>
   <div id="pw-error" class="pw-modal error-window" event="load" action="show">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -10,17 +10,17 @@
         </div>
         <div class="modal-body">
           <ul class="list-unstyled">
-            <? if (is_array($this->errors)): ?>
-              <? foreach ($this->errors as $key => $error): ?>
-                <? if (is_array($error)): ?>
-                <? foreach ($error as $key2 => $value): ?>
+            <?php if (is_array($this->errors)): ?>
+              <?php foreach ($this->errors as $key => $error): ?>
+                <?php if (is_array($error)): ?>
+                <?php foreach ($error as $key2 => $value): ?>
                   <li><?= PwError::display($value, $this->pw_gets, $key)?></li>
-                <? endforeach?>
+                <?php endforeach?>
                 <? else: ?>
                   <li><?= PwError::displayForString($error, $this->pw_gets, $key) ?></li>
-                <? endif ?>
-              <? endforeach?>
-            <? endif ?>
+                <?php endif ?>
+              <?php endforeach?>
+            <?php endif ?>
           </ul>
         </div>
         <div class="modal-footer">
@@ -29,4 +29,4 @@
       </div>
     </div>
   </div>
-<? endif ?>
+<?php endif ?>

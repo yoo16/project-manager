@@ -1,11 +1,11 @@
 
-<? if ($this->pg_attributes): ?>
+<?php if ($this->pg_attributes): ?>
 <h3><?= $this->model->value['name'] ?> -> <?= $this->attribute->value['name'] ?></h3>
 <table class="table table-sm">
-  <? foreach ($this->pg_attributes as $database_name => $pg_models): ?>
-  <? foreach ($pg_models as $model_name => $pg_attributes): ?>
-  <? foreach ($pg_attributes as $pg_attribute): ?>
-  <? if (!Model::isNumberingName($pg_attribute['relname'])): ?>
+  <?php foreach ($this->pg_attributes as $database_name => $pg_models): ?>
+  <?php foreach ($pg_models as $model_name => $pg_attributes): ?>
+  <?php foreach ($pg_attributes as $pg_attribute): ?>
+  <?php if (!Model::isNumberingName($pg_attribute['relname'])): ?>
   <tr>
     <td><?= $database_name ?></td>
     <td><?= $model_name ?></td>
@@ -22,9 +22,9 @@
         </form>
       </td>
     </tr>
-  <? endif ?>
-<? endforeach ?>
-<? endforeach ?>
-<? endforeach ?>
+  <?php endif ?>
+<?php endforeach ?>
+<?php endforeach ?>
+<?php endforeach ?>
 </table>
-<? endif ?>
+<?php endif ?>

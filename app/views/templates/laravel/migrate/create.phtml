@@ -17,12 +17,12 @@ class <?= $values['migrate_class_name'] ?> extends Migration
         Schema::create('<?= $values['model']->value['name'] ?>', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
-<? foreach($values['attribute']->values as $attribute_value): ?>
+<?php foreach($values['attribute']->values as $attribute_value): ?>
 <? $attribute = DB::model('Attribute')->setValue($attribute_value) ?>
-<? if (!PwLaravel::isGuardedAttribute($attribute)): ?>
+<?php if (!PwLaravel::isGuardedAttribute($attribute)): ?>
             <?= PwLaravel::migrateFunction(DB::model('Attribute')->setValue($attribute_value)) ?>;
-<? endif ?>
-<? endforeach ?>
+<?php endif ?>
+<?php endforeach ?>
         });
     }
 

@@ -5,19 +5,19 @@
   </div>
 </div>
 <table class="table">
-  <? foreach ($this->project->values as $project): ?>
+  <?php foreach ($this->project->values as $project): ?>
   <tr>
     <td><?= $project['name'] ?></td>
     <td><?= $project['models_name'] ?></td>
     <td><?= $project['attributes_name'] ?></td>
   </tr>
-<? endforeach ?>
+<?php endforeach ?>
 </table>
 
 <table class="table">
   <tr>
-    <? foreach ($this->model->values as $model): ?>
+    <?php foreach ($this->model->values as $model): ?>
     <td><?= $model['name'] ?></td>
   </tr>
-<? endforeach ?>
+<?php endforeach ?>
 </table>

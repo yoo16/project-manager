@@ -21,9 +21,9 @@
 
       <div class="modal-footer">
         <a action="update" class="action btn btn-outline-primary" href="#"><?= LABEL_UPDATE ?></a>
-        <? if (!$this->user['id']): ?>
+        <?php if (!$this->user['id']): ?>
         <a action="delete" class="action btn btn-outline-danger" href="#"><?= LABEL_DELETE ?></a>
-        <? endif ?>
+        <?php endif ?>
         <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><?= LABEL_CLOSE ?></button>
       </div>
 

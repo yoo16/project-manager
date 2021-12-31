@@ -16,9 +16,9 @@
       <td>Exists</td>
     </tr>
   </thead>
-  <? if (is_array($this->project->user_project_setting->values)): ?>
+  <?php if (is_array($this->project->user_project_setting->values)): ?>
   <tbody>
-    <? foreach ($this->project->user_project_setting->values as $user_project_setting): ?>
+    <?php foreach ($this->project->user_project_setting->values as $user_project_setting): ?>
     <tr>
       <td>
         <?= $this->linkTo(
@@ -28,19 +28,19 @@
       </td>
       <td><?= $user_project_setting['project_path'] ?></td>
       <td>
-        <? if (file_exists($user_project_setting['project_path'])): ?>
-        <? if (file_exists($user_project_setting['project_path']."app/")): ?><label class="badge badge-success">exists</label><? else: ?>
+        <?php if (file_exists($user_project_setting['project_path'])): ?>
+        <?php if (file_exists($user_project_setting['project_path']."app/")): ?><label class="badge badge-success">exists</label><? else: ?>
         <label class="badge badge-danger">not found php-work</label>
         <div>
           <a href="<?= PHP_WORK_GIT_URL ?>" target="_blank"><?= PHP_WORK_GIT_URL ?></a>
         </div>
-      <? endif ?>
+      <?php endif ?>
     <? else: ?>
     <label class="badge badge-danger">not exists</label>
-  <? endif ?>
+  <?php endif ?>
 </td>
 </tr>
-<? endforeach ?>
-<? endif ?>
+<?php endforeach ?>
+<?php endif ?>
 </tbody>
 </table>

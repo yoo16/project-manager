@@ -15,20 +15,20 @@
   <?= $this->attribute->value['name'] ?>
 </h4>
 
-<? if ($this->fk_attribute->value): ?>
+<?php if ($this->fk_attribute->value): ?>
 <form action="<?= $this->urlFor(['action' => 'remove_relation']) ?>" method="post">
   <?= $this->fk_model->value['name'] ?> ->
   <?= $this->fk_attribute->value['name'] ?>
   <input class="btn btn-sm btn-danger" type="submit" value="<?= LABEL_DELETE ?>">
   <input type="hidden" name="attribute_id" value="<?= $this->attribute->value['id'] ?>">
 </form>
-<? endif ?>
+<?php endif ?>
 
 <h4>
   <?= $this->fk_model->value['name'] ?>
 </h4>
 <table class="table table-sm">
-  <? foreach ($this->fk_model->attribute->values as $fk_attribute): ?>
+  <?php foreach ($this->fk_model->attribute->values as $fk_attribute): ?>
   <tr>
     <td>
       <?= $fk_attribute['name'] ?></a></td>
@@ -40,5 +40,5 @@
       </form>
     </td>
   </tr>
-  <? endforeach ?>
+  <?php endforeach ?>
 </table>

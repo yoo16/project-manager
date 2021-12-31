@@ -10,14 +10,14 @@
           </button>
         </div>
         <div class="modal-body">
-        <? foreach ($this->pg_class['pg_attribute'] as $column): ?>
-        <? if (!PwModel::$required_columns[$column['attname']]): ?>
+        <?php foreach ($this->pg_class['pg_attribute'] as $column): ?>
+        <?php if (!PwModel::$required_columns[$column['attname']]): ?>
           <div class="form-group row">
             <label for="" class="col-6 col-form-label"><?= $column['attname'] ?></label>
             <input class="form-control col-5" type="text" name="model[<?= $column['attname'] ?>]" value="">
           </div>
-        <? endif ?>
-        <? endforeach ?>
+        <?php endif ?>
+        <?php endforeach ?>
         </div>
         <div class="modal-footer">
           <input class="btn btn-primary" type="submit" value="<?= LABEL_ADD ?>">

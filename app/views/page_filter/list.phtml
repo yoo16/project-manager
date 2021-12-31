@@ -21,8 +21,8 @@
     </tr>
   </thead>
 
-  <? if ($this->page_filter->values): ?>
-  <? foreach ($this->page_filter->values as $values): ?>
+  <?php if ($this->page_filter->values): ?>
+  <?php foreach ($this->page_filter->values as $values): ?>
   <tr row-id="<?= $values['id'] ?>">
     <td>
       <?= $this->page_filter->linkEdit([], $values) ?>
@@ -37,6 +37,6 @@
       <?= $this->attribute->values[$values['attribute_id']]['name'] ?>
     </td>
   </tr>
-  <? endforeach ?>
-  <? endif ?>
+  <?php endforeach ?>
+  <?php endif ?>
 </table>

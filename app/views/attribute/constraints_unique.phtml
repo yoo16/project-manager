@@ -1,10 +1,10 @@
 
-    <? if ($this->pg_class['pg_constraint']['unique']): ?>
-    <? foreach ($this->pg_class['pg_constraint']['unique'] as $conname => $pg_constraints): ?>
-    <? foreach ($pg_constraints as $index => $pg_constraint): ?>
+    <?php if ($this->pg_class['pg_constraint']['unique']): ?>
+    <?php foreach ($this->pg_class['pg_constraint']['unique'] as $conname => $pg_constraints): ?>
+    <?php foreach ($pg_constraints as $index => $pg_constraint): ?>
     <div class="row">
       <div class="col-6">
-      <? if ($index == 0): ?>
+      <?php if ($index == 0): ?>
         <form action="<?= $this->urlFor(['action' => 'rename_constraint']) ?>" method="post">
           <div class="input-group">
             <?= PwForm::input(['class' => 'form-control form-control'], 'new_constraint_name', $conname) ?>
@@ -14,22 +14,22 @@
           <?= PwForm::hidden('model_id', $this->model->value['id']) ?></a>
           <?= PwForm::hidden('database_id', $this->database->value['id']) ?></a>
         </form>
-      <? endif ?>
+      <?php endif ?>
       </div>
       <div class="col-5"><?= $pg_constraint['attname'] ?></div>
 
       <div class="col-1">
-      <? if ($index == 0): ?>
+      <?php if ($index == 0): ?>
         <form action="<?= $this->urlFor(['action' => 'delete_constraint']) ?>" method="post">
           <?= PwForm::submit(LABEL_DELETE, ['class' => 'btn btn-sm btn-danger confirm-dialog', 'message' => 'Do you delete Constrain key?']) ?></a>
           <?= PwForm::hidden('constraint_name', $pg_constraint['conname']) ?></a>
           <?= PwForm::hidden('model_id', $this->model->value['id']) ?></a>
           <?= PwForm::hidden('database_id', $this->database->value['id']) ?></a>
         </form>
-      <? endif ?>
+      <?php endif ?>
       </div>
     </div>
-  <? endforeach ?>
-  <? endforeach ?>
+  <?php endforeach ?>
+  <?php endforeach ?>
 
-<? endif ?>
+<?php endif ?>

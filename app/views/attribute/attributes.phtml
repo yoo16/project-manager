@@ -7,7 +7,7 @@
     </div>
   </h4>
 
-  <? if ($this->pg_class['pg_class_id'] != $this->model->value['pg_class_id']): ?>
+  <?php if ($this->pg_class['pg_class_id'] != $this->model->value['pg_class_id']): ?>
   <div class="alert alert-danger">
     pg_class is not match on PostgreSQL.
     <ul>
@@ -19,7 +19,7 @@
       </li>
     </ul>
   </div>
-  <? endif ?>
+  <?php endif ?>
 
   <div class="card-body">
     <table class="table">
@@ -37,31 +37,31 @@
       </thead>
 
       <tbody>
-        <? if ($this->attribute->values): ?>
-        <? foreach ($this->attribute->values as $attribute): ?>
+        <?php if ($this->attribute->values): ?>
+        <?php foreach ($this->attribute->values as $attribute): ?>
         <tr>
           <td id="attnum_<?= $attribute['attnum'] ?>">
-            <? if (!PwModel::$required_columns[$attribute['name']]): ?>
+            <?php if (!PwModel::$required_columns[$attribute['name']]): ?>
             <?= $this->attribute->linkEdit([], $attribute) ?>
-            <? endif ?>
+            <?php endif ?>
           </td>
 
           <td>
             <?= $attribute['name'] ?>
-            <? if ($attribute['old_name']): ?>
+            <?php if ($attribute['old_name']): ?>
             <div>
               (<?= $attribute['old_name'] ?>)
             </div>
-            <? endif ?>
+            <?php endif ?>
             <div>
-              <? if ($attribute['default_value']): ?>
+              <?php if ($attribute['default_value']): ?>
               <span class="badge badge-success"><?= $attribute['default_value'] ?></span>
-              <? endif ?>
+              <?php endif ?>
             </div>
           </td>
 
           <td>
-            <? if (PwModel::$required_columns[$attribute['name']]): ?>
+            <?php if (PwModel::$required_columns[$attribute['name']]): ?>
             <?= $attribute['label'] ?>
             <? else: ?>
             <form method="post" action="<?= $this->urlFor(['action' => 'update_label', 'id' => $attribute['id']]) ?>">
@@ -73,11 +73,11 @@
               <?= PwForm::hidden('pg_class_id', $attribute['pg_attribute']['pg_class_id']) ?>
               <?= PwForm::hidden('database_id', $this->database->value['id']) ?>
             </form>
-            <? endif ?>
+            <?php endif ?>
           </td>
 
           <td>
-            <? if ($attribute['fk_attribute_id'] > 0): ?>
+            <?php if ($attribute['fk_attribute_id'] > 0): ?>
               <?= $this->linkJs(
                 [
                 'label' => 'relation',
@@ -101,47 +101,47 @@
                   'attribute_id' => $attribute['id']
                   ]
                   ) ?>
-            <? endif ?>
+            <?php endif ?>
           </td>
 
           <td>
             <label class="badge badge-pill badge-info">
               <?= $attribute['type'] ?>
-              <? if ($attribute['length'] > 0): ?> (
+              <?php if ($attribute['length'] > 0): ?> (
               <?= $attribute['length'] ?>)
-              <? endif ?>
+              <?php endif ?>
             </label>
 
-            <? if ($attribute['is_primary_key']): ?>
+            <?php if ($attribute['is_primary_key']): ?>
             <?= PwForm::badgeTag('Primary', null, 'info') ?>
-            <? endif ?>
-            <? if ($attribute['pg_attribute']['attnotnull'] == 't'): ?>
+            <?php endif ?>
+            <?php if ($attribute['pg_attribute']['attnotnull'] == 't'): ?>
             <?= PwForm::badgeTag('Not Null', null, 'info') ?>
-            <? endif ?>
+            <?php endif ?>
           </td>
 
           <td>
-            <? if (!PwModel::$required_columns[$attribute['name']]): ?>
-            <? if ($attribute['is_required']): ?>
+            <?php if (!PwModel::$required_columns[$attribute['name']]): ?>
+            <?php if ($attribute['is_required']): ?>
             <?= $this->linkTo(['action' => 'change_required', 'id' => $attribute['id']], ['label' => 'required', 'class' => 'badge badge-success']) ?>
             <? else: ?>
             <?= $this->linkTo(['action' => 'change_required', 'id' => $attribute['id']], ['label' => 'required', 'class' => 'badge badge-default']) ?>
-            <? endif ?>
-            <? endif ?>
+            <?php endif ?>
+            <?php endif ?>
           </td>
 
           <td>
-            <? if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
+            <?php if ($attribute['pg_attribute'] && $attribute['attnum'] == $attribute['pg_attribute']['attnum']): ?>
             <?= PwForm::badgeTag('sync', null, 'success') ?>
 
-            <? if ($attribute['pg_attribute']['attname'] != $attribute['name']): ?>
+            <?php if ($attribute['pg_attribute']['attname'] != $attribute['name']): ?>
             <?= PwForm::badgeTag($attribute['pg_attribute']['attname'], null, 'danger') ?>
-            <? endif ?>
+            <?php endif ?>
 
-            <? if ($attribute['pg_attribute']['udt_name'] != $attribute['type']): ?>
+            <?php if ($attribute['pg_attribute']['udt_name'] != $attribute['type']): ?>
             <?= PwForm::badgeTag($attribute['pg_attribute']['udt_name'], null, 'danger') ?>
             <?= PwForm::badgeTag($attribute['pg_attribute']['character_maximum_length'], null, 'danger') ?>
-            <? endif ?>
+            <?php endif ?>
             <? else: ?>
             <label class="badge badge-pill badge-danger">unsync</label>
             <form action="<?= $this->urlFor(['action' => 'sync_by_attribute', 'id' => $attribute['id']]) ?>" method="post">
@@ -149,11 +149,11 @@
               <?= PwForm::hidden('model_id', $this->model->value['id']) ?>
               <?= PwForm::hidden('table_name', $this->model->value['name']) ?>
             </form>
-            <? endif ?>
+            <?php endif ?>
           </td>
         </tr>
-        <? endforeach ?>
-        <? endif ?>
+        <?php endforeach ?>
+        <?php endif ?>
       </tbody>
     </table>
   </div>

@@ -21,18 +21,18 @@
     </tr>
   </thead>
 
-  <? if ($this->localize_string->values): ?>
-    <? foreach ($this->localize_string->values as $values): ?>
+  <?php if ($this->localize_string->values): ?>
+    <?php foreach ($this->localize_string->values as $values): ?>
       <tr>
         <td><?= $this->localize_string->linkEdit([], $values) ?></td>
         <td><?= $values['name'] ?></td>
         <td>
           <dl class="row">
-          <? foreach ($this->lang->values as $lang): ?>
+          <?php foreach ($this->lang->values as $lang): ?>
             <? $labels = json_decode($values['label'], true) ?>
             <dt class="col-2"><?= $lang['name'] ?></dt>
             <dd class="col-10"><?= $labels[$lang['lang']] ?></dd>
-          <? endforeach ?>
+          <?php endforeach ?>
           </dl>
         </td>
         <td>
@@ -44,7 +44,7 @@
           ) ?>
         </td>
       </tr>
-    <? endforeach ?>
-  <? endif ?>
+    <?php endforeach ?>
+  <?php endif ?>
 
 </table>

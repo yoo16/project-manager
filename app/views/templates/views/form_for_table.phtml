@@ -1,14 +1,14 @@
 
 <table class="table">
-<? foreach ($values['view']['view_item'] as $view_item): ?>
-<? if (!PwModel::$required_columns[$values['attribute'][$view_item['attribute_id']]['name']]): ?>
+<?php foreach ($values['view']['view_item'] as $view_item): ?>
+<?php if (!PwModel::$required_columns[$values['attribute'][$view_item['attribute_id']]['name']]): ?>
 
-<? if ($view_item['form_type'] == 'hidden'): ?>
+<?php if ($view_item['form_type'] == 'hidden'): ?>
 <? else: ?>
     <tr>
       <th><?= Attribute::labelName($values['model'], $values['attribute'][$view_item['attribute_id']]) ?></th>
       <td>
-<? if ($view_item['form_type'] == 'textarea'): ?>
+<?php if ($view_item['form_type'] == 'textarea'): ?>
           <? Tag::init()->php('$this->'.$values['model']['entity_name']."->formTextarea('{$values['attribute'][$view_item['attribute_id']]['name']}')") ?>
 <? elseif ($view_item['form_type'] == 'select'): ?>
           <? Tag::init()->formSelect($view_item, $values['model'], $values['attribute'][$view_item['attribute_id']]) ?>
@@ -22,21 +22,21 @@
           <? Tag::init()->formSelectDate($view_item, $values['model'], $values['attribute'][$view_item['attribute_id']]) ?>
 <? else: ?>
           <? Tag::init()->formInput($view_item, $values['model'], $values['attribute'][$view_item['attribute_id']]) ?>
-<? endif ?>
-<? if ($view_item['note']): ?>
+<?php endif ?>
+<?php if ($view_item['note']): ?>
           <span class="text-danger"><?= $view_item['note'] ?></span>
-<? endif ?>
+<?php endif ?>
 
       </td>
     </tr>
-<? endif ?>
+<?php endif ?>
 
-<? endif ?>
-<? endforeach ?>
+<?php endif ?>
+<?php endforeach ?>
 </table>
 
-<? foreach ($values['view']['view_item'] as $view_item): ?>
-  <? if ($view_item['form_type'] == 'hidden'): ?>
+<?php foreach ($values['view']['view_item'] as $view_item): ?>
+  <?php if ($view_item['form_type'] == 'hidden'): ?>
     <?= Tag::init()->hidden($view_item, $values['model'], $values['attribute']) ?>
-  <? endif ?>
-<? endforeach ?>
+  <?php endif ?>
+<?php endforeach ?>

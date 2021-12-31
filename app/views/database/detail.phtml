@@ -3,7 +3,7 @@
 
 <h2>テーブル名</h2>
 
-<? foreach ($this->pg_tables as $pg_table): ?>
+<?php foreach ($this->pg_tables as $pg_table): ?>
 <h3><?= $pg_table['tablename'] ?></h3>
 <table class="table">
   <tr>
@@ -16,7 +16,7 @@
     <th>attnum</th>
     <th>NOT NULL</th>
   </tr>
-  <? foreach ($pg_table['attributes'] as $attribute): ?>
+  <?php foreach ($pg_table['attributes'] as $attribute): ?>
   <tr>
     <td></td>
     <td nowrap="nowrap">
@@ -30,13 +30,13 @@
     <td><?= $attribute['attnum'] ?></td>
     <td><?= $attribute['attnotnull'] ?></td>
   </tr>
-<? endforeach ?>
+<?php endforeach ?>
 
 <tr>
 </tr>
 
 </table>
-<? endforeach ?>
+<?php endforeach ?>
 
 <?= PwTag::javascript('controllers/DatabaseController') ?>
 

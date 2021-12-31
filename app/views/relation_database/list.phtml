@@ -17,14 +17,14 @@
       </tr>
     </thead>
 
-    <? if ($this->relation_database->values): ?>
-    <? foreach ($this->relation_database->values as $relation_database): ?>
+    <?php if ($this->relation_database->values): ?>
+    <?php foreach ($this->relation_database->values as $relation_database): ?>
     <tr>
       <td><?= PwForm::linkButton('edit', LABEL_EDIT, $relation_database['id']) ?></td>
       <td><?= $relation_database['database_name'] ?></td>
       <td><?= $relation_database['database_hostname'] ?></td>
     </tr>
-  <? endforeach ?>
-<? endif ?>
+  <?php endforeach ?>
+<?php endif ?>
 </table>
 </div>

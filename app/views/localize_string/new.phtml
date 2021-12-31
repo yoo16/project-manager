@@ -7,12 +7,12 @@
       <td><?= $this->localize_string->formInput('name', ['class' => 'form-control col-5']) ?></td>
     </tr>
 
-    <? foreach ($this->lang->values as $lang): ?>
+    <?php foreach ($this->lang->values as $lang): ?>
     <tr>
       <th>Lang(<?= $lang['name'] ?>)</th>
       <td><input class="form-control" name="localize_string[label][<?= $lang['lang'] ?>]" value=""></td>
     </tr> 
-    <? endforeach ?>
+    <?php endforeach ?>
 
     </table>
 

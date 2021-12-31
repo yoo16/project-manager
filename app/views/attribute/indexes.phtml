@@ -1,4 +1,4 @@
-<? if ($this->pg_indexes): ?>
+<?php if ($this->pg_indexes): ?>
 <div class="card">
   <div class="card-header">
     Index
@@ -13,25 +13,25 @@
   <div class="card-body">
 
     <div class="p-2">
-      <? foreach ($this->pg_indexes as $pg_index): ?>
+      <?php foreach ($this->pg_indexes as $pg_index): ?>
       <div class="row">
         <div class="col-6">
-          <? if (strpos($pg_index['indexdef'], 'CREATE UNIQUE') === 0): ?>
+          <?php if (strpos($pg_index['indexdef'], 'CREATE UNIQUE') === 0): ?>
           <?= $pg_index['indexname'] ?>
           <span class="badge badge-info">UNIQUE</span>
           <? else: ?>
           <?= PwForm::input(['class' => 'form-control form-control'], 'new_index_name', $pg_index['indexname']) ?>
-          <? endif ?>
+          <?php endif ?>
         </div>
         <div class="col-6">
         </div>
       </div>
-      <? endforeach ?>
+      <?php endforeach ?>
     </div>
 
   </div>
 
 </div>
-<? endif ?>
+<?php endif ?>
 
 <? include('index_window.phtml') ?>

@@ -12,39 +12,39 @@
 <div>
   <h5>$this->forms['area']</h5>
   <table class="table">
-    <? foreach ($this->forms['area'] as $key => $value): ?>
+    <?php foreach ($this->forms['area'] as $key => $value): ?>
 
     <tr>
       <th><?= $key ?></th>
       <td>
-        <? if (is_array($value)): ?>
+        <?php if (is_array($value)): ?>
 
         <table class="table">
 
-          <? foreach ($value as $key2 => $value2): ?>
+          <?php foreach ($value as $key2 => $value2): ?>
           <tr>
             <th><?= $key2 ?></th>
             <td>
-              <? if (is_array($value2)): ?>
+              <?php if (is_array($value2)): ?>
               <? print_r($value2) ?>
             <? else: ?>
             <?= $value2 ?>
-          <? endif ?>
+          <?php endif ?>
         </td>
       </tr>
-    <? endforeach ?>
+    <?php endforeach ?>
 
   </table>
 
 <? else: ?>
 
 <?= $value ?>
-<? endif ?>
+<?php endif ?>
 </td>
 
 </tr>
 
-<? endforeach ?>
+<?php endforeach ?>
 </table>
 
 </div>
@@ -62,39 +62,39 @@
 
 <h5>$this->forms['area_checkbox']</h5>
 <table class="table">
-  <? foreach ($this->forms['area_checkbox'] as $key => $value): ?>
+  <?php foreach ($this->forms['area_checkbox'] as $key => $value): ?>
 
   <tr>
     <th><?= $key ?></th>
     <td>
-      <? if (is_array($value)): ?>
+      <?php if (is_array($value)): ?>
 
       <table class="table">
 
-        <? foreach ($value as $key2 => $value2): ?>
+        <?php foreach ($value as $key2 => $value2): ?>
         <tr>
           <th><?= $key2 ?></th>
           <td>
-            <? if (is_array($value2)): ?>
+            <?php if (is_array($value2)): ?>
             <? print_r($value2) ?>
           <? else: ?>
           <?= $value2 ?>
-        <? endif ?>
+        <?php endif ?>
       </td>
     </tr>
-  <? endforeach ?>
+  <?php endforeach ?>
 
 </table>
 
 <? else: ?>
 
 <?= $value ?>
-<? endif ?>
+<?php endif ?>
 </td>
 
 </tr>
 
-<? endforeach ?>
+<?php endforeach ?>
 </table>
 
 <h4>radio($params, $selected=null, $value_key=null, $label_key=null, $values=null)</h4>
@@ -110,39 +110,39 @@
 
   <h5>$this->forms['area_radio']</h5>
   <table class="table">
-    <? foreach ($this->forms['area_radio'] as $key => $value): ?>
+    <?php foreach ($this->forms['area_radio'] as $key => $value): ?>
 
     <tr>
       <th><?= $key ?></th>
       <td>
-        <? if (is_array($value)): ?>
+        <?php if (is_array($value)): ?>
 
         <table class="table">
 
-          <? foreach ($value as $key2 => $value2): ?>
+          <?php foreach ($value as $key2 => $value2): ?>
           <tr>
             <th><?= $key2 ?></th>
             <td>
-              <? if (is_array($value2)): ?>
+              <?php if (is_array($value2)): ?>
               <? print_r($value2) ?>
             <? else: ?>
             <?= $value2 ?>
-          <? endif ?>
+          <?php endif ?>
         </td>
       </tr>
-    <? endforeach ?>
+    <?php endforeach ?>
 
   </table>
 
 <? else: ?>
 
 <?= $value ?>
-<? endif ?>
+<?php endif ?>
 </td>
 
 </tr>
 
-<? endforeach ?>
+<?php endforeach ?>
 </table>
 </div>
 
@@ -158,38 +158,38 @@
 <div>
   <h5>$this->forms['date']</h5>
   <table class="table">
-    <? foreach ($this->forms['date'] as $key => $value): ?>
+    <?php foreach ($this->forms['date'] as $key => $value): ?>
 
     <tr>
       <th><?= $key ?></th>
       <td>
-        <? if (is_array($value)): ?>
+        <?php if (is_array($value)): ?>
 
         <table class="table">
 
-          <? foreach ($value as $key2 => $value2): ?>
+          <?php foreach ($value as $key2 => $value2): ?>
           <tr>
             <th><?= $key2 ?></th>
             <td>
-              <? if (is_array($value2)): ?>
+              <?php if (is_array($value2)): ?>
               <? print_r($value2) ?>
             <? else: ?>
             <?= $value2 ?>
-          <? endif ?>
+          <?php endif ?>
         </td>
       </tr>
-    <? endforeach ?>
+    <?php endforeach ?>
 
   </table>
 
 <? else: ?>
 
 <?= $value ?>
-<? endif ?>
+<?php endif ?>
 </td>
 
 </tr>
 
-<? endforeach ?>
+<?php endforeach ?>
 </table>
 </div>

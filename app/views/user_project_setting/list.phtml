@@ -14,9 +14,9 @@
       <td>project exists</td>
     </tr>
   </thead>
-  <? if (is_array($this->user_project_setting->values)): ?>
+  <?php if (is_array($this->user_project_setting->values)): ?>
   <tbody>
-    <? foreach ($this->user_project_setting->values as $user_project_setting): ?>
+    <?php foreach ($this->user_project_setting->values as $user_project_setting): ?>
     <tr>
       <td>
         <?= $this->linkTo(
@@ -26,18 +26,18 @@
       </td>
       <td><?= $user_project_setting['project_path'] ?></td>
       <td>
-        <? if (file_exists($user_project_setting['project_path'])): ?>
-        <? if (file_exists($user_project_setting['project_path']."app/")): ?><label class="badge badge-success">exists</label><? else: ?>
+        <?php if (file_exists($user_project_setting['project_path'])): ?>
+        <?php if (file_exists($user_project_setting['project_path']."app/")): ?><label class="badge badge-success">exists</label><? else: ?>
         <label class="badge badge-danger">not found php-work</label>
         <a class="btn btn-primary" href="<?= $this->urlFor(['action' => 'git_clone'], ['user_project_setting_id' => $user_project_setting['id']]) ?>">git clone php-work</a>
-      <? endif ?>
+      <?php endif ?>
     <? else: ?>
     <label class="badge badge-danger">not exists</label>
     <a class="btn btn-primary" href="<?= $this->urlFor(['action' => 'git_clone'], ['user_project_setting_id' => $user_project_setting['id']]) ?>">git clone php-work</a>
-  <? endif ?>
+  <?php endif ?>
 </td>
 </tr>
-<? endforeach ?>
-<? endif ?>
+<?php endforeach ?>
+<?php endif ?>
 </tbody>
 </table>

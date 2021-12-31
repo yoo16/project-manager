@@ -10,12 +10,12 @@
                         'label' => ['login_name'],
                         'model' => 'User',
                         ]) ?>
-          <? if (!$from): ?>
+          <?php if (!$from): ?>
           <div>
           Please, create user!!
           </div>
           <?= $this->linkTo(['controller' => 'user'], ['label' => 'create', 'class' => 'btn btn-primary']) ?>
-          <? endif ?>
+          <?php endif ?>
       </td>
     </tr>
 

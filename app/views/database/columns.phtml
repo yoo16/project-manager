@@ -22,7 +22,7 @@ if you want create database's columns, please add columns on 'Project'.
         <th>NOT NULL</th>
       </tr>
     </thead>
-    <? foreach ($this->pg_attributes as $attribute): ?>
+    <?php foreach ($this->pg_attributes as $attribute): ?>
     <tr>
       <td><?= $attribute['attnum'] ?></td>
       <td><?= $attribute['attname'] ?></td>
@@ -46,7 +46,7 @@ if you want create database's columns, please add columns on 'Project'.
       <td><?= $attribute['is_primary_key'] ?></td>
       <td><?= $attribute['attnotnull'] ?></td>
     </tr>
-  <? endforeach ?>
+  <?php endforeach ?>
 </table>
 
 </div>

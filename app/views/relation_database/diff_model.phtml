@@ -2,11 +2,11 @@
 
 <? include('old_attribute_window.phtml') ?>
 
-<? foreach ($this->values as $values): ?>
+<?php foreach ($this->values as $values): ?>
 
-<? if ($values['attribute']): ?>
+<?php if ($values['attribute']): ?>
 
-<? if ($values['model']['old_name']): ?>
+<?php if ($values['model']['old_name']): ?>
 <h3><?= $values['model']['name'] ?> <--> <?= $values['model']['old_name'] ?></h3>
 <? else: ?>
 <h3>
@@ -21,10 +21,10 @@
     'model_id' => $values['model']['id'], 
     ]) ?>
   </h3>
-<? endif ?>
+<?php endif ?>
 
 <table class="table">
-  <? foreach ($values['attribute'] as $attribute): ?>
+  <?php foreach ($values['attribute'] as $attribute): ?>
   <tr>
     <td class="col-3"><?= $attribute['name'] ?></td>
     <td>
@@ -40,12 +40,12 @@
     ]) ?>
     </td>
   </tr>
-<? endforeach ?>
+<?php endforeach ?>
 </table>
 
-<? endif ?>
+<?php endif ?>
 
-<? endforeach ?>
+<?php endforeach ?>
 
 <?= PwTag::javascript('controllers/ModelController') ?>
 

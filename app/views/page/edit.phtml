@@ -16,14 +16,14 @@
           </td>
         </tr>
 
-        <? if ($this->model->value): ?>
+        <?php if ($this->model->value): ?>
         <tr>
           <th>Model</th>
           <td>
             <?= $this->model->value['name'] ?>
           </td>
         </tr>
-        <? endif ?>
+        <?php endif ?>
 
         <tr>
           <th>Class Name</th>
@@ -102,11 +102,11 @@
                     ]
                     ) ?>
             .id
-            <? if ($this->page->value['where_model_id']): ?>
+            <?php if ($this->page->value['where_model_id']): ?>
             =
             <?= $this->model->value['name'] ?>.
             <?= DB::model('Model')->fetch($this->page->value['where_model_id'])->value['entity_name'] ?>_id
-            <? endif ?>
+            <?php endif ?>
           </td>
         </tr>
 

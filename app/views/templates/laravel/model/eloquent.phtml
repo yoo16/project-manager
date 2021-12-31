@@ -13,7 +13,7 @@ class <?= $values['model_name'] ?> extends Model
     protected $fillable = [
 <?php if ($values['attribute']->values) : ?>
 <?php foreach ($values['attribute']->values as $attribute) : ?>
-<? if (!PwLaravel::isGuardedAttribute($attribute)): ?>
+<?php if (!PwLaravel::isGuardedAttribute($attribute)): ?>
         '<?= $attribute['name'] ?>',
 <?php endif ?>
 <?php endforeach ?>
@@ -23,7 +23,7 @@ class <?= $values['model_name'] ?> extends Model
     protected $guarded = [
 <?php if ($values['attribute']->values) : ?>
 <?php foreach ($values['attribute']->values as $attribute) : ?>
-<? if (PwLaravel::isGuardedAttribute($attribute)): ?>
+<?php if (PwLaravel::isGuardedAttribute($attribute)): ?>
         '<?= $attribute['name'] ?>',
 <?php endif ?>
 <?php endforeach ?>

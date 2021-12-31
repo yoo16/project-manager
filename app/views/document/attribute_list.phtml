@@ -17,20 +17,20 @@
       </thead>
 
       <tbody>
-        <? if ($this->attribute->values): ?>
-        <? foreach ($this->attribute->values as $attribute): ?>
+        <?php if ($this->attribute->values): ?>
+        <?php foreach ($this->attribute->values as $attribute): ?>
         <tr>
           <td>
-            <? if (!PwModel::$required_columns[$attribute['name']]): ?><?= PwForm::linkButton('edit', LABEL_EDIT, $attribute['id']) ?><? endif ?>
+            <?php if (!PwModel::$required_columns[$attribute['name']]): ?><?= PwForm::linkButton('edit', LABEL_EDIT, $attribute['id']) ?><?php endif ?>
           </td>
 
           <td>
             <?= $attribute['name'] ?>
-            <? if ($attribute['old_name']): ?>
+            <?php if ($attribute['old_name']): ?>
             <div>
               (<?= $attribute['old_name'] ?>)
             </div>
-          <? endif ?>
+          <?php endif ?>
         </td>
 
         <td>
@@ -52,8 +52,8 @@
        </td>
 
      </tr>
-   <? endforeach ?>
- <? endif ?>
+   <?php endforeach ?>
+ <?php endif ?>
 </tbody>
 </table>
 </div>

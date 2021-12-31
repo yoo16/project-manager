@@ -7,11 +7,11 @@
 
   <?= PwTag::javascript('log') ?>
 
-  <? if (defined('PROJECT_NAME')): ?>
+  <?php if (defined('PROJECT_NAME')): ?>
   <script type="text/javascript">
     var project_name = '<?= PROJECT_NAME ?>';
   </script>
-  <? endif ?>
+  <?php endif ?>
 </head>
 
 <body>
@@ -23,13 +23,13 @@
           <?= APP_NAME ?></a>
       </div>
 
-      <? if ($this->admin): ?>
+      <?php if ($this->admin): ?>
       <div class="nav nav-pills flex-column flex-sm-row">
         <a class="flex-sm-fill text-sm-center nav-link" href="<?= $this->linkTo('admin_user/') ?>">User</a>
         <a class="flex-sm-fill text-sm-center nav-link" href="<?= $this->linkTo('admin/log') ?>">Log File</a>
         <a class="flex-sm-fill text-sm-center nav-link" href="<?= $this->linkTo('admin/logout') ?>">Logout</a>
       </div>
-      <? endif ?>
+      <?php endif ?>
     </div>
   </div>
 

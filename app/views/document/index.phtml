@@ -11,45 +11,45 @@
 <a class="btn" href="<?= $this->linkTo('test_php', array('project_id' => $this->project->value['id'])) ?>">Test PHP</a>
 <div id="error_documents">
   <ul>
-    <? foreach ($this->missmatch_function_params as $file_name => $missmatch_function_params): ?>
+    <?php foreach ($this->missmatch_function_params as $file_name => $missmatch_function_params): ?>
     <li>
       <h3><?= $file_name ?></h3>
-      <? foreach ($missmatch_function_params as $function_name => $missmatch_function_param): ?>
+      <?php foreach ($missmatch_function_params as $function_name => $missmatch_function_param): ?>
       <h4><?= $function_name ?></h4>
       <ul>
-        <? foreach ($missmatch_function_param as $param): ?>
+        <?php foreach ($missmatch_function_param as $param): ?>
         <li>
           <?= $param ?>
-          <? endforeach ?>
+          <?php endforeach ?>
         </li>
       </ul>
-      <? endforeach ?>
+      <?php endforeach ?>
     </li>
-    <? endforeach ?>
+    <?php endforeach ?>
   </ul>
 </div>
 
 <h2>Document</h2>
 <div>
-  <? foreach ($this->controller_files as $path => $controller_file): ?>
+  <?php foreach ($this->controller_files as $path => $controller_file): ?>
   <? $dir_index++ ?>
   <div><a href="#<?=$path ?>"><?= $path ?></a></div>
-  <? endforeach ?>
+  <?php endforeach ?>
 </div>
 
 <div>
 
   <dl>
-    <? foreach ($this->controller_files as $path => $controller_file): ?>
+    <?php foreach ($this->controller_files as $path => $controller_file): ?>
     <? $dir_index++ ?>
     <dt><a name="<?= $path ?>">&nbsp;</a><?= $path ?></dt>
-    <? foreach ($controller_file as $key => $_controller): ?>
+    <?php foreach ($controller_file as $key => $_controller): ?>
     <? $function_key = "document_{$dir_index}_{$key}" ?>
     <dd>
       <h2><a href="javascript:showHideDocument('#<?= $function_key ?>');"><?= $_controller['file_name'] ?></a></h2>
       <div id="<?= $function_key ?>" class="document_element">
 
-        <? if($_controller['documents']['class_documents']): ?>
+        <?php if($_controller['documents']['class_documents']): ?>
         <div class="row">
           <div class="">
             <table class="table table-bordered table-condensed">
@@ -72,23 +72,23 @@
               <tr>
                 <th>require_once</th>
                 <td>
-                  <? if($_controller['documents']['require_once']): ?>
+                  <?php if($_controller['documents']['require_once']): ?>
                   <ul class="nav">
-                    <? foreach ($_controller['documents']['require_once'] as $key => $require_once): ?>
+                    <?php foreach ($_controller['documents']['require_once'] as $key => $require_once): ?>
                     <li><?= $require_once ?></li>
-                    <? endforeach ?>
+                    <?php endforeach ?>
                   </ul>
-                  <? endif ?>
+                  <?php endif ?>
                 </td>
               </tr>
             </table>
           </div>
         </div>
-        <? endif ?>
+        <?php endif ?>
 
         <p><?= $_controller['documents']['row_count'] ?>行</p>
 
-        <? foreach ($_controller['documents']['function_documents'] as $key2 =>  $values): ?>
+        <?php foreach ($_controller['documents']['function_documents'] as $key2 =>  $values): ?>
         <h3>
           <? $controller_name =  php_controller_uri_name($_controller['file_name']) ?>
           <? $url = "http://{$_SERVER['SERVER_NAME']}/{$this->project->value['name']}/{$controller_name}/{$values['action_name']}/" ?>
@@ -105,18 +105,18 @@
           </tr>
           <tr>
             <th>パラメータ</th>
-            <td><? foreach ($values['request'] as $key3 => $param): ?><?=$param ?><br /><? endforeach ?></td>
+            <td><?php foreach ($values['request'] as $key3 => $param): ?><?=$param ?><br /><?php endforeach ?></td>
           </tr>
           <tr>
             <th>戻り値</th>
             <td><?= $values['return'] ?></td>
           </tr>
         </table>
-        <? endforeach ?>
+        <?php endforeach ?>
       </div>
     </dd>
-    <? endforeach ?>
-    <? endforeach ?>
+    <?php endforeach ?>
+    <?php endforeach ?>
 
   </dl>
 </div>

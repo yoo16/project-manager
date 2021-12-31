@@ -3,26 +3,26 @@
 
     <div class="card-block">
       <table class="table">
-      <? foreach ($errors as $key => $error) : ?>
-      <? if ($key == 'request') : ?>
+      <?php foreach ($errors as $key => $error) : ?>
+      <?php if ($key == 'request') : ?>
         <tr>
           <th><?= $key ?></th>
           <td>
             <dl>
-        <? foreach ($error as $param_key => $param) : ?>
+        <?php foreach ($error as $param_key => $param) : ?>
             <dt><?= $key ?></dt>
             <dd><?= $param ?></dd>
-        <? endforeach ?>
+        <?php endforeach ?>
             </dl>
           </td>
         </tr>
-      <? else : ?>
+      <?php else : ?>
         <tr>
           <th><?= $key ?></th>
           <td><?= $error ?></td>
         </tr>
-      <? endif ?>
-      <? endforeach ?>
+      <?php endif ?>
+      <?php endforeach ?>
       </table>
     </div>
 

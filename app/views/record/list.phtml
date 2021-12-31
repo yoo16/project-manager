@@ -21,8 +21,8 @@
     </tr>
   </thead>
 
-  <? if ($this->record->values): ?>
-  <? foreach ($this->record->values as $values): ?>
+  <?php if ($this->record->values): ?>
+  <?php foreach ($this->record->values as $values): ?>
   <tr row-id="<?= $values['id'] ?>">
     <td>
       <?= $this->record->linkEdit([], $values) ?>
@@ -38,6 +38,6 @@
       <?= $values['label'] ?>
     </td>
   </tr>
-  <? endforeach ?>
-  <? endif ?>
+  <?php endforeach ?>
+  <?php endif ?>
 </table>

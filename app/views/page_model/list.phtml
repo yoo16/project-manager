@@ -19,8 +19,8 @@
       </tr>
     </thead>
 
-    <? if ($this->page_model->values): ?>
-      <? foreach ($this->page_model->values as $values): ?>
+    <?php if ($this->page_model->values): ?>
+      <?php foreach ($this->page_model->values as $values): ?>
         <tr row-id="<?= $values['id'] ?>">
           <td>
             <?= PwForm::linkButton(['action' => 'edit', 'id' => $values['id']], ['label' => LABEL_EDIT]) ?>
@@ -35,6 +35,6 @@
             <?= PwForm::changeActiveLabelTag(['controller' => $this->name, 'action' => 'change_request_session', 'id' => $values['id']], $values['is_request_session']) ?>
           </td>
         </tr>
-        <? endforeach ?>
-          <? endif ?>
+        <?php endforeach ?>
+          <?php endif ?>
 </table>

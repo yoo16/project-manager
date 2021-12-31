@@ -16,15 +16,15 @@
           </tr>
   </thead>
 
-  <? if ($this->api->values): ?>
-  <? foreach ($this->api->values as $values): ?>
+  <?php if ($this->api->values): ?>
+  <?php foreach ($this->api->values as $values): ?>
   <tr id="<?= $values['id'] ?>">
     <td><?= PwForm::linkButton(['action' => 'edit', 'id' => $values['id']], ['label' => LABEL_EDIT]) ?></td>
     <td><?= $values['label'] ?></td>
     <td><?= $values['note'] ?></td>
     <td><a href="<?= $this->urlFor(['controller' => 'root', 'id' => $values['id'], ['api_id' => $values['id']]) ?>"><?= $values['name'] ?></a></td>
   </tr>
-  <? endforeach ?>
-  <? endif ?>
+  <?php endforeach ?>
+  <?php endif ?>
 
 </table>

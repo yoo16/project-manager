@@ -2,31 +2,31 @@ from lib.pgsql import Pgsql
 
 class _<?= $values['model']['class_name'] ?>(Pgsql):
 
-<? if ($values['model']['id_column_name']): ?>
+<?php if ($values['model']['id_column_name']): ?>
     id_column = '<?=  $values['model']["id_column_name"] ?>'
 <? else: ?>
     id_column = 'id'
-<? endif ?>
+<?php endif ?>
     name = '<?= $values['model']['name'] ?>'
     table_name = '<?= $values['model']['name'] ?>'
     entity_name = '<?= $values['model']['entity_name']?>'
 
-<? if ($values['attribute']): ?>
+<?php if ($values['attribute']): ?>
     columns = {
-<? foreach ($values['attribute'] as $attribute): ?>
-<? if ($attribute['name'] != 'id'): ?>
+<?php foreach ($values['attribute'] as $attribute): ?>
+<?php if ($attribute['name'] != 'id'): ?>
         <?= Model::pythonPropertyForTemplate($attribute) ?>,
-<? endif ?>
-<? endforeach ?>
+<?php endif ?>
+<?php endforeach ?>
     }
-<? endif ?>
+<?php endif ?>
 
-<? if ($values['primary']): ?>
+<?php if ($values['primary']): ?>
     primary_key = '<?= $values['primary'] ?>'
-<? endif ?>
-<? if ($values['foreign']): ?>
+<?php endif ?>
+<?php if ($values['foreign']): ?>
     foreigns = {
-<? foreach ($values['foreign'] as $conname => $foreign): ?>
+<?php foreach ($values['foreign'] as $conname => $foreign): ?>
         '<?= $conname ?>': {
             'column': '<?= $foreign['attname'] ?>',
             'class_name': '<?= PwFile::phpClassNameFromPwEntityName($foreign['foreign_relname']) ?>',
@@ -35,17 +35,17 @@ class _<?= $values['model']['class_name'] ?>(Pgsql):
             'cascade_update_type': '<?= $foreign['confupdtype'] ?>',
             'cascade_delete_type': '<?= $foreign['confdeltype'] ?>',
         },
-<? endforeach ?>
+<?php endforeach ?>
     }
-<? endif ?>
+<?php endif ?>
 
-<? if ($values['unique']): ?>
+<?php if ($values['unique']): ?>
     unique: {
-<? foreach ($values['unique'] as $conname => $uniques): ?>
-            '<?= $conname ?>': {<? foreach ($uniques as $unique): ?>'<?= $unique['attname'] ?>',<? endforeach ?>},
-<? endforeach ?>
+<?php foreach ($values['unique'] as $conname => $uniques): ?>
+            '<?= $conname ?>': {<?php foreach ($uniques as $unique): ?>'<?= $unique['attname'] ?>',<?php endforeach ?>},
+<?php endforeach ?>
     }
-<? endif ?>
+<?php endif ?>
     def __init__(self):
         super().__init__()
         return

@@ -10,31 +10,31 @@
       </div>
 
       <div class="modal-body">
-        <? if (is_array($this->user_project_setting->values)): ?>
+        <?php if (is_array($this->user_project_setting->values)): ?>
         <div>
           <input type="checkbox" name="is_overwrite" value="1"> overwrite
           <input id="project_id" type="hidden" name="project_id" value="<?= $this->project->value['id'] ?>">
         </div>
         <table class="table">
-          <? foreach ($this->user_project_setting->values as $user_project_setting): ?>
+          <?php foreach ($this->user_project_setting->values as $user_project_setting): ?>
           <tr>
             <td>
               <?= $user_project_setting['project_path'] ?>
             </td>
             <td>
-              <? if (file_exists($user_project_setting['project_path'])): ?>
-              <? if (file_exists($user_project_setting['project_path']."app/")): ?>
+              <?php if (file_exists($user_project_setting['project_path'])): ?>
+              <?php if (file_exists($user_project_setting['project_path']."app/")): ?>
               <label class="badge badge-success">exists</label>
               <? else: ?>
               <label class="badge badge-danger">not found php-work</label>
-              <? endif ?>
+              <?php endif ?>
               <? else: ?>
               <label class="badge badge-danger">not exists</label>
-              <? endif ?>
+              <?php endif ?>
             </td>
             <td>
-              <? if (file_exists($user_project_setting['project_path'])): ?>
-              <? if (file_exists($user_project_setting['project_path']."app/")): ?>
+              <?php if (file_exists($user_project_setting['project_path'])): ?>
+              <?php if (file_exists($user_project_setting['project_path']."app/")): ?>
 
               <div class="form-inline">
                 <?= $this->linkJs(
@@ -145,13 +145,13 @@
                    ]
                 ) ?>
 
-              <? endif ?>
-              <? endif ?>
+              <?php endif ?>
+              <?php endif ?>
             </td>
           </tr>
 
-          <? if (file_exists($user_project_setting['project_path'])): ?>
-          <? if (!file_exists($user_project_setting['project_path']."app/")): ?>
+          <?php if (file_exists($user_project_setting['project_path'])): ?>
+          <?php if (!file_exists($user_project_setting['project_path']."app/")): ?>
           <tr>
             <td>
               <small class="text-danger">
@@ -159,9 +159,9 @@
             </td>
             <td></td>
           </tr>
-          <? endif ?>
-          <? endif ?>
-          <? endforeach ?>
+          <?php endif ?>
+          <?php endif ?>
+          <?php endforeach ?>
 
         </table>
         <? else: ?>
@@ -173,7 +173,7 @@
                 ],
                 ['label' => LABEL_EXPORT.LABEL_SETTING]
                 ) ?>
-        <? endif ?>
+        <?php endif ?>
 
       </div>
     </div>

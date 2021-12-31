@@ -69,9 +69,9 @@
       <?= PwForm::submit(LABEL_UPDATE) ?>
       <?= PwForm::linkButton(['action' => 'cancel'], ['label' => LABEL_BACK]) ?>
 
-      <? if (!$this->model->value['is_lock']): ?>
+      <?php if (!$this->model->value['is_lock']): ?>
       <?= $this->model->confirmDelete() ?>
-      <? endif ?>
+      <?php endif ?>
     </form>
   </div>
 </div>

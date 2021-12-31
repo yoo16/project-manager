@@ -7,9 +7,9 @@
       </tr>
     </thead>
 
-<? if (is_array($this->projects)): ?> 
+<?php if (is_array($this->projects)): ?> 
 
-<? foreach ($this->projects as $key => $project): ?> 
+<?php foreach ($this->projects as $key => $project): ?> 
 
     <tr id="<?=$project['id'] ?>">
       <td>
@@ -18,9 +18,9 @@
       </td>
 
     </tr>
-<? endforeach ?> 
+<?php endforeach ?> 
 
-<? endif ?> 
+<?php endif ?> 
 
   </table>
 

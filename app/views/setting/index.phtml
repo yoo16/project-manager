@@ -1,7 +1,7 @@
 <h2>Setting</h2>
 
 <div class="hero-unit">
-  <? if ($this->pgsql_entity->is_connection_error) : ?>
+  <?php if ($this->pgsql_entity->is_connection_error) : ?>
     <div class="alert alert-danger">
       <p>
         Not Found project-manager's database '<?= DB_NAME ?>' on PostgreSQL
@@ -12,14 +12,14 @@
       </p>
       <a class="btn btn-primary" href="<?= $this->urlFor(['action' => 'create_database']) ?>" onClick="return confirm('createdb for PostgreSQL?')">Create Database</a>
     </div>
-  <? endif ?>
+  <?php endif ?>
 
-  <? if (!$this->database->is_success) : ?>
+  <?php if (!$this->database->is_success) : ?>
     <div class="alert alert-danger">
       Not Found <?= DB_NAME ?>'s tables.
       <?= $this->linkTo(['action' => 'pgsql'], ['label' => 'Create Table', 'class' => 'btn btn-primary']) ?>
     </div>
-  <? endif ?>
+  <?php endif ?>
 
   <div class="alert alert-success">
     <h1>Hello, project-manager! </h1>
@@ -163,11 +163,11 @@ define('DB_PASS', '');
     <tr>
       <th>pg_connection()</th>
       <td>
-        <? if ($this->pg_connection) : ?>
+        <?php if ($this->pg_connection) : ?>
           <?= $this->pg_connection ?>
         <? else : ?>
           <?= undefineLabelTag() ?>
-        <? endif ?>
+        <?php endif ?>
       </td>
     </tr>
   </table>

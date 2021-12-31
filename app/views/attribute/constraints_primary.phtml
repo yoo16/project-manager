@@ -1,5 +1,5 @@
-  <? if ($this->pg_class['pg_constraint']['primary']): ?>
-  <? foreach ($this->pg_class['pg_constraint']['primary'] as $pg_constraint): ?>
+  <?php if ($this->pg_class['pg_constraint']['primary']): ?>
+  <?php foreach ($this->pg_class['pg_constraint']['primary'] as $pg_constraint): ?>
   <div class="row">
     <div class="col-6">
       <form action="<?= $this->urlFor(['action' => 'rename_constraint']) ?>" method="post">
@@ -23,6 +23,6 @@
       </form>
     </div>
   </div>
-<? endforeach ?>
+<?php endforeach ?>
 
-<? endif ?>
+<?php endif ?>

@@ -5,22 +5,22 @@
   <a href="#" class="change-show-all-table">show all</a>
   <a href="#" class="change-hide-all-table">hide all</a>
   <table class="table">
-    <? foreach ($this->pg_classes as $pg_class): ?>
+    <?php foreach ($this->pg_classes as $pg_class): ?>
       <tr>
         <td><input type="checkbox" name="check_<?= $pg_class['pg_class_id'] ?>" class="change-show-table" rel="<?= $pg_class['pg_class_id'] ?>"></td>
         <td><a href="#<?= $pg_class['pg_class_id'] ?>"><?= $pg_class['tablename'] ?></a></td>
         <td><?= $pg_class['comment'] ?></td>
       </tr>
-    <? endforeach ?>
+    <?php endforeach ?>
   </table>
 
   <a class="change-list-col" target-class=".db-table" data="1" href="#"><i class="fa fa-list"></i></a>
   <a class="change-list-col" target-class=".db-table" data="2" href="#"><i class="fa fa-th"></i></a>
 </div>
 
-<? if ($this->pg_classes): ?>
+<?php if ($this->pg_classes): ?>
   <div class="row db-list">
-    <? foreach ($this->pg_classes as $pg_class): ?>
+    <?php foreach ($this->pg_classes as $pg_class): ?>
       <div id="<?= $pg_class['pg_class_id'] ?>" class="db-table col-6 mb-3">
         <div class="card">
 
@@ -32,19 +32,19 @@
 
           <div>
             <table class="table">
-              <? foreach ($pg_class['pg_attribute'] as $attnum => $pg_attribute): ?>
+              <?php foreach ($pg_class['pg_attribute'] as $attnum => $pg_attribute): ?>
                 <tr>
                   <td>
                     <div id="<?= $pg_class['pg_class_id'] ?>-<?= $attnum ?>"><?= $pg_attribute['attname'] ?></div>
                   </td>
                   <td>
-                    <? if ($pg_attribute['comment']): ?><?= $pg_attribute['comment'] ?><? else: ?><span class="badge badge-danger">undefined</span><? endif ?>
+                    <?php if ($pg_attribute['comment']): ?><?= $pg_attribute['comment'] ?><? else: ?><span class="badge badge-danger">undefined</span><?php endif ?>
                   </td>
                   <td>
                     <div><?= $pg_attribute['udt_name'] ?></div>
                   </td>
                 </tr>
-              <? endforeach ?>
+              <?php endforeach ?>
             </table>
           </div>
 
@@ -52,7 +52,7 @@
       </div>
 
 
-    <? endforeach ?>
+    <?php endforeach ?>
 
   </div>
-<? endif ?>
+<?php endif ?>

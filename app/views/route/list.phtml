@@ -16,15 +16,15 @@
     </tr>
   </thead>
 
-  <? if ($this->route->values): ?>
-  <? foreach ($this->route->values as $values): ?>
+  <?php if ($this->route->values): ?>
+  <?php foreach ($this->route->values as $values): ?>
   <tr row-id="<?= $values['id'] ?>">
     <td><?= $this->route->linkEdit([], $values) ?></td>
     <td><?= $values['uri'] ?></td>
     <td><?= $values['action'] ?></td>
     <td><?= $values['method'] ?></td>
   </tr>
-  <? endforeach ?>
-  <? endif ?>
+  <?php endforeach ?>
+  <?php endif ?>
 
 </table>

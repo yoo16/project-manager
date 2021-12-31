@@ -18,8 +18,8 @@
     </tr>
   </thead>
 
-  <? if ($this->view_item_group_member->values): ?>
-  <? foreach ($this->view_item_group_member->values as $values): ?>
+  <?php if ($this->view_item_group_member->values): ?>
+  <?php foreach ($this->view_item_group_member->values as $values): ?>
   <tr row-id="<?= $values['id'] ?>">
     <td>
       <?= $this->view_item_group_member->linkEdit([], $values) ?>
@@ -31,6 +31,6 @@
       <?= $this->view_item->values[$values['view_item_id']]['name'] ?>
     </td>
   </tr>
-  <? endforeach ?>
-  <? endif ?>
+  <?php endforeach ?>
+  <?php endif ?>
 </table>

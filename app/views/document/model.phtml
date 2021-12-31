@@ -13,13 +13,13 @@
       </tr>
     </thead>
 
-    <? if ($this->model->values): ?>
-    <? foreach ($this->model->values as $model): ?>
+    <?php if ($this->model->values): ?>
+    <?php foreach ($this->model->values as $model): ?>
     <tr>
       <td><?= PwForm::linkButton('edit', LABEL_EDIT, $model['id']) ?></td>
       <td>
         <div><?= PwForm::link('attribute_list', $model['name'], ['model_id' => $model['id']]) ?></div>
-        <? if ($model['old_name']): ?><div>(<?= $model['old_name'] ?>)</div><? endif ?>
+        <?php if ($model['old_name']): ?><div>(<?= $model['old_name'] ?>)</div><?php endif ?>
       </td>
       <td>
         <form method="post" action="<?= $this->urlFor('update_model', $model['id']) ?>">
@@ -45,7 +45,7 @@
    </td>
 
  </tr>
-<? endforeach ?>
-<? endif ?>
+<?php endforeach ?>
+<?php endif ?>
 </table>
 </div>

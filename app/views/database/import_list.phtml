@@ -8,7 +8,7 @@
         ],
         $this->host) ?>
 <table class="table">
-<? foreach ($this->pg_databases as $pg_database): ?>
+<?php foreach ($this->pg_databases as $pg_database): ?>
 <tr>
   <td><?= $pg_database['datname'] ?></td>
   <td>
@@ -19,5 +19,5 @@
     </form>
   </td>
 </tr>
-<? endforeach ?>
+<?php endforeach ?>
 </table>

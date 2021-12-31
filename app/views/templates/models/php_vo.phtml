@@ -10,34 +10,34 @@ require_once 'PwPgsql.php';
 
 class _<?= $values['model']['class_name'] ?> extends PwPgsql {
 
-<? if ($values['model']['is_none_id_column']): ?>
+<?php if ($values['model']['is_none_id_column']): ?>
     public $is_none_id_column = true;
 <? else: ?>
-<? if ($values['model']['id_column_name']): ?>
+<?php if ($values['model']['id_column_name']): ?>
     public $id_column = '<?=  $values['model']["id_column_name"] ?>';
 <? else: ?>
     public $id_column = 'id';
-<? endif ?>
-<? endif ?>
+<?php endif ?>
+<?php endif ?>
     public $name = '<?= $values['model']['name'] ?>';
     public $entity_name = '<?= $values['model']['entity_name']?>';
 
-<? if ($values['attribute']): ?>
+<?php if ($values['attribute']): ?>
     public $columns = [
-<? foreach ($values['attribute'] as $attribute): ?>
-<? if ($attribute['name'] != 'id'): ?>
+<?php foreach ($values['attribute'] as $attribute): ?>
+<?php if ($attribute['name'] != 'id'): ?>
         <?= Model::columnPropertyForTemplate($attribute) ?>,
-<? endif ?>
-<? endforeach ?>
+<?php endif ?>
+<?php endforeach ?>
     ];
-<? endif ?>
+<?php endif ?>
 
-<? if ($values['primary']): ?>
+<?php if ($values['primary']): ?>
     public $primary_key = '<?= $values['primary'] ?>';
-<? endif ?>
-<? if ($values['foreign']): ?>
+<?php endif ?>
+<?php if ($values['foreign']): ?>
     public $foreign = [
-<? foreach ($values['foreign'] as $conname => $foreign): ?>
+<?php foreach ($values['foreign'] as $conname => $foreign): ?>
             '<?= $conname ?>' => [
                                   'column' => '<?= $foreign['attname'] ?>',
                                   'class_name' => '<?= PwFile::phpClassNameFromPwEntityName($foreign['foreign_relname']) ?>',
@@ -46,35 +46,35 @@ class _<?= $values['model']['class_name'] ?> extends PwPgsql {
                                   'cascade_update_type' => '<?= $foreign['confupdtype'] ?>',
                                   'cascade_delete_type' => '<?= $foreign['confdeltype'] ?>',
                                   ],
-<? endforeach ?>
+<?php endforeach ?>
     ];
-<? endif ?>
+<?php endif ?>
 
-<? if ($values['unique']): ?>
+<?php if ($values['unique']): ?>
     public $unique = [
-<? foreach ($values['unique'] as $conname => $uniques): ?>
+<?php foreach ($values['unique'] as $conname => $uniques): ?>
             '<?= $conname ?>' => [
-<? foreach ($uniques as $unique): ?>
+<?php foreach ($uniques as $unique): ?>
                         '<?= $unique['attname'] ?>',
-<? endforeach ?>
+<?php endforeach ?>
                         ],
-<? endforeach ?>
+<?php endforeach ?>
     ];
-<? endif ?>
-<? if ($values['index']): ?>
+<?php endif ?>
+<?php if ($values['index']): ?>
     public $index_keys = [
-<? foreach ($values['index'] as $index): ?>
+<?php foreach ($values['index'] as $index): ?>
     '<?= $index['indexname'] ?>' => '<?= $index['indexdef'] ?>',
-<? endforeach ?>
+<?php endforeach ?>
     ];
-<? endif ?>
-<? if ($values['model']['old_name']): ?>
+<?php endif ?>
+<?php if ($values['model']['old_name']): ?>
     public $old_name = '<?= $values['model']['old_name'] ?>';
-<? endif ?>
+<?php endif ?>
 
-<? if ($values['old_id_column']): ?>
+<?php if ($values['old_id_column']): ?>
     public $old_id_column = '<?= $values['old_id_column'] ?>';
-<? endif ?>
+<?php endif ?>
 
     function __construct($params = null) {
         parent::__construct($params);

@@ -15,15 +15,15 @@
           </tr>
   </thead>
 
-  <? if ($this->api_param->values): ?>
-  <? foreach ($this->api_param->values as $values): ?>
+  <?php if ($this->api_param->values): ?>
+  <?php foreach ($this->api_param->values as $values): ?>
   <tr row-id="<?= $values['id'] ?>">
     <td><?= $this->api_param->linkEdit([], $values) ?></td>
     <td><?= $values['name'] ?></td>
     <td><?= $values['type'] ?></td>
     <td><?= $values['note'] ?></td>
   </tr>
-  <? endforeach ?>
-  <? endif ?>
+  <?php endforeach ?>
+  <?php endif ?>
 
 </table>

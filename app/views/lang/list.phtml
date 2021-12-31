@@ -14,14 +14,14 @@
     </tr>
   </thead>
 
-  <? if ($this->lang->values): ?>
-  <? foreach ($this->lang->values as $values): ?>
+  <?php if ($this->lang->values): ?>
+  <?php foreach ($this->lang->values as $values): ?>
   <tr>
     <td><?= $this->lang->linkEdit([], $values) ?></td>
     <td><?= $values['name'] ?></td>
     <td><?= $values['lang'] ?></td>
   </tr>
-  <? endforeach ?>
-  <? endif ?>
+  <?php endforeach ?>
+  <?php endif ?>
 
 </table>

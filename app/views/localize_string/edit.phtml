@@ -9,12 +9,12 @@
       </td>
     </tr>
 
-    <? foreach ($this->lang->values as $lang): ?>
+    <?php foreach ($this->lang->values as $lang): ?>
     <tr>
       <th>Language(<?= $lang['name'] ?>)</th>
       <td><input class="form-control" name="localize_string[label][<?= $lang['lang'] ?>]" value="<?= $this->localize_string->value['label'][$lang['lang']] ?>"></td>
     </tr>
-    <? endforeach ?>
+    <?php endforeach ?>
 
   </table>
 

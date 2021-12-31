@@ -3,8 +3,8 @@
   pw_app.setCurrentAction('<?= $this->pw_action ?>');
   pw_app.setCurrentId('<?= $this->pw_id ?>');
 </script>
-<? if ($this->is_use_multi_sid): ?>
+<?php if ($this->is_use_multi_sid): ?>
 <script>
   pw_app.setMultiSid('');
 </script>
-<? endif ?>
+<?php endif ?>
